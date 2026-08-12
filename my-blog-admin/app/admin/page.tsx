@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { siteConfig } from '../../siteConfig'; // 确保路径正确，可能需要根据你的目录结构调整为 '../siteConfig'
+import { siteConfig } from '../../siteConfig';
+import { apiClient, type Post, type Chatter, type Project, type Friend, type Album } from '../../lib/api';
+import AuthModal from '../../components/AuthModal';
 
 export default function AdminDashboard() {
   // 当前选中的功能模块
@@ -11,20 +13,119 @@ export default function AdminDashboard() {
   // 操作队列（模拟你说的：上传照片、保存文章算一次操作）
   // 这里先放两条假数据看看效果，后面我们会通过全局状态或 Context 来动态管理
   const [operations, setOperations] = useState([
-    { id: 1, text: '更新了个人头像', time: '10:05' },
-    { id: 2, text: '保存草稿《GNN虚拟筛选环境配置》', time: '10:30' }
+    { id: 1, text: '系统已初始化，等待操作', time: '--:--' },
   ]);
 
   // 控制操作箱的展开与折叠
   const [isOpBoxOpen, setIsOpBoxOpen] = useState(false);
 
-  // 左侧导航菜单配置
+  // 数据状态
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [chatters, setChatters] = useState<Chatter[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [friends, setFriends] = useState<Friend[]>([]);
+  const [albums, setAlbums] = useState<Album[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  // 登录状态
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const hasToken = !!apiClient.getToken();
+    setIsLoggedIn(hasToken);
+    if (!hasToken) {
+      setIsAuthModalOpen(true);
+    }
+  }, []);
+
+  const addOperation = (text: string) => {
+    const now = new Date();
+    const time = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+    setOperations(prev => [{ id: Date.now(), text, time }, ...prev].slice(0, 20));
+  };
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const [postsRes, chattersRes, projectsRes, friendsRes, albumsRes] = await Promise.all([
+        apiClient.getAllPosts(),
+        apiClient.getAllChatters(),
+        apiClient.getAllProjects(),
+        apiClient.getAllFriends(),
+        apiClient.getAllAlbums(),
+      ]);
+
+      if (postsRes.success) setPosts(postsRes.data);
+      if (chattersRes.success) setChatters(chattersRes.data);
+      if (projectsRes.success) setProjects(projectsRes.data);
+      if (friendsRes.success) setFriends(friendsRes.data);
+      if (albumsRes.success) setAlbums(albumsRes.data);
+    } catch (e) {
+      addOperation(`数据加载失败: ${e instanceof Error ? e.message : '未知错误'}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetchData();
+    }
+  }, [isLoggedIn]);
+
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
+    setIsAuthModalOpen(false);
+    addOperation('登录成功');
+  };
+
+  const handleLogout = () => {
+    apiClient.clearToken();
+    setIsLoggedIn(false);
+    setIsAuthModalOpen(true);
+  };
+
   const menuItems = [
     { id: 'dashboard', name: '全息仪表盘', icon: '🌌' },
     { id: 'posts', name: '文章与草稿', icon: '📝' },
     { id: 'gallery', name: '光影画廊', icon: '🖼️' },
     { id: 'settings', name: '系统核心配置', icon: '⚙️' },
   ];
+
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 p-4">
+        {/* 居中提示 */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center"
+        >
+          <motion.div
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ repeat: Infinity, duration: 2 }}
+            className="w-24 h-24 mx-auto mb-6 rounded-3xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-5xl shadow-2xl shadow-indigo-500/30"
+          >
+            🌌
+          </motion.div>
+          <h1 className="text-3xl font-black text-white mb-2">BaicaiBlogs CMS</h1>
+          <p className="text-slate-400 text-sm">请先登录以访问管理后台</p>
+        </motion.div>
+
+        {/* 登录/注册弹窗 - 仅在客户端挂载后显示，避免 SSR 水合不匹配 */}
+        {mounted && (
+          <AuthModal
+            isOpen={isAuthModalOpen}
+            onClose={() => {}}
+            onLoginSuccess={handleLoginSuccess}
+          />
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen pt-20 pb-10 px-4 md:px-10 flex flex-col md:flex-row gap-6 max-w-[1600px] mx-auto relative z-10">
@@ -44,6 +145,12 @@ export default function AdminDashboard() {
           </div>
           <h2 className="text-xl font-black text-slate-800 dark:text-white tracking-wider">{siteConfig.authorName}</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-bold tracking-[0.2em] uppercase">CMS Administrator</p>
+          <button
+            onClick={handleLogout}
+            className="mt-4 text-xs text-red-400 hover:text-red-600 font-bold transition-colors"
+          >
+            退出登录
+          </button>
         </div>
 
         {/* 导航菜单区 */}
@@ -62,6 +169,29 @@ export default function AdminDashboard() {
               {item.name}
             </button>
           ))}
+        </div>
+
+        {/* 数据统计卡片 */}
+        <div className="bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl border border-white/50 dark:border-slate-700/50 rounded-3xl p-4 shadow-lg">
+          <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">数据概览</h3>
+          <div className="grid grid-cols-2 gap-3 text-center">
+            <div className="bg-indigo-500/20 rounded-xl p-3">
+              <div className="text-2xl font-black text-indigo-600 dark:text-indigo-400">{posts.length}</div>
+              <div className="text-xs text-slate-500">文章</div>
+            </div>
+            <div className="bg-purple-500/20 rounded-xl p-3">
+              <div className="text-2xl font-black text-purple-600 dark:text-purple-400">{chatters.length}</div>
+              <div className="text-xs text-slate-500">杂谈</div>
+            </div>
+            <div className="bg-green-500/20 rounded-xl p-3">
+              <div className="text-2xl font-black text-green-600 dark:text-green-400">{projects.length}</div>
+              <div className="text-xs text-slate-500">项目</div>
+            </div>
+            <div className="bg-pink-500/20 rounded-xl p-3">
+              <div className="text-2xl font-black text-pink-600 dark:text-pink-400">{friends.length}</div>
+              <div className="text-xs text-slate-500">友链</div>
+            </div>
+          </div>
         </div>
       </motion.div>
 
@@ -130,8 +260,12 @@ export default function AdminDashboard() {
             </div>
 
             {/* 一键部署按钮 */}
-            <button className="h-12 px-6 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white font-black text-sm shadow-lg shadow-indigo-500/30 flex items-center gap-2 transition-all active:scale-95">
-              🚀 全部上传并部署
+            <button
+              onClick={fetchData}
+              disabled={loading}
+              className="h-12 px-6 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 disabled:opacity-50 text-white font-black text-sm shadow-lg shadow-indigo-500/30 flex items-center gap-2 transition-all active:scale-95"
+            >
+              {loading ? '加载中...' : '🔄 刷新数据'}
             </button>
           </div>
         </div>
@@ -140,26 +274,139 @@ export default function AdminDashboard() {
         <div className="bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl border border-white/50 dark:border-slate-700/50 rounded-3xl p-6 min-h-[500px] shadow-lg">
 
           {activeTab === 'dashboard' && (
-            <div className="flex flex-col items-center justify-center h-full text-slate-500 dark:text-slate-400 gap-4 pt-20">
-              <span className="text-6xl">🌌</span>
-              <p className="font-bold tracking-widest text-sm">系统运转良好，随时准备接收指令</p>
+            <div className="flex flex-col gap-6">
+              <h2 className="text-xl font-bold text-slate-800 dark:text-white">系统仪表盘</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <StatCard icon="📝" title="文章" value={posts.length} color="indigo" />
+                <StatCard icon="💭" title="杂谈" value={chatters.length} color="purple" />
+                <StatCard icon="🚀" title="项目" value={projects.length} color="green" />
+                <StatCard icon="💝" title="友链" value={friends.length} color="pink" />
+              </div>
+              <div className="bg-white/60 dark:bg-slate-800/60 rounded-2xl p-6 mt-4">
+                <h3 className="font-bold text-slate-700 dark:text-slate-300 mb-4">最近动态</h3>
+                {posts.length === 0 ? (
+                  <p className="text-slate-500 text-sm">暂无数据，请先在系统中创建内容</p>
+                ) : (
+                  <div className="flex flex-col gap-3">
+                    {posts.slice(0, 5).map(post => (
+                      <div key={post.id} className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-900/50">
+                        <div className="w-10 h-10 rounded-lg bg-indigo-500/20 flex items-center justify-center">📄</div>
+                        <div className="flex-1">
+                          <h4 className="font-bold text-sm text-slate-700 dark:text-slate-200">{post.title}</h4>
+                          <p className="text-xs text-slate-500">{post.date}</p>
+                        </div>
+                        <span className={`text-xs px-2 py-1 rounded-full ${post.status === 'PUBLISHED' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}>
+                          {post.status === 'PUBLISHED' ? '已发布' : '草稿'}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
           {activeTab === 'posts' && (
-            <div className="text-slate-500 text-center pt-20">双栏 Markdown 编辑器即将部署于此...</div>
+            <div>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-slate-800 dark:text-white">文章管理</h2>
+                <button className="px-4 py-2 rounded-xl bg-indigo-500 text-white text-sm font-bold hover:bg-indigo-600 transition-colors">
+                  + 新建文章
+                </button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {posts.map(post => (
+                  <div key={post.id} className="bg-white/60 dark:bg-slate-800/60 rounded-2xl p-5 border border-white/50 dark:border-slate-700/50">
+                    <div className="flex items-start justify-between mb-3">
+                      <h3 className="font-bold text-slate-800 dark:text-white">{post.title}</h3>
+                      <span className={`text-xs px-2 py-1 rounded-full ${post.status === 'PUBLISHED' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}>
+                        {post.status === 'PUBLISHED' ? '已发布' : '草稿'}
+                      </span>
+                    </div>
+                    <p className="text-sm text-slate-500 mb-3 line-clamp-2">{post.description}</p>
+                    <div className="flex items-center justify-between text-xs text-slate-400">
+                      <span>📅 {post.date}</span>
+                      <span>👁 {post.views}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
 
           {activeTab === 'gallery' && (
-            <div className="text-slate-500 text-center pt-20">图床配置与相册管理即将部署于此...</div>
+            <div>
+              <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-4">相册管理</h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {albums.map(album => (
+                  <div key={album.id} className="bg-white/60 dark:bg-slate-800/60 rounded-2xl overflow-hidden border border-white/50 dark:border-slate-700/50">
+                    {album.cover && <img src={album.cover} alt={album.title} className="w-full h-32 object-cover" />}
+                    <div className="p-3">
+                      <h3 className="font-bold text-sm text-slate-800 dark:text-white truncate">{album.title}</h3>
+                      <p className="text-xs text-slate-500">{album.photos.length} 张照片</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
-
           {activeTab === 'settings' && (
-            <div className="text-slate-500 text-center pt-20">核心变量 siteConfig 控制台即将部署于此...</div>
+            <div className="flex flex-col gap-6">
+              <h2 className="text-xl font-bold text-slate-800 dark:text-white">系统配置</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <ConfigCard title="基础信息" items={[
+                  { label: '站点标题', value: siteConfig.title },
+                  { label: '博主名称', value: siteConfig.authorName },
+                ]} />
+                <ConfigCard title="社交链接" items={[
+                  { label: 'GitHub', value: siteConfig.social?.github || '未配置' },
+                  { label: '邮箱', value: siteConfig.social?.email || '未配置' },
+                ]} />
+                <ConfigCard title="友链管理" items={[
+                  { label: '友链数量', value: `${friends.length} 个` },
+                ]} />
+                <ConfigCard title="项目展示" items={[
+                  { label: '项目数量', value: `${projects.length} 个` },
+                ]} />
+              </div>
+            </div>
           )}
 
         </div>
       </motion.div>
+    </div>
+  );
+}
+
+function StatCard({ icon, title, value, color }: { icon: string; title: string; value: number; color: string }) {
+  const colorMap: Record<string, string> = {
+    indigo: 'from-indigo-500/20 to-indigo-600/20 text-indigo-600',
+    purple: 'from-purple-500/20 to-purple-600/20 text-purple-600',
+    green: 'from-green-500/20 to-green-600/20 text-green-600',
+    pink: 'from-pink-500/20 to-pink-600/20 text-pink-600',
+  };
+
+  return (
+    <div className={`bg-gradient-to-br ${colorMap[color]} dark:to-slate-800/60 rounded-2xl p-5 border border-white/50 dark:border-slate-700/50`}>
+      <div className="text-3xl mb-2">{icon}</div>
+      <div className="text-3xl font-black">{value}</div>
+      <div className="text-sm text-slate-500">{title}</div>
+    </div>
+  );
+}
+
+function ConfigCard({ title, items }: { title: string; items: { label: string; value: string }[] }) {
+  return (
+    <div className="bg-white/60 dark:bg-slate-800/60 rounded-2xl p-5 border border-white/50 dark:border-slate-700/50">
+      <h3 className="font-bold text-slate-800 dark:text-white mb-3">{title}</h3>
+      <div className="flex flex-col gap-2">
+        {items.map((item, index) => (
+          <div key={index} className="flex justify-between items-center">
+            <span className="text-sm text-slate-500">{item.label}</span>
+            <span className="text-sm font-bold text-slate-700 dark:text-slate-300 truncate max-w-[200px]">{item.value}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
