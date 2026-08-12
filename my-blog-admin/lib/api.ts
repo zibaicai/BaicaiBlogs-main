@@ -115,6 +115,18 @@ export interface Comment {
   createdAt: string;
 }
 
+export interface MusicResponse {
+  id: string;
+  name?: string;
+  artist?: string;
+  author?: string;
+  cover?: string;
+  pic?: string;
+  url?: string;
+  lrc?: string;
+  error?: string;
+}
+
 export interface LoginRequest {
   username: string;
   password: string;
@@ -264,6 +276,18 @@ class ApiClient {
 
   async getConfigByKey(key: string): Promise<ApiResponse<SiteConfig>> {
     return this.request<SiteConfig>('GET', `/api/public/config/${key}`);
+  }
+
+  // Public API - Music
+  async getMusic(ids: string[]): Promise<MusicResponse[]> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/public/music?ids=${encodeURIComponent(ids.join(','))}`);
+      if (!response.ok) throw new Error('音乐接口请求失败');
+      return await response.json() as MusicResponse[];
+    } catch (error) {
+      if (error instanceof Error) throw error;
+      throw new Error('网络错误');
+    }
   }
 
   // Public API - Comments

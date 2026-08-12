@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useRef, useEffect, ReactNode } from 'react';
 import { siteConfig } from '../siteConfig';
+import { apiClient } from '../lib/api';
 
 // 【增强版 LRC 歌词解析】
 function parseLrc(lrcText: string) {
@@ -84,8 +85,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     let isMounted = true;
     const fetchMusicData = async () => {
       try {
-        const res = await fetch(`/api/music?ids=${siteConfig.cloudMusicIds.join(',')}`);
-        const rawResults = await res.json();
+        const rawResults = await apiClient.getMusic(siteConfig.cloudMusicIds);
 
         const mergedPlaylist = rawResults
           .filter((song: any) => song && song.url && !song.error)
