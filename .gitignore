@@ -46,3 +46,19 @@ next-env.d.ts
 # 忽略不需要提交的子项目
 XHBlogs/
 my-blog-manager/
+
+# Java/Maven build artifacts
+my-blog-backend/target/
+my-blog-backend/.mvn/
+my-blog-backend/mvnw
+my-blog-backend/mvnw.cmd
+
+# Java IDE
+my-blog-backend/.idea/
+my-blog-backend/.vscode/
+my-blog-backend/*.iml
+
+# Python backend (已被 Java 替代)
+my-blog-admin/cms_core/
+my-blog-admin/run_me.py
+my-blog-admin/launcher.py
