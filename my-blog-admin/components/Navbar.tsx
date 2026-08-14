@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useOperations } from '../context/OperationContext';
 import { useToast } from './ToastProvider';
 import { AlertTriangle } from 'lucide-react';
-import { siteConfig } from '../siteConfig';
+import { useSiteConfigContext } from '../context/SiteConfigProvider';
 
 export default function Navbar() {
   const [showNav, setShowNav] = useState(true);
@@ -20,6 +20,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const { operations, removeOperation, clearOperations } = useOperations();
   const { showToast } = useToast();
+  const { siteInfo } = useSiteConfigContext();
 
   useEffect(() => {
     const fetchPath = async () => {
@@ -102,7 +103,7 @@ export default function Navbar() {
         for (const op of operations) {
           let apiUrl = '';
           let body = {};
-
+          console.log(op, "op");
           switch (op.type) {
             case 'sync_photowall':
               apiUrl = `${apiBase}/api/gallery/sync`;
@@ -198,11 +199,11 @@ export default function Navbar() {
         <div className="w-[95%] max-w-7xl mx-auto h-16 flex items-center justify-between px-4 box-border">
 
           <Link href="/" className="text-xl font-black text-slate-800 dark:text-white tracking-tighter">
-            {siteConfig.navTitle}
+            {siteInfo?.navTitle}
             <span className="text-indigo-500 mx-1">
-              {siteConfig.navSuffix || 'の'}
+              {siteInfo?.navSuffix || 'の'}
             </span>
-            {siteConfig.navAfter}
+            {siteInfo?.navAfter}
           </Link>
 
           <div className="flex items-center gap-6" style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}>

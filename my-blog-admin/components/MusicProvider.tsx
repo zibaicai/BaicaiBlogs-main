@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useRef, useEffect, ReactNode } from 'react';
-import { siteConfig } from '../siteConfig';
+import { useSiteConfigContext } from '../context/SiteConfigProvider';
 import { apiClient } from '../lib/api';
 
 // 【增强版 LRC 歌词解析】
@@ -64,6 +64,7 @@ interface MusicContextType {
 const MusicContext = createContext<MusicContextType | null>(null);
 
 export function MusicProvider({ children }: { children: ReactNode }) {
+  const { misc } = useSiteConfigContext();
   const [playlist, setPlaylist] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -85,7 +86,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     let isMounted = true;
     const fetchMusicData = async () => {
       try {
-        const rawResults = await apiClient.getMusic(siteConfig.cloudMusicIds);
+        const rawResults = await apiClient.getMusic(misc?.cloudMusicIds ?? []);
 
         const mergedPlaylist = rawResults
           .filter((song: any) => song && song.url && !song.error)
@@ -109,11 +110,11 @@ export function MusicProvider({ children }: { children: ReactNode }) {
       }
     };
 
-    if (siteConfig.cloudMusicIds?.length > 0) fetchMusicData();
+    if ((misc?.cloudMusicIds?.length ?? 0) > 0) fetchMusicData();
     else setIsLoading(false);
 
     return () => { isMounted = false; };
-  }, []);
+  }, [misc?.cloudMusicIds]);
 
   useEffect(() => {
     if (playlist.length === 0) return;

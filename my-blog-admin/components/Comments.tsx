@@ -6,11 +6,12 @@ import 'gitalk/dist/gitalk.css';
 import Gitalk from 'gitalk';
 
 // 🌟 引入全局配置，读取你的 GitHub OAuth 凭证
-import { siteConfig } from '../siteConfig'; // 如果路径报错，请检查层级是否需要改成 '../../siteConfig'
+import { useSiteConfigContext } from '../context/SiteConfigProvider';
 
 export default function Comments() {
   const containerRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const { misc } = useSiteConfigContext();
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -19,11 +20,11 @@ export default function Comments() {
     containerRef.current.innerHTML = '';
 
     const gitalk = new Gitalk({
-      clientID: siteConfig.gitalkConfig.clientID,
-      clientSecret: siteConfig.gitalkConfig.clientSecret,
-      repo: siteConfig.gitalkConfig.repo,
-      owner: siteConfig.gitalkConfig.owner,
-      admin: siteConfig.gitalkConfig.admin,
+      clientID: misc?.gitalkConfig?.clientID || '',
+      clientSecret: misc?.gitalkConfig?.clientSecret || '',
+      repo: misc?.gitalkConfig?.repo || '',
+      owner: misc?.gitalkConfig?.owner || '',
+      admin: misc?.gitalkConfig?.admin || [],
 
       // 👇 指向我们自己的同源 API，彻底告别跨域和第三方拦截！
       proxy: '/api/github',
@@ -42,7 +43,7 @@ export default function Comments() {
       window.history.replaceState({}, document.title, url.toString());
     }
 
-  }, [pathname]);
+  }, [pathname, misc?.gitalkConfig]);
 
   return (
     <div className="w-full mt-16 relative">

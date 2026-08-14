@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { siteConfig } from '../../siteConfig';
+import { useSiteConfigContext } from '../../context/SiteConfigProvider';
 import { apiClient, type Post, type Chatter, type Project, type Friend, type Album } from '../../lib/api';
 import AuthModal from '../../components/AuthModal';
 
 export default function AdminDashboard() {
+  const { siteInfo } = useSiteConfigContext();
   // 当前选中的功能模块
   const [activeTab, setActiveTab] = useState('dashboard');
 
@@ -141,9 +142,9 @@ export default function AdminDashboard() {
         {/* 个人名片区 */}
         <div className="bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl border border-white/50 dark:border-slate-700/50 rounded-3xl p-6 flex flex-col items-center shadow-lg">
           <div className="w-20 h-20 rounded-full p-1 bg-gradient-to-tr from-indigo-500 to-purple-500 mb-4 shadow-[0_0_20px_rgba(99,102,241,0.4)]">
-            <img src={siteConfig.avatarUrl} alt="Avatar" className="w-full h-full rounded-full object-cover border-2 border-white dark:border-slate-800" />
+            <img src={siteInfo?.avatarUrl} alt="Avatar" className="w-full h-full rounded-full object-cover border-2 border-white dark:border-slate-800" />
           </div>
-          <h2 className="text-xl font-black text-slate-800 dark:text-white tracking-wider">{siteConfig.authorName}</h2>
+          <h2 className="text-xl font-black text-slate-800 dark:text-white tracking-wider">{siteInfo?.authorName}</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-bold tracking-[0.2em] uppercase">CMS Administrator</p>
           <button
             onClick={handleLogout}
@@ -355,12 +356,12 @@ export default function AdminDashboard() {
               <h2 className="text-xl font-bold text-slate-800 dark:text-white">系统配置</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <ConfigCard title="基础信息" items={[
-                  { label: '站点标题', value: siteConfig.title },
-                  { label: '博主名称', value: siteConfig.authorName },
+                  { label: '站点标题', value: siteInfo?.title || '' },
+                  { label: '博主名称', value: siteInfo?.authorName || '' },
                 ]} />
                 <ConfigCard title="社交链接" items={[
-                  { label: 'GitHub', value: siteConfig.social?.github || '未配置' },
-                  { label: '邮箱', value: siteConfig.social?.email || '未配置' },
+                  { label: 'GitHub', value: siteInfo?.social?.github || '未配置' },
+                  { label: '邮箱', value: siteInfo?.social?.email || '未配置' },
                 ]} />
                 <ConfigCard title="友链管理" items={[
                   { label: '友链数量', value: `${friends.length} 个` },

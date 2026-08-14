@@ -1,12 +1,13 @@
 "use client";
 
 import { useRouter } from 'next/navigation';
-import { siteConfig } from '../siteConfig';
+import { useSiteConfigContext } from '../context/SiteConfigProvider';
 import { useToast } from './ToastProvider'; // 👈 引入我们写好的绝美提示钩子
 
 export default function ProfileCard({ postCount, chatterCount, photoCount }: { postCount: number, chatterCount: number, photoCount: number }) {
   const router = useRouter();
   const { showToast } = useToast(); // 👈 激活魔法
+  const { siteInfo } = useSiteConfigContext();
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
@@ -22,11 +23,11 @@ export default function ProfileCard({ postCount, chatterCount, photoCount }: { p
       <div className="flex items-start justify-between relative z-10">
         <div className="flex items-center gap-6">
           <div className="w-24 h-24 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-500 p-1 shadow-lg flex-shrink-0 transition-transform duration-500 group-hover:rotate-3">
-            <img src={siteConfig.avatarUrl} alt="avatar" className="w-full h-full rounded-xl object-cover bg-white" />
+            <img src={siteInfo?.avatarUrl} alt="avatar" className="w-full h-full rounded-xl object-cover bg-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2 tracking-wider transition-colors duration-700">{siteConfig.authorName}</h1>
-            <p className="text-slate-700 dark:text-slate-300 font-medium leading-relaxed max-w-md transition-colors duration-700">{siteConfig.bio}</p>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2 tracking-wider transition-colors duration-700">{siteInfo?.authorName}</h1>
+            <p className="text-slate-700 dark:text-slate-300 font-medium leading-relaxed max-w-md transition-colors duration-700">{siteInfo?.bio}</p>
           </div>
         </div>
       </div>
@@ -43,12 +44,12 @@ export default function ProfileCard({ postCount, chatterCount, photoCount }: { p
 
         {/* 社交图标区 - 阻止冒泡防止触发卡片跳转 */}
         <div className="flex gap-3 flex-wrap justify-end" onClick={(e) => e.stopPropagation()}>
-          <SocialBtn type="github" url={siteConfig.social?.github} />
-          <SocialBtn type="gitee" url={siteConfig.social?.gitee} />
-          <SocialBtn type="google" url={siteConfig.social?.google} />
-          <SocialBtn type="email" onClick={() => copyToClipboard(siteConfig.social?.email || '', '邮箱')} />
-          <SocialBtn type="qq" onClick={() => copyToClipboard(siteConfig.social?.qq || '', 'QQ号')} />
-          <SocialBtn type="wechat" onClick={() => copyToClipboard(siteConfig.social?.wechat || '', '微信号')} />
+          <SocialBtn type="github" url={siteInfo?.social?.github} />
+          <SocialBtn type="gitee" url={siteInfo?.social?.gitee} />
+          <SocialBtn type="google" url={siteInfo?.social?.google} />
+          <SocialBtn type="email" onClick={() => copyToClipboard(siteInfo?.social?.email || '', '邮箱')} />
+          <SocialBtn type="qq" onClick={() => copyToClipboard(siteInfo?.social?.qq || '', 'QQ号')} />
+          <SocialBtn type="wechat" onClick={() => copyToClipboard(siteInfo?.social?.wechat || '', '微信号')} />
         </div>
       </div>
     </div>

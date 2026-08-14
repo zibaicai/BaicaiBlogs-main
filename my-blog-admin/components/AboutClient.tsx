@@ -4,7 +4,7 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookOpen, MessageSquare, Sparkles, Activity } from 'lucide-react';
 import Comments from './Comments';
-import { siteConfig } from '../siteConfig';
+import { useSiteConfigContext } from '../context/SiteConfigProvider';
 import Link from 'next/link';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
@@ -26,6 +26,7 @@ export default function AboutClient({
   activities: ActivityRecord[]
 }) {
   const router = useRouter();
+  const { siteInfo } = useSiteConfigContext();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const activeTab = searchParams.get('tab') || 'intro';
@@ -133,13 +134,13 @@ export default function AboutClient({
 
       <div className="px-5 sm:px-8 md:px-16 pb-10 md:pb-16 relative">
         <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white dark:border-slate-800 shadow-2xl overflow-hidden -mt-12 md:-mt-16 relative z-20 bg-white">
-          <img src={siteConfig.avatarUrl} alt="avatar" className="w-full h-full object-cover" />
+          <img src={siteInfo?.avatarUrl} alt="avatar" className="w-full h-full object-cover" />
         </div>
 
         <div className="mt-4 md:mt-6 mb-6 md:mb-8 relative flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
             <h1 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight mb-2 md:mb-3 transition-colors duration-700">关于我</h1>
-            <p className="text-sm md:text-lg text-indigo-600 dark:text-indigo-400 font-bold tracking-widest uppercase transition-colors duration-700">Hello World, I'm {siteConfig.authorName}</p>
+            <p className="text-sm md:text-lg text-indigo-600 dark:text-indigo-400 font-bold tracking-widest uppercase transition-colors duration-700">Hello World, I'm {siteInfo?.authorName}</p>
           </div>
 
           <div className="flex items-center gap-1 bg-white/50 dark:bg-slate-900/50 p-1.5 rounded-2xl shadow-inner border border-white/40 dark:border-white/5">
@@ -300,11 +301,11 @@ export default function AboutClient({
                         className="flex flex-col md:flex-row md:items-center gap-3 bg-white/60 dark:bg-slate-800/60 backdrop-blur-md p-4 rounded-2xl border border-white/50 dark:border-white/5 shadow-sm hover:shadow-lg transition-all group-hover:-translate-y-1 cursor-pointer block relative overflow-hidden"
                       >
                         <div className="flex items-center gap-3 w-full md:w-auto">
-                          <img src={siteConfig.avatarUrl} alt="author" className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-white dark:border-slate-700 shadow-sm shrink-0" />
+                          <img src={siteInfo?.avatarUrl} alt="author" className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-white dark:border-slate-700 shadow-sm shrink-0" />
 
                           <div className="flex flex-col flex-1 min-w-0">
                             <div className="flex items-center gap-2">
-                              <span className="font-black text-slate-800 dark:text-slate-200 text-sm">{siteConfig.authorName}</span>
+                              <span className="font-black text-slate-800 dark:text-slate-200 text-sm">{siteInfo?.authorName}</span>
                               <span className={`text-xs font-bold ${getTypeColor(act.type)}`}>
                                 {isMoment ? '发布了 说说' : `更新了 ${act.type}`}
                               </span>

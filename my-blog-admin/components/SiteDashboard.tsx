@@ -1,15 +1,15 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-// 🌟 引入咱们的控制中心配置
-import { siteConfig } from '../siteConfig';
+import { useSiteConfigContext } from '../context/SiteConfigProvider';
 
 export default function SiteDashboard() {
   const [timeStr, setTimeStr] = useState('');
   const [uptimeStr, setUptimeStr] = useState('');
+  const { siteInfo, misc } = useSiteConfigContext();
 
   // 🌟 从配置中读取建站时间
-  const START_DATE = new Date(siteConfig.buildDate || '2026-03-23T00:00:00').getTime();
+  const START_DATE = new Date(siteInfo?.buildDate || '2026-03-23T00:00:00').getTime();
 
   useEffect(() => {
     const updateTime = () => {
@@ -50,9 +50,9 @@ export default function SiteDashboard() {
           <span>系统已稳定运行：<span className="text-indigo-600 dark:text-indigo-400 font-black">{uptimeStr}</span></span>
         </div>
 
-        {/* 技术栈徽章 (🌟 动态映射 siteConfig 里的数组) */}
+        {/* 技术栈徽章 (🌟 动态映射 misc.footerBadges 里的数组) */}
         <div className="flex gap-2">
-          {siteConfig.footerBadges?.map((badge, index) => (
+          {misc?.footerBadges?.map((badge, index) => (
             <span
               key={index}
               className="px-2 py-1 bg-white/50 dark:bg-slate-700/50 rounded-md shadow-sm flex items-center gap-1 border border-white/40 dark:border-slate-600"
@@ -63,15 +63,15 @@ export default function SiteDashboard() {
           ))}
         </div>
 
-        {/* 备案信息 (🌟 从 siteConfig 读取链接和名称) */}
-        {siteConfig.icpConfig && (
+        {/* 备案信息 (🌟 从 siteInfo.icpConfig 读取链接和名称) */}
+        {siteInfo?.icpConfig && (
           <a
-            href={siteConfig.icpConfig.link}
+            href={siteInfo.icpConfig.link}
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-indigo-500 transition-colors border-b border-dashed border-slate-400 dark:border-slate-500 pb-0.5"
           >
-            {siteConfig.icpConfig.name}
+            {siteInfo.icpConfig.name}
           </a>
         )}
 

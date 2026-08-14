@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '../ToastProvider';
-import { siteConfig } from '../../siteConfig';
+import { useSiteConfigContext } from '../../context/SiteConfigProvider';
 
 interface FloatingImageToolProps {
   isOpen: boolean;
@@ -13,6 +13,7 @@ interface FloatingImageToolProps {
 
 export default function FloatingImageTool({ isOpen, onClose, onInsert }: FloatingImageToolProps) {
   const { showToast } = useToast();
+  const { misc } = useSiteConfigContext();
   const [activeTab, setActiveTab] = useState<'upload' | 'url'>('upload'); // 🌟 新增：切换状态
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedUrl, setUploadedUrl] = useState('');
@@ -22,8 +23,8 @@ export default function FloatingImageTool({ isOpen, onClose, onInsert }: Floatin
 
   // 处理文件上传逻辑 (保持不变)
   const handleFileUpload = async (file: File) => {
-    const picUrl = (siteConfig as any).picBedUrl || "https://pic.dusays.com";
-    const picToken = (siteConfig as any).picBedToken;
+    const picUrl = misc?.picBedUrl || "https://pic.dusays.com";
+    const picToken = misc?.picBedToken;
 
     if (!picToken) {
       showToast("未配置图床 Token！", "error");
