@@ -32,6 +32,8 @@ export interface Post {
   views: number;
   /** 标签列表，例如 ["React","Spring Boot"] */
   tags: string[];
+  /** MD 原文件在阿里云 OSS 上的完整 URL（可直接下载原始 .md 文件） */
+  fileUrl?: string;
   createdAt: string;
   updatedAt: string;
 }
