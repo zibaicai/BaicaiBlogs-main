@@ -40,8 +40,11 @@ public class Project {
     @Column(columnDefinition = "JSON")
     private String tags;
 
+    @Column(name = "user_id")
+    private Long userId;
+
     @Column(name = "sort_order")
-    private Integer sortOrder = 0;
+    private Integer sortOrder  = 0;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
