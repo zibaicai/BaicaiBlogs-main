@@ -5,11 +5,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useSiteConfigContext } from '../../context/SiteConfigProvider';
 import { apiClient, type Post, type Chatter, type Project, type Friend, type Album } from '../../lib/api';
 import AuthModal from '../../components/AuthModal';
+import SiteConfigEditor from '../../components/SiteConfigEditor';
 
 export default function AdminDashboard() {
   const { siteInfo } = useSiteConfigContext();
   // 当前选中的功能模块
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [isConfigEditorOpen, setIsConfigEditorOpen] = useState(false);
 
   // 操作队列（模拟你说的：上传照片、保存文章算一次操作）
   // 这里先放两条假数据看看效果，后面我们会通过全局状态或 Context 来动态管理
@@ -353,7 +355,13 @@ export default function AdminDashboard() {
           )}
           {activeTab === 'settings' && (
             <div className="flex flex-col gap-6">
-              <h2 className="text-xl font-bold text-slate-800 dark:text-white">系统配置</h2>
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-bold text-slate-800 dark:text-white">系统配置</h2>
+                <button onClick={() => setIsConfigEditorOpen(true)}
+                  className="px-4 py-2 rounded-xl text-sm font-black bg-indigo-500 text-white shadow-lg hover:bg-indigo-600 active:scale-95 transition-all flex items-center gap-2">
+                  ⚙️ 编辑站点配置
+                </button>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <ConfigCard title="基础信息" items={[
                   { label: '站点标题', value: siteInfo?.title || '' },
@@ -375,6 +383,8 @@ export default function AdminDashboard() {
 
         </div>
       </motion.div>
+
+      <SiteConfigEditor isOpen={isConfigEditorOpen} onClose={() => setIsConfigEditorOpen(false)} />
     </div>
   );
 }

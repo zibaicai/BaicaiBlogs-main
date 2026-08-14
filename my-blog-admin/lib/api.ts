@@ -62,7 +62,7 @@ export interface Project {
   icon: string;
   githubUrl: string;
   tags: string[];
-  sortOrder: number;
+  sortOrder?: number;
 }
 
 export interface Friend {
