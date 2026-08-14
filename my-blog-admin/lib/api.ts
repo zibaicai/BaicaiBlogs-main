@@ -4,6 +4,7 @@ export interface ApiResponse<T> {
   success: boolean;
   message: string;
   data: T;
+  code?: number;
 }
 
 export interface PageResponse<T> {
@@ -16,15 +17,21 @@ export interface PageResponse<T> {
 
 export interface Post {
   id: number;
+  /** URL 友好的唯一标识 */
   slug: string;
   title: string;
   description: string;
+  /** Markdown 原文 */
   content: string;
+  /** 渲染后的 HTML */
   htmlContent: string;
   cover: string;
+  /** ISO 日期字符串 */
   date: string;
   status: string;
   views: number;
+  /** 标签列表，例如 ["React","Spring Boot"] */
+  tags: string[];
   createdAt: string;
   updatedAt: string;
 }
@@ -316,6 +323,70 @@ class ApiClient {
   }
 
   // Admin API - Posts
+  /**
+   * 获取当前登录用户的已发布文章列表
+   * 用于时间线页面展示该用户自己的文章
+   * 需要携带 JWT token 认证
+   */
+  async getMyPosts(): Promise<ApiResponse<Post[]>> {
+    return this.request<Post[]>('GET', '/api/admin/posts/mine', undefined, true);
+  }
+
+  /**
+   * 获取当前登录用户所有文章中出现过的 tag 集合（去重）
+   * 用于编辑器标签历史提示功能
+   */
+  async getAllTags(): Promise<ApiResponse<string[]>> {
+    return this.request<string[]>('GET', '/api/admin/posts/all_tags', undefined, true);
+  }
+
+  /**
+   * 按 slug 获取当前登录用户的单篇文章（编辑器加载用）
+   * 不限发布状态，DRAFT 也能获取
+   */
+  async getMyPostBySlug(slug: string): Promise<ApiResponse<Post>> {
+    return this.request<Post>('GET', `/api/admin/posts/${encodeURIComponent(slug)}`, undefined, true);
+  }
+
+  /**
+   * 上传 Markdown 文件并导入为文章
+   * 后端解析 frontmatter（title/date/tags/cover/description）并存入数据库
+   * 如果 slug（文件名）已存在则更新，否则创建新文章
+   *
+   * @param file 用户选择的 .md 文件
+   */
+  async uploadPost(file: File): Promise<ApiResponse<Post>> {
+    // 使用 FormData 包装文件，以 multipart/form-data 格式上传
+    const formData = new FormData();
+    formData.append('file', file);
+
+    // 手动构建请求（不使用 this.request，因为 body 是 FormData 不是 JSON）
+    const token = this.getToken();
+    if (!token) {
+      return { success: false, message: '未登录', code: 401, data: null as any };
+    }
+
+    const API_BASE_URL = 'http://localhost:8080';
+    const res = await fetch(`${API_BASE_URL}/api/admin/posts/upload`, {
+      method: 'POST',
+      headers: {
+        // FormData 请求不要手动设置 Content-Type，浏览器会自动设置 boundary
+        'Authorization': `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (res.status === 401 || res.status === 403) {
+      this.clearToken();
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login';
+      }
+      return { success: false, message: '登录已过期', code: res.status, data: null as any };
+    }
+
+    return res.json();
+  }
+
   async createPost(post: Omit<Post, 'id' | 'createdAt' | 'updatedAt' | 'views' | 'htmlContent'>): Promise<ApiResponse<Post>> {
     return this.request<Post>('POST', '/api/admin/posts', post, true);
   }

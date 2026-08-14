@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, KeyboardEvent } from 'react';
+import React, { useState, KeyboardEvent, useEffect } from 'react';
 import { ImageIcon, Tag, FileText, X, Clock, CloudUpload, Smile, Save, Send } from 'lucide-react';
 
 interface Props {
@@ -27,13 +27,17 @@ export default function MetaMatrix({
   const currentHistoryTags = type === 'chatter' ? allHistoryChatterTags : allHistoryPostTags;
 
   const handleAddTag = (e: KeyboardEvent<HTMLInputElement>) => {
+    console.log(e);
     if (e.key === 'Enter' && tagInput.trim() !== '') {
       const val = tagInput.trim().replace(/^#/, '');
       if (!tags.includes(val)) setTags([...tags, val]);
       setTagInput('');
     }
   };
-
+  useEffect(() => {
+    console.log(tags);
+    
+  }, [tags]);
   const Label = ({ icon: Icon, text, color }: any) => (
     <div className={`flex items-center gap-2 mb-3 border-l-4 ${color} pl-4`}>
       <Icon size={14} className="text-slate-400" />

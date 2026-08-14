@@ -5,9 +5,10 @@ import TimelineNode from './TimelineNode';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Search, AlertTriangle, Sparkles, LayoutGrid, ListTree, Calendar, Hash, ArrowRight, Edit3, ArrowUp } from 'lucide-react';
 import { useToast } from './ToastProvider';
+import { apiClient, type Post } from '../lib/api';
 import Link from 'next/link';
 
-export default function TimelineClient({ posts: initialPosts, tags }: { posts: any[], tags: { name: string, count: number }[] }) {
+export default function TimelineClient({ posts: initialPosts, tags }: { posts: Post[], tags: { name: string, count: number }[] }) {
   const [posts, setPosts] = useState(initialPosts);
   const [selectedTag, setSelectedTag] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState("");
@@ -52,25 +53,29 @@ export default function TimelineClient({ posts: initialPosts, tags }: { posts: a
     });
   }, [posts, selectedTag]);
 
+  /**
+   * 确认删除文章
+   * 改造：原实现调用 Python 后端 /api/drafts/delete 物理删除 MD 文件，
+   * 现改为调用 Java 后端 apiClient.deletePost(slug) 删除数据库记录
+   */
   const confirmDelete = async () => {
     if (!deleteModal.slug) return;
     try {
-      const configRes = await fetch(`/backend_config.json?t=${Date.now()}`);
-      const config = await configRes.json();
-      const res = await fetch(`http://127.0.0.1:${config.api_port}/api/drafts/delete`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: deleteModal.slug })
-      });
-      const data = await res.json();
-      if (data.success) {
-        showToast("🗑️ 文章已从硬盘物理粉碎", "success");
+      const res = await apiClient.deletePost(deleteModal.slug);
+      if (res.success) {
+        showToast("🗑️ 文章已删除", "success");
+        // 从前端列表中移除已删除的文章
         setPosts(prev => prev.filter(p => p.slug !== deleteModal.slug));
       } else {
-        showToast("❌ 销毁失败: " + data.message, "error");
+        showToast("❌ 删除失败: " + res.message, "error");
       }
-    } catch (err) {
-      showToast("无法连接到 Python 引擎", "error");
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : '未知错误';
+      if (msg.includes('401') || msg.includes('403')) {
+        showToast('登录已过期，请重新登录', 'error');
+      } else {
+        showToast('删除失败：' + msg, 'error');
+      }
     } finally {
       setDeleteModal({ isOpen: false, slug: null, title: null });
     }
