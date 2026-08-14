@@ -1,8 +1,10 @@
 package com.baicaiblogs.controller;
 
 import com.baicaiblogs.dto.*;
+import com.baicaiblogs.entity.User;
 import com.baicaiblogs.service.ProjectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,10 +25,21 @@ public class ProjectController {
         }
     }
 
+    @GetMapping("/admin/projects/mine")
+    public ApiResponse<List<ProjectResponse>> getMyProjects() {
+        try {
+            Long userId = getCurrentUserId();
+            return ApiResponse.success(projectService.getProjectsByUser(userId));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
     @PostMapping("/admin/projects")
     public ApiResponse<ProjectResponse> createProject(@RequestBody ProjectRequest request) {
         try {
-            return ApiResponse.success("创建成功", projectService.createProject(request));
+            Long userId = getCurrentUserId();
+            return ApiResponse.success("创建成功", projectService.createProject(userId, request));
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
         }
@@ -36,7 +49,8 @@ public class ProjectController {
     public ApiResponse<ProjectResponse> updateProject(@PathVariable String projectId,
                                                       @RequestBody ProjectRequest request) {
         try {
-            return ApiResponse.success("更新成功", projectService.updateProject(projectId, request));
+            Long userId = getCurrentUserId();
+            return ApiResponse.success("更新成功", projectService.updateProject(userId, projectId, request));
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
         }
@@ -45,10 +59,19 @@ public class ProjectController {
     @DeleteMapping("/admin/projects/{projectId}")
     public ApiResponse<Void> deleteProject(@PathVariable String projectId) {
         try {
-            projectService.deleteProject(projectId);
+            Long userId = getCurrentUserId();
+            projectService.deleteProject(userId, projectId);
             return ApiResponse.success("删除成功", null);
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
         }
+    }
+
+    private Long getCurrentUserId() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User) {
+            return ((User) principal).getId();
+        }
+        throw new RuntimeException("用户未登录");
     }
 }

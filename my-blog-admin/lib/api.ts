@@ -177,8 +177,14 @@ class ApiClient {
       'Content-Type': 'application/json',
     };
 
-    if (requiresAuth && this.token) {
-      headers['Authorization'] = `Bearer ${this.token}`;
+    if (requiresAuth) {
+      // 每次请求时从 localStorage 重新读取 token，避免 SSR 时 constructor 未获取到
+      if (typeof window !== 'undefined' && !this.token) {
+        this.token = localStorage.getItem('auth_token');
+      }
+      if (this.token) {
+        headers['Authorization'] = `Bearer ${this.token}`;
+      }
     }
 
     try {
@@ -191,10 +197,11 @@ class ApiClient {
       const data = await response.json() as ApiResponse<T>;
 
       if (!response.ok) {
-        throw new Error(data.message || '请求失败');
+        throw new Error(data.message || `请求失败 (${response.status})`);
       }
 
-      if (requiresAuth && response.status === 401) {
+      // 401 或 403 都表示认证失败，清除 token 并跳转
+      if (requiresAuth && (response.status === 401 || response.status === 403)) {
         this.clearToken();
         if (typeof window !== 'undefined') {
           window.location.href = '/admin';
@@ -257,6 +264,11 @@ class ApiClient {
   // Public API - Projects
   async getAllProjects(): Promise<ApiResponse<Project[]>> {
     return this.request<Project[]>('GET', '/api/public/projects');
+  }
+
+  // Admin API - My Projects (当前登录用户)
+  async getMyProjects(): Promise<ApiResponse<Project[]>> {
+    return this.request<Project[]>('GET', '/api/admin/projects/mine', undefined, true);
   }
 
   // Public API - Friends

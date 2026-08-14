@@ -26,14 +26,22 @@ public class ProjectService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<ProjectResponse> getProjectsByUser(Long userId) {
+        return projectRepository.findByUserIdOrderBySortOrderAsc(userId).stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
     @Transactional
-    public ProjectResponse createProject(ProjectRequest request) {
-        if (projectRepository.existsByProjectId(request.getProjectId())) {
+    public ProjectResponse createProject(Long userId, ProjectRequest request) {
+        if (projectRepository.existsByProjectIdAndUserId(request.getProjectId(), userId)) {
             throw new RuntimeException("Project ID 已存在: " + request.getProjectId());
         }
 
         Project project = Project.builder()
                 .projectId(request.getProjectId())
+                .userId(userId)
                 .name(request.getName())
                 .description(request.getDescription())
                 .icon(request.getIcon())
@@ -46,9 +54,9 @@ public class ProjectService {
     }
 
     @Transactional
-    public ProjectResponse updateProject(String projectId, ProjectRequest request) {
-        Project project = projectRepository.findByProjectId(projectId)
-                .orElseThrow(() -> new RuntimeException("项目不存在: " + projectId));
+    public ProjectResponse updateProject(Long userId, String projectId, ProjectRequest request) {
+        Project project = projectRepository.findByProjectIdAndUserId(projectId, userId)
+                .orElseThrow(() -> new RuntimeException("项目不存在或无权操作: " + projectId));
 
         project.setName(request.getName());
         project.setDescription(request.getDescription());
@@ -63,11 +71,11 @@ public class ProjectService {
     }
 
     @Transactional
-    public void deleteProject(String projectId) {
-        if (!projectRepository.existsByProjectId(projectId)) {
-            throw new RuntimeException("项目不存在: " + projectId);
+    public void deleteProject(Long userId, String projectId) {
+        if (!projectRepository.existsByProjectIdAndUserId(projectId, userId)) {
+            throw new RuntimeException("项目不存在或无权操作: " + projectId);
         }
-        projectRepository.deleteByProjectId(projectId);
+        projectRepository.deleteByProjectIdAndUserId(projectId, userId);
     }
 
     private String serializeTags(List<String> tags) {
