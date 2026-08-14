@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -13,6 +14,53 @@ import java.util.List;
 public class SiteConfigController {
 
     private final SiteConfigService siteConfigService;
+
+    // ============ 分组配置公开端点 ============
+
+    @GetMapping("/public/config/group/site-info")
+    public ApiResponse<Map<String, Object>> getSiteInfo() {
+        try {
+            return ApiResponse.success(siteConfigService.getSiteInfo());
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/public/config/group/background")
+    public ApiResponse<Map<String, Object>> getBackgroundConfig() {
+        try {
+            return ApiResponse.success(siteConfigService.getBackgroundConfig());
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/public/config/group/danmaku")
+    public ApiResponse<List<String>> getDanmakuList() {
+        try {
+            return ApiResponse.success(siteConfigService.getDanmakuList());
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/public/config/group/ai")
+    public ApiResponse<Map<String, Object>> getAiConfig() {
+        try {
+            return ApiResponse.success(siteConfigService.getAiConfig());
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/public/config/group/misc")
+    public ApiResponse<Map<String, Object>> getMiscConfig() {
+        try {
+            return ApiResponse.success(siteConfigService.getMiscConfig());
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
 
     @GetMapping("/public/config")
     public ApiResponse<List<SiteConfigResponse>> getAllConfigs() {
