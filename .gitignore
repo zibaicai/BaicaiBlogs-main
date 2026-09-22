@@ -62,3 +62,5 @@ my-blog-backend/*.iml
 my-blog-admin/cms_core/
 my-blog-admin/run_me.py
 my-blog-admin/launcher.py
+# 取消追踪 application.yml 文件
+application.yml
