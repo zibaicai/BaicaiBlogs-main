@@ -1,4 +1,5 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
+// 去掉末尾斜杠：环境变量为 '/' 时规范化为空串，避免与 '/api/...' 拼成 '//api/...'（浏览器会把 // 开头的串当协议相对 URL，主机名变成 api）
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080').replace(/\/+$/, '');
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -368,7 +369,6 @@ class ApiClient {
       return { success: false, message: '未登录', code: 401, data: null as any };
     }
 
-    const API_BASE_URL = 'http://localhost:8080';
     const res = await fetch(`${API_BASE_URL}/api/admin/posts/upload`, {
       method: 'POST',
       headers: {

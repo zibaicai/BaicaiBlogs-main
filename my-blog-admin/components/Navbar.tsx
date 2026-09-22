@@ -23,24 +23,9 @@ export default function Navbar() {
   const { siteInfo } = useSiteConfigContext();
 
   useEffect(() => {
-    const fetchPath = async () => {
-      try {
-        const configRes = await fetch(`/backend_config.json?t=${Date.now()}`);
-        const config = await configRes.json();
-        const res = await fetch(`http://127.0.0.1:${config.api_port}/api/deploy/config`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data.blogPath) {
-            setTargetBlogPath(data.blogPath);
-            localStorage.setItem('targetBlogPath', data.blogPath);
-          }
-        }
-      } catch (e) {
-        const path = localStorage.getItem('targetBlogPath') || "F:/Projects/my-blog";
-        setTargetBlogPath(path);
-      }
-    };
-    fetchPath();
+    // 生产环境不需要本地同步后端的配置，直接用 localStorage 兜底
+    const path = localStorage.getItem('targetBlogPath') || "";
+    setTargetBlogPath(path);
   }, []);
 
   useEffect(() => {
@@ -96,9 +81,10 @@ export default function Navbar() {
       try {
         showToast(`🔍 正在准备发送 ${operations.length} 个任务...`, "info");
 
-        const configRes = await fetch(`/backend_config.json?t=${Date.now()}`);
-        const configData = await configRes.json();
-        const apiBase = `http://127.0.0.1:${configData.api_port}`;
+        // 生产环境直接走后端 API（与 lib/api.ts 的 apiClient 同源）
+        const { apiClient } = await import('../lib/api');
+        const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL || '').replace(/\/+$/, '');
+        const apiBase = API_BASE_URL;
 
         for (const op of operations) {
           let apiUrl = '';

@@ -1,0 +1,18 @@
+
+[Unit]
+Description=BaicaiBlogs Spring Boot Backend
+After=network.target mysql.service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt
+ExecStart=/usr/bin/java -jar /opt/my-blog-backend-1.0.0.jar --spring.profiles.active=prod
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=baicai-backend
+
+[Install]
+WantedBy=multi-user.target
+EOF

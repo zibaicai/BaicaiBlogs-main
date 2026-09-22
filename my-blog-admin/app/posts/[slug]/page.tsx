@@ -1,6 +1,3 @@
-import fs from 'fs';
-import path from 'path';
-import matter from 'gray-matter';
 import Link from 'next/link';
 
 import { unified } from 'unified';
@@ -23,23 +20,40 @@ import ClientTOC from '../../../components/ClientTOC';
 import BackButton from '../../../components/BackButton';
 import Comments from '../../../components/Comments';
 import SidebarLyric from '../../../components/SidebarLyric';
+import { Download } from 'lucide-react';
 
+// 后端 API 基础地址（与 lib/api.ts 的 API_BASE_URL 保持一致）
+// 去掉末尾斜杠：避免 '/' 与 '/api/...' 拼成 '//api/...'（协议相对 URL，主机名会变成 api）
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080').replace(/\/+$/, '');
+
+/**
+ * 生成静态路由参数
+ *
+ * 原实现：从项目本地 posts/ 目录遍历 .md 文件名
+ * 现改造：请求后端公开接口 /api/public/posts 获取所有已发布文章的 slug
+ *
+ * 说明：静态构建阶段用 getAllPosts 拉全量 slug；运行时如果新增文章
+ *       Next.js App Router 动态路由也能正常按需渲染（动态参数兜底）。
+ */
 export async function generateStaticParams() {
-  const postsDirectory = path.join(process.cwd(), 'posts');
-  if (!fs.existsSync(postsDirectory)) return [];
-
-  const filenames = fs.readdirSync(postsDirectory);
-
-  return filenames
-    .filter((name) => name.endsWith('.md'))
-    .map((name) => ({
-      slug: name.replace(/\.md$/, ''),
-    }));
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/public/posts`, {
+      // 生成静态参数时缓存不要超过 60s，避免文章新增/删除时静态路径滞后
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return [];
+    const json = await res.json();
+    if (!json?.success || !Array.isArray(json.data)) return [];
+    return json.data.map((post: { slug: string }) => ({ slug: post.slug }));
+  } catch (e) {
+    console.error('[generateStaticParams] 拉取文章 slug 失败：', e);
+    return [];
+  }
 }
 
 function extractToc(content: string) {
   const headingRegex = /^(#{1,3})\s+(.+)$/gm;
-  const toc = [];
+  const toc: { level: number; text: string; id: string }[] = [];
   let match;
   while ((match = headingRegex.exec(content)) !== null) {
     toc.push({
@@ -51,14 +65,81 @@ function extractToc(content: string) {
   return toc;
 }
 
+/**
+ * 按 slug 拉取单篇文章数据
+ *
+ * 原实现：fs.readFileSync 本地 posts/{slug}.md → gray-matter 解析 frontmatter + body
+ * 现改造：请求后端公开接口 /api/public/posts/{slug}
+ *   - title / description / tags / cover / date → 后端 DTO 直接返回（字段和原 frontmatter 一致）
+ *   - content → 后端已去除 frontmatter 的 Markdown 正文（与 parsed.body 等价），直接进入 unified 渲染
+ *   - fileUrl → 阿里云 OSS 上该文章的原始 MD 文件 URL（含 frontmatter 的完整文件）
+ *     用于页面右上角"下载原文件"按钮，满足"渲染的数据来源改为 OSS 存储"的要求
+ *   - 可选兜底：当后端 content 为空时，主动 fetch(fileUrl) 从 OSS 下载原始 MD 作为降级渲染
+ */
 async function getPostData(slug: string) {
-  const fullPath = path.join(process.cwd(), 'posts', `${slug}.md`);
-  const fileContents = fs.readFileSync(fullPath, 'utf8');
-  let { data, content } = matter(fileContents);
+  let rawMarkdown = '';        // unified 渲染用的正文（无 frontmatter）
+  let title = '';
+  let date: string | undefined;
+  let tags: string[] = [];
+  let cover = '';
+  let fileUrl = '';            // OSS 上的完整 MD 文件地址（包含 frontmatter）
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/public/posts/${encodeURIComponent(slug)}`, {
+      next: { revalidate: 30 },
+    });
+    if (!res.ok) throw new Error(`后端返回 ${res.status}`);
+    const json = await res.json();
+    if (!json?.success || !json.data) {
+      throw new Error(json?.message || '文章不存在');
+    }
+    const post = json.data as {
+      title?: string;
+      date?: string;
+      tags?: string[];
+      cover?: string;
+      content?: string;
+      fileUrl?: string;
+    };
+    title = post.title || slug;
+    date = post.date;
+    tags = Array.isArray(post.tags) ? post.tags : [];
+    cover = post.cover || '';
+    fileUrl = post.fileUrl || '';
+
+    if (post.content && typeof post.content === 'string') {
+      rawMarkdown = post.content;
+    }
+  } catch (e) {
+    console.error(`[getPostData] 后端接口获取文章 ${slug} 失败，尝试降级到 OSS fileUrl：`, e);
+  }
+
+  // —— 当后端 content 为空时，从 OSS fileUrl 抓取原始 MD 文件（含 frontmatter）进行降级渲染 ——
+  if (!rawMarkdown && fileUrl) {
+    try {
+      const r = await fetch(fileUrl, { cache: 'force-cache' });
+      if (!r.ok) throw new Error(`OSS HTTP ${r.status}`);
+      const fileText = await r.text();
+      const sepMatch = fileText.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
+      if (sepMatch) {
+        rawMarkdown = fileText.slice(sepMatch[0].length);
+        // 尝试从 frontmatter 简单抽取 title/tags
+        const fm = sepMatch[1];
+        const titleLine = fm.match(/^title:\s*(.+)$/m);
+        if (titleLine && !title) title = titleLine[1].replace(/^["']|["']$/g, '').trim();
+      } else {
+        rawMarkdown = fileText;
+      }
+    } catch (e2) {
+      console.error(`[getPostData] OSS 降级渲染也失败：`, e2);
+    }
+  }
 
   // ==========================================
   // 🌟 前台渲染清洗区：终极防吞换行补丁！
   // ==========================================
+
+  let content = rawMarkdown;
 
   // 1. 强行修复数字列表缺少空格导致无法渲染为列表的 Bug (1.百度 -> 1. 百度)
   content = content.replace(/^(\s*\d+)\.([^ \n])/gm, '$1. $2');
@@ -103,31 +184,49 @@ async function getPostData(slug: string) {
   return {
     slug,
     contentHtml: processedContent.toString(),
-    toc: extractToc(content),
-    title: data.title,
-    date: data.date,
-    tags: data.tags && Array.isArray(data.tags) ? data.tags : [],
-    cover: data.cover || siteConfig.defaultPostCover
+    toc: extractToc(rawMarkdown),
+    title,
+    date,
+    tags,
+    cover: cover || siteConfig.defaultPostCover,
+    fileUrl,   // 暴露给页面，用作右上角下载原 MD 按钮
   };
 }
 
-function getRecentPosts(currentSlug: string) {
-  const postsDirectory = path.join(process.cwd(), 'posts');
-  let fileNames: string[] = [];
-  try { fileNames = fs.readdirSync(postsDirectory).filter(f => f.endsWith('.md')); } catch(e) {}
-  if (!fileNames) return [];
-  return fileNames.map(f => {
-    const s = f.replace(/\.md$/, '');
-    const c = fs.readFileSync(path.join(postsDirectory, f), 'utf8');
-    const { data } = matter(c);
-    return { slug: s, title: data.title || '无标题', date: data.date };
-  }).filter(p => p.slug !== currentSlug).slice(0, 3);
+/**
+ * 侧边栏"推荐最近文章"
+ *
+ * 原实现：fs.readdirSync 本地 posts/ 目录读取文件名
+ * 现改造：请求后端公开接口 /api/public/posts 取已发布列表
+ */
+async function getRecentPosts(currentSlug: string) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/public/posts`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return [];
+    const json = await res.json();
+    if (!json?.success || !Array.isArray(json.data)) return [];
+    const all: { slug: string; title: string; date?: string }[] = json.data;
+    return all
+      .filter((p) => p.slug !== currentSlug)
+      // 后端返回的列表已按 date desc 排序，直接取前 3 条即可
+      .slice(0, 3)
+      .map((p) => ({
+        slug: p.slug,
+        title: p.title || '无标题',
+        date: p.date,
+      }));
+  } catch (e) {
+    console.error('[getRecentPosts] 拉取推荐列表失败：', e);
+    return [];
+  }
 }
 
 export default async function Post({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
   const postData = await getPostData(resolvedParams.slug);
-  const recentPosts = getRecentPosts(resolvedParams.slug);
+  const recentPosts = await getRecentPosts(resolvedParams.slug);
 
   return (
     <div className="min-h-screen relative pb-20">
@@ -148,13 +247,28 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
                   {postData.title}
                 </h1>
 
-                <Link
-                  href={`/editor?id=${postData.slug}&type=post`}
-                  className="absolute top-0 right-0 p-2.5 md:p-3 rounded-xl md:rounded-2xl bg-white/50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 hover:bg-indigo-500 hover:text-white transition-all shadow-sm border border-slate-200 dark:border-slate-700 group flex items-center gap-2 active:scale-95 z-50"
-                >
-                  <span className="text-base md:text-lg">✏️</span>
-                  <span className="text-xs md:text-sm font-bold hidden md:inline-block group-hover:inline-block">修改此篇</span>
-                </Link>
+                <div className="absolute top-0 right-0 flex items-center gap-2">
+                  {postData.fileUrl && (
+                    <a
+                      href={postData.fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2.5 md:p-3 rounded-xl md:rounded-2xl bg-white/50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 hover:bg-emerald-500 hover:text-white transition-all shadow-sm border border-slate-200 dark:border-slate-700 group flex items-center gap-2 active:scale-95 z-50"
+                      title="从阿里云 OSS 下载原始 MD 文件"
+                    >
+                      <Download size={18} />
+                      <span className="text-xs md:text-sm font-bold hidden md:inline-block group-hover:inline-block">原文件</span>
+                    </a>
+                  )}
+
+                  <Link
+                    href={`/editor?id=${postData.slug}&type=post`}
+                    className="p-2.5 md:p-3 rounded-xl md:rounded-2xl bg-white/50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 hover:bg-indigo-500 hover:text-white transition-all shadow-sm border border-slate-200 dark:border-slate-700 group flex items-center gap-2 active:scale-95 z-50"
+                  >
+                    <span className="text-base md:text-lg">✏️</span>
+                    <span className="text-xs md:text-sm font-bold hidden md:inline-block group-hover:inline-block">修改此篇</span>
+                  </Link>
+                </div>
 
                 <div className="flex flex-wrap items-center gap-2 md:gap-3">
                   <div className="flex items-center gap-1.5 md:gap-2 text-indigo-700 dark:text-indigo-400 font-bold bg-white/30 dark:bg-slate-900/50 px-3 md:px-4 py-1.5 md:py-2 rounded-full w-max text-xs md:text-sm transition-colors duration-700 shadow-sm border border-white/20 dark:border-white/5">

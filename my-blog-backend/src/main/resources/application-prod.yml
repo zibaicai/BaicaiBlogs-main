@@ -1,0 +1,33 @@
+# 线上生产环境配置
+# 启动方式：java -jar xxx.jar --spring.profiles.active=prod
+# 或设置环境变量：SPRING_PROFILES_ACTIVE=prod
+spring:
+  datasource:
+    # 云服务器 MySQL 与应用同机部署，用 localhost 匹配 root@localhost 用户
+    url: jdbc:mysql://localhost:3306/blogs?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    # 密码含 @ 和 . 特殊字符，必须用单引号包裹，避免 YAML / Spring 占位符解析问题
+    password: 'Z1yeziluochen@gmail.com'
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # 生产环境不自动执行 schema.sql / data.sql，避免覆盖线上数据
+  sql:
+    init:
+      mode: never
+
+  jpa:
+    hibernate:
+      # 首次部署用 update 自动补齐缺失字段；表结构稳定后可改回 validate
+      ddl-auto: update
+    show-sql: false
+
+# 生产环境允许的前端来源
+app:
+  cors:
+    allowed-origins: http://zibaicai.cn,http://www.zibaicai.cn,http://8.153.164.215
+
+# 生产环境降低日志级别，减少日志量
+logging:
+  level:
+    com.baicaiblogs: INFO
+    org.hibernate.SQL: WARN
