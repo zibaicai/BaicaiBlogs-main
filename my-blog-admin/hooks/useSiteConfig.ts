@@ -89,14 +89,14 @@ export interface SiteConfigState {
 
 // ============ 默认值（从 siteConfig.ts 提取，作为 fallback）============
 const DEFAULT_SITE_INFO: SiteInfo = {
-  title: "XingHuiSama の 宝藏之地",
-  faviconUrl: "https://bu.dusays.com/2026/03/24/69c1e38ac1846.jpg",
-  authorName: "XingHuiSama",
+  title: "YeLuo の 云间小屋",
+  faviconUrl: "https://github.com/zibaicai/BaicaiBlogs-main/blob/master/picture/00.png?raw=true",
+  authorName: "YeLuo",
   bio: "在代码、学术与分子动力学模拟间穿梭的普通人。近期正埋头于 GROMACS 模拟研究与神经网络计算。",
-  navTitle: "XingHuiSama",
+  navTitle: "YeLuo",
   navSuffix: "の",
-  navAfter: "宝藏之地",
-  avatarUrl: "https://bu.dusays.com/2026/03/24/69c1e38ac1846.jpg",
+  navAfter: "云间小屋",
+  avatarUrl: "https://github.com/zibaicai/BaicaiBlogs-main/blob/master/picture/00.png?raw=true",
   buildDate: "2026-03-23T00:00:00",
   enableLevelSystem: true,
   social: {
@@ -145,7 +145,7 @@ const DEFAULT_MISC: MiscConfig = {
   picBedUrl: "",
   picBedToken: "",
   cloudMusicIds: ["1809646618", "3361076230", "1859390262"],
-  friendLinkApplyFormat: "名称：XingHuiSamaの宝藏之地\n简介：今天我也要学习吗\n链接：https://www.xinghuisama.top\n头像：https://bu.dusays.com/2026/03/24/69c1e38ac1846.jpg",
+  friendLinkApplyFormat: "名称：YeLuoの云间小屋\n简介：今天我也要学习吗\n链接：https://www.YeLuo.top\n头像：https://github.com/zibaicai/BaicaiBlogs-main/blob/master/picture/00.png?raw=true",
   photoWallImage: "https://bu.dusays.com/2026/03/24/69c1e38b4c370.jpg",
   counts: { photos: 128 },
   footerBadges: [

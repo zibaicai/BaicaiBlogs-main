@@ -67,7 +67,7 @@ export default function ProfileSection({ formData, handleUpdate, pushToQueue }: 
                 </div>
                 <div>
                   <label className="text-[10px] font-black text-slate-400 uppercase ml-1">前缀 (navTitle)</label>
-                  <input type="text" value={safeData.navTitle || ''} onChange={e => handleUpdate('navTitle', e.target.value)} placeholder="例如: XingHuiSama" className="w-full bg-white/70 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm mt-1 outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-bold" />
+                  <input type="text" value={safeData.navTitle || ''} onChange={e => handleUpdate('navTitle', e.target.value)} placeholder="例如: YeLuo" className="w-full bg-white/70 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm mt-1 outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-bold" />
                 </div>
                 <div>
                   <label className="text-[10px] font-black text-slate-400 uppercase ml-1">连接符 (navSuffix)</label>
@@ -75,14 +75,14 @@ export default function ProfileSection({ formData, handleUpdate, pushToQueue }: 
                 </div>
                 <div>
                   <label className="text-[10px] font-black text-slate-400 uppercase ml-1">尾部 (navAfter)</label>
-                  <input type="text" value={safeData.navAfter || ''} onChange={e => handleUpdate('navAfter', e.target.value)} placeholder="例如: 宝藏之地" className="w-full bg-white/70 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm mt-1 outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-bold" />
+                  <input type="text" value={safeData.navAfter || ''} onChange={e => handleUpdate('navAfter', e.target.value)} placeholder="例如: 云间小屋" className="w-full bg-white/70 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm mt-1 outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-bold" />
                 </div>
               </div>
 
               {/* 网站总标题 Title */}
               <div className="col-span-1 md:col-span-2">
                 <label className="text-[10px] font-black text-slate-400 uppercase ml-1">网站总标题 (Browser Title)</label>
-                <input type="text" value={safeData.title || ''} onChange={e => handleUpdate('title', e.target.value)} placeholder="例如: XingHuiSama の 宝藏之地" className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm mt-1 outline-none font-bold focus:ring-2 focus:ring-indigo-500" />
+                <input type="text" value={safeData.title || ''} onChange={e => handleUpdate('title', e.target.value)} placeholder="例如: YeLuo の 云间小屋" className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm mt-1 outline-none font-bold focus:ring-2 focus:ring-indigo-500" />
               </div>
 
               {/* 网页图标 Favicon */}
@@ -175,7 +175,7 @@ export default function ProfileSection({ formData, handleUpdate, pushToQueue }: 
                   rows={4}
                   value={safeData.friendLinkApplyFormat || ''}
                   onChange={e => handleUpdate('friendLinkApplyFormat', e.target.value)}
-                  placeholder="名称：XingHuiSamaの宝藏之地\n简介：今天我也要学习吗\n链接：https://www.xinghuisama.top\n头像：..."
+                  placeholder="名称：YeLuoの云间小屋\n简介：今天我也要学习吗\n链接：https://www.YeLuo.top\n头像：..."
                   className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm mt-1 outline-none resize-none focus:ring-2 focus:ring-indigo-500 font-mono"
                 />
               </div>
