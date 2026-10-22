@@ -27,15 +27,20 @@ cd /opt/BaicaiBlogs-main/apps/web
 npm ci
 npm run build
 
-rm -rf /opt/baicai-public
-mkdir -p /opt/baicai-public
-cp -a .next/standalone/. /opt/baicai-public/
-mkdir -p /opt/baicai-public/.next
-cp -a .next/static /opt/baicai-public/.next/static
-if [ -d public ]; then cp -a public /opt/baicai-public/public; fi
+TS=$(date +%Y%m%d-%H%M%S)
+REL=/opt/baicai-public/releases/$TS
+mkdir -p "$REL"
+cp -a .next/standalone/. "$REL"/
+mkdir -p "$REL/.next"
+cp -a .next/static "$REL/.next/static"
+if [ -d public ]; then cp -a public "$REL/public"; fi
+chown -R baicaiweb:baicaiweb "$REL"
+ln -sfn "$REL" /opt/baicai-public/current
+systemctl restart baicai-public
 ```
 
 `server.js` 依赖同目录 `node_modules`、`.next/static` 与 `public`，缺一不可。
+不要直接清空 `/opt/baicai-public/`，否则会把历史 release 一起删掉；只切换 `current` 软链。
 
 ## 2. 构建管理端并发布静态文件
 
@@ -43,7 +48,14 @@ if [ -d public ]; then cp -a public /opt/baicai-public/public; fi
 cd /opt/BaicaiBlogs-main/apps/admin
 npm ci
 npm run build
-rsync -a --delete dist/ /var/www/admin/
+TS=$(date +%Y%m%d-%H%M%S)
+cp -a /var/www/admin /var/www/admin.bak.$TS
+rm -rf /var/www/admin.new
+mkdir -p /var/www/admin.new
+tar -C dist -cf - . | tar -C /var/www/admin.new -xf -
+chmod -R u+rwX,go+rX /var/www/admin.new
+rm -rf /var/www/admin
+mv /var/www/admin.new /var/www/admin
 ```
 
 `/var/www/admin/index.html` 必须是 Vite 产物；旧版 Next 管理端已备份在 `/var/www/admin.bak.*`。
@@ -58,22 +70,34 @@ systemctl restart baicai-public
 curl -I http://127.0.0.1:3001
 ```
 
-## 4. 安装 nginx 配置
+## 4. 切换 www 上游与旧入口重定向
+
+生产环境不要用 `deploy/nginx/baicai-www.conf` 覆盖现有 `baicai.conf`——后者还带着
+443/SSL、ACME 与 VulnArk 的 include。只做两处最小改动：
 
 ```bash
-install -m 644 /opt/BaicaiBlogs-main/deploy/nginx/baicai-c.conf /etc/nginx/sites-available/baicai-c.conf
-install -m 644 /opt/BaicaiBlogs-main/deploy/nginx/baicai-admin.conf /etc/nginx/sites-available/baicai-admin.conf
+TS=$(date +%Y%m%d-%H%M%S)
+mkdir -p /root/backup
+cp -a /etc/nginx/sites-available/baicai.conf /root/backup/baicai.conf.$TS
 
-ln -sf /etc/nginx/sites-available/baicai-c.conf /etc/nginx/sites-enabled/baicai-c.conf
-ln -sf /etc/nginx/sites-available/baicai-admin.conf /etc/nginx/sites-enabled/baicai-admin.conf
+cat > /etc/nginx/snippets/baicai-legacy-redirect.conf <<'EOF'
+location = /admin { return 301 https://admin.zibaicai.cn/; }
+location ^~ /admin/ { return 301 https://admin.zibaicai.cn/; }
+location = /editor { return 301 https://admin.zibaicai.cn/editor; }
+location ^~ /editor/ { return 301 https://admin.zibaicai.cn$request_uri; }
+EOF
 
-# 同一 server_name 不能有两个生效的 server 块：旧 www 配置让位
-rm -f /etc/nginx/sites-enabled/baicai.conf
+# 1) www 前端 3000 -> 3001（只改第一处 upstream）
+sed -i '0,/server 127.0.0.1:3000;/s//server 127.0.0.1:3001;/' /etc/nginx/sites-available/baicai.conf
+# 2) 在 443 server 块内引入旧入口重定向
+grep -q 'baicai-legacy-redirect.conf' /etc/nginx/sites-available/baicai.conf || \
+  sed -i '/server_name www.zibaicai.cn;/a\    include /etc/nginx/snippets/baicai-legacy-redirect.conf;' /etc/nginx/sites-available/baicai.conf
 
 nginx -t && systemctl reload nginx
 ```
 
-如果服务器上已有上一轮生成的 `baicai-c.conf`（可能只改了 upstream），以现有文件为准，只把 upstream 指向 `127.0.0.1:3001`。
+`baicai-admin.conf`（admin 静态站 + `/api/` 反代）在服务器上已生效；重建环境时可用
+`deploy/nginx/baicai-admin.conf` 参考，但同样要补齐现有 SSL/ACME 配置。
 
 ## 5. 验收
 
@@ -95,25 +119,32 @@ curl -s https://www.zibaicai.cn/api/public/posts | head -c 200
 
 ## 6. 回滚
 
-### C 端回滚（恢复旧 www）
+### C 端回滚（恢复旧 www -> 3000）
 
 ```bash
-rm -f /etc/nginx/sites-enabled/baicai-c.conf
-ln -sf /etc/nginx/sites-available/baicai.conf /etc/nginx/sites-enabled/baicai.conf
-nginx -t && systemctl reload nginx
 systemctl stop baicai-public
+
+# 方式 A：直接用切换前备份恢复（推荐）
+cp -a /root/backup/baicai.conf.<时间戳> /etc/nginx/sites-available/baicai.conf
+
+# 方式 B：只把 upstream 改回 3000，并移除旧入口 include
+# sed -i '0,/server 127.0.0.1:3001;/s//server 127.0.0.1:3000;/' /etc/nginx/sites-available/baicai.conf
+# sed -i '/baicai-legacy-redirect.conf/d' /etc/nginx/sites-available/baicai.conf
+
+nginx -t && systemctl reload nginx
 ```
 
-> 如果切换时保留了旧 `baicai.conf` 且 www 仍由它服务，只删 `baicai-c.conf` 软链并停 `baicai-public` 即可；上面的 `ln -sf` 是旧配置被移除时的兜底。
+旧站 Next 进程仍监听 3000，回滚后 www 立即恢复；C 端 release 目录保留，可随时把
+`/opt/baicai-public/current` 切回上一版并重启 `baicai-public`。
 
 ### 管理端回滚
 
 ```bash
 rm -rf /var/www/admin
 cp -a /var/www/admin.bak.<时间戳> /var/www/admin
-rm -f /etc/nginx/sites-enabled/baicai-admin.conf
-nginx -t && systemctl reload nginx
 ```
+
+nginx 的 `admin.zibaicai.cn` 配置无需改动（仍是静态目录 + `/api/` 反代）。
 
 ### 后端回滚
 
