@@ -70,3 +70,8 @@ apps/*/dist/
 apps/web/.next/
 my-blog-public/node_modules/
 my-blog-public/.next/
+
+# 本地部署副本与 IDE 配置
+/my-blog-public/
+/my-blog-admin-spa/
+/.vscode/
