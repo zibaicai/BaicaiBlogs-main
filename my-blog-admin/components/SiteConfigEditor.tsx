@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from './ToastProvider';
 import { apiClient } from '../lib/api';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
+// 去掉末尾斜杠：避免 '/' 与 '/api/...' 拼成 '//api/...'（协议相对 URL，主机名会变成 api）
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080').replace(/\/+$/, '');
 
 const TABS = [
   { id: 'basic', label: '基础信息', icon: '📋' },

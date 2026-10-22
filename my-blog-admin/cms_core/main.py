@@ -6,7 +6,7 @@ from cms_core.api import music, config, picbed, drafts, moments
 from cms_core.api import gallery, friends, projects
 from cms_core.api import sync, deploy
 
-app = FastAPI(title="XingHuiSama CMS Backend", version="1.0.0")
+app = FastAPI(title="YeLuo CMS Backend", version="1.0.0")
 
 # 🌟 核心修复：添加跨域中间件，彻底解决 Failed to fetch 报错
 app.add_middleware(

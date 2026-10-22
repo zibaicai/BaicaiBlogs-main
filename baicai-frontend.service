@@ -1,0 +1,20 @@
+
+[Unit]
+Description=BaicaiBlogs Next.js Frontend
+After=network.target baicai-backend.service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/my-blog-admin
+Environment=PORT=3000
+Environment=HOSTNAME=0.0.0.0
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=baicai-frontend
+
+[Install]
+WantedBy=multi-user.target
+EOF

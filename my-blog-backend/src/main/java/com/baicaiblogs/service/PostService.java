@@ -46,6 +46,8 @@ public class PostService {
     private final HtmlRenderer htmlRenderer = HtmlRenderer.builder().build();
     /** Jackson ObjectMapper，用于 tags 字段的 JSON 序列化/反序列化 */
     private final ObjectMapper objectMapper;
+    /** 阿里云 OSS 文件存储服务，用于 MD 原文件的上传/删除（用户原始文件归档） */
+    private final OssService ossService;
 
     // ==================== 公开接口（无需登录） ====================
 
@@ -165,7 +167,8 @@ public class PostService {
     @Transactional
     public PostResponse uploadPost(Long userId, MultipartFile file) throws IOException {
         // 读取文件全部内容（UTF-8 编码）
-        String rawContent = new String(file.getBytes(), StandardCharsets.UTF_8);
+        byte[] rawBytes = file.getBytes();
+        String rawContent = new String(rawBytes, StandardCharsets.UTF_8);
 
         // 解析 frontmatter，分离出元数据和正文
         FrontmatterParseResult parsed = parseFrontmatter(rawContent);
@@ -177,11 +180,17 @@ public class PostService {
         // 渲染 Markdown 正文为 HTML
         String htmlContent = renderMarkdown(parsed.body);
 
-        // 判断是创建还是更新（同一用户下 slug 重复则更新）
+        // Step 1: 把用户上传的原文件字节数组原封不动上传到阿里云 OSS（保留原始 MD 全貌）
+        String ossFileKey = ossService.generateUniqueFilename(slug);
+        String newFileUrl = ossService.uploadBytes(ossFileKey, rawBytes);
+
+        // Step 2: 判断是创建还是更新（同一用户下 slug 重复则更新）
         if (postRepository.existsBySlugAndUserId(slug, userId)) {
-            // 更新已有文章
+            // —— 更新已有文章 ——
             Post post = postRepository.findBySlugAndUserId(slug, userId)
                     .orElseThrow(() -> new RuntimeException("文章不存在: " + slug));
+            // 记录旧 OSS 文件 URL，保存成功后删除旧文件
+            String oldFileUrl = post.getFileUrl();
             post.setTitle(parsed.title != null ? parsed.title : slug);
             post.setDescription(parsed.description);
             post.setContent(parsed.body);
@@ -192,9 +201,13 @@ public class PostService {
                 post.setDate(parsed.date);
             }
             post.setStatus("PUBLISHED");
-            return toResponse(postRepository.save(post));
+            post.setFileUrl(newFileUrl);     // 覆盖为新的 OSS 地址
+            Post saved = postRepository.save(post);
+            // DB 成功后删除旧的 OSS 旧文件（失败不阻断主流程，只记日志）
+            ossService.deleteFile(oldFileUrl);
+            return toResponse(saved);
         } else {
-            // 创建新文章
+            // —— 创建新文章 ——
             Post post = Post.builder()
                     .slug(slug)
                     .userId(userId)
@@ -207,6 +220,7 @@ public class PostService {
                     .date(parsed.date != null ? parsed.date : LocalDateTime.now())
                     .status("PUBLISHED")
                     .views(0)
+                    .fileUrl(newFileUrl)          // 新上传文章记录 OSS 地址
                     .build();
             return toResponse(postRepository.save(post));
         }
@@ -482,6 +496,18 @@ public class PostService {
         // 将 Markdown 原文渲染为 HTML，存储 htmlContent 字段供前端直接展示
         String htmlContent = renderMarkdown(request.getContent());
 
+        // 生成标准 frontmatter + 正文 的完整 MD 文本，上传到 OSS 归档一份
+        String markdownFull = buildMarkdownWithFrontmatter(
+                request.getTitle(),
+                request.getDescription(),
+                request.getTags(),
+                request.getCover(),
+                request.getDate(),
+                request.getContent()
+        );
+        String ossFileKey = ossService.generateUniqueFilename(request.getSlug());
+        String fileUrl = ossService.uploadText(ossFileKey, markdownFull);
+
         Post post = Post.builder()
                 .slug(request.getSlug())
                 .userId(userId)
@@ -494,6 +520,7 @@ public class PostService {
                 .date(request.getDate() != null ? request.getDate() : java.time.LocalDateTime.now())
                 .status(request.getStatus() != null ? request.getStatus() : "PUBLISHED")
                 .views(0)
+                .fileUrl(fileUrl)             // 新创建的文章也记录 OSS 地址
                 .build();
 
         return toResponse(postRepository.save(post));
@@ -512,6 +539,9 @@ public class PostService {
         Post post = postRepository.findBySlugAndUserId(slug, userId)
                 .orElseThrow(() -> new RuntimeException("文章不存在或无权操作: " + slug));
 
+        // 保存旧 OSS 文件 URL，新文件上传且 DB 成功后删除旧文件
+        String oldFileUrl = post.getFileUrl();
+
         post.setTitle(request.getTitle());
         post.setDescription(request.getDescription());
         post.setContent(request.getContent());
@@ -526,7 +556,25 @@ public class PostService {
             post.setStatus(request.getStatus());
         }
 
-        return toResponse(postRepository.save(post));
+        // 生成新的 MD 文件上传到 OSS，更新 fileUrl（新文件名 + UUID 避免覆盖）
+        String markdownFull = buildMarkdownWithFrontmatter(
+                request.getTitle(),
+                request.getDescription(),
+                request.getTags(),
+                request.getCover(),
+                request.getDate() != null ? request.getDate() : post.getDate(),
+                request.getContent()
+        );
+        String ossFileKey = ossService.generateUniqueFilename(request.getSlug() != null ? request.getSlug() : slug);
+        String newFileUrl = ossService.uploadText(ossFileKey, markdownFull);
+        post.setFileUrl(newFileUrl);
+
+        Post saved = postRepository.save(post);
+
+        // DB 保存成功后再删除旧文件（失败不抛异常，不阻断主流程）
+        ossService.deleteFile(oldFileUrl);
+
+        return toResponse(saved);
     }
 
     /**
@@ -537,11 +585,74 @@ public class PostService {
      */
     @Transactional
     public void deletePost(Long userId, String slug) {
-        // 先校验归属权，再执行删除
-        if (!postRepository.existsBySlugAndUserId(slug, userId)) {
-            throw new RuntimeException("文章不存在或无权操作: " + slug);
+        // 先查出来拿旧 fileUrl（用于删 OSS）并校验归属权
+        Post post = postRepository.findBySlugAndUserId(slug, userId)
+                .orElseThrow(() -> new RuntimeException("文章不存在或无权操作: " + slug));
+        String oldFileUrl = post.getFileUrl();
+        // 先删 DB 记录，再删 OSS 文件（OSS 删除失败不阻断）
+        postRepository.delete(post);
+        ossService.deleteFile(oldFileUrl);
+    }
+
+    /**
+     * 按指定元数据构造完整的 MD 文件内容（包含 YAML frontmatter + 正文），
+     * 用于在线编辑器保存时生成与"上传 MD 文件"格式一致的归档文件。
+     * <pre>
+     * ---
+     * title: xxx
+     * description: xxx
+     * tags: ["A","B"]
+     * cover: https://...
+     * date: 2026-01-02T03:04:05
+     * ---
+     * 正文 Markdown
+     * </pre>
+     */
+    private String buildMarkdownWithFrontmatter(String title, String description,
+                                                 List<String> tags, String cover,
+                                                 LocalDateTime date, String content) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("---\n");
+        if (title != null) sb.append("title: ").append(yamlEscape(title)).append("\n");
+        if (description != null) sb.append("description: ").append(yamlEscape(description)).append("\n");
+        if (tags != null && !tags.isEmpty()) {
+            try {
+                sb.append("tags: ").append(objectMapper.writeValueAsString(tags)).append("\n");
+            } catch (JsonProcessingException e) {
+                // 序列化失败就忽略 tags 行
+            }
         }
-        postRepository.deleteBySlugAndUserId(slug, userId);
+        if (cover != null && !cover.isEmpty()) sb.append("cover: ").append(yamlEscape(cover)).append("\n");
+        if (date != null) {
+            sb.append("date: ").append(date.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)).append("\n");
+        }
+        sb.append("---\n");
+        if (content != null) {
+            sb.append(content);
+            if (!content.endsWith("\n")) sb.append("\n");
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 将字符串转义为 YAML 双引号标量（处理引号、换行、冒号等特殊字符）
+     */
+    private static String yamlEscape(String raw) {
+        if (raw == null) return "\"\"";
+        StringBuilder out = new StringBuilder("\"");
+        for (int i = 0; i < raw.length(); i++) {
+            char c = raw.charAt(i);
+            switch (c) {
+                case '\\': out.append("\\\\"); break;
+                case '"':  out.append("\\\""); break;
+                case '\n': out.append("\\n");  break;
+                case '\r': out.append("\\r");  break;
+                case '\t': out.append("\\t");  break;
+                default:   out.append(c);
+            }
+        }
+        out.append("\"");
+        return out.toString();
     }
 
     // ==================== 私有辅助方法 ====================
@@ -609,6 +720,7 @@ public class PostService {
                 .status(post.getStatus())
                 .views(post.getViews())
                 .tags(deserializeTags(post.getTags()))
+                .fileUrl(post.getFileUrl())
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
                 .build();

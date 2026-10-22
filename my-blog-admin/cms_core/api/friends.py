@@ -21,7 +21,7 @@ async def sync_friends(request: Request):
 
         # 2. 构造 TS 模板
         ts_content = (
-            "// 🛡️ 本文件由 XingHuiSama 控制台自动生成\n"
+            "// 🛡️ 本文件由 YeLuo 控制台自动生成\n"
             "export interface Friend { id: string; name: string; url: string; description: string; avatar: string; themeColor: string; }\n\n"
             f"export const friendsData: Friend[] = {json_str};"
         )
