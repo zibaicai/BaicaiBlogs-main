@@ -89,6 +89,13 @@
             <version>0.22.0</version>
         </dependency>
 
+        <!-- HTML Sanitizer：清洗用户内容渲染结果，阻断存储型 XSS -->
+        <dependency>
+            <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
+            <artifactId>owasp-java-html-sanitizer</artifactId>
+            <version>20240325.1</version>
+        </dependency>
+
         <!-- 阿里云 OSS SDK（MD 原文件对象存储） -->
         <dependency>
             <groupId>com.aliyun.oss</groupId>
