@@ -1,17 +1,23 @@
 [Unit]
-Description=BaicaiBlogs Public Site (Next.js)
-After=network.target baicai-backend.service
+Description=Baicai Public Site (read-only)
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=simple
-WorkingDirectory=/opt/baicai-public
+User=baicaiweb
+Group=baicaiweb
+WorkingDirectory=/opt/baicai-public/current
 Environment=NODE_ENV=production
 Environment=PORT=3001
 Environment=HOSTNAME=127.0.0.1
 Environment=API_INTERNAL=http://127.0.0.1:8080
-ExecStart=/usr/bin/node server.js
+ExecStart=/usr/local/bin/node server.js
 Restart=on-failure
 RestartSec=5
+MemoryMax=384M
+NoNewPrivileges=true
+PrivateTmp=true
 StandardOutput=journal
 StandardError=journal
 SyslogIdentifier=baicai-public
