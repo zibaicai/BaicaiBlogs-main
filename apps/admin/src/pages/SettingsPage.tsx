@@ -39,7 +39,7 @@ const BACKGROUND_KEYS = ["useGradient", "themeColors", "bgImages", "defaultPostC
 const MISC_KEYS = [
   "chatterTitle", "chatterDescription", "picBedName", "picBedUrl", "picBedToken",
   "cloudMusicIds", "friendLinkApplyFormat", "photoWallImage", "counts",
-  "footerBadges", "gitalkConfig",
+  "footerBadges", "gitalkConfig", "repoConfig",
 ] as const;
 
 function pick(source: Record<string, any>, keys: readonly string[]) {
@@ -67,6 +67,11 @@ function buildFlat(config: any) {
     counts: { ...(misc.counts || {}) },
     footerBadges: misc.footerBadges || [],
     gitalkConfig: { ...(misc.gitalkConfig || { admin: [] }) },
+    repoConfig: {
+      repoUrl: "https://github.com/zibaicai/BaicaiBlogs-main",
+      note: "",
+      ...(misc.repoConfig || {}),
+    },
     cloudMusicIds: misc.cloudMusicIds || [],
     bgImages: background.bgImages || [],
     themeColors: background.themeColors || [],
@@ -189,7 +194,7 @@ export default function SettingsPage() {
         {activeTab === "danmaku" && <DanmakuSection {...panelProps} />}
         {activeTab === "music" && <MusicSection {...panelProps} />}
         {activeTab === "comment" && <CommentSection {...panelProps} />}
-        {activeTab === "repo" && <RepoSection />}
+        {activeTab === "repo" && <RepoSection {...panelProps} />}
         {activeTab === "ai" && <AICatSection {...panelProps} />}
         {activeTab === "footer" && <FooterSection {...panelProps} />}
         {activeTab === "gallery" && <GallerySection {...panelProps} />}
