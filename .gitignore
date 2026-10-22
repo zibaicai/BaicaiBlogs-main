@@ -75,3 +75,7 @@ my-blog-public/.next/
 /my-blog-public/
 /my-blog-admin-spa/
 /.vscode/
+
+# 本地部署/测试产物
+/_deploy/
+/_test/

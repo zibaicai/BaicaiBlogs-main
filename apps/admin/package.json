@@ -2,7 +2,43 @@
   "name": "baicai-admin",
   "private": true,
   "type": "module",
-  "scripts": { "dev": "vite --port 5173", "build": "tsc -b || true && vite build", "preview": "vite preview" },
-  "dependencies": { "react": "^19.2.0", "react-dom": "^19.2.0", "react-router-dom": "^7.1.0" },
-  "devDependencies": { "vite": "^6.0.0", "@vitejs/plugin-react": "^4.3.4", "typescript": "^5.6.0", "@types/react": "^19.0.0", "@types/react-dom": "^19.0.0" }
+  "scripts": {
+    "dev": "vite --port 5173",
+    "build": "vite build",
+    "typecheck": "tsc -b",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-router-dom": "^7.1.0",
+    "framer-motion": "^12.38.0",
+    "lucide-react": "^1.7.0",
+    "@tiptap/react": "^3.20.5",
+    "@tiptap/starter-kit": "^3.20.5",
+    "@tiptap/pm": "^3.20.5",
+    "@tiptap/extension-underline": "^3.20.5",
+    "@tiptap/extension-link": "^3.20.5",
+    "@tiptap/extension-image": "^3.20.5",
+    "@tiptap/extension-subscript": "^3.20.5",
+    "@tiptap/extension-superscript": "^3.20.5",
+    "@tiptap/extension-text-align": "^3.20.5",
+    "@tiptap/extension-highlight": "^3.20.5",
+    "@tiptap/extension-text-style": "^3.20.5",
+    "@tiptap/extension-color": "^3.20.5",
+    "@tiptap/extension-task-list": "^3.20.5",
+    "@tiptap/extension-task-item": "^3.20.5",
+    "@tiptap/extension-code-block-lowlight": "^3.23.4",
+    "lowlight": "^3.3.0",
+    "tiptap-markdown": "^0.9.0"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.6.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "tailwindcss": "^4.1.0",
+    "@tailwindcss/vite": "^4.1.0"
+  }
 }
