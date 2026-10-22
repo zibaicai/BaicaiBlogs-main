@@ -37,14 +37,16 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     /** 按 slug + userId 组合删除，避免越权删除他人文章 */
     void deleteBySlugAndUserId(String slug, Long userId);
 
-    @Query("SELECT p FROM Post p WHERE p.status = 'PUBLISHED' ORDER BY p.date DESC")
+    @Query("SELECT p FROM Post p WHERE p.status = 'PUBLISHED' AND p.visibility = 'public' ORDER BY p.date DESC")
     List<Post> findAllPublished();
 
-    @Query("SELECT p FROM Post p WHERE p.status = 'PUBLISHED' ORDER BY p.date DESC")
+    @Query("SELECT p FROM Post p WHERE p.status = 'PUBLISHED' AND p.visibility = 'public' ORDER BY p.date DESC")
     Page<Post> findAllPublished(Pageable pageable);
 
-    @Query("SELECT p FROM Post p WHERE p.status = 'PUBLISHED' AND (p.title LIKE %:keyword% OR p.description LIKE %:keyword%)")
+    @Query("SELECT p FROM Post p WHERE p.status = 'PUBLISHED' AND p.visibility = 'public' AND (p.title LIKE %:keyword% OR p.description LIKE %:keyword%)")
     List<Post> searchPublished(String keyword);
+
+    Optional<Post> findBySlugAndVisibility(String slug, String visibility);
 
     boolean existsBySlug(String slug);
 }

@@ -183,6 +183,19 @@ public class PostController {
         }
     }
 
+    /** 切换文章可见性：public / private / unlisted（仅作者本人） */
+    @PatchMapping("/admin/posts/{slug}/visibility")
+    public ApiResponse<PostResponse> updateVisibility(@PathVariable String slug,
+                                                      @RequestBody java.util.Map<String, String> body) {
+        try {
+            Long userId = getCurrentUserId();
+            return ApiResponse.success("更新成功",
+                    postService.updateVisibility(userId, slug, body.get("visibility")));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
     // ==================== 辅助方法 ====================
 
     /**

@@ -22,8 +22,18 @@ public class ProjectService {
     @Transactional(readOnly = true)
     public List<ProjectResponse> getAllProjects() {
         return projectRepository.findAllByOrderBySortOrderAsc().stream()
+                .filter(p -> "public".equals(p.getVisibility()))
                 .map(this::toResponse)
                 .collect(Collectors.toList());
+    }
+
+    /** 切换项目可见性（仅作者本人） */
+    @Transactional
+    public ProjectResponse updateVisibility(Long userId, String projectId, String visibility) {
+        Project project = projectRepository.findByProjectIdAndUserId(projectId, userId)
+                .orElseThrow(() -> new RuntimeException("项目不存在或无权操作: " + projectId));
+        project.setVisibility(visibility == null ? "public" : visibility);
+        return toResponse(projectRepository.save(project));
     }
 
     @Transactional(readOnly = true)
