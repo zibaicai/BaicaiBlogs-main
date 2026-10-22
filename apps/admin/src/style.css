@@ -1,0 +1,15 @@
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,"Microsoft YaHei",sans-serif;background:#0f172a;color:#e2e8f0}
+a{color:#93c5fd;text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:980px;margin:0 auto;padding:24px}
+.nav{display:flex;gap:18px;align-items:center;border-bottom:1px solid #334155;padding-bottom:12px;margin-bottom:18px}
+.nav .sp{flex:1}
+.card{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:16px;margin:12px 0}
+input{width:100%;padding:10px;margin:6px 0;border-radius:8px;border:1px solid #475569;background:#0f172a;color:#e2e8f0}
+button{padding:8px 14px;border-radius:8px;border:0;background:#3b82f6;color:#fff;cursor:pointer}
+button.gray{background:#475569}
+.row{display:flex;align-items:center;gap:12px;justify-content:space-between}
+.muted{color:#94a3b8;font-size:13px}
+.tag{padding:2px 8px;border-radius:999px;background:#1d4ed8;font-size:12px}
+.tag.private{background:#b91c1c}

@@ -39,6 +39,11 @@ public class Post {
     @Column(name = "html_content", columnDefinition = "MEDIUMTEXT")
     private String htmlContent;
 
+    /** 可见性：public / unlisted / private（默认 public） */
+    @Builder.Default
+    @Column(length = 16, nullable = false)
+    private String visibility = "public";
+
     /** 文章标签列表，以 JSON 数组字符串形式存储，例如 ["React","Spring Boot"] */
     @Column(columnDefinition = "JSON")
     private String tags;

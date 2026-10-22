@@ -67,6 +67,19 @@ public class ProjectController {
         }
     }
 
+    /** 切换项目可见性：public / private / unlisted（仅作者本人） */
+    @PatchMapping("/admin/projects/{projectId}/visibility")
+    public ApiResponse<ProjectResponse> updateVisibility(@PathVariable String projectId,
+                                                         @RequestBody java.util.Map<String, String> body) {
+        try {
+            Long userId = getCurrentUserId();
+            return ApiResponse.success("更新成功",
+                    projectService.updateVisibility(userId, projectId, body.get("visibility")));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
     private Long getCurrentUserId() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof User) {

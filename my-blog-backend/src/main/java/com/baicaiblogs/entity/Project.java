@@ -43,6 +43,11 @@ public class Project {
     @Column(name = "user_id")
     private Long userId;
 
+    /** 可见性：public / unlisted / private（默认 public） */
+    @Builder.Default
+    @Column(length = 16, nullable = false)
+    private String visibility = "public";
+
     @Column(name = "sort_order")
     private Integer sortOrder  = 0;
 

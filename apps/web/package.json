@@ -1,0 +1,7 @@
+{
+  "name": "baicai-public",
+  "private": true,
+  "scripts": { "dev": "next dev -p 3001", "build": "next build", "start": "next start -p 3001" },
+  "dependencies": { "next": "16.2.1", "react": "19.2.4", "react-dom": "19.2.4" },
+  "devDependencies": { "typescript": "^5.6.0", "@types/node": "^22.0.0", "@types/react": "^19.0.0", "@types/react-dom": "^19.0.0" }
+}

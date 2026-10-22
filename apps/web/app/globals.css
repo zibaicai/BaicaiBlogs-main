@@ -1,0 +1,16 @@
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; color: #1f2937; background: #f8fafc; }
+a { color: #2563eb; text-decoration: none; }
+a:hover { text-decoration: underline; }
+.container { max-width: 880px; margin: 0 auto; padding: 0 20px; }
+.nav { border-bottom: 1px solid #e5e7eb; background: #fff; }
+.nav .inner { display: flex; gap: 20px; align-items: center; height: 56px; }
+.nav .brand { font-weight: 700; color: #111827; }
+.nav .spacer { flex: 1; }
+.card { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 18px 20px; margin: 14px 0; }
+.muted { color: #6b7280; font-size: 14px; }
+.tag { display: inline-block; font-size: 12px; background: #eef2ff; color: #4338ca; border-radius: 999px; padding: 2px 8px; margin-right: 6px; }
+.prose img { max-width: 100%; height: auto; }
+.prose pre { background: #0f172a; color: #e2e8f0; padding: 14px; border-radius: 8px; overflow: auto; }
+.prose code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.footer { margin: 40px 0 24px; color: #9ca3af; font-size: 13px; }

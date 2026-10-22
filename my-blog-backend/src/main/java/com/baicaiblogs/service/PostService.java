@@ -83,7 +83,7 @@ public class PostService {
      */
     @Transactional(readOnly = true)
     public PostResponse getPostBySlug(String slug) {
-        Post post = postRepository.findBySlug(slug)
+        Post post = postRepository.findBySlugAndVisibility(slug, "public")
                 .orElseThrow(() -> new RuntimeException("文章不存在: " + slug));
         return toResponse(post);
     }
@@ -657,6 +657,15 @@ public class PostService {
     }
 
     // ==================== 私有辅助方法 ====================
+
+    /** 切换文章可见性（仅作者本人） */
+    @Transactional
+    public PostResponse updateVisibility(Long userId, String slug, String visibility) {
+        Post post = postRepository.findBySlugAndUserId(slug, userId)
+                .orElseThrow(() -> new RuntimeException("文章不存在或无权操作: " + slug));
+        post.setVisibility(visibility == null ? "public" : visibility);
+        return toResponse(postRepository.save(post));
+    }
 
     /**
      * 将 Markdown 原文渲染为 HTML

@@ -64,3 +64,9 @@ my-blog-admin/run_me.py
 my-blog-admin/launcher.py
 # 取消追踪 application.yml 文件
 application.yml
+# monorepo apps
+apps/*/node_modules/
+apps/*/dist/
+apps/web/.next/
+my-blog-public/node_modules/
+my-blog-public/.next/
