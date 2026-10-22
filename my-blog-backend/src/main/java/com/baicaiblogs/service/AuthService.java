@@ -47,7 +47,7 @@ public class AuthService {
         User user = User.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role("ADMIN")
+                .role("USER")   // 公开注册只能创建普通用户，管理员由后台/数据库授予
                 .build();
 
         userRepository.save(user);

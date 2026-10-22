@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -66,9 +67,12 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/public/**").permitAll()
-                .requestMatchers("/api/admin/**").authenticated()
-                .anyRequest().permitAll()
+                // 公开读接口；非 GET（例如匿名评论）一律要求登录
+                .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll()
+                // 管理接口只允许 ADMIN（JWT 过滤器已注入 ROLE_xxx 权限）
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                // 兜底：默认拒绝匿名访问
+                .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

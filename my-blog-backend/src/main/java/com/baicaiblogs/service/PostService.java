@@ -3,6 +3,7 @@ package com.baicaiblogs.service;
 import com.baicaiblogs.dto.*;
 import com.baicaiblogs.entity.Post;
 import com.baicaiblogs.repository.PostRepository;
+import com.baicaiblogs.util.HtmlSanitizer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -666,7 +667,7 @@ public class PostService {
             return "";
         }
         Node document = markdownParser.parse(markdown);
-        return htmlRenderer.render(document);
+        return HtmlSanitizer.clean(htmlRenderer.render(document));
     }
 
     /**

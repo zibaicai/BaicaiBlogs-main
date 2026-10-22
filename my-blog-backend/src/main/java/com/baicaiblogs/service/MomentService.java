@@ -3,6 +3,7 @@ package com.baicaiblogs.service;
 import com.baicaiblogs.dto.*;
 import com.baicaiblogs.entity.Moment;
 import com.baicaiblogs.repository.MomentRepository;
+import com.baicaiblogs.util.HtmlSanitizer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -74,7 +75,7 @@ public class MomentService {
 
     private String renderMarkdown(String markdown) {
         Node document = markdownParser.parse(markdown);
-        return htmlRenderer.render(document);
+        return HtmlSanitizer.clean(htmlRenderer.render(document));
     }
 
     private String serializeImages(List<String> images) {

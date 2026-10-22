@@ -29,7 +29,7 @@ public class User {
     private String password;
 
     @Column(length = 20)
-    private String role = "ADMIN";
+    private String role = "USER";
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

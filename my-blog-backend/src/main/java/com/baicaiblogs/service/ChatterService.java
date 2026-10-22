@@ -3,6 +3,7 @@ package com.baicaiblogs.service;
 import com.baicaiblogs.dto.*;
 import com.baicaiblogs.entity.Chatter;
 import com.baicaiblogs.repository.ChatterRepository;
+import com.baicaiblogs.util.HtmlSanitizer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -104,7 +105,7 @@ public class ChatterService {
 
     private String renderMarkdown(String markdown) {
         Node document = markdownParser.parse(markdown);
-        return htmlRenderer.render(document);
+        return HtmlSanitizer.clean(htmlRenderer.render(document));
     }
 
     private String serializeTags(List<String> tags) {
