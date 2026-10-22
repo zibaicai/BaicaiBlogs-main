@@ -80,12 +80,13 @@ export interface PublicSiteConfig {
 }
 
 export async function getPublicSiteConfig(): Promise<PublicSiteConfig> {
+  // 配置改动要尽快生效（管理端保存后下一次请求即可看到），不做 60s 数据缓存。
   const [siteInfo, background, danmakuList, aiConfig, misc] = await Promise.all([
-    getJson<Partial<SiteInfo>>("/api/public/config/group/site-info"),
-    getJson<Partial<BackgroundConfig>>("/api/public/config/group/background"),
-    getJson<string[]>("/api/public/config/group/danmaku"),
-    getJson<Partial<AiConfig>>("/api/public/config/group/ai"),
-    getJson<Partial<MiscConfig>>("/api/public/config/group/misc"),
+    getJson<Partial<SiteInfo>>("/api/public/config/group/site-info", 0),
+    getJson<Partial<BackgroundConfig>>("/api/public/config/group/background", 0),
+    getJson<string[]>("/api/public/config/group/danmaku", 0),
+    getJson<Partial<AiConfig>>("/api/public/config/group/ai", 0),
+    getJson<Partial<MiscConfig>>("/api/public/config/group/misc", 0),
   ]);
 
   return {
