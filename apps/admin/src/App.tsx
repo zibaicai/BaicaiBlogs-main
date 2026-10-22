@@ -9,8 +9,12 @@ function useLoad<T>(fn: () => Promise<T>, deps: any[] = []) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const reload = () => {
-    setLoading(true); setError("");
-    fn().then((d) => setData(d)).catch((e) => setError(e.message)).finally(() => setLoading(false));
+    setLoading(true);
+    setError("");
+    fn()
+      .then((d) => setData(d))
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false));
   };
   useEffect(reload, deps);
   return { data, error, loading, reload };
@@ -18,13 +22,19 @@ function useLoad<T>(fn: () => Promise<T>, deps: any[] = []) {
 
 function Login() {
   const nav = useNavigate();
-  const [u, setU] = useState(""); const [p, setP] = useState(""); const [msg, setMsg] = useState("");
+  const [u, setU] = useState("");
+  const [p, setP] = useState("");
+  const [msg, setMsg] = useState("");
   const submit = async () => {
     try {
       const j = await api.login(u, p);
       if (!j?.success) throw new Error(j?.message || "登录失败");
-      setToken(j.data.token); localStorage.setItem("bc_admin_user", u); nav("/");
-    } catch (e: any) { setMsg("登录失败：" + e.message); }
+      setToken(j.data.token);
+      localStorage.setItem("bc_admin_user", u);
+      nav("/");
+    } catch (e: any) {
+      setMsg("登录失败：" + e.message);
+    }
   };
   return (
     <div className="card" style={{ maxWidth: 420, margin: "60px auto" }}>
@@ -40,7 +50,11 @@ function Login() {
 function Shell({ children }: { children: React.ReactNode }) {
   const nav = useNavigate();
   const [me] = useState<Any>({ username: localStorage.getItem("bc_admin_user") || "" });
-  const logout = () => { setToken(""); nav("/login"); };
+  const logout = () => {
+    setToken("");
+    localStorage.removeItem("bc_admin_user");
+    nav("/login");
+  };
   return (
     <div className="wrap">
       <div className="nav">
@@ -49,6 +63,7 @@ function Shell({ children }: { children: React.ReactNode }) {
         <Link to="/posts">文章</Link>
         <Link to="/projects">项目</Link>
         <Link to="/timeline">归档预览</Link>
+        <Link to="/settings">设置</Link>
         <span className="sp" />
         <span className="muted">{me?.username}</span>
         <button className="gray" onClick={logout}>退出</button>
@@ -61,13 +76,19 @@ function Shell({ children }: { children: React.ReactNode }) {
 function Dashboard() {
   const { data: posts } = useLoad<any>(() => api.myPosts());
   const { data: projects } = useLoad<any>(() => api.myProjects());
-  const list = posts?.data || []; const plist = projects?.data || [];
+  const list = posts?.data || [];
+  const plist = projects?.data || [];
   return (
     <Shell>
       <h2>概览</h2>
-      <div className="card">文章：{list.length}（公开 {list.filter((x: Any) => x.visibility !== "private").length}）</div>
+      <div className="card">
+        文章：{list.length}（公开 {list.filter((x: Any) => x.visibility !== "private").length}）
+      </div>
       <div className="card">项目：{plist.length}</div>
-      <p className="muted">编辑器迁移中，暂时通过旧站入口编辑：<a href="https://www.zibaicai.cn/editor">打开旧编辑器</a></p>
+      <p className="muted">
+        编辑器迁移中，暂时通过旧站入口编辑：
+        <a href="https://www.zibaicai.cn/editor" target="_blank" rel="noreferrer">打开旧编辑器</a>
+      </p>
     </Shell>
   );
 }
@@ -75,7 +96,10 @@ function Dashboard() {
 function Posts() {
   const { data, loading, error, reload } = useLoad<any>(() => api.myPosts());
   const list = data?.data || [];
-  const toggle = async (slug: string, v: string) => { await api.setPostVisibility(slug, v === "private" ? "public" : "private"); reload(); };
+  const toggle = async (slug: string, v: string) => {
+    await api.setPostVisibility(slug, v === "private" ? "public" : "private");
+    reload();
+  };
   return (
     <Shell>
       <h2>我的文章</h2>
@@ -84,9 +108,14 @@ function Posts() {
       {!loading && list.length === 0 && <div className="card muted">暂无文章</div>}
       {list.map((p: Any) => (
         <div className="card row" key={p.slug}>
-          <div><strong>{p.title}</strong><div className="muted">{p.slug}</div></div>
+          <div>
+            <strong>{p.title}</strong>
+            <div className="muted">{p.slug}</div>
+          </div>
           <div className="row">
-            <span className={"tag " + (p.visibility === "private" ? "private" : "")}>{p.visibility || "public"}</span>
+            <span className={"tag " + (p.visibility === "private" ? "private" : "")}>
+              {p.visibility || "public"}
+            </span>
             <button className="gray" onClick={() => toggle(p.slug, p.visibility)}>切换</button>
           </div>
         </div>
@@ -98,7 +127,10 @@ function Posts() {
 function Projects() {
   const { data, loading, error, reload } = useLoad<any>(() => api.myProjects());
   const list = data?.data || [];
-  const toggle = async (id: string, v: string) => { await api.setProjectVisibility(id, v === "private" ? "public" : "private"); reload(); };
+  const toggle = async (id: string, v: string) => {
+    await api.setProjectVisibility(id, v === "private" ? "public" : "private");
+    reload();
+  };
   return (
     <Shell>
       <h2>我的项目</h2>
@@ -106,9 +138,14 @@ function Projects() {
       {error && <div className="card muted">失败：{error}</div>}
       {list.map((p: Any) => (
         <div className="card row" key={p.projectId}>
-          <div><strong>{p.name}</strong><div className="muted">{p.projectId}</div></div>
+          <div>
+            <strong>{p.name}</strong>
+            <div className="muted">{p.projectId}</div>
+          </div>
           <div className="row">
-            <span className={"tag " + (p.visibility === "private" ? "private" : "")}>{p.visibility || "public"}</span>
+            <span className={"tag " + (p.visibility === "private" ? "private" : "")}>
+              {p.visibility || "public"}
+            </span>
             <button className="gray" onClick={() => toggle(p.projectId, p.visibility)}>切换</button>
           </div>
         </div>
@@ -133,6 +170,27 @@ function TimelinePreview() {
   );
 }
 
+function Settings() {
+  const panels = ["站点信息", "背景", "弹幕", "音乐", "评论", "仓库", "AI", "页脚", "图库", "显示"];
+  return (
+    <Shell>
+      <h2>设置</h2>
+      <div className="card">
+        <p className="muted">设置模块正在迁移到本管理端，以下面板将逐步迁入：</p>
+        <div className="row" style={{ flexWrap: "wrap", justifyContent: "flex-start" }}>
+          {panels.map((n) => (
+            <span className="tag" key={n} style={{ marginRight: 8 }}>{n}</span>
+          ))}
+        </div>
+      </div>
+      <div className="card">
+        迁移期间请使用旧版设置页：
+        <a href="https://www.zibaicai.cn/admin" target="_blank" rel="noreferrer">打开旧版设置</a>
+      </div>
+    </Shell>
+  );
+}
+
 export default function App() {
   const authed = !!getToken();
   return (
@@ -143,6 +201,7 @@ export default function App() {
       <Route path="/posts" element={authed ? <Posts /> : <Navigate to="/login" />} />
       <Route path="/projects" element={authed ? <Projects /> : <Navigate to="/login" />} />
       <Route path="/timeline" element={authed ? <TimelinePreview /> : <Navigate to="/login" />} />
+      <Route path="/settings" element={authed ? <Settings /> : <Navigate to="/login" />} />
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
