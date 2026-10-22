@@ -1,15 +1,94 @@
-*{box-sizing:border-box}
-body{margin:0;font-family:system-ui,"Microsoft YaHei",sans-serif;background:#0f172a;color:#e2e8f0}
-a{color:#93c5fd;text-decoration:none}
-a:hover{text-decoration:underline}
-.wrap{max-width:980px;margin:0 auto;padding:24px}
-.nav{display:flex;gap:18px;align-items:center;border-bottom:1px solid #334155;padding-bottom:12px;margin-bottom:18px}
-.nav .sp{flex:1}
-.card{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:16px;margin:12px 0}
-input{width:100%;padding:10px;margin:6px 0;border-radius:8px;border:1px solid #475569;background:#0f172a;color:#e2e8f0}
-button{padding:8px 14px;border-radius:8px;border:0;background:#3b82f6;color:#fff;cursor:pointer}
-button.gray{background:#475569}
-.row{display:flex;align-items:center;gap:12px;justify-content:space-between}
-.muted{color:#94a3b8;font-size:13px}
-.tag{padding:2px 8px;border-radius:999px;background:#1d4ed8;font-size:12px}
-.tag.private{background:#b91c1c}
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    font-family: "Source Han Serif SC", "Noto Serif SC", "Microsoft YaHei", system-ui, sans-serif;
+    color: #e2e8f0;
+    background-color: #020617;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: rgba(99, 102, 241, 0.35);
+  }
+}
+
+/* 后台整体背景：深色星云 + 玻璃层 */
+.admin-bg {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(99, 102, 241, 0.22), transparent 42%),
+    radial-gradient(circle at 88% 12%, rgba(168, 85, 247, 0.18), transparent 40%),
+    radial-gradient(circle at 50% 100%, rgba(14, 165, 233, 0.12), transparent 45%),
+    #020617;
+}
+
+.admin-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.admin-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.35);
+  border-radius: 999px;
+}
+.admin-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* 富文本编辑器正文 */
+.tiptap {
+  outline: none;
+  min-height: 60vh;
+  line-height: 1.85;
+}
+.tiptap > * + * {
+  margin-top: 0.85em;
+}
+.tiptap h1 {
+  font-size: 1.9rem;
+  font-weight: 900;
+}
+.tiptap h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+.tiptap h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.tiptap ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+}
+.tiptap ol {
+  list-style: decimal;
+  padding-left: 1.5rem;
+}
+.tiptap blockquote {
+  border-left: 4px solid #6366f1;
+  padding-left: 1rem;
+  color: #94a3b8;
+}
+.tiptap pre {
+  background: #0f172a;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  overflow-x: auto;
+}
+.tiptap img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 1rem;
+}
+.tiptap a {
+  color: #818cf8;
+  text-decoration: underline;
+}

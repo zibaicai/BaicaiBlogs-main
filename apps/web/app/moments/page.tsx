@@ -1,0 +1,75 @@
+﻿import Navbar from "../../components/Navbar";
+import PageTransition from "../../components/PageTransition";
+import { formatDate } from "../../lib/api";
+import { getMoments } from "../../lib/server-api";
+
+export const dynamic = "force-dynamic";
+export const metadata = { title: "说说" };
+
+export default async function MomentsPage() {
+  const moments = await getMoments();
+
+  return (
+    <div className="min-h-screen relative pb-20">
+      <Navbar />
+      <PageTransition>
+        <main className="w-full max-w-3xl mx-auto mt-28 px-4 sm:px-10 relative z-10">
+          <header className="text-center mb-12">
+            <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-4">
+              说说
+            </h1>
+            <p className="text-slate-500 dark:text-slate-400 font-medium">
+              零散的念头，落在时间里
+            </p>
+          </header>
+
+          {moments.length === 0 ? (
+            <div className="bg-white/60 dark:bg-slate-800/50 backdrop-blur-xl rounded-3xl p-10 border border-white/40 dark:border-white/10 shadow-xl text-center">
+              <div className="text-5xl mb-5">💭</div>
+              <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-3">这里还很安静</h2>
+              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                说说模块已接入公开数据源，等第一条记录出现时，它会在这里亮起来。
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-6">
+              {moments.map((moment) => (
+                <article
+                  key={moment.slug || moment.id}
+                  className="bg-white/60 dark:bg-slate-800/50 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/40 dark:border-white/10 shadow-xl"
+                >
+                  <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">
+                    {formatDate(moment.date)}
+                  </div>
+                  <div
+                    className="article-prose prose prose-slate dark:prose-invert max-w-none text-sm md:text-base text-slate-800 dark:text-slate-200"
+                    dangerouslySetInnerHTML={{ __html: moment.htmlContent || "" }}
+                  />
+                  {(moment.images || []).length > 0 && (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-5">
+                      {moment.images.map((img) => (
+                        <a
+                          key={img}
+                          href={img}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block aspect-square rounded-2xl overflow-hidden bg-white/40 dark:bg-slate-900/40"
+                        >
+                          <img
+                            src={img}
+                            alt=""
+                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                          />
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </article>
+              ))}
+            </div>
+          )}
+        </main>
+      </PageTransition>
+    </div>
+  );
+}

@@ -1,16 +1,219 @@
-* { box-sizing: border-box; }
-body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; color: #1f2937; background: #f8fafc; }
-a { color: #2563eb; text-decoration: none; }
-a:hover { text-decoration: underline; }
-.container { max-width: 880px; margin: 0 auto; padding: 0 20px; }
-.nav { border-bottom: 1px solid #e5e7eb; background: #fff; }
-.nav .inner { display: flex; gap: 20px; align-items: center; height: 56px; }
-.nav .brand { font-weight: 700; color: #111827; }
-.nav .spacer { flex: 1; }
-.card { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 18px 20px; margin: 14px 0; }
-.muted { color: #6b7280; font-size: 14px; }
-.tag { display: inline-block; font-size: 12px; background: #eef2ff; color: #4338ca; border-radius: 999px; padding: 2px 8px; margin-right: 6px; }
-.prose img { max-width: 100%; height: auto; }
-.prose pre { background: #0f172a; color: #e2e8f0; padding: 14px; border-radius: 8px; overflow: auto; }
-.prose code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
-.footer { margin: 40px 0 24px; color: #9ca3af; font-size: 13px; }
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* 1. 声明暗黑模式变体 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* 2. 基础环境与性能优化 */
+@layer base {
+  :root {
+    --font-serif: "Source Han Serif SC", "Noto Serif SC", "Songti SC", "SimSun", Georgia, serif;
+  }
+
+  body {
+    font-family: var(--font-serif);
+    @apply transition-colors duration-1000 text-slate-900 bg-slate-50;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .dark body {
+    @apply text-slate-100 bg-slate-950;
+  }
+
+  h1, h2, h3, h4 {
+    font-weight: 900;
+    letter-spacing: -0.02em;
+  }
+
+  .dark .prose {
+    --tw-prose-body: var(--color-slate-200);
+    --tw-prose-headings: var(--color-white);
+    --tw-prose-links: var(--color-indigo-400);
+  }
+
+  [class*="backdrop-blur-"] {
+    will-change: backdrop-filter;
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .group:hover img {
+    will-change: transform;
+  }
+}
+
+/* 3. 音乐播放器进度条样式 */
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: #6366f1;
+  cursor: pointer;
+}
+
+/* 4. 火狐专项优化与布局兜底 */
+@layer base {
+  [class*="backdrop-blur-"] {
+    will-change: backdrop-filter;
+  }
+
+  @-moz-document url-prefix() {
+    [class*="backdrop-blur-md"] {
+      backdrop-filter: blur(8px) !important;
+    }
+  }
+
+  html, body {
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+/* ========================================================
+   5. 全局滚动条美化 (Chrome, Edge, Safari)
+   ======================================================== */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.3);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.8);
+}
+
+/* ========================================================
+   6. Firefox 浏览器的兼容写法
+   ======================================================== */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99, 102, 241, 0.3) transparent;
+}
+
+/* 彻底隐藏所有数字输入框的上下滑动箭头 */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield; /* 针对 Firefox 的兼容 */
+}
+
+/* 修复 Tailwind Prose 抹除列表符号的问题 */
+.prose ul { list-style-type: disc !important; padding-left: 1.5em !important; }
+.prose ol { list-style-type: decimal !important; padding-left: 1.5em !important; }
+.prose ul[data-type="taskList"] { list-style-type: none !important; padding-left: 0 !important; }
+.prose ul[data-type="taskList"] li { display: flex; align-items: flex-start; gap: 0.5rem; }
+.prose ul[data-type="taskList"] input[type="checkbox"] {
+  margin-top: 0.5rem;
+  cursor: pointer;
+  accent-color: #6366f1;
+}
+/* 自定义滚动条美化 */
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(100, 116, 139, 0.2); border-radius: 10px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.4); }
+
+/* ========================================================
+   7. 文章正文（后端返回的 sanitized HTML）
+   ======================================================== */
+.article-prose {
+  font-size: 1rem;
+  line-height: 1.85;
+}
+.article-prose h1 { font-size: 1.9rem; font-weight: 900; margin: 2rem 0 1.2rem; line-height: 1.3; }
+.article-prose h2 { font-size: 1.55rem; font-weight: 800; margin: 1.8rem 0 1rem; }
+.article-prose h3 { font-size: 1.25rem; font-weight: 700; margin: 1.4rem 0 0.8rem; }
+.article-prose p { margin: 0.9rem 0; }
+.article-prose a {
+  color: #6366f1;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px dashed #6366f1;
+  transition: all 0.3s ease;
+}
+.article-prose a:hover {
+  color: #4f46e5;
+  border-bottom-style: solid;
+  background-color: rgba(99, 102, 241, 0.1);
+  border-radius: 0.2rem;
+}
+.dark .article-prose a { color: #818cf8; border-bottom-color: #818cf8; }
+.article-prose ul { list-style: disc; padding-left: 1.6rem; margin: 0.9rem 0; }
+.article-prose ol { list-style: decimal; padding-left: 1.6rem; margin: 0.9rem 0; }
+.article-prose li { margin: 0.35rem 0; }
+.article-prose blockquote {
+  border-left: 4px solid #6366f1;
+  background: rgba(99, 102, 241, 0.05);
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  border-radius: 0 1.25rem 1.25rem 0;
+  font-style: italic;
+  color: #64748b;
+}
+.dark .article-prose blockquote {
+  border-left-color: #818cf8;
+  background: rgba(129, 140, 248, 0.1);
+  color: #94a3b8;
+}
+.article-prose pre {
+  background: #282c34 !important;
+  color: #abb2bf !important;
+  padding: 1.1rem !important;
+  border-radius: 0.85rem !important;
+  overflow-x: auto;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+  margin: 1.3rem 0;
+}
+.article-prose pre code {
+  background: transparent !important;
+  padding: 0 !important;
+  color: inherit !important;
+  font-size: 0.86em;
+  font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", Consolas, ui-monospace, monospace !important;
+}
+.article-prose p code,
+.article-prose li code {
+  background: rgba(99, 102, 241, 0.1);
+  color: #6366f1;
+  padding: 0.15rem 0.35rem;
+  border-radius: 0.3rem;
+  font-size: 0.86em;
+  font-family: "JetBrains Mono", "Fira Code", Consolas, ui-monospace, monospace !important;
+}
+.dark .article-prose p code,
+.dark .article-prose li code {
+  background: rgba(99, 102, 241, 0.2);
+  color: #818cf8;
+}
+.article-prose img {
+  display: block;
+  margin: 1.6rem auto;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+  height: auto;
+}
+.article-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.2rem 0;
+  font-size: 0.92rem;
+}
+.article-prose th,
+.article-prose td {
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  padding: 0.55rem 0.75rem;
+  text-align: left;
+}
+.article-prose th { background: rgba(99, 102, 241, 0.08); font-weight: 700; }
+.article-prose hr { border: none; border-top: 1px dashed rgba(148, 163, 184, 0.45); margin: 2rem 0; }
+.article-prose .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.5rem 0; }

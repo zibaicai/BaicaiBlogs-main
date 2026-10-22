@@ -1,25 +1,202 @@
-// 服务端同源访问内部 API；浏览器侧所有请求都走本应用自身的 /api 代理（见 next.config rewrites）
-const BASE = process.env.API_INTERNAL || "http://127.0.0.1:8080";
+// 浏览器侧 API 客户端。所有请求都走同源 `/api`，由 Next rewrite（开发）
+// 或 nginx（生产）转发到后端，因此不依赖构建期注入的地址。
 
-export type Post = {
-  id: number; slug: string; title: string; description?: string;
-  htmlContent?: string; date?: string; tags?: string[]; cover?: string;
-};
-export type Project = { id: number; projectId: string; name: string; description?: string; githubUrl?: string; tags?: string[] };
+export interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+  code?: number;
+}
 
-async function json(url: string) {
-  const r = await fetch(url, { next: { revalidate: 60 } });
-  return r.json().catch(() => null);
+export interface PageResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+  size: number;
 }
-export async function getPosts(): Promise<Post[]> {
-  const j = await json(`${BASE}/api/public/posts`);
-  return (j && j.data) || [];
+
+export interface Post {
+  id: number;
+  slug: string;
+  title: string;
+  description: string;
+  content: string;
+  htmlContent: string;
+  cover: string;
+  date: string;
+  status: string;
+  views: number;
+  tags: string[];
+  fileUrl?: string;
+  createdAt: string;
+  updatedAt: string;
+  visibility?: string;
 }
-export async function getPost(slug: string): Promise<Post | null> {
-  const j = await json(`${BASE}/api/public/posts/${encodeURIComponent(slug)}`);
-  return j && j.success ? j.data : null;
+
+export interface Chatter {
+  id: number;
+  slug: string;
+  title: string;
+  description?: string;
+  content: string;
+  htmlContent: string;
+  mood: string;
+  cover: string;
+  date: string;
+  tags: string[];
+  createdAt: string;
+  updatedAt: string;
 }
-export async function getProjects(): Promise<Project[]> {
-  const j = await json(`${BASE}/api/public/projects`);
-  return (j && j.data) || [];
+
+export interface Project {
+  id: number;
+  projectId: string;
+  name: string;
+  description: string;
+  icon: string;
+  githubUrl: string;
+  tags: string[];
+  sortOrder?: number;
+}
+
+export interface Moment {
+  id: number;
+  slug: string;
+  content: string;
+  htmlContent: string;
+  date: string;
+  images: string[];
+  createdAt: string;
+}
+
+export interface Friend {
+  id: number;
+  friendId: string;
+  name: string;
+  url: string;
+  description: string;
+  avatar: string;
+  themeColor: string;
+  sortOrder: number;
+}
+
+export interface Photo {
+  id: number;
+  url: string;
+  caption: string;
+  sortOrder: number;
+}
+
+export interface Album {
+  id: number;
+  albumId: string;
+  title: string;
+  description: string;
+  cover: string;
+  date: string;
+  sortOrder: number;
+  photos: Photo[];
+}
+
+export interface MusicResponse {
+  id: string;
+  name?: string;
+  artist?: string;
+  author?: string;
+  cover?: string;
+  pic?: string;
+  url?: string;
+  lrc?: string;
+  error?: string;
+}
+
+async function publicRequest<T>(path: string): Promise<ApiResponse<T>> {
+  const res = await fetch(`/api${path}`, { cache: "no-store" });
+  const json = (await res.json().catch(() => null)) as ApiResponse<T> | null;
+  if (!res.ok || !json) {
+    throw new Error(json?.message || `请求失败 (${res.status})`);
+  }
+  return json;
+}
+
+/**
+ * 兼容旧组件的客户端。C 端只保留公开读取能力；
+ * 管理端写操作一律在 apps/admin 中完成。
+ */
+class PublicApiClient {
+  private token: string | null = null;
+
+  getToken() {
+    return this.token;
+  }
+
+  setToken(token: string) {
+    this.token = token || null;
+  }
+
+  clearToken() {
+    this.token = null;
+  }
+
+  getAllPosts() {
+    return publicRequest<Post[]>("/public/posts");
+  }
+
+  getPostBySlug(slug: string) {
+    return publicRequest<Post>(`/public/posts/${encodeURIComponent(slug)}`);
+  }
+
+  getAllChatters() {
+    return publicRequest<Chatter[]>("/public/chatters");
+  }
+
+  getAllProjects() {
+    return publicRequest<Project[]>("/public/projects");
+  }
+
+  getAllAlbums() {
+    return publicRequest<Album[]>("/public/albums");
+  }
+
+  getAllFriends() {
+    return publicRequest<Friend[]>("/public/friends");
+  }
+
+  async getMusic(ids: string[]): Promise<MusicResponse[]> {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 8000);
+    try {
+      const res = await fetch(`/api/public/music?ids=${encodeURIComponent(ids.join(","))}`, {
+        cache: "no-store",
+        signal: controller.signal,
+      });
+      if (!res.ok) throw new Error("音乐接口请求失败");
+      return (await res.json()) as MusicResponse[];
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  // 旧的配置编辑器方法保留签名，C 端不再使用。
+  async getAllConfigs() {
+    return publicRequest<Array<{ id: number; configKey: string; configValue: string; description: string; updatedAt: string }>>(
+      "/public/config"
+    );
+  }
+}
+
+export const apiClient = new PublicApiClient();
+
+/** 把后端 ISO 时间转成旧组件期望的 `YYYY-MM-DD HH:mm`。 */
+export function formatDate(value?: string | null): string {
+  if (!value) return "";
+  const text = String(value);
+  const m = text.match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/);
+  if (m) return `${m[1]}-${m[2]}-${m[3]} ${m[4]}:${m[5]}`;
+  return text;
+}
+
+export function formatDay(value?: string | null): string {
+  return formatDate(value).slice(0, 10);
 }
