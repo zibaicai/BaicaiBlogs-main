@@ -122,6 +122,21 @@ public class OssService {
     }
 
     /**
+     * 按公开 URL 下载 UTF-8 文本（用于从 OSS 原始 .md 修复被编辑器破坏的文章）。
+     */
+    public String downloadTextByUrl(String fileUrl) {
+        if (fileUrl == null || fileUrl.isBlank()) throw new RuntimeException("文章没有原始文件地址");
+        String objectKey = extractObjectKey(fileUrl);
+        if (objectKey == null || objectKey.isBlank()) throw new RuntimeException("无法解析原始文件地址");
+        try (OSSObject object = getObject(objectKey);
+             java.io.InputStream in = object.getObjectContent()) {
+            return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            throw new RuntimeException("原始 Markdown 读取失败: " + e.getMessage(), e);
+        }
+    }
+
+    /**
      * 生成唯一文件名（避免重名冲突）
      * 格式：posts/YYYY/MM/DD/{slug}-{8位uuid}.md
      *

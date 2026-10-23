@@ -596,6 +596,31 @@ public class PostService {
     }
 
     /**
+     * 从 OSS 原始 .md 文件恢复正文，修复“整篇变成一个段落”的历史数据。
+     * 仅超级管理员可跨作者修复；普通作者只能修复自己的文章。
+     */
+    @Transactional
+    public PostResponse repairFromOriginal(Long userId, String slug, boolean superAdmin) {
+        Post post = superAdmin
+                ? postRepository.findBySlug(slug).orElseThrow(() -> new RuntimeException("文章不存在: " + slug))
+                : postRepository.findBySlugAndUserId(slug, userId)
+                    .orElseThrow(() -> new RuntimeException("文章不存在或无权操作: " + slug));
+
+        String raw = ossService.downloadTextByUrl(post.getFileUrl());
+        FrontmatterParseResult parsed = parseFrontmatter(raw);
+        if (parsed.body == null || parsed.body.isBlank()) {
+            throw new RuntimeException("原始 Markdown 正文为空，无法修复");
+        }
+        post.setContent(parsed.body);
+        post.setHtmlContent(renderMarkdown(parsed.body));
+        if (parsed.title != null && !parsed.title.isBlank()) post.setTitle(parsed.title);
+        if (parsed.description != null) post.setDescription(parsed.description);
+        if (parsed.cover != null) post.setCover(parsed.cover);
+        if (parsed.tags != null && !parsed.tags.isEmpty()) post.setTags(serializeTags(parsed.tags));
+        return toResponse(postRepository.save(post));
+    }
+
+    /**
      * 按指定元数据构造完整的 MD 文件内容（包含 YAML frontmatter + 正文），
      * 用于在线编辑器保存时生成与"上传 MD 文件"格式一致的归档文件。
      * <pre>
@@ -718,13 +743,17 @@ public class PostService {
      * 负责将 tags JSON 字符串反序列化为 List<String>
      */
     private PostResponse toResponse(Post post) {
+        String html = post.getHtmlContent();
+        if ((html == null || html.isBlank()) && post.getContent() != null && !post.getContent().isBlank()) {
+            html = renderMarkdown(post.getContent());
+        }
         return PostResponse.builder()
                 .id(post.getId())
                 .slug(post.getSlug())
                 .title(post.getTitle())
                 .description(post.getDescription())
                 .content(post.getContent())
-                .htmlContent(post.getHtmlContent())
+                .htmlContent(html)
                 .cover(post.getCover())
                 .date(post.getDate())
                 .status(post.getStatus())

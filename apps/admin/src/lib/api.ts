@@ -15,8 +15,9 @@ export interface ApiResponse<T> {
 }
 
 export async function request<T = any>(path: string, opts: RequestInit = {}): Promise<ApiResponse<T>> {
+  const isFormData = typeof FormData !== "undefined" && opts.body instanceof FormData;
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
+    ...(isFormData ? {} : { "Content-Type": "application/json" }),
     ...(opts.headers as Record<string, string>),
   };
   const token = getToken();
@@ -156,6 +157,15 @@ export const api = {
 
   updatePost: (slug: string, post: Partial<Post>) =>
     request<Post>(`/admin/posts/${encodeURIComponent(slug)}`, { method: "PUT", body: JSON.stringify(post) }),
+
+  uploadPost: (file: File) => {
+    const form = new FormData();
+    form.append("file", file);
+    return request<Post>("/admin/posts/upload", { method: "POST", body: form });
+  },
+
+  repairPost: (slug: string) =>
+    request<Post>(`/admin/posts/${encodeURIComponent(slug)}/repair`, { method: "POST" }),
 
   deletePost: (slug: string) =>
     request<void>(`/admin/posts/${encodeURIComponent(slug)}`, { method: "DELETE" }),

@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Download, Image as ImageIcon, Loader2, Lock, X } from "lucide-react";
 import Navbar from "../../../components/Navbar";
 import PageTransition from "../../../components/PageTransition";
+import BackButton from "../../../components/BackButton";
 import { useAuth } from "../../../lib/auth";
 
 interface Photo {
@@ -178,6 +179,7 @@ export default function AlbumPage() {
       <Navbar />
       <PageTransition>
         <main className="w-full max-w-6xl mx-auto mt-28 px-4 sm:px-10 relative z-10">
+          <BackButton fallbackHref="/photowall" label="返回照片墙" />
           {loading && (
             <div className="flex justify-center py-24">
               <Loader2 className="animate-spin text-indigo-400" size={28} />

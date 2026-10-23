@@ -1,8 +1,9 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { Download } from "lucide-react";
 import Navbar from "../../../components/Navbar";
 import PageTransition from "../../../components/PageTransition";
 import AuthorCard from "../../../components/AuthorCard";
+import BackButton from "../../../components/BackButton";
 import SidebarLyric from "../../../components/SidebarLyric";
 import { formatDate, formatDay } from "../../../lib/api";
 import { getPost, getPosts } from "../../../lib/server-api";
@@ -50,12 +51,7 @@ export default async function PostDetail({ params }: { params: Promise<{ slug: s
             </div>
 
             <div className="p-5 md:p-12 relative">
-              <Link
-                href="/posts"
-                className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-indigo-500 transition-colors mb-6"
-              >
-                ← 返回列表
-              </Link>
+              <BackButton fallbackHref="/posts" />
 
               <header className="mb-6 md:mb-8 border-b border-slate-300/50 dark:border-slate-700 pb-5 md:pb-6 relative">
                 <h1 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4 tracking-tight transition-colors duration-700 pr-16 md:pr-24 leading-snug">
