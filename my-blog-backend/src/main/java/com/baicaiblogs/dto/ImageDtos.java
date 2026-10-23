@@ -61,6 +61,11 @@ public class ImageDtos {
     }
 
     @Data
+    public static class DanmakuRequest {
+        private String text;
+    }
+
+    @Data
     public static class AccessRequest {
         private String reason;
     }

@@ -206,6 +206,8 @@ export const api = {
   deletePhoto: (id: number) => request<void>(`/user/photos/${id}`, { method: "DELETE" }),
 
   adminReports: () => request<any[]>("/admin/reports"),
+  adminDanmaku: () => request<any[]>("/admin/danmaku"),
+  deleteDanmaku: (id: number) => request<void>(`/admin/danmaku/${id}`, { method: "DELETE" }),
   requestAccess: (albumId: string, reason: string) =>
     request<any>(`/admin/albums/${encodeURIComponent(albumId)}/access-requests`, { method: "POST", body: JSON.stringify({ reason }) }),
   accessRequests: () => request<any[]>("/admin/access-requests"),
