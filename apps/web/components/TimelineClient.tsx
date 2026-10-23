@@ -127,7 +127,7 @@ export default function TimelineClient({
           </AnimatePresence>
         </div>
 
-        <div className="w-full max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 bg-white/30 dark:bg-slate-800/30 backdrop-blur-md p-4 rounded-3xl border border-white/20 dark:border-white/5">
+        <div className="w-full flex flex-col md:flex-row justify-between items-center gap-6 bg-white/30 dark:bg-slate-800/30 backdrop-blur-md p-4 rounded-3xl border border-white/20 dark:border-white/5">
           <div className="flex flex-wrap justify-center md:justify-start gap-2 flex-1">
             <button
               onClick={() => setSelectedTag("All")}
