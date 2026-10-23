@@ -101,9 +101,15 @@ export interface GalleryAlbum {
   visibility: "PUBLIC" | "PASSWORD" | "PRIVATE" | string;
   hasPassword: boolean;
   status: string;
-  photoCount: number;
+  photoCount: number | null;
   coverThumbUrl: string | null;
   coverStandardUrl: string | null;
+  coverBlurUrl: string | null;
+  locked?: boolean;
+  isOwner?: boolean;
+  hidePhotoCount?: boolean;
+  ownerLabel?: string | null;
+  grantExpiresAt?: number | null;
   reportCount: number;
   photos?: GalleryPhoto[];
 }
@@ -119,11 +125,13 @@ export const api = {
   get: <T = any>(path: string) => request<T>(path),
 
   login: (username: string, password: string) =>
-    request<{ token: string; username: string; role: string }>("/auth/login", {
+    request<{ token: string; username: string; role: string }>("/auth/login?cookie=true", {
       method: "POST",
+      credentials: "include",
       body: JSON.stringify({ username, password }),
     }),
 
+  logout: () => request<void>("/auth/logout", { method: "POST", credentials: "include" }),
   myPosts: () => request<Post[]>("/admin/posts/mine"),
   myProjects: () => request<Project[]>("/admin/projects/mine"),
   publicPosts: () => request<Post[]>("/public/posts"),
@@ -198,6 +206,14 @@ export const api = {
   deletePhoto: (id: number) => request<void>(`/user/photos/${id}`, { method: "DELETE" }),
 
   adminReports: () => request<any[]>("/admin/reports"),
+  requestAccess: (albumId: string, reason: string) =>
+    request<any>(`/admin/albums/${encodeURIComponent(albumId)}/access-requests`, { method: "POST", body: JSON.stringify({ reason }) }),
+  accessRequests: () => request<any[]>("/admin/access-requests"),
+  approveAccess: (id: number) => request<any>(`/admin/access-requests/${id}/approve`, { method: "POST" }),
+  rejectAccess: (id: number) => request<void>(`/admin/access-requests/${id}/reject`, { method: "POST" }),
+  accessGrants: () => request<any[]>("/admin/access-grants"),
+  auditLogs: () => request<any[]>("/admin/audit"),
+  ownerAccessLogs: (albumId: string) => request<any[]>(`/user/albums/${encodeURIComponent(albumId)}/access-logs`),
   banUser: (id: number, reason: string) =>
     request<void>(`/admin/users/${id}/ban?reason=${encodeURIComponent(reason)}`, { method: "POST" }),
   unbanUser: (id: number) => request<void>(`/admin/users/${id}/unban`, { method: "POST" }),

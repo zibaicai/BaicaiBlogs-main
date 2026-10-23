@@ -1,54 +1,97 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { Lock, ShieldCheck } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import PageTransition from "../../components/PageTransition";
 import { DEFAULT_MISC } from "../../lib/site-config";
+import { useAuth } from "../../lib/auth";
 
 export interface GalleryAlbum {
   albumId: string;
   title: string;
   description: string;
   visibility: string;
-  photoCount: number;
+  photoCount: number | null;
   coverThumbUrl: string | null;
   coverStandardUrl: string | null;
+  coverBlurUrl: string | null;
   hasPassword: boolean;
+  locked?: boolean;
+  isOwner?: boolean;
+  hidePhotoCount?: boolean;
+  ownerLabel?: string;
 }
 
-async function fetchAlbums(): Promise<GalleryAlbum[]> {
-  const res = await fetch("/api/public/gallery/albums", { credentials: "include" });
-  const json = await res.json();
-  if (!json?.success) throw new Error(json?.message || "加载失败");
-  return json.data || [];
-}
+type Tab = "all" | "public" | "password" | "private";
+
+const TAB_LABELS: Record<Tab, string> = {
+  all: "全部",
+  public: "公开",
+  password: "密码",
+  private: "私密",
+};
 
 export default function PhotoWallPage() {
+  const { user } = useAuth();
   const [albums, setAlbums] = useState<GalleryAlbum[]>([]);
+  const [tab, setTab] = useState<Tab>("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    void fetchAlbums()
-      .then(setAlbums)
-      .catch((e) => setError(e instanceof Error ? e.message : "加载失败"))
-      .finally(() => setLoading(false));
+  const fetchAlbums = useCallback(async (nextTab: Tab) => {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch(`/api/public/gallery/albums?visibility=${nextTab}`, {
+        credentials: "include",
+      });
+      const json = await res.json();
+      if (!json?.success) throw new Error(json?.message || "加载失败");
+      setAlbums(json.data || []);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "加载失败");
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    void fetchAlbums(tab);
+  }, [fetchAlbums, tab, user?.id]);
+
+  const tabs: Tab[] = user ? ["all", "public", "password", "private"] : ["all", "public", "password"];
 
   return (
     <div className="min-h-screen relative pb-20">
       <Navbar />
       <PageTransition>
         <main className="w-full max-w-6xl mx-auto mt-28 px-4 sm:px-10 relative z-10">
-          <header className="text-center mb-12">
+          <header className="text-center mb-8">
             <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-4">
               照片墙
             </h1>
             <p className="text-slate-500 dark:text-slate-400 font-medium">
-              {albums.length} 个公开相册 · 封面取权重最高的一张
+              {albums.length} 个可见相册 · 密码相册显示模糊封面
             </p>
           </header>
+
+          <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
+            {tabs.map((key) => (
+              <button
+                key={key}
+                onClick={() => setTab(key)}
+                className={`px-4 py-2 rounded-full text-xs font-black border transition-all ${
+                  tab === key
+                    ? "bg-indigo-500 text-white border-indigo-500 shadow-lg shadow-indigo-500/20"
+                    : "bg-white/50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 border-white/40 dark:border-white/10 hover:border-indigo-300"
+                }`}
+              >
+                {TAB_LABELS[key]}
+              </button>
+            ))}
+          </div>
 
           {loading && (
             <div className="flex justify-center py-24">
@@ -59,46 +102,64 @@ export default function PhotoWallPage() {
 
           {!loading && !error && albums.length === 0 && (
             <div className="text-center py-24 text-slate-500 dark:text-slate-400 font-bold">
-              还没有公开相册。
+              暂无可见相册。
             </div>
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {albums.map((album) => (
-              <Link
-                key={album.albumId}
-                href={`/photowall/${encodeURIComponent(album.albumId)}`}
-                className="group relative rounded-[40px] overflow-hidden border border-white/40 dark:border-white/10 shadow-xl bg-slate-900 min-h-[280px]"
-              >
-                {album.coverThumbUrl ? (
-                  <img
-                    src={album.coverThumbUrl}
-                    alt={album.title}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                ) : (
-                  <div
-                    className="absolute inset-0 bg-cover bg-center blur-2xl scale-110 opacity-60"
-                    style={{ backgroundImage: `url(${DEFAULT_MISC.photoWallImage})` }}
-                  />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
-                <div className="absolute bottom-6 left-6 right-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-indigo-300 bg-black/40 backdrop-blur px-2 py-1 rounded-md">
-                      {album.photoCount} Photos
-                    </span>
-                    {album.visibility === "PASSWORD" && (
-                      <span className="text-[10px] font-black text-amber-300 bg-black/40 backdrop-blur px-2 py-1 rounded-md">
-                        密码
+            {albums.map((album) => {
+              const cover = album.locked ? album.coverBlurUrl : album.coverThumbUrl;
+              return (
+                <Link
+                  key={album.albumId}
+                  href={`/photowall/${encodeURIComponent(album.albumId)}`}
+                  className="group relative rounded-[40px] overflow-hidden border border-white/40 dark:border-white/10 shadow-xl bg-slate-900 min-h-[280px]"
+                >
+                  {cover ? (
+                    <img
+                      src={cover}
+                      alt={album.title}
+                      className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${
+                        album.locked ? "blur-[3px] scale-105" : ""
+                      }`}
+                    />
+                  ) : (
+                    <div
+                      className="absolute inset-0 bg-cover bg-center blur-2xl scale-110 opacity-60"
+                      style={{ backgroundImage: `url(${DEFAULT_MISC.photoWallImage})` }}
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+                  <div className="absolute bottom-6 left-6 right-6">
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-indigo-300 bg-black/40 backdrop-blur px-2 py-1 rounded-md">
+                        {album.photoCount == null ? "照片数已隐藏" : `${album.photoCount} Photos`}
                       </span>
+                      {album.visibility === "PASSWORD" && (
+                        <span className="text-[10px] font-black text-amber-300 bg-black/40 backdrop-blur px-2 py-1 rounded-md flex items-center gap-1">
+                          <Lock size={10} /> {album.locked ? "密码相册" : "我的密码相册"}
+                        </span>
+                      )}
+                      {album.visibility === "PRIVATE" && (
+                        <span className="text-[10px] font-black text-sky-300 bg-black/40 backdrop-blur px-2 py-1 rounded-md flex items-center gap-1">
+                          <ShieldCheck size={10} /> {album.isOwner ? "我的私密" : "私密"}
+                        </span>
+                      )}
+                      {album.visibility === "PUBLIC" && (
+                        <span className="text-[10px] font-black text-emerald-300 bg-black/40 backdrop-blur px-2 py-1 rounded-md">
+                          公开
+                        </span>
+                      )}
+                    </div>
+                    <h2 className="text-3xl font-black text-white drop-shadow mb-1">{album.title}</h2>
+                    <p className="text-sm text-white/70 line-clamp-2">{album.description}</p>
+                    {album.ownerLabel && (
+                      <p className="text-[10px] text-white/50 mt-1">{album.ownerLabel}</p>
                     )}
                   </div>
-                  <h2 className="text-3xl font-black text-white drop-shadow mb-1">{album.title}</h2>
-                  <p className="text-sm text-white/70 line-clamp-2">{album.description}</p>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         </main>
       </PageTransition>

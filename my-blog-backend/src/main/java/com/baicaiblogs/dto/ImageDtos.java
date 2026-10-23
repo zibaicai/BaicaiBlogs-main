@@ -61,6 +61,11 @@ public class ImageDtos {
     }
 
     @Data
+    public static class AccessRequest {
+        private String reason;
+    }
+
+    @Data
     public static class AppealRequest {
         private String reason;
     }

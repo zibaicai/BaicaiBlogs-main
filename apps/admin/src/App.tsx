@@ -6,6 +6,7 @@ import {
   FolderKanban,
   Images,
   ShieldAlert,
+  KeyRound,
   LayoutDashboard,
   Loader2,
   LogOut,
@@ -21,6 +22,7 @@ import { SiteConfigProvider } from "./context/SiteConfigProvider";
 import SettingsPage from "./pages/SettingsPage";
 import GalleryPage from "./pages/GalleryPage";
 import ReportsPage from "./pages/ReportsPage";
+import AccessPage from "./pages/AccessPage";
 import EditorPage from "./pages/EditorPage";
 
 type Any = Record<string, any>;
@@ -125,6 +127,7 @@ const NAV_ITEMS = [
   { to: "/projects", label: "项目", icon: FolderKanban },
   { to: "/gallery", label: "图片墙", icon: Images },
   { to: "/reports", label: "举报", icon: ShieldAlert },
+  { to: "/access", label: "授权", icon: KeyRound },
   { to: "/timeline", label: "归档预览", icon: Waypoints },
   { to: "/settings", label: "设置", icon: Settings },
 ];
@@ -133,7 +136,12 @@ function Shell({ children }: { children: React.ReactNode }) {
   const nav = useNavigate();
   const user = getAdminUser();
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await api.logout();
+    } catch {
+      // 即使后端失败也清理本地登录态
+    }
     setToken("");
     setAdminUser("");
     nav("/login");
@@ -504,6 +512,7 @@ export default function App() {
             <Route path="/timeline" element={<RequireAuth><Shell><TimelinePreview /></Shell></RequireAuth>} />
             <Route path="/gallery" element={<RequireAuth><Shell><GalleryPage /></Shell></RequireAuth>} />
             <Route path="/reports" element={<RequireAuth><Shell><ReportsPage /></Shell></RequireAuth>} />
+            <Route path="/access" element={<RequireAuth><Shell><AccessPage /></Shell></RequireAuth>} />
             <Route path="/settings" element={<RequireAuth><Shell><SettingsPage /></Shell></RequireAuth>} />
             <Route path="/editor/:slug?" element={<RequireAuth><EditorPage /></RequireAuth>} />
             <Route path="*" element={<Navigate to="/" replace />} />

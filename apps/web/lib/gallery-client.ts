@@ -3,7 +3,7 @@ export interface GalleryPhoto {
   albumId: number;
   thumbUrl: string;
   standardUrl: string;
-  originalUrl: string;
+  originalUrl: string | null;
   caption: string;
   weight: number;
   width: number;

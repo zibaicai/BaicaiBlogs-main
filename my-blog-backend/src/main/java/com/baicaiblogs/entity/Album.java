@@ -66,6 +66,25 @@ public class Album {
     @Builder.Default
     private Integer reportCount = 0;
 
+    /** 内容版本：照片/标题/描述/封面/可见性/密码/展示设置变更时递增 */
+    @Column(name = "content_version")
+    @Builder.Default
+    private Long contentVersion = 0L;
+
+    /** 低分辨率模糊封面对象 key，密码相册锁定态只返回它 */
+    @Column(name = "cover_blur_key", length = 500)
+    private String coverBlurKey;
+
+    /** 是否隐藏照片数量，默认 false（显示） */
+    @Column(name = "hide_photo_count")
+    @Builder.Default
+    private Boolean hidePhotoCount = false;
+
+    /** owner 已收到通知的内容版本，用于每版本首次通知 */
+    @Column(name = "owner_notified_version")
+    @Builder.Default
+    private Long ownerNotifiedVersion = -1L;
+
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Photo> photos = new ArrayList<>();

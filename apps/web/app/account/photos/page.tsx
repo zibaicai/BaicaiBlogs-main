@@ -23,6 +23,8 @@ export default function MyPhotosPage() {
   const [title, setTitle] = useState("");
   const [visibility, setVisibility] = useState("PRIVATE");
   const [password, setPassword] = useState("");
+  const [hideCount, setHideCount] = useState(false);
+  const [accessLogs, setAccessLogs] = useState<any[] | null>(null);
   const [message, setMessage] = useState("");
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState<Record<string, number>>({});
@@ -42,6 +44,7 @@ export default function MyPhotosPage() {
     try {
       const data = await galleryRequest<GalleryAlbum>(`/public/gallery/albums/${encodeURIComponent(albumId)}`);
       setSelected(data);
+      setAccessLogs(null);
     } catch (e) {
       setMessage(e instanceof Error ? e.message : "加载失败");
     }
@@ -58,7 +61,7 @@ export default function MyPhotosPage() {
     try {
       const data = await galleryRequest<GalleryAlbum>("/user/albums", {
         method: "POST",
-        body: JSON.stringify({ title: title.trim(), visibility, password: visibility === "PASSWORD" ? password : undefined }),
+        body: JSON.stringify({ title: title.trim(), visibility, password: visibility === "PASSWORD" ? password : undefined, hidePhotoCount: hideCount }),
       });
       setTitle("");
       setPassword("");
@@ -107,6 +110,16 @@ export default function MyPhotosPage() {
       setUploading(false);
       setProgress({});
       if (fileRef.current) fileRef.current.value = "";
+    }
+  };
+
+  const loadAccessLogs = async () => {
+    if (!selected) return;
+    try {
+      const data = await galleryRequest<any[]>(`/user/albums/${encodeURIComponent(selected.albumId)}/access-logs`);
+      setAccessLogs(data);
+    } catch (e) {
+      setMessage(e instanceof Error ? e.message : "加载访问记录失败");
     }
   };
 
@@ -197,13 +210,19 @@ export default function MyPhotosPage() {
                   </button>
                 </div>
                 {visibility === "PASSWORD" && (
-                  <input
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    type="password"
-                    placeholder="相册密码"
-                    className="w-full rounded-xl bg-white/60 dark:bg-slate-900/50 border border-white/40 dark:border-slate-700 px-4 py-2.5 text-sm outline-none"
-                  />
+                  <div className="space-y-2">
+                    <input
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      type="password"
+                      placeholder="相册密码"
+                      className="w-full rounded-xl bg-white/60 dark:bg-slate-900/50 border border-white/40 dark:border-slate-700 px-4 py-2.5 text-sm outline-none"
+                    />
+                    <label className="flex items-center gap-2 text-[11px] text-slate-500 font-bold">
+                      <input type="checkbox" checked={hideCount} onChange={(e) => setHideCount(e.target.checked)} className="accent-indigo-500" />
+                      未解锁时隐藏照片数量
+                    </label>
+                  </div>
                 )}
               </div>
               <div className="space-y-2 max-h-[55vh] overflow-y-auto">
@@ -245,10 +264,37 @@ export default function MyPhotosPage() {
                       <h2 className="text-xl font-black">{selected.title}</h2>
                       <div className="text-[10px] text-slate-400">{selected.photoCount} 张 · {selected.status}</div>
                     </div>
-                    <Link href={`/photowall/${encodeURIComponent(selected.albumId)}`} className="text-xs font-bold text-indigo-500">
-                      在前台查看
-                    </Link>
+                    <div className="flex items-center gap-2">
+                      {selected.visibility === "PASSWORD" && (
+                        <button onClick={() => void loadAccessLogs()} className="text-xs font-bold text-indigo-400">
+                          访问记录
+                        </button>
+                      )}
+                      <Link href={`/photowall/${encodeURIComponent(selected.albumId)}`} className="text-xs font-bold text-indigo-500">
+                        在前台查看
+                      </Link>
+                    </div>
                   </div>
+
+                  {accessLogs && (
+                    <div className="mb-4 rounded-2xl bg-white/50 dark:bg-slate-900/40 border border-white/40 dark:border-white/10 p-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-[11px] font-black text-slate-500">管理员查看记录（仅授权访问）</span>
+                        <button onClick={() => setAccessLogs(null)} className="text-[10px] text-slate-400">收起</button>
+                      </div>
+                      {accessLogs.length === 0 ? (
+                        <div className="text-[11px] text-slate-400">暂无记录</div>
+                      ) : (
+                        <div className="space-y-1 max-h-40 overflow-y-auto">
+                          {accessLogs.map((log) => (
+                            <div key={log.id} className="text-[10px] text-slate-500">
+                              {log.adminLabel} · {log.action} · {log.viewedAt}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   <div
                     onClick={() => fileRef.current?.click()}

@@ -13,6 +13,7 @@ import {
   UploadCloud,
 } from "lucide-react";
 import { api, uploadToOss, type GalleryAlbum, type GalleryPhoto } from "../lib/api";
+import AuthImage from "../components/AuthImage";
 import { useToast } from "../components/ToastProvider";
 
 function readImageSize(file: File): Promise<{ width: number; height: number }> {
@@ -41,6 +42,7 @@ export default function GalleryPage() {
   const [newTitle, setNewTitle] = useState("");
   const [newVisibility, setNewVisibility] = useState("PUBLIC");
   const [newPassword, setNewPassword] = useState("");
+  const [hideCount, setHideCount] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -63,7 +65,10 @@ export default function GalleryPage() {
   const loadAlbum = async (albumId: string) => {
     try {
       const res = await api.get<GalleryAlbum>(`/public/gallery/albums/${encodeURIComponent(albumId)}`);
-      if (res.success) setSelected(res.data);
+      if (res.success) {
+        setSelected(res.data);
+        setHideCount(Boolean(res.data.hidePhotoCount));
+      }
     } catch (e) {
       showToast(e instanceof Error ? e.message : "加载相册失败", "error");
     }
@@ -103,6 +108,7 @@ export default function GalleryPage() {
         description: selected.description,
         visibility: selected.visibility,
         password: newPassword || undefined,
+        hidePhotoCount: hideCount,
       });
       if (!res.success) throw new Error(res.message);
       showToast("相册已更新", "success");
@@ -111,6 +117,18 @@ export default function GalleryPage() {
       await loadAlbums(selected.albumId);
     } catch (e) {
       showToast(e instanceof Error ? e.message : "更新失败", "error");
+    }
+  };
+
+  const requestAccess = async () => {
+    if (!selected) return;
+    const reason = window.prompt("申请查看原因（至少 10 个字，用于合规审计）");
+    if (!reason || reason.trim().length < 10) return;
+    try {
+      const res = await api.requestAccess(selected.albumId, reason.trim());
+      showToast(res.message || "申请已提交", "success");
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : "申请失败", "error");
     }
   };
 
@@ -266,7 +284,7 @@ export default function GalleryPage() {
               >
                 <div className="w-12 h-12 rounded-xl overflow-hidden bg-slate-800 shrink-0">
                   {album.coverThumbUrl ? (
-                    <img src={album.coverThumbUrl} alt="" className="w-full h-full object-cover" />
+                    <AuthImage src={album.coverThumbUrl} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-slate-500">
                       <ImageIcon size={18} />
@@ -303,18 +321,29 @@ export default function GalleryPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setEditMode((v) => !v)}
-                    className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-slate-300"
-                  >
-                    {editMode ? "收起编辑" : "编辑相册"}
-                  </button>
-                  <button
-                    onClick={deleteAlbum}
-                    className="px-3 py-2 rounded-xl bg-red-500/10 text-red-400 text-xs font-bold flex items-center gap-1"
-                  >
-                    <Trash2 size={13} /> 删除
-                  </button>
+                  {selected.isOwner === false ? (
+                    <button
+                      onClick={() => void requestAccess()}
+                      className="px-3 py-2 rounded-xl bg-amber-500/10 text-amber-300 text-xs font-bold flex items-center gap-1"
+                    >
+                      <Lock size={13} /> 申请查看
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => setEditMode((v) => !v)}
+                        className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-slate-300"
+                      >
+                        {editMode ? "收起编辑" : "编辑相册"}
+                      </button>
+                      <button
+                        onClick={deleteAlbum}
+                        className="px-3 py-2 rounded-xl bg-red-500/10 text-red-400 text-xs font-bold flex items-center gap-1"
+                      >
+                        <Trash2 size={13} /> 删除
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -341,6 +370,15 @@ export default function GalleryPage() {
                     placeholder={selected.hasPassword ? "新密码（留空不变）" : "设置密码"}
                     className="rounded-xl bg-black/20 border border-white/10 px-4 py-2.5 text-sm text-slate-100"
                   />
+                  <label className="md:col-span-3 flex items-center gap-2 text-xs text-slate-400 font-bold">
+                    <input
+                      type="checkbox"
+                      checked={hideCount}
+                      onChange={(e) => setHideCount(e.target.checked)}
+                      className="w-4 h-4 accent-indigo-500"
+                    />
+                    未解锁时隐藏照片数量
+                  </label>
                   <button
                     onClick={saveAlbum}
                     className="md:col-span-3 py-2.5 rounded-xl bg-indigo-500 text-white text-sm font-black"
@@ -350,6 +388,7 @@ export default function GalleryPage() {
                 </div>
               )}
 
+              {selected.isOwner !== false && (
               <div
                 onClick={() => fileRef.current?.click()}
                 className="rounded-3xl border-2 border-dashed border-white/15 hover:border-indigo-400/60 bg-black/10 p-8 text-center cursor-pointer transition-colors"
@@ -385,6 +424,7 @@ export default function GalleryPage() {
                   </div>
                 )}
               </div>
+              )}
 
               <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
                 {(selected.photos || []).map((photo, index) => (
@@ -393,12 +433,7 @@ export default function GalleryPage() {
                     className="group relative rounded-2xl overflow-hidden bg-slate-800 border border-white/10"
                   >
                     <div className="aspect-square relative">
-                      <img
-                        src={photo.thumbUrl}
-                        alt={photo.caption}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
+                      <AuthImage src={photo.thumbUrl} alt={photo.caption} className="w-full h-full object-cover" />
                       {index === 0 && (
                         <span className="absolute top-2 left-2 px-2 py-1 rounded-md bg-indigo-500 text-white text-[9px] font-black">
                           封面

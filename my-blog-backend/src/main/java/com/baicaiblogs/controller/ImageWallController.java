@@ -43,12 +43,19 @@ public class ImageWallController {
     private final DeletionAuditRepository deletionAuditRepository;
     private final ObjectMapper objectMapper;
     private final IpBanService ipBanService;
+    private final GrantService grantService;
+    private final AuditService auditService;
+    private final PasswordAttemptService passwordAttemptService;
+    private final NotificationService notificationService;
 
     // ==================== 公开浏览 ====================
 
     @GetMapping("/public/gallery/albums")
-    public ApiResponse<List<AlbumResponse>> publicAlbums() {
-        return ApiResponse.success(imageWallService.listPublicAlbums());
+    public ApiResponse<List<AlbumResponse>> publicAlbums(
+            @RequestParam(defaultValue = "all") String visibility,
+            HttpServletRequest request) {
+        User user = imageWallService.currentUserOrNull();
+        return ApiResponse.success(imageWallService.listPublicAlbums(user, visibility));
     }
 
     @GetMapping("/public/gallery/albums/{albumId}")
@@ -58,11 +65,40 @@ public class ImageWallController {
             User user = imageWallService.currentUserOrNull();
             boolean unlocked = isAlbumUnlocked(album, request);
             if (!imageWallService.canView(album, user, unlocked)) {
-                return ApiResponse.error("该相册需要密码或登录后访问");
+                if ("PASSWORD".equals(album.getVisibility()) && "VISIBLE".equals(album.getStatus())) {
+                    return ApiResponse.success(imageWallService.toAlbum(album, false, user, false));
+                }
+                return ApiResponse.error("无权访问或资源不存在");
             }
-            return ApiResponse.success(imageWallService.albumDetail(album, true));
+            if (imageWallService.isSuperAdmin(user)
+                    && !"PUBLIC".equals(album.getVisibility())
+                    && (album.getUserId() == null || !album.getUserId().equals(user.getId()))) {
+                String reason = request.getParameter("reason");
+                auditService.internal(user, album, "detail", "super_admin", null,
+                        reason == null || reason.isBlank() ? "super-admin-patrol" : reason, ipHash(request));
+            }
+            return ApiResponse.success(imageWallService.albumDetail(album, true, unlocked));
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/public/albums/{albumId}/cover-blur")
+    public ResponseEntity<byte[]> coverBlur(@PathVariable String albumId) {
+        try {
+            Album album = imageWallService.getAlbum(albumId);
+            if (!"PASSWORD".equals(album.getVisibility())
+                    || album.getCoverBlurKey() == null || album.getCoverBlurKey().isBlank()) {
+                return ResponseEntity.notFound().build();
+            }
+            byte[] bytes = ossService.getObjectBytes(album.getCoverBlurKey());
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .contentLength(bytes.length)
+                    .cacheControl(CacheControl.maxAge(Duration.ofHours(6)).cachePublic())
+                    .body(bytes);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
         }
     }
 
@@ -77,10 +113,18 @@ public class ImageWallController {
             if (!"PASSWORD".equals(album.getVisibility())) {
                 return ApiResponse.error("该相册不需要密码");
             }
+            String ipHash = ipHash(request);
+            try {
+                passwordAttemptService.assertAllowed(album.getId(), user.getId(), ipHash);
+            } catch (Exception e) {
+                return ApiResponse.error(e.getMessage());
+            }
             if (album.getPasswordHash() == null
                     || !passwordMatches(body.getPassword(), album.getPasswordHash())) {
-                return ApiResponse.error("相册密码错误");
+                passwordAttemptService.fail(album.getId(), user.getId(), ipHash);
+                return ApiResponse.error("密码错误，请重试");
             }
+            passwordAttemptService.clear(album.getId(), user.getId(), ipHash);
             String token = albumAccessService.issue(album.getId(), user.getId());
             ResponseCookie cookie = ResponseCookie.from(AlbumAccessService.cookieName(album.getId()), token)
                     .httpOnly(true)
@@ -90,33 +134,46 @@ public class ImageWallController {
                     .maxAge(Duration.ofHours(2))
                     .build();
             response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-            return ApiResponse.success(imageWallService.albumDetail(album, true));
+            return ApiResponse.success(imageWallService.albumDetail(album, true, true));
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
         }
     }
 
     @GetMapping("/public/photos/{id}/thumb")
-    public ResponseEntity<byte[]> thumb(@PathVariable Long id, HttpServletRequest request) {
-        return privateImage(id, request, 400);
+    public ResponseEntity<byte[]> thumb(@PathVariable Long id,
+                                        @RequestParam(defaultValue = "normal") String view,
+                                        HttpServletRequest request) {
+        return privateImage(id, request, 400, view);
     }
 
     @GetMapping("/public/photos/{id}/standard")
-    public ResponseEntity<byte[]> standard(@PathVariable Long id, HttpServletRequest request) {
-        return privateImage(id, request, 800);
+    public ResponseEntity<byte[]> standard(@PathVariable Long id,
+                                           @RequestParam(defaultValue = "normal") String view,
+                                           HttpServletRequest request) {
+        return privateImage(id, request, 800, view);
     }
 
     @GetMapping("/public/photos/{id}/original")
     public ResponseEntity<byte[]> original(@PathVariable Long id,
                                                           @RequestParam(defaultValue = "0") int download,
+                                                          @RequestParam(required = false) String reason,
                                                           HttpServletRequest request) {
         User user = imageWallService.currentUserOrNull();
         if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         Photo photo = imageWallService.getPhoto(id);
         Album album = photo.getAlbum();
-        boolean unlocked = isAlbumUnlocked(album, request);
-        if (!imageWallService.canView(album, user, unlocked)) {
+        if ("ADMIN".equals(user.getRole()) && imageWallService.hasGrant(user, album)) {
+            // grant 仅允许 400/800，绝不允许原图
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        if (!imageWallService.canViewOriginal(album, user)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        boolean superAdmin = imageWallService.isSuperAdmin(user);
+        boolean sensitive = !"PUBLIC".equals(album.getVisibility());
+        if (superAdmin && sensitive && (reason == null || reason.isBlank())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         boolean owner = album.getUserId() != null && album.getUserId().equals(user.getId());
         try {
@@ -127,7 +184,14 @@ public class ImageWallController {
             return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
         }
 
-        byte[] bytes = watermarkService.apply(photo.getObjectKey(), photo.getMime());
+        if (superAdmin) {
+            auditService.internal(user, album, download == 1 ? "download" : "original",
+                    "super_admin", null, reason, ipHash(request));
+        }
+
+        byte[] bytes = superAdmin
+                ? ossService.getObjectBytes(photo.getObjectKey())
+                : watermarkService.apply(photo.getObjectKey(), photo.getMime());
         MediaType mediaType = mediaTypeFor(photo.getMime());
         return ResponseEntity.ok()
                 .contentType(mediaType)
@@ -137,24 +201,45 @@ public class ImageWallController {
                 .body(bytes);
     }
 
-    private ResponseEntity<byte[]> privateImage(Long id, HttpServletRequest request, int maxWidth) {
+    private ResponseEntity<byte[]> privateImage(Long id, HttpServletRequest request, int maxWidth, String view) {
         Photo photo = imageWallService.getPhoto(id);
         Album album = photo.getAlbum();
         User user = imageWallService.currentUserOrNull();
-        if (!imageWallService.canView(album, user, isAlbumUnlocked(album, request))) {
+        boolean unlocked = isAlbumUnlocked(album, request);
+        boolean grant = "grant".equalsIgnoreCase(view)
+                && user != null && imageWallService.hasGrant(user, album);
+        if (!imageWallService.canView(album, user, unlocked || grant)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         if (photo.getObjectKey() == null) {
             return ResponseEntity.status(HttpStatus.FOUND).header(HttpHeaders.LOCATION, photo.getUrl()).build();
         }
+
+        boolean superAdmin = imageWallService.isSuperAdmin(user);
+        Long watermarkAdminId = null;
+        if (grant) {
+            watermarkAdminId = user.getId();
+            grantService.activeGrant(user.getId(), album.getId()).ifPresent(g ->
+                    afterGrantView(album, user, g, maxWidth == 400 ? "view_thumb" : "view_standard", request));
+        } else if (superAdmin && !"PUBLIC".equals(album.getVisibility())) {
+            auditService.internal(user, album, maxWidth == 400 ? "thumb" : "standard",
+                    "super_admin", null, "super-admin-patrol", ipHash(request));
+        }
+
         byte[] original = ossService.getObjectBytes(photo.getObjectKey());
-        byte[] bytes = imageVariantService.resize(original, maxWidth, photo.getMime());
+        byte[] bytes = imageVariantService.resize(original, maxWidth, photo.getMime(), watermarkAdminId);
         MediaType mediaType = mediaTypeFor(photo.getMime());
         return ResponseEntity.ok()
                 .contentType(mediaType)
                 .contentLength(bytes.length)
                 .cacheControl(CacheControl.maxAge(Duration.ofHours(1)).cachePrivate())
                 .body(bytes);
+    }
+
+    private void afterGrantView(Album album, User admin, AlbumAccessGrant grant, String action, HttpServletRequest request) {
+        auditService.internal(admin, album, action, "admin_grant", grant.getId(), grant.getReason(), ipHash(request));
+        auditService.ownerVisible(album, admin, action, grant.getId());
+        notificationService.notifyAdminView(album, admin, grant.getId());
     }
 
     // ==================== 用户相册/上传 ====================
@@ -524,6 +609,126 @@ public class ImageWallController {
         }
     }
 
+    // ==================== 授权 / 审计 / 通知 ====================
+
+    @PostMapping("/admin/albums/{albumId}/access-requests")
+    public ApiResponse<AlbumAccessRequest> requestAccess(@PathVariable String albumId,
+                                                         @RequestBody ImageDtos.AccessRequest body) {
+        try {
+            User admin = imageWallService.currentUser();
+            Album album = imageWallService.getAlbum(albumId);
+            AlbumAccessRequest request = grantService.request(admin, album, body == null ? null : body.getReason());
+            return ApiResponse.success("申请已提交，等待超级管理员审批", request);
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/admin/access-requests")
+    public ApiResponse<List<AlbumAccessRequest>> accessRequests() {
+        try {
+            return ApiResponse.success(grantService.requests(imageWallService.currentUser()));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @PostMapping("/admin/access-requests/{id}/approve")
+    public ApiResponse<AlbumAccessGrant> approveAccess(@PathVariable Long id) {
+        try {
+            AlbumAccessGrant grant = grantService.approve(imageWallService.currentUser(), id);
+            return ApiResponse.success("已批准，1 小时内有效", grant);
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @PostMapping("/admin/access-requests/{id}/reject")
+    public ApiResponse<Void> rejectAccess(@PathVariable Long id) {
+        try {
+            grantService.reject(imageWallService.currentUser(), id);
+            return ApiResponse.success("已拒绝", null);
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/admin/access-grants")
+    public ApiResponse<List<AlbumAccessGrant>> accessGrants() {
+        try {
+            return ApiResponse.success(grantService.grants(imageWallService.currentUser()));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/user/albums/{albumId}/access-logs")
+    public ApiResponse<List<OwnerVisibleAccessLog>> ownerAccessLogs(@PathVariable String albumId) {
+        try {
+            User user = imageWallService.currentUser();
+            Album album = imageWallService.getAlbum(albumId);
+            imageWallService.assertOwner(album, user);
+            return ApiResponse.success(auditService.ownerLogs(album.getId(), album.getUserId()));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/user/notifications")
+    public ApiResponse<List<Notification>> notifications() {
+        try {
+            return ApiResponse.success(notificationService.list(imageWallService.currentUser()));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/user/notifications/unread-count")
+    public ApiResponse<Long> unreadNotifications() {
+        try {
+            return ApiResponse.success(notificationService.unread(imageWallService.currentUser()));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @PostMapping("/user/notifications/{id}/read")
+    public ApiResponse<Void> readNotification(@PathVariable Long id) {
+        try {
+            notificationService.markRead(imageWallService.currentUser(), id);
+            return ApiResponse.success("已读", null);
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/admin/reports/{id}/evidence")
+    public ResponseEntity<byte[]> reportEvidence(@PathVariable Long id) {
+        try {
+            User user = imageWallService.currentUser();
+            if (!imageWallService.isAdmin(user)) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            Report report = reportRepository.findById(id).orElse(null);
+            if (report == null || report.getEvidenceKey() == null) return ResponseEntity.notFound().build();
+            byte[] bytes = ossService.getObjectBytes(report.getEvidenceKey());
+            return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG)
+                    .contentLength(bytes.length).cacheControl(CacheControl.maxAge(Duration.ofHours(1)).cachePrivate())
+                    .body(bytes);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/admin/audit")
+    public ApiResponse<List<AlbumAccessLog>> internalAudit() {
+        try {
+            User user = imageWallService.currentUser();
+            if (!imageWallService.isSuperAdmin(user)) return ApiResponse.error("只有超级管理员可以查看内部审计");
+            return ApiResponse.success(auditService.allInternal());
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
     // ==================== helpers ====================
 
     private void report(String targetType, Long targetId, ImageDtos.ReportRequest request,
@@ -534,6 +739,10 @@ public class ImageWallController {
         }
         if (request.getReason() == null || request.getReason().isBlank()) {
             throw new RuntimeException("请选择举报理由");
+        }
+        Long targetOwnerId = targetUserId(targetType, targetId);
+        if (targetOwnerId != null && targetOwnerId.equals(user.getId())) {
+            throw new RuntimeException("不能举报自己的资源");
         }
         Report report = Report.builder()
                 .reporterId(user.getId())
@@ -550,7 +759,7 @@ public class ImageWallController {
         if ("photo".equals(targetType)) {
             Photo photo = imageWallService.getPhoto(targetId);
             photo.setReportCount((photo.getReportCount() == null ? 0 : photo.getReportCount()) + 1);
-            if (photo.getReportCount() >= 10) photo.setStatus("HIDDEN_PENDING_REVIEW");
+            if (photo.getReportCount() >= 10) photo.setStatus("HIDDEN");
             if (photo.getObjectKey() != null) {
                 String evidence = "moderation/evidence/" + report.getId() + "/" + photo.getObjectKey();
                 try {
@@ -562,7 +771,7 @@ public class ImageWallController {
         } else {
             Album album = albumRepository.findById(targetId).orElseThrow(() -> new RuntimeException("相册不存在"));
             album.setReportCount((album.getReportCount() == null ? 0 : album.getReportCount()) + 1);
-            if (album.getReportCount() >= 10) album.setStatus("HIDDEN_PENDING_REVIEW");
+            if (album.getReportCount() >= 10) album.setStatus("HIDDEN");
             albumRepository.save(album);
         }
         reportRepository.save(report);

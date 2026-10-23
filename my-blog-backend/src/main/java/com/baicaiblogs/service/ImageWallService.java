@@ -27,6 +27,8 @@ public class ImageWallService {
     private final OssService ossService;
     private final QuotaService quotaService;
     private final PasswordEncoder passwordEncoder;
+    private final GrantService grantService;
+    private final ImageVariantService imageVariantService;
 
     public User currentUser() {
         Object principal = org.springframework.security.core.context.SecurityContextHolder
@@ -58,15 +60,27 @@ public class ImageWallService {
         return quotaService.isSuperAdmin(user);
     }
 
+    public boolean hasGrant(User user, Album album) {
+        return user != null && "ADMIN".equals(user.getRole())
+                && grantService.activeGrant(user.getId(), album.getId()).isPresent();
+    }
+
     public boolean canView(Album album, User user, boolean unlocked) {
         String status = album.getStatus() == null ? "VISIBLE" : album.getStatus();
         String visibility = album.getVisibility() == null ? "PUBLIC" : album.getVisibility();
         if ("VISIBLE".equals(status) && "PUBLIC".equals(visibility)) return true;
         if (user == null) return false;
-        if (isAdmin(user)) return true;
         if (album.getUserId() != null && album.getUserId().equals(user.getId())) return true;
-        if ("PASSWORD".equals(visibility)) return unlocked;
+        if (isSuperAdmin(user)) return true;
+        if (!"VISIBLE".equals(status)) return false;
+        if ("PASSWORD".equals(visibility)) return unlocked || hasGrant(user, album);
         return false;
+    }
+
+    public boolean canViewOriginal(Album album, User user) {
+        if (user == null) return false;
+        if (album.getUserId() != null && album.getUserId().equals(user.getId())) return true;
+        return isSuperAdmin(user);
     }
 
     public boolean isPublic(Album album) {
@@ -75,33 +89,86 @@ public class ImageWallService {
         return "VISIBLE".equals(status) && "PUBLIC".equals(visibility);
     }
 
-    public List<AlbumResponse> listPublicAlbums() {
-        return albumRepository.findAllByOrderBySortOrderAsc().stream()
-                .filter(this::isPublic)
-                .map(a -> toAlbum(a, false, true))
-                .toList();
+    /**
+     * C 端个性化目录：公开 + 密码锁定卡片 + 自己的私密；SUPER 可看全部私密。
+     */
+    public List<AlbumResponse> listPublicAlbums(User viewer, String filter) {
+        String f = filter == null || filter.isBlank() ? "all" : filter.toLowerCase(Locale.ROOT);
+        List<AlbumResponse> result = new ArrayList<>();
+        for (Album album : albumRepository.findAllByOrderBySortOrderAsc()) {
+            if (!"VISIBLE".equals(album.getStatus() == null ? "VISIBLE" : album.getStatus())) continue;
+            String visibility = album.getVisibility() == null ? "PUBLIC" : album.getVisibility();
+            boolean owner = viewer != null && album.getUserId() != null && album.getUserId().equals(viewer.getId());
+            boolean superAdmin = isSuperAdmin(viewer);
+            if ("PRIVATE".equals(visibility) && !owner && !superAdmin) continue;
+            if ("public".equals(f) && !"PUBLIC".equals(visibility)) continue;
+            if ("password".equals(f) && !"PASSWORD".equals(visibility)) continue;
+            if ("private".equals(f) && !"PRIVATE".equals(visibility)) continue;
+            result.add(toAlbum(album, false, viewer, false));
+        }
+        return result;
     }
 
     public List<AlbumResponse> listMyAlbums(User user) {
-        List<Album> albums = isAdmin(user)
-                ? albumRepository.findAllByOrderBySortOrderAsc()
-                : albumRepository.findByUserIdOrderBySortOrderAsc(user.getId());
-        return albums.stream().map(a -> toAlbum(a, false, false)).toList();
+        List<Album> albums;
+        if (isSuperAdmin(user)) {
+            albums = albumRepository.findAllByOrderBySortOrderAsc();
+        } else if ("ADMIN".equals(user.getRole())) {
+            albums = albumRepository.findAllByOrderBySortOrderAsc().stream()
+                    .filter(a -> !"PRIVATE".equals(a.getVisibility())
+                            || (a.getUserId() != null && a.getUserId().equals(user.getId())))
+                    .toList();
+        } else {
+            albums = albumRepository.findByUserIdOrderBySortOrderAsc(user.getId());
+        }
+        return albums.stream().map(a -> {
+            boolean owner = a.getUserId() != null && a.getUserId().equals(user.getId());
+            return toAlbum(a, false, user, owner);
+        }).toList();
     }
 
     public AlbumResponse albumDetail(Album album, boolean includePhotos) {
-        return toAlbum(album, includePhotos, isPublic(album));
+        return albumDetail(album, includePhotos, false);
     }
 
-    public AlbumResponse toAlbum(Album album, boolean includePhotos, boolean publicView) {
+    public AlbumResponse albumDetail(Album album, boolean includePhotos, boolean unlocked) {
+        return toAlbum(album, includePhotos, currentUserOrNull(), unlocked);
+    }
+
+    /**
+     * 统一构建相册响应：锁定密码相册不返回真实封面/照片；私密只允许 owner/SUPER。
+     */
+    public AlbumResponse toAlbum(Album album, boolean includePhotos, User viewer, boolean unlocked) {
+        String visibility = album.getVisibility() == null ? "PUBLIC" : album.getVisibility();
+        boolean owner = viewer != null && album.getUserId() != null && album.getUserId().equals(viewer.getId());
+        boolean superAdmin = isSuperAdmin(viewer);
+        boolean grantView = hasGrant(viewer, album);
+        boolean canSeeContent = owner || superAdmin || grantView || unlocked || "PUBLIC".equals(visibility);
+        boolean locked = "PASSWORD".equals(visibility) && !canSeeContent;
+
         List<Photo> photos = photoRepository.findByAlbumIdOrderByWeightDescSortOrderAscIdAsc(album.getId());
         List<Photo> visible = photos.stream()
                 .filter(p -> "VISIBLE".equals(p.getStatus()))
                 .toList();
         Photo cover = visible.isEmpty() ? null : visible.get(0);
-        List<PhotoResponse> photoResponses = includePhotos
-                ? visible.stream().map(p -> toPhoto(p, publicView)).toList()
+
+        String blurUrl = null;
+        if (locked && cover != null) {
+            blurUrl = ensureBlurCover(album, cover);
+        }
+
+        List<PhotoResponse> photoResponses = includePhotos && canSeeContent
+                ? visible.stream().map(p -> toPhoto(p, grantView)).toList()
                 : List.of();
+
+        Long photoCount = (long) visible.size();
+        if (locked && Boolean.TRUE.equals(album.getHidePhotoCount())) photoCount = null;
+
+        Long grantExpires = null;
+        if (grantView) {
+            grantExpires = grantService.activeGrant(viewer.getId(), album.getId())
+                    .map(g -> g.getExpiresAt().atZone(ZONE).toEpochSecond()).orElse(null);
+        }
 
         return AlbumResponse.builder()
                 .id(album.getId())
@@ -109,32 +176,58 @@ public class ImageWallService {
                 .userId(album.getUserId())
                 .parentId(album.getParentId())
                 .title(album.getTitle())
-                .description(album.getDescription())
-                .cover(album.getCover())
+                .description(locked ? null : album.getDescription())
+                .cover(canSeeContent ? album.getCover() : null)
                 .date(album.getDate())
                 .sortOrder(album.getSortOrder())
-                .visibility(album.getVisibility())
+                .visibility(visibility)
                 .hasPassword(album.getPasswordHash() != null && !album.getPasswordHash().isBlank())
                 .status(album.getStatus())
                 .reportCount(album.getReportCount())
-                .photoCount((long) visible.size())
-                .coverThumbUrl(cover == null ? null : toPhoto(cover, publicView).getThumbUrl())
-                .coverStandardUrl(cover == null ? null : toPhoto(cover, publicView).getStandardUrl())
+                .photoCount(photoCount)
+                .coverThumbUrl(canSeeContent && cover != null ? toPhoto(cover, grantView).getThumbUrl() : null)
+                .coverStandardUrl(canSeeContent && cover != null ? toPhoto(cover, grantView).getStandardUrl() : null)
+                .coverBlurUrl(blurUrl)
+                .locked(locked)
+                .isOwner(owner)
+                .hidePhotoCount(Boolean.TRUE.equals(album.getHidePhotoCount()))
+                .ownerLabel(superAdmin && !owner && album.getUserId() != null ? "用户 #" + album.getUserId() : null)
+                .contentVersion(album.getContentVersion())
+                .grantExpiresAt(grantExpires)
                 .photos(photoResponses)
                 .build();
     }
 
-    public PhotoResponse toPhoto(Photo photo, boolean publicView) {
+    private String ensureBlurCover(Album album, Photo cover) {
+        if (album.getCoverBlurKey() != null && !album.getCoverBlurKey().isBlank()) {
+            return "/api/public/albums/" + album.getAlbumId() + "/cover-blur";
+        }
+        if (cover.getObjectKey() == null) return null;
+        try {
+            byte[] original = ossService.getObjectBytes(cover.getObjectKey());
+            byte[] blurred = imageVariantService.blur(original);
+            String key = "photos/" + album.getAlbumId() + "/cover-blur.jpg";
+            ossService.putObject(key, blurred, "image/jpeg");
+            album.setCoverBlurKey(key);
+            albumRepository.save(album);
+            return "/api/public/albums/" + album.getAlbumId() + "/cover-blur";
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public PhotoResponse toPhoto(Photo photo, boolean grantView) {
         String key = photo.getObjectKey();
-        String thumb = key == null ? photo.getUrl() : "/api/public/photos/" + photo.getId() + "/thumb";
-        String standard = key == null ? photo.getUrl() : "/api/public/photos/" + photo.getId() + "/standard";
+        String suffix = grantView ? "?view=grant" : "";
+        String thumb = key == null ? photo.getUrl() : "/api/public/photos/" + photo.getId() + "/thumb" + suffix;
+        String standard = key == null ? photo.getUrl() : "/api/public/photos/" + photo.getId() + "/standard" + suffix;
         return PhotoResponse.builder()
                 .id(photo.getId())
                 .albumId(photo.getAlbum().getId())
                 .url(photo.getUrl())
                 .thumbUrl(thumb)
                 .standardUrl(standard)
-                .originalUrl("/api/public/photos/" + photo.getId() + "/original")
+                .originalUrl(grantView ? null : "/api/public/photos/" + photo.getId() + "/original")
                 .caption(photo.getCaption())
                 .weight(photo.getWeight())
                 .width(photo.getWidth())
@@ -173,7 +266,9 @@ public class ImageWallService {
                 .sortOrder(request.getSortOrder() != null ? request.getSortOrder() : 0)
                 .visibility(visibility)
                 .passwordHash(password == null || password.isBlank() ? null : passwordEncoder.encode(password))
+                .hidePhotoCount(Boolean.TRUE.equals(request.getHidePhotoCount()))
                 .status("VISIBLE")
+                .contentVersion(0L)
                 .build();
         return albumRepository.save(album);
     }
@@ -181,11 +276,17 @@ public class ImageWallService {
     @Transactional
     public Album updateAlbum(Album album, AlbumRequest request, User user) {
         assertOwner(album, user);
+        String oldVisibility = album.getVisibility();
+        String oldPassword = album.getPasswordHash();
         if (request.getTitle() != null) album.setTitle(request.getTitle().trim());
         if (request.getDescription() != null) album.setDescription(request.getDescription());
-        if (request.getCover() != null) album.setCover(request.getCover());
         if (request.getSortOrder() != null) album.setSortOrder(request.getSortOrder());
         if (request.getParentId() != null) album.setParentId(request.getParentId());
+        if (request.getHidePhotoCount() != null) album.setHidePhotoCount(request.getHidePhotoCount());
+        if (request.getCover() != null) {
+            album.setCover(request.getCover());
+            album.setCoverBlurKey(null);
+        }
         if (request.getVisibility() != null && !request.getVisibility().isBlank()) {
             String visibility = normalizeVisibility(request.getVisibility());
             album.setVisibility(visibility);
@@ -195,6 +296,14 @@ public class ImageWallService {
             album.setVisibility("PASSWORD");
             album.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         }
+        boolean visibilityChanged = !Objects.equals(oldVisibility, album.getVisibility());
+        boolean securityChanged = visibilityChanged || !Objects.equals(oldPassword, album.getPasswordHash());
+        if (securityChanged) grantService.revokeForAlbum(album.getId());
+        if (visibilityChanged && !"PASSWORD".equals(album.getVisibility()) && album.getCoverBlurKey() != null) {
+            ossService.deleteObject(album.getCoverBlurKey());
+            album.setCoverBlurKey(null);
+        }
+        album.setContentVersion((album.getContentVersion() == null ? 0 : album.getContentVersion()) + 1);
         return albumRepository.save(album);
     }
 
@@ -207,7 +316,7 @@ public class ImageWallService {
     }
 
     public void assertOwner(Album album, User user) {
-        if (isAdmin(user)) return;
+        if (isSuperAdmin(user)) return;
         if (album.getUserId() == null || !album.getUserId().equals(user.getId())) {
             throw new RuntimeException("无权操作该相册");
         }
@@ -215,6 +324,7 @@ public class ImageWallService {
 
     public void deleteAlbum(Album album, User user) {
         assertOwner(album, user);
+        grantService.revokeForAlbum(album.getId());
         List<Photo> photos = photoRepository.findByAlbumIdOrderByWeightDescSortOrderAscIdAsc(album.getId());
         for (Photo p : photos) {
             if (p.getObjectKey() != null) ossService.deleteObject(p.getObjectKey());
@@ -222,6 +332,7 @@ public class ImageWallService {
                 quotaService.releaseStorage(user, p.getBytes() == null ? 0 : p.getBytes());
             }
         }
+        if (album.getCoverBlurKey() != null) ossService.deleteObject(album.getCoverBlurKey());
         albumRepository.delete(album);
     }
 
@@ -300,8 +411,11 @@ public class ImageWallService {
                     .build();
             photoRepository.save(photo);
             added += size;
-            result.add(toPhoto(photo, isPublic(album)));
+            result.add(toPhoto(photo, false));
         }
+        album.setContentVersion((album.getContentVersion() == null ? 0 : album.getContentVersion()) + 1);
+        album.setCoverBlurKey(null);
+        albumRepository.save(album);
         quotaService.assertStorage(user, added);
         quotaService.addStorage(user, added);
         return result;
@@ -319,6 +433,9 @@ public class ImageWallService {
             if (p != null) p.setWeight(item.getWeight() == null ? p.getWeight() : item.getWeight());
         }
         photoRepository.saveAll(photos);
+        album.setContentVersion((album.getContentVersion() == null ? 0 : album.getContentVersion()) + 1);
+        album.setCoverBlurKey(null);
+        albumRepository.save(album);
     }
 
     @Transactional
@@ -329,12 +446,15 @@ public class ImageWallService {
         photoRepository.delete(photo);
         if (!isAdmin(user)) quotaService.releaseStorage(user, bytes);
         if (photo.getObjectKey() != null) ossService.deleteObject(photo.getObjectKey());
+        album.setContentVersion((album.getContentVersion() == null ? 0 : album.getContentVersion()) + 1);
+        album.setCoverBlurKey(null);
+        albumRepository.save(album);
     }
 
     public List<PhotoResponse> photos(Album album, boolean publicView) {
         return photoRepository.findByAlbumIdOrderByWeightDescSortOrderAscIdAsc(album.getId()).stream()
                 .filter(p -> "VISIBLE".equals(p.getStatus()))
-                .map(p -> toPhoto(p, publicView))
+                .map(p -> toPhoto(p, false))
                 .toList();
     }
 

@@ -29,5 +29,12 @@ public class AlbumResponse {
     private Long photoCount;
     private String coverThumbUrl;
     private String coverStandardUrl;
+    private String coverBlurUrl;
+    private Boolean locked;
+    private Boolean isOwner;
+    private Boolean hidePhotoCount;
+    private String ownerLabel;
+    private Long contentVersion;
+    private Long grantExpiresAt;
     private List<PhotoResponse> photos;
 }

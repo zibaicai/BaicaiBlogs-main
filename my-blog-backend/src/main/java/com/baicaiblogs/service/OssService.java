@@ -137,6 +137,23 @@ public class OssService {
 
     // ==================== 图片墙能力 ====================
 
+    /** 直接写入对象（不拼接 posts/ 目录），用于模糊封面等衍生图。 */
+    public void putObject(String objectKey, byte[] bytes, String contentType) {
+        assertConfigured();
+        OSS ossClient = buildClient();
+        try {
+            ObjectMetadata meta = new ObjectMetadata();
+            meta.setContentLength(bytes.length);
+            if (contentType != null) meta.setContentType(contentType);
+            ossClient.putObject(ossProperties.getBucketName(), objectKey, new java.io.ByteArrayInputStream(bytes), meta);
+        } catch (Exception e) {
+            log.error("[OssService] 写入对象失败: key={}", objectKey, e);
+            throw new RuntimeException("OSS 写入失败: " + e.getMessage(), e);
+        } finally {
+            ossClient.shutdown();
+        }
+    }
+
     /** 生成原图公开 URL（不经过图片处理）。 */
     public String publicUrl(String objectKey) {
         return buildPublicUrl(objectKey);
