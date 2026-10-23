@@ -1,4 +1,4 @@
-# 切换与回滚（C 端 / 管理端拆分）
+# 切换与回滚（C 端 / 管理端拆分）\n\n> 当前完整生产部署以仓库根目录 `部署手册.md` 为准；本文保留拆分切换与回滚细节。
 
 > 目标拓扑
 >
@@ -152,7 +152,7 @@ nginx 的 `admin.zibaicai.cn` 配置无需改动（仍是静态目录 + `/api/` 
 
 ## 7. 已知坑
 
-- `/api/auth/me` 后端不存在，前端不要调用；登录后用户名从登录响应/localStorage 取。
+- `/api/auth/me` 已存在，C 端与管理端都可用来校验当前登录态。
 - 后端 404 会被 `anyRequest().authenticated()` 变成 403，排查时先看 nginx 日志与后端日志，不要只按状态码判断。
 - PowerShell 读写 UTF-8 文件用 `[IO.File]::WriteAllText`（或 PS7 默认 UTF-8），避免中文乱码/截断。
 - Next.js standalone 必须保留 `.next/static`，否则页面无样式、无 JS。
