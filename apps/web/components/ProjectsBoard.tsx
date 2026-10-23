@@ -1,9 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
-
 import DirectoryHeader from "./DirectoryHeader";
+import DirectoryView from "./DirectoryView";
 import type { Project } from "../lib/api";
 
 const GithubIcon = () => (
@@ -34,6 +33,45 @@ export default function ProjectsBoard({ projects }: { projects: Project[] }) {
     );
   }, [projects, searchQuery]);
 
+  const items = filteredProjects.map((project) => (
+    <a
+      key={project.projectId}
+      href={project.githubUrl || "#"}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="directory-card group p-8 md:p-10"
+    >
+      <div className="absolute -top-10 -right-10 w-32 h-32 bg-indigo-500/5 rounded-full blur-2xl group-hover:bg-indigo-500/10 transition-colors" />
+
+      <div className="flex items-start justify-between mb-8 relative z-10">
+        <div className="flex items-center gap-5 min-w-0">
+          <span className="text-5xl group-hover:scale-110 transition-transform duration-500">
+            {project.icon || "🚀"}
+          </span>
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">
+            {project.name}
+          </h2>
+        </div>
+        <GithubIcon />
+      </div>
+
+      <p className="text-sm text-slate-700 dark:text-slate-300 font-serif leading-relaxed line-clamp-3 mb-10 relative z-10 min-h-[60px]">
+        {project.description}
+      </p>
+
+      <div className="flex flex-wrap gap-2 relative z-10">
+        {(project.tags || []).map((tag) => (
+          <span
+            key={tag}
+            className="directory-tag border border-indigo-500/10 px-3 py-1.5 uppercase tracking-widest"
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+    </a>
+  ));
+
   return (
     <div className="directory-shell mt-0 py-0">
       <DirectoryHeader
@@ -62,59 +100,15 @@ export default function ProjectsBoard({ projects }: { projects: Project[] }) {
           </svg>
         </div>
       </div>
-      <motion.div layout className="directory-grid relative">
-        {filteredProjects.map((project) => (
-          <motion.div
-            layout
-            initial={{ opacity: 0, scale: 0.94 }}
-            animate={{ opacity: 1, scale: 1 }}
-            key={project.projectId}
-            className="h-full relative group"
-          >
-            <a
-              href={project.githubUrl || "#"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="directory-card group p-8 md:p-10"
-            >
-              <div className="absolute -top-10 -right-10 w-32 h-32 bg-indigo-500/5 rounded-full blur-2xl group-hover:bg-indigo-500/10 transition-colors" />
 
-              <div className="flex items-start justify-between mb-8 relative z-10">
-                <div className="flex items-center gap-5 min-w-0">
-                  <span className="text-5xl group-hover:scale-110 transition-transform duration-500">
-                    {project.icon || "🚀"}
-                  </span>
-                  <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">
-                    {project.name}
-                  </h2>
-                </div>
-                <GithubIcon />
-              </div>
-
-              <p className="text-sm text-slate-700 dark:text-slate-300 font-serif leading-relaxed line-clamp-3 mb-10 relative z-10 min-h-[60px]">
-                {project.description}
-              </p>
-
-              <div className="flex flex-wrap gap-2 relative z-10">
-                {(project.tags || []).map((tag) => (
-                  <span
-                    key={tag}
-                    className="directory-tag border border-indigo-500/10 px-3 py-1.5 uppercase tracking-widest"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </a>
-          </motion.div>
-        ))}
-      </motion.div>
-
-      {filteredProjects.length === 0 && (
-        <div className="text-center py-20 text-slate-500 font-serif italic">
-          {searchQuery ? `代号为 [${searchQuery}] 的档案似乎在云端消失了...` : "暂无公开项目。"}
-        </div>
-      )}
+      <DirectoryView
+        items={items}
+        empty={
+          searchQuery
+            ? `代号为 [${searchQuery}] 的档案似乎在云端消失了...`
+            : "暂无公开项目。"
+        }
+      />
     </div>
   );
 }
