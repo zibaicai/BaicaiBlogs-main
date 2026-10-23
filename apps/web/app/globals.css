@@ -217,3 +217,173 @@ input[type="number"] {
 .article-prose th { background: rgba(99, 102, 241, 0.08); font-weight: 700; }
 .article-prose hr { border: none; border-top: 1px dashed rgba(148, 163, 184, 0.45); margin: 2rem 0; }
 .article-prose .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.5rem 0; }
+
+/* ========================================================
+   8. C 端目录页统一卡片体系
+   卡片最小宽度 380px；1440 宽屏 3 列，1680+ 宽屏 4 列
+   ======================================================== */
+@layer components {
+  .directory-shell {
+    @apply w-full max-w-[1680px] mx-auto mt-28 px-4 sm:px-6 lg:px-10 relative z-10 pb-20;
+  }
+
+  .directory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr));
+    gap: 1.5rem;
+    align-items: stretch;
+  }
+
+  .directory-card {
+    @apply relative flex h-full flex-col overflow-hidden rounded-3xl border border-white/50 bg-white/60 shadow-lg backdrop-blur-xl transition-all duration-500;
+  }
+
+  .dark .directory-card {
+    @apply border-slate-700/50 bg-slate-800/70;
+  }
+
+  .directory-card:hover {
+    @apply -translate-y-1 shadow-2xl;
+    border-color: rgb(165 180 252 / 0.8);
+  }
+
+  .dark .directory-card:hover {
+    border-color: rgb(99 102 241 / 0.45);
+  }
+
+  .directory-card-media {
+    @apply relative h-44 overflow-hidden;
+  }
+
+  .directory-card-media img {
+    @apply h-full w-full object-cover transition-transform duration-700;
+  }
+
+  .directory-card:hover .directory-card-media img {
+    @apply scale-105;
+  }
+
+  .directory-card-body {
+    @apply flex flex-1 flex-col p-5;
+  }
+
+  .directory-card-title {
+    @apply line-clamp-2 text-lg font-bold text-slate-800 transition-colors duration-300;
+  }
+
+  .dark .directory-card-title {
+    @apply text-slate-100;
+  }
+
+  .directory-card:hover .directory-card-title {
+    @apply text-indigo-500;
+  }
+
+  .directory-card-description {
+    @apply mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-slate-500;
+  }
+
+  .dark .directory-card-description {
+    @apply text-slate-400;
+  }
+
+  .directory-card-tags {
+    @apply mt-4 flex flex-wrap gap-2;
+  }
+
+  .directory-tag {
+    @apply rounded-md bg-indigo-50 px-2 py-1 text-[10px] font-bold text-indigo-500;
+  }
+
+  .dark .directory-tag {
+    @apply bg-indigo-500/10 text-indigo-400;
+  }
+
+  .directory-date-badge {
+    @apply absolute bottom-3 left-4 rounded-md bg-black/40 px-2 py-1 font-mono text-[10px] font-bold text-white/90 backdrop-blur-sm;
+  }
+
+  .directory-header {
+    @apply relative mb-10 text-center;
+  }
+
+  .directory-eyebrow {
+    @apply mb-3 text-[10px] font-black uppercase tracking-[0.3em] text-indigo-500;
+  }
+
+  .directory-title {
+    @apply text-4xl font-black tracking-tighter text-slate-900 md:text-5xl;
+  }
+
+  .dark .directory-title {
+    @apply text-white;
+  }
+
+  .directory-subtitle {
+    @apply mt-3 flex flex-wrap items-center justify-center gap-2 text-sm font-medium text-slate-500;
+  }
+
+  .dark .directory-subtitle {
+    @apply text-slate-400;
+  }
+
+  .directory-count {
+    @apply inline-flex items-center rounded-full border border-white/50 bg-white/50 px-3 py-1 text-[10px] font-black text-indigo-500 backdrop-blur-md;
+  }
+
+  .dark .directory-count {
+    @apply border-white/10 bg-slate-800/50 text-indigo-400;
+  }
+
+  .directory-toolbar {
+    @apply mb-12 flex flex-col items-center justify-between gap-4 rounded-3xl border border-white/30 bg-white/30 p-4 backdrop-blur-md md:flex-row;
+  }
+
+  .dark .directory-toolbar {
+    @apply border-white/5 bg-slate-800/30;
+  }
+
+  .directory-tabs {
+    @apply flex flex-wrap items-center justify-center gap-2;
+  }
+
+  .directory-tab {
+    @apply rounded-xl px-4 py-2 text-xs font-bold text-slate-600 transition-all duration-300;
+  }
+
+  .dark .directory-tab {
+    @apply text-slate-400;
+  }
+
+  .directory-tab:hover {
+    @apply bg-white/70 text-indigo-500;
+  }
+
+  .dark .directory-tab:hover {
+    @apply bg-slate-700/60 text-indigo-300;
+  }
+
+  .directory-tab-active {
+    @apply bg-indigo-500 text-white shadow-md hover:bg-indigo-500 hover:text-white;
+  }
+
+  .dark .directory-tab-active {
+    @apply bg-indigo-500 text-white;
+  }
+
+  .directory-search {
+    @apply w-full max-w-lg rounded-2xl border border-white/40 bg-white/40 py-4 pl-14 pr-6 text-sm font-medium text-slate-800 shadow-xl outline-none backdrop-blur-xl transition-all placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500/50;
+  }
+
+  .dark .directory-search {
+    @apply border-white/5 bg-slate-800/40 text-white;
+  }
+
+  .directory-empty {
+    @apply py-24 text-center text-sm font-bold text-slate-500;
+  }
+
+  .dark .directory-empty {
+    @apply text-slate-400;
+  }
+}

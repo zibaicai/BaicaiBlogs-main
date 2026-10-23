@@ -1,7 +1,8 @@
-﻿import Navbar from "../../components/Navbar";
+import Navbar from "../../components/Navbar";
 import PageTransition from "../../components/PageTransition";
 import { formatDate } from "../../lib/api";
 import { getMoments } from "../../lib/server-api";
+import DirectoryHeader from "../../components/DirectoryHeader";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "说说" };
@@ -13,18 +14,16 @@ export default async function MomentsPage() {
     <div className="min-h-screen relative pb-20">
       <Navbar />
       <PageTransition>
-        <main className="w-full max-w-3xl mx-auto mt-28 px-4 sm:px-10 relative z-10">
-          <header className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-4">
-              说说
-            </h1>
-            <p className="text-slate-500 dark:text-slate-400 font-medium">
-              零散的念头，落在时间里
-            </p>
-          </header>
+        <main className="directory-shell max-w-4xl">
+          <DirectoryHeader
+            eyebrow="BAICAI / MOMENTS"
+            title="说说"
+            subtitle="零散的念头，落在时间里"
+            count={`${moments.length} 条记录`}
+          />
 
           {moments.length === 0 ? (
-            <div className="bg-white/60 dark:bg-slate-800/50 backdrop-blur-xl rounded-3xl p-10 border border-white/40 dark:border-white/10 shadow-xl text-center">
+            <div className="directory-card p-10 text-center">
               <div className="text-5xl mb-5">💭</div>
               <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-3">这里还很安静</h2>
               <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -36,7 +35,7 @@ export default async function MomentsPage() {
               {moments.map((moment) => (
                 <article
                   key={moment.slug || moment.id}
-                  className="bg-white/60 dark:bg-slate-800/50 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/40 dark:border-white/10 shadow-xl"
+                  className="directory-card p-6 md:p-8"
                 >
                   <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">
                     {formatDate(moment.date)}
