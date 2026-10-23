@@ -1,6 +1,5 @@
 import Navbar from "../../components/Navbar";
 import PageTransition from "../../components/PageTransition";
-import DirectoryHeader from "../../components/DirectoryHeader";
 import DirectoryExplorer from "../../components/DirectoryExplorer";
 import { formatDate } from "../../lib/api";
 import { getMoments } from "../../lib/server-api";
@@ -60,12 +59,6 @@ export default async function MomentsPage() {
       <Navbar />
       <PageTransition>
         <main className="directory-shell">
-          <DirectoryHeader
-            eyebrow="BAICAI / MOMENTS"
-            title="说说"
-            subtitle="零散的念头，落在时间里"
-            count={`${moments.length} 条记录`}
-          />
           <DirectoryExplorer
             eyebrow="BAICAI / MOMENTS"
             title="说说"
