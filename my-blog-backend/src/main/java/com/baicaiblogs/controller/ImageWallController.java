@@ -128,8 +128,7 @@ public class ImageWallController {
         }
 
         byte[] bytes = watermarkService.apply(photo.getObjectKey(), photo.getMime());
-        MediaType mediaType = photo.getMime() != null && photo.getMime().contains("png")
-                ? MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG;
+        MediaType mediaType = mediaTypeFor(photo.getMime());
         return ResponseEntity.ok()
                 .contentType(mediaType)
                 .contentLength(bytes.length)
@@ -150,8 +149,7 @@ public class ImageWallController {
         }
         byte[] original = ossService.getObjectBytes(photo.getObjectKey());
         byte[] bytes = imageVariantService.resize(original, maxWidth, photo.getMime());
-        MediaType mediaType = photo.getMime() != null && photo.getMime().contains("png")
-                ? MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG;
+        MediaType mediaType = mediaTypeFor(photo.getMime());
         return ResponseEntity.ok()
                 .contentType(mediaType)
                 .contentLength(bytes.length)
@@ -592,6 +590,14 @@ public class ImageWallController {
         } catch (Exception e) {
             return "unknown";
         }
+    }
+
+    private MediaType mediaTypeFor(String mime) {
+        if (mime == null) return MediaType.IMAGE_JPEG;
+        if (mime.contains("png")) return MediaType.IMAGE_PNG;
+        if (mime.contains("gif")) return MediaType.IMAGE_GIF;
+        if (mime.contains("webp")) return MediaType.parseMediaType("image/webp");
+        return MediaType.IMAGE_JPEG;
     }
 
     private Long targetUserId(String targetType, Long targetId) {

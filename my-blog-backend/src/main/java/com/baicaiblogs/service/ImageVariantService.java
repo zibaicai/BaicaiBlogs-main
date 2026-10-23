@@ -28,7 +28,7 @@ public class ImageVariantService {
 
             int width = maxWidth;
             int height = Math.max(1, src.getHeight() * maxWidth / src.getWidth());
-            boolean alpha = src.getColorModel().hasAlpha();
+            boolean alpha = mime != null && mime.contains("png");
             BufferedImage dst = new BufferedImage(width, height, alpha ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_RGB);
             Graphics2D g = dst.createGraphics();
             g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);

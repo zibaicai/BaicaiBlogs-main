@@ -100,7 +100,6 @@ export default function AlbumPage() {
     try {
       const res = await fetch(`${photo.originalUrl}${download ? "?download=1" : ""}`, {
         credentials: "include",
-        cache: "no-store",
       });
       if (res.status === 401) {
         router.push("/login");
