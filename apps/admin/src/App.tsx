@@ -4,6 +4,8 @@ import {
   ArrowUpRight,
   BookOpen,
   FolderKanban,
+  Images,
+  ShieldAlert,
   LayoutDashboard,
   Loader2,
   LogOut,
@@ -17,6 +19,8 @@ import { ToastProvider } from "./components/ToastProvider";
 import { OperationProvider } from "./context/OperationContext";
 import { SiteConfigProvider } from "./context/SiteConfigProvider";
 import SettingsPage from "./pages/SettingsPage";
+import GalleryPage from "./pages/GalleryPage";
+import ReportsPage from "./pages/ReportsPage";
 import EditorPage from "./pages/EditorPage";
 
 type Any = Record<string, any>;
@@ -119,6 +123,8 @@ const NAV_ITEMS = [
   { to: "/", label: "概览", icon: LayoutDashboard, end: true },
   { to: "/posts", label: "文章", icon: BookOpen },
   { to: "/projects", label: "项目", icon: FolderKanban },
+  { to: "/gallery", label: "图片墙", icon: Images },
+  { to: "/reports", label: "举报", icon: ShieldAlert },
   { to: "/timeline", label: "归档预览", icon: Waypoints },
   { to: "/settings", label: "设置", icon: Settings },
 ];
@@ -496,6 +502,8 @@ export default function App() {
             <Route path="/posts" element={<RequireAuth><Shell><Posts /></Shell></RequireAuth>} />
             <Route path="/projects" element={<RequireAuth><Shell><Projects /></Shell></RequireAuth>} />
             <Route path="/timeline" element={<RequireAuth><Shell><TimelinePreview /></Shell></RequireAuth>} />
+            <Route path="/gallery" element={<RequireAuth><Shell><GalleryPage /></Shell></RequireAuth>} />
+            <Route path="/reports" element={<RequireAuth><Shell><ReportsPage /></Shell></RequireAuth>} />
             <Route path="/settings" element={<RequireAuth><Shell><SettingsPage /></Shell></RequireAuth>} />
             <Route path="/editor/:slug?" element={<RequireAuth><EditorPage /></RequireAuth>} />
             <Route path="*" element={<Navigate to="/" replace />} />

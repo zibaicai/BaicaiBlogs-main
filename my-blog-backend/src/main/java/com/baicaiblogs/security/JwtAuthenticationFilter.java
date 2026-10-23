@@ -4,6 +4,7 @@ import com.baicaiblogs.entity.User;
 import com.baicaiblogs.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,8 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    public static final String COOKIE_NAME = "BC_TOKEN";
+
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
 
@@ -34,20 +37,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
                 String username = jwtTokenProvider.getUsernameFromToken(jwt);
-
                 User user = userRepository.findByUsername(username).orElse(null);
 
-                if (user != null) {
+                if (user != null && !"BANNED".equalsIgnoreCase(user.getStatus())) {
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             user, null,
                             Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole())));
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
-        } catch (Exception e) {
-            // Log error but continue filter chain
+        } catch (Exception ignored) {
+            // 继续匿名链路，由 SecurityConfig 决定是否放行
         }
 
         filterChain.doFilter(request, response);
@@ -57,6 +58,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String bearerToken = request.getHeader("Authorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
+        }
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (COOKIE_NAME.equals(cookie.getName())) return cookie.getValue();
+            }
         }
         return null;
     }
