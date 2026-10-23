@@ -120,6 +120,20 @@ export default function MyPhotosPage() {
     }
   };
 
+  const appealPhoto = async (photo: GalleryPhoto) => {
+    const reason = window.prompt("申诉理由：请说明图片没有违规");
+    if (!reason) return;
+    try {
+      await galleryRequest(`/public/photos/${photo.id}/appeal`, {
+        method: "POST",
+        body: JSON.stringify({ reason }),
+      });
+      setMessage("申诉已提交，等待管理员审核");
+    } catch (e) {
+      setMessage(e instanceof Error ? e.message : "申诉失败");
+    }
+  };
+
   const move = async (index: number, dir: -1 | 1) => {
     if (!selected?.photos) return;
     const photos = [...selected.photos];
@@ -272,9 +286,17 @@ export default function MyPhotosPage() {
                     {(selected.photos || []).map((photo, index) => (
                       <div key={photo.id} className="relative rounded-2xl overflow-hidden bg-slate-900 border border-white/10 group">
                         <img src={photo.thumbUrl} alt={photo.caption} className="w-full aspect-square object-cover" loading="lazy" />
+                        {photo.status !== "VISIBLE" && (
+                          <span className="absolute top-2 left-2 px-2 py-1 rounded-md bg-amber-500 text-black text-[9px] font-black">
+                            审核中
+                          </span>
+                        )}
                         <div className="absolute bottom-0 inset-x-0 bg-black/60 p-2 flex items-center justify-between">
                           <span className="text-[9px] text-white/80">权重 {photo.weight}</span>
                           <div className="flex gap-1">
+                            {photo.status !== "VISIBLE" && (
+                              <button onClick={() => void appealPhoto(photo)} className="text-amber-300 text-[9px] px-1">申诉</button>
+                            )}
                             <button onClick={() => void move(index, -1)} className="text-white/70 hover:text-white"><ChevronUp size={13} /></button>
                             <button onClick={() => void move(index, 1)} className="text-white/70 hover:text-white"><ChevronDown size={13} /></button>
                             <button onClick={() => void deletePhoto(photo)} className="text-red-300 hover:text-red-400"><Trash2 size={13} /></button>
