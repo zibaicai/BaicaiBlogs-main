@@ -12,7 +12,14 @@ import { DEFAULT_BACKGROUND } from "../../../lib/site-config";
 export const dynamic = "force-dynamic";
 
 export default async function PostDetail({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  // Next 动态段有时传入百分号编码值，直接 encodeURIComponent 会二次编码导致 403。
+  let slug = rawSlug;
+  try {
+    slug = decodeURIComponent(rawSlug);
+  } catch {
+    // 非法百分号序列时保留原值
+  }
   const [post, allPosts] = await Promise.all([getPost(slug), getPosts()]);
 
   if (!post) {
