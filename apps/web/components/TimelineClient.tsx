@@ -3,8 +3,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUp, LayoutGrid, ListTree, Search, Sparkles } from "lucide-react";
+import { ArrowUp, LayoutGrid, ListTree, Search } from "lucide-react";
 import TimelineNode from "./TimelineNode";
+import DirectoryHeader from "./DirectoryHeader";
 import { formatDay, type Post } from "../lib/api";
 
 interface TimelineTag {
@@ -62,16 +63,13 @@ export default function TimelineClient({
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto mt-28 px-4 sm:px-10 relative z-10">
-      <div className="text-center mb-12 relative z-20">
-        <h1 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-4">
-          研究终端
-        </h1>
-        <p className="text-slate-500 dark:text-slate-400 font-medium flex items-center justify-center gap-2 italic">
-          <Sparkles size={16} className="text-indigo-500" /> 总计 {posts.length} 篇研究记录
-        </p>
-      </div>
-
+    <div className="directory-shell">
+      <DirectoryHeader
+        eyebrow="BAICAI / TIMELINE"
+        title="研究终端"
+        subtitle="沿着时间轴，检索被封存的知识"
+        count={`总计 ${posts.length} 篇`}
+      />
       <div className="flex flex-col items-center gap-8 mb-16 relative z-[99]">
         <div className="relative w-full max-w-lg group" ref={searchContainerRef}>
           <input
@@ -129,7 +127,7 @@ export default function TimelineClient({
           </AnimatePresence>
         </div>
 
-        <div className="w-full flex flex-col md:flex-row justify-between items-center gap-6 bg-white/30 dark:bg-slate-800/30 backdrop-blur-md p-4 rounded-3xl border border-white/20 dark:border-white/5">
+        <div className="w-full max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 bg-white/30 dark:bg-slate-800/30 backdrop-blur-md p-4 rounded-3xl border border-white/20 dark:border-white/5">
           <div className="flex flex-wrap justify-center md:justify-start gap-2 flex-1">
             <button
               onClick={() => setSelectedTag("All")}
@@ -209,7 +207,7 @@ export default function TimelineClient({
               onScroll={handleGridScroll}
               className="h-[75vh] overflow-y-auto cyber-scrollbar pr-5 pb-10 fade-edges"
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4 pb-10">
+              <div className="directory-grid pt-4 pb-10">
                 {timelinePosts.map((post, idx) => (
                   <motion.div
                     key={post.slug}
@@ -217,31 +215,31 @@ export default function TimelineClient({
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.3, delay: idx * 0.05 }}
                   >
-                    <div className="bg-white/60 dark:bg-slate-800/70 backdrop-blur-xl border border-white/50 dark:border-slate-700/50 rounded-3xl overflow-hidden shadow-lg flex flex-col h-full group relative">
+                    <div className="directory-card group">
                       <Link href={`/posts/${encodeURIComponent(post.slug)}`} className="block flex-1 flex flex-col cursor-pointer">
-                        <div className="relative h-40 overflow-hidden">
+                        <div className="directory-card-media h-40">
                           <img
                             src={post.cover}
                             alt={post.title}
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                          <span className="absolute bottom-3 left-4 text-white/90 text-xs font-mono font-bold bg-black/40 backdrop-blur-sm px-2 py-1 rounded-md">
+                          <span className="directory-date-badge">
                             {formatDay(post.date)}
                           </span>
                         </div>
-                        <div className="p-5 flex-1 flex flex-col">
-                          <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2 line-clamp-2 transition-colors group-hover:text-indigo-500">
+                        <div className="directory-card-body">
+                          <h3 className="directory-card-title">
                             {post.title}
                           </h3>
-                          <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 line-clamp-3 flex-1">
+                          <p className="directory-card-description">
                             {post.description || "没有描述..."}
                           </p>
-                          <div className="flex flex-wrap gap-2 mt-auto">
+                          <div className="directory-card-tags">
                             {(post.tags || []).map((tag: string) => (
                               <span
                                 key={tag}
-                                className="text-[10px] font-bold text-indigo-500 bg-indigo-50 dark:bg-indigo-500/10 px-2 py-1 rounded-md"
+                                className="directory-tag"
                               >
                                 #{tag}
                               </span>

@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
-import BackButton from "./BackButton";
+
+import DirectoryHeader from "./DirectoryHeader";
 import type { Project } from "../lib/api";
 
 const GithubIcon = () => (
@@ -35,20 +35,13 @@ export default function ProjectsBoard({ projects }: { projects: Project[] }) {
   }, [projects, searchQuery]);
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 sm:px-10 py-10 relative z-10">
-      <div className="mb-8 flex flex-col items-center md:items-start">
-        <div className="w-full flex justify-start mb-6">
-          <BackButton />
-        </div>
-        <div className="text-center md:text-left w-full">
-          <h1 className="text-4xl font-black text-slate-900 dark:text-white mb-4 tracking-widest uppercase">
-            Projects Matrix
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400 font-serif italic opacity-80 flex items-center justify-center md:justify-start gap-2">
-            <Sparkles size={14} className="text-indigo-500" /> 代码与日常的折腾记录
-          </p>
-        </div>
-      </div>
+    <div className="directory-shell mt-0 py-0">
+      <DirectoryHeader
+        eyebrow="BAICAI / PROJECTS"
+        title="项目矩阵"
+        subtitle="代码与日常的折腾记录"
+        count={`${filteredProjects.length} 个项目`}
+      />
 
       <div className="mb-12 flex justify-center w-full">
         <div className="relative w-full max-w-lg group">
@@ -57,7 +50,7 @@ export default function ProjectsBoard({ projects }: { projects: Project[] }) {
             placeholder="搜索项目、代号或技术栈..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white/40 dark:bg-slate-800/40 backdrop-blur-md border border-white/40 dark:border-white/10 rounded-full px-6 py-3 pl-12 text-slate-800 dark:text-white shadow-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-serif"
+            className="directory-search"
           />
           <svg
             className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-indigo-500 transition-colors"
@@ -69,8 +62,7 @@ export default function ProjectsBoard({ projects }: { projects: Project[] }) {
           </svg>
         </div>
       </div>
-
-      <motion.div layout className="grid grid-cols-1 md:grid-cols-2 gap-8 relative">
+      <motion.div layout className="directory-grid relative">
         {filteredProjects.map((project) => (
           <motion.div
             layout
@@ -83,7 +75,7 @@ export default function ProjectsBoard({ projects }: { projects: Project[] }) {
               href={project.githubUrl || "#"}
               target="_blank"
               rel="noopener noreferrer"
-              className="block h-full rounded-[40px] bg-white/60 dark:bg-slate-800/50 backdrop-blur-xl border border-white/40 dark:border-white/10 shadow-xl overflow-hidden transition-all duration-700 hover:-translate-y-1 p-8 md:p-10 relative group"
+              className="directory-card group p-8 md:p-10"
             >
               <div className="absolute -top-10 -right-10 w-32 h-32 bg-indigo-500/5 rounded-full blur-2xl group-hover:bg-indigo-500/10 transition-colors" />
 
@@ -107,7 +99,7 @@ export default function ProjectsBoard({ projects }: { projects: Project[] }) {
                 {(project.tags || []).map((tag) => (
                   <span
                     key={tag}
-                    className="text-[10px] font-black tracking-widest uppercase text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-3 py-1.5 rounded-lg border border-indigo-500/10 shadow-sm"
+                    className="directory-tag border border-indigo-500/10 px-3 py-1.5 uppercase tracking-widest"
                   >
                     {tag}
                   </span>

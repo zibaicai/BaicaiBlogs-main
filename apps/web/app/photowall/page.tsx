@@ -6,6 +6,7 @@ import { Lock, ShieldCheck } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import PageTransition from "../../components/PageTransition";
 import { DEFAULT_MISC } from "../../lib/site-config";
+import DirectoryHeader from "../../components/DirectoryHeader";
 import { useAuth } from "../../lib/auth";
 
 export interface GalleryAlbum {
@@ -67,26 +68,19 @@ export default function PhotoWallPage() {
     <div className="min-h-screen relative pb-20">
       <Navbar />
       <PageTransition>
-        <main className="w-full max-w-6xl mx-auto mt-28 px-4 sm:px-10 relative z-10">
-          <header className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-4">
-              照片墙
-            </h1>
-            <p className="text-slate-500 dark:text-slate-400 font-medium">
-              {albums.length} 个可见相册 · 密码相册显示模糊封面
-            </p>
-          </header>
-
-          <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
+        <main className="directory-shell">
+          <DirectoryHeader
+            eyebrow="BAICAI / GALLERY"
+            title="照片墙"
+            subtitle="密码相册以模糊封面展示，私密相册只对自己可见"
+            count={`${albums.length} 个可见相册`}
+          />
+          <div className="directory-tabs mb-8 justify-center">
             {tabs.map((key) => (
               <button
                 key={key}
                 onClick={() => setTab(key)}
-                className={`px-4 py-2 rounded-full text-xs font-black border transition-all ${
-                  tab === key
-                    ? "bg-indigo-500 text-white border-indigo-500 shadow-lg shadow-indigo-500/20"
-                    : "bg-white/50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 border-white/40 dark:border-white/10 hover:border-indigo-300"
-                }`}
+                className={`directory-tab ${tab === key ? "directory-tab-active" : ""}`}
               >
                 {TAB_LABELS[key]}
               </button>
@@ -106,14 +100,14 @@ export default function PhotoWallPage() {
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="directory-grid">
             {albums.map((album) => {
               const cover = album.locked ? album.coverBlurUrl : album.coverThumbUrl;
               return (
                 <Link
                   key={album.albumId}
                   href={`/photowall/${encodeURIComponent(album.albumId)}`}
-                  className="group relative rounded-[40px] overflow-hidden border border-white/40 dark:border-white/10 shadow-xl bg-slate-900 min-h-[280px]"
+                  className="directory-card group min-h-[320px] bg-slate-900 p-0"
                 >
                   {cover ? (
                     <img
