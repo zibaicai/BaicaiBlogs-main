@@ -14,7 +14,7 @@ export default async function MomentsPage() {
     <div className="min-h-screen relative pb-20">
       <Navbar />
       <PageTransition>
-        <main className="directory-shell max-w-4xl">
+        <main className="directory-shell">
           <DirectoryHeader
             eyebrow="BAICAI / MOMENTS"
             title="说说"
