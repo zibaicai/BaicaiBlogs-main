@@ -1,8 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import DirectoryHeader from "./DirectoryHeader";
-import DirectoryView from "./DirectoryView";
+import DirectoryExplorer from "./DirectoryExplorer";
 import type { Project } from "../lib/api";
 
 const GithubIcon = () => (
@@ -20,94 +18,74 @@ const GithubIcon = () => (
 );
 
 export default function ProjectsBoard({ projects }: { projects: Project[] }) {
-  const [searchQuery, setSearchQuery] = useState("");
+  const tagCounts: Record<string, number> = {};
+  projects.forEach((project) => {
+    (project.tags || []).forEach((tag) => {
+      tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+    });
+  });
 
-  const filteredProjects = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-    if (!query) return projects;
-    return projects.filter(
-      (p) =>
-        (p.name || "").toLowerCase().includes(query) ||
-        (p.description || "").toLowerCase().includes(query) ||
-        (p.tags || []).some((t) => t.toLowerCase().includes(query))
-    );
-  }, [projects, searchQuery]);
+  const filters = [
+    { value: "all", label: "全部项目", count: projects.length },
+    ...Object.keys(tagCounts)
+      .map((tag) => ({ value: tag, label: tag, count: tagCounts[tag] }))
+      .sort((a, b) => b.count - a.count),
+  ];
 
-  const items = filteredProjects.map((project) => (
-    <a
-      key={project.projectId}
-      href={project.githubUrl || "#"}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="directory-card group p-8 md:p-10"
-    >
-      <div className="absolute -top-10 -right-10 w-32 h-32 bg-indigo-500/5 rounded-full blur-2xl group-hover:bg-indigo-500/10 transition-colors" />
+  const items = projects.map((project) => ({
+    key: project.projectId,
+    node: (
+      <a
+        href={project.githubUrl || "#"}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="directory-card group p-8 md:p-10"
+      >
+        <div className="absolute -top-10 -right-10 w-32 h-32 bg-indigo-500/5 rounded-full blur-2xl group-hover:bg-indigo-500/10 transition-colors" />
 
-      <div className="flex items-start justify-between mb-8 relative z-10">
-        <div className="flex items-center gap-5 min-w-0">
-          <span className="text-5xl group-hover:scale-110 transition-transform duration-500">
-            {project.icon || "🚀"}
-          </span>
-          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">
-            {project.name}
-          </h2>
+        <div className="flex items-start justify-between mb-8 relative z-10">
+          <div className="flex items-center gap-5 min-w-0">
+            <span className="text-5xl group-hover:scale-110 transition-transform duration-500">
+              {project.icon || "🚀"}
+            </span>
+            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">
+              {project.name}
+            </h2>
+          </div>
+          <GithubIcon />
         </div>
-        <GithubIcon />
-      </div>
 
-      <p className="text-sm text-slate-700 dark:text-slate-300 font-serif leading-relaxed line-clamp-3 mb-10 relative z-10 min-h-[60px]">
-        {project.description}
-      </p>
+        <p className="text-sm text-slate-700 dark:text-slate-300 font-serif leading-relaxed line-clamp-3 mb-10 relative z-10 min-h-[60px]">
+          {project.description}
+        </p>
 
-      <div className="flex flex-wrap gap-2 relative z-10">
-        {(project.tags || []).map((tag) => (
-          <span
-            key={tag}
-            className="directory-tag border border-indigo-500/10 px-3 py-1.5 uppercase tracking-widest"
-          >
-            {tag}
-          </span>
-        ))}
-      </div>
-    </a>
-  ));
+        <div className="flex flex-wrap gap-2 relative z-10">
+          {(project.tags || []).map((tag) => (
+            <span
+              key={tag}
+              className="directory-tag border border-indigo-500/10 px-3 py-1.5 uppercase tracking-widest"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      </a>
+    ),
+    searchText: [project.name, project.description, ...(project.tags || [])].join(" "),
+    filterValues: project.tags || [],
+  }));
 
   return (
     <div className="directory-shell mt-0 py-0">
-      <DirectoryHeader
+      <DirectoryExplorer
         eyebrow="BAICAI / PROJECTS"
         title="项目矩阵"
         subtitle="代码与日常的折腾记录"
-        count={`${filteredProjects.length} 个项目`}
-      />
-
-      <div className="mb-12 flex justify-center w-full">
-        <div className="relative w-full max-w-lg group">
-          <input
-            type="text"
-            placeholder="搜索项目、代号或技术栈..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="directory-search"
-          />
-          <svg
-            className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-indigo-500 transition-colors"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </div>
-      </div>
-
-      <DirectoryView
+        count={`${projects.length} 个项目`}
         items={items}
-        empty={
-          searchQuery
-            ? `代号为 [${searchQuery}] 的档案似乎在云端消失了...`
-            : "暂无公开项目。"
-        }
+        filters={filters}
+        searchPlaceholder="搜索项目、代号或技术栈..."
+        empty="没有匹配的项目。"
       />
     </div>
   );

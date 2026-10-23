@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { motion } from "framer-motion";
-import { LayoutGrid, ListTree } from "lucide-react";
 
-type ViewMode = "timeline" | "card";
+export type DirectoryViewMode = "timeline" | "card";
 
 function TimelineView({ items }: { items: ReactNode[] }) {
   return (
@@ -34,57 +33,20 @@ function TimelineView({ items }: { items: ReactNode[] }) {
 
 export default function DirectoryView({
   items,
-  empty,
-  initialMode = "card",
+  mode,
 }: {
   items: ReactNode[];
-  empty?: ReactNode;
-  initialMode?: ViewMode;
+  mode: DirectoryViewMode;
 }) {
-  const [mode, setMode] = useState<ViewMode>(initialMode);
-
-  if (items.length === 0) {
-    return <div className="directory-empty">{empty || "暂无内容"}</div>;
-  }
+  if (mode === "timeline") return <TimelineView items={items} />;
 
   return (
-    <div>
-      <div className="directory-view-toggle" role="group" aria-label="视图模式">
-        <button
-          type="button"
-          onClick={() => setMode("timeline")}
-          aria-pressed={mode === "timeline"}
-          className={`directory-view-toggle-button ${
-            mode === "timeline" ? "directory-view-toggle-active" : ""
-          }`}
-        >
-          <ListTree size={15} />
-          <span className="hidden sm:inline">中枢链路</span>
-        </button>
-        <button
-          type="button"
-          onClick={() => setMode("card")}
-          aria-pressed={mode === "card"}
-          className={`directory-view-toggle-button ${
-            mode === "card" ? "directory-view-toggle-active" : ""
-          }`}
-        >
-          <LayoutGrid size={15} />
-          <span className="hidden sm:inline">矩阵网格</span>
-        </button>
-      </div>
-
-      {mode === "card" ? (
-        <div className="directory-grid">
-          {items.map((item, index) => (
-            <div key={index} className="h-full">
-              {item}
-            </div>
-          ))}
+    <div className="directory-grid">
+      {items.map((item, index) => (
+        <div key={index} className="h-full">
+          {item}
         </div>
-      ) : (
-        <TimelineView items={items} />
-      )}
+      ))}
     </div>
   );
 }

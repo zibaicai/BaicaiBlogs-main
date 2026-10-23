@@ -381,7 +381,7 @@ input[type="number"] {
 
 
   .directory-view-toggle {
-    @apply mx-auto mb-8 flex w-fit items-center gap-1 rounded-2xl border border-white/40 bg-white/50 p-1 shadow-inner backdrop-blur-md;
+    @apply flex w-fit items-center gap-1 rounded-2xl border border-white/40 bg-white/50 p-1 shadow-inner backdrop-blur-md;
   }
 
   .dark .directory-view-toggle {
