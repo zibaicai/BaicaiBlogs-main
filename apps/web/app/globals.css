@@ -128,6 +128,19 @@ input[type="number"] {
 .article-prose {
   font-size: 1rem;
   line-height: 1.85;
+  /* 正文使用常规字重，避免继承标题/全局粗体；加粗标记单独提高字重 */
+  font-family: "Noto Serif SC", "Songti SC", SimSun, Georgia, serif;
+  font-weight: 400;
+  font-synthesis: none;
+}
+.article-prose p,
+.article-prose li,
+.article-prose td {
+  font-weight: 400;
+}
+.article-prose strong,
+.article-prose b {
+  font-weight: 800;
 }
 .article-prose h1 { font-size: 1.9rem; font-weight: 900; margin: 2rem 0 1.2rem; line-height: 1.3; }
 .article-prose h2 { font-size: 1.55rem; font-weight: 800; margin: 1.8rem 0 1rem; }
