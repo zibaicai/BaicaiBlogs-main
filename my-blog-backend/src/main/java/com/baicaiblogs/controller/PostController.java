@@ -140,6 +140,23 @@ public class PostController {
     }
 
     /**
+     * 从 OSS 原始 .md 恢复正文（修复历史编辑器造成的单段落损坏）。
+     */
+    @PostMapping("/admin/posts/{slug}/repair")
+    public ApiResponse<PostResponse> repairPost(@PathVariable String slug) {
+        try {
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (!(principal instanceof User user)) {
+                return ApiResponse.error("未登录");
+            }
+            boolean superAdmin = "SUPER_ADMIN".equals(user.getRole());
+            return ApiResponse.success("已从原始 MD 恢复", postService.repairFromOriginal(user.getId(), slug, superAdmin));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    /**
      * 创建新文章
      * 文章会自动关联到当前登录用户（userId 从 JWT 中提取，不由前端传入，防止伪造）
      */

@@ -15,9 +15,10 @@ import {
   Settings,
   Sparkles,
   Waypoints,
+  Upload,
 } from "lucide-react";
 import { api, getAdminUser, getToken, setAdminUser, setToken } from "./lib/api";
-import { ToastProvider } from "./components/ToastProvider";
+import { ToastProvider, useToast } from "./components/ToastProvider";
 import { OperationProvider } from "./context/OperationContext";
 import { SiteConfigProvider } from "./context/SiteConfigProvider";
 import SettingsPage from "./pages/SettingsPage";
@@ -348,6 +349,23 @@ function nextVisibility(value?: string) {
 function Posts() {
   const { data, loading, error, reload } = useLoad<any>(() => api.myPosts());
   const list = data?.data || [];
+  const nav = useNavigate();
+  const { showToast } = useToast();
+  const [uploading, setUploading] = useState(false);
+
+  const uploadMarkdown = async (file: File) => {
+    setUploading(true);
+    try {
+      const res = await api.uploadPost(file);
+      if (!res.success || !res.data) throw new Error(res.message || "上传失败");
+      showToast(`已导入：${res.data.title || res.data.slug}`, "success");
+      nav(`/editor/${encodeURIComponent(res.data.slug)}`);
+    } catch (e) {
+      showToast("上传失败：" + (e instanceof Error ? e.message : "未知错误"), "error");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const toggle = async (slug: string, value?: string) => {
     try {
@@ -365,12 +383,28 @@ function Posts() {
           <h1 className="text-3xl font-black text-white">文章</h1>
           <p className="text-sm text-slate-400 mt-1 font-bold">可见性决定 C 端是否展示</p>
         </div>
-        <Link
-          to="/editor/new"
-          className="px-5 py-3 rounded-2xl bg-indigo-500 hover:bg-indigo-600 text-white font-black text-sm shadow-lg shadow-indigo-500/25 transition-all"
-        >
-          + 新建
-        </Link>
+        <div className="flex items-center gap-3">
+          <label className="px-5 py-3 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 font-black text-sm cursor-pointer transition-all flex items-center gap-2">
+            <Upload size={16} /> {uploading ? "导入中..." : "上传 MD"}
+            <input
+              type="file"
+              accept=".md,.markdown,text/markdown"
+              className="hidden"
+              disabled={uploading}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                e.currentTarget.value = "";
+                if (file) void uploadMarkdown(file);
+              }}
+            />
+          </label>
+          <Link
+            to="/editor/new"
+            className="px-5 py-3 rounded-2xl bg-indigo-500 hover:bg-indigo-600 text-white font-black text-sm shadow-lg shadow-indigo-500/25 transition-all"
+          >
+            + 新建
+          </Link>
+        </div>
       </div>
 
       {loading && <div className="text-slate-400 flex items-center gap-2"><Loader2 className="animate-spin" size={16} />加载中…</div>}

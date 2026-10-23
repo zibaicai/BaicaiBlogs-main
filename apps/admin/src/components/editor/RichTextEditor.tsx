@@ -188,8 +188,10 @@ const RichTextEditor = forwardRef<RichTextEditorHandle, EditorProps>(({ title, s
   useEffect(() => {
     if (!editor || !initialContent) return;
     if (loadedContentRef.current !== initialContent) {
-      // tiptap-markdown 会接管 setContent，把 Markdown 解析成 ProseMirror 文档。
-      editor.commands.setContent(initialContent, { emitUpdate: false });
+      // 显式走 markdown-it 解析，避免 Tiptap 把整篇 Markdown 当成一个 HTML 文本段。
+      const parser = (editor.storage as any).markdown?.parser;
+      const parsed = parser ? parser.parse(initialContent) : initialContent;
+      editor.commands.setContent(parsed, { emitUpdate: false });
       loadedContentRef.current = initialContent;
     }
   }, [editor, initialContent]);
