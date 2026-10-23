@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink, Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import { Link, NavLink, Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import {
   ArrowUpRight,
   BookOpen,
@@ -125,7 +125,9 @@ const NAV_ITEMS = [
 
 function Shell({ children }: { children: React.ReactNode }) {
   const nav = useNavigate();
+  const location = useLocation();
   const user = getAdminUser();
+  const isSettings = location.pathname.startsWith("/settings");
 
   const logout = () => {
     setToken("");
@@ -134,8 +136,8 @@ function Shell({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="min-h-screen admin-bg flex">
-      <aside className="hidden lg:flex w-64 shrink-0 flex-col gap-6 p-5 border-r border-white/5 bg-slate-950/40 backdrop-blur-2xl">
+    <div className="h-screen overflow-hidden admin-bg flex">
+      <aside className="hidden lg:flex w-64 shrink-0 flex-col gap-6 p-5 border-r border-white/5 bg-slate-950/40 backdrop-blur-2xl overflow-y-auto">
         <Link to="/" className="flex items-center gap-3 px-3 py-3">
           <span className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-xl shadow-lg shadow-indigo-500/30">
             🌌
@@ -182,7 +184,7 @@ function Shell({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      <div className="flex-1 min-w-0 flex flex-col">
+      <div className="flex-1 min-w-0 flex flex-col min-h-0">
         <header className="h-20 shrink-0 px-5 md:px-8 flex items-center justify-between border-b border-white/5 bg-slate-950/30 backdrop-blur-xl">
           <div className="flex items-center gap-3">
             <span className="lg:hidden w-9 h-9 rounded-xl bg-indigo-500 flex items-center justify-center text-white text-sm">
@@ -205,7 +207,13 @@ function Shell({ children }: { children: React.ReactNode }) {
           </a>
         </header>
 
-        <main className="flex-1 p-5 md:p-8 overflow-x-hidden">{children}</main>
+        <main
+          className={`flex-1 min-h-0 overflow-y-auto overflow-x-hidden admin-scrollbar px-5 md:px-8 pb-5 md:pb-8 ${
+            isSettings ? "pt-0" : "pt-5 md:pt-8"
+          }`}
+        >
+          {children}
+        </main>
       </div>
     </div>
   );

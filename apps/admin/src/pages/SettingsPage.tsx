@@ -154,21 +154,24 @@ export default function SettingsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black text-slate-900 dark:text-white">系统设置</h1>
-          <p className="text-sm text-slate-400 mt-1 font-bold">
-            所有面板直接读写 /api/admin/config，保存后 C 端下一次请求即可生效
-          </p>
+      {/* 内容区滚动时，标题与“保存全部配置”固定在内容区顶部 */}
+      <div className="sticky top-0 z-30 -mx-5 md:-mx-8 px-5 md:px-8 py-4 md:py-5 bg-[#070b18]/90 backdrop-blur-2xl border-b border-white/10 shadow-[0_12px_30px_rgba(2,6,23,0.35)]">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-black text-slate-900 dark:text-white">系统设置</h1>
+            <p className="text-sm text-slate-400 mt-1 font-bold">
+              所有面板直接读写 /api/admin/config，保存后 C 端下一次请求即可生效
+            </p>
+          </div>
+          <button
+            onClick={() => saveAll("全部站点配置")}
+            disabled={saving}
+            className="shrink-0 px-6 py-3 rounded-2xl bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 text-white font-black text-sm shadow-lg shadow-indigo-500/30 flex items-center justify-center gap-2 transition-all active:scale-95 md:ml-auto"
+          >
+            {saving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
+            {saving ? "保存中..." : "保存全部配置"}
+          </button>
         </div>
-        <button
-          onClick={() => saveAll("全部站点配置")}
-          disabled={saving}
-          className="shrink-0 px-6 py-3 rounded-2xl bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 text-white font-black text-sm shadow-lg shadow-indigo-500/30 flex items-center gap-2 transition-all active:scale-95"
-        >
-          {saving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
-          {saving ? "保存中..." : "保存全部配置"}
-        </button>
       </div>
 
       <div className="flex flex-wrap gap-2 bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl border border-white/40 dark:border-slate-800/60 rounded-3xl p-3">
