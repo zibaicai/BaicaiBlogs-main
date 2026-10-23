@@ -75,7 +75,49 @@ export interface SiteConfigItem {
   updatedAt: string;
 }
 
+export interface GalleryPhoto {
+  id: number;
+  albumId: number;
+  url: string;
+  thumbUrl: string;
+  standardUrl: string;
+  originalUrl: string;
+  caption: string;
+  weight: number;
+  width: number;
+  height: number;
+  bytes: number;
+  mime: string;
+  status: string;
+  reportCount: number;
+}
+
+export interface GalleryAlbum {
+  id: number;
+  albumId: string;
+  userId: number;
+  title: string;
+  description: string;
+  visibility: "PUBLIC" | "PASSWORD" | "PRIVATE" | string;
+  hasPassword: boolean;
+  status: string;
+  photoCount: number;
+  coverThumbUrl: string | null;
+  coverStandardUrl: string | null;
+  reportCount: number;
+  photos?: GalleryPhoto[];
+}
+
+export interface PresignResult {
+  key: string;
+  uploadUrl: string;
+  publicUrl: string;
+  expiresAt: number;
+}
+
 export const api = {
+  get: <T = any>(path: string) => request<T>(path),
+
   login: (username: string, password: string) =>
     request<{ token: string; username: string; role: string }>("/auth/login", {
       method: "POST",
@@ -119,4 +161,77 @@ export const api = {
       method: "PUT",
       body: JSON.stringify({ configKey: key, configValue, description }),
     }),
+
+  // ===== 图片墙 =====
+  myAlbums: () => request<GalleryAlbum[]>("/user/albums"),
+
+  createAlbum: (payload: any) =>
+    request<GalleryAlbum>("/user/albums", { method: "POST", body: JSON.stringify(payload) }),
+
+  updateAlbum: (albumId: string, payload: any) =>
+    request<GalleryAlbum>(`/user/albums/${encodeURIComponent(albumId)}`, {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    }),
+
+  deleteAlbum: (albumId: string) =>
+    request<void>(`/user/albums/${encodeURIComponent(albumId)}`, { method: "DELETE" }),
+
+  presignPhotos: (albumId: string, files: Array<{ name: string; type: string; size: number }>) =>
+    request<PresignResult[]>(`/user/albums/${encodeURIComponent(albumId)}/photos/presign`, {
+      method: "POST",
+      body: JSON.stringify(files),
+    }),
+
+  confirmPhotos: (albumId: string, photos: any[]) =>
+    request<GalleryPhoto[]>(`/user/albums/${encodeURIComponent(albumId)}/photos/confirm`, {
+      method: "POST",
+      body: JSON.stringify({ photos }),
+    }),
+
+  reorderPhotos: (albumId: string, items: Array<{ photoId: number; weight: number }>) =>
+    request<void>(`/user/albums/${encodeURIComponent(albumId)}/photos/order`, {
+      method: "PATCH",
+      body: JSON.stringify({ items }),
+    }),
+
+  deletePhoto: (id: number) => request<void>(`/user/photos/${id}`, { method: "DELETE" }),
+
+  adminReports: () => request<any[]>("/admin/reports"),
+  banUser: (id: number, reason: string) =>
+    request<void>(`/admin/users/${id}/ban?reason=${encodeURIComponent(reason)}`, { method: "POST" }),
+  unbanUser: (id: number) => request<void>(`/admin/users/${id}/unban`, { method: "POST" }),
+  deleteReports: (ids: number[]) =>
+    request<void>(`/admin/reports?ids=${ids.join(",")}`, { method: "DELETE" }),
+  adminAppeals: () => request<any[]>("/admin/appeals"),
+  handleAppeal: (id: number, action: string) =>
+    request<void>(`/admin/appeals/${id}/handle?action=${encodeURIComponent(action)}`, { method: "POST" }),
+  reopenAppeal: (id: number) => request<void>(`/admin/appeals/${id}/reopen?note=管理组复核`, { method: "POST" }),
+  ipBans: () => request<any[]>("/admin/ip-bans"),
+  banIp: (ip: string, reason: string) =>
+    request<any>(`/admin/ip-bans?ip=${encodeURIComponent(ip)}&reason=${encodeURIComponent(reason)}`, { method: "POST" }),
+  unbanIp: (id: number) => request<void>(`/admin/ip-bans/${id}`, { method: "DELETE" }),
+  exportReports: async (ids: number[]) => {
+    const res = await fetch(`/api/admin/reports/export?ids=${ids.join(",")}`, {
+      headers: { Authorization: `Bearer ${getToken()}` },
+    });
+    if (!res.ok) throw new Error(`导出失败 (${res.status})`);
+    return res.blob();
+  },
+  resolveReport: (id: number, action: string) =>
+    request<void>(`/admin/reports/${id}/resolve?action=${encodeURIComponent(action)}`, { method: "POST" }),
 };
+
+export async function uploadToOss(url: string, file: File, onProgress?: (percent: number) => void) {
+  return new Promise<void>((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("PUT", url);
+    xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable && onProgress) onProgress(Math.round((e.loaded / e.total) * 100));
+    };
+    xhr.onload = () => (xhr.status >= 200 && xhr.status < 300 ? resolve() : reject(new Error(`OSS HTTP ${xhr.status}`)));
+    xhr.onerror = () => reject(new Error("OSS 上传网络错误"));
+    xhr.send(file);
+  });
+}

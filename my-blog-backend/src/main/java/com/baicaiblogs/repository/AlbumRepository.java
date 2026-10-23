@@ -13,4 +13,5 @@ public interface AlbumRepository extends JpaRepository<Album, Long> {
     void deleteByAlbumId(String albumId);
     boolean existsByAlbumId(String albumId);
     List<Album> findAllByOrderBySortOrderAsc();
+    List<Album> findByUserIdOrderBySortOrderAsc(Long userId);
 }

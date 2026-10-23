@@ -19,5 +19,8 @@ public class AlbumRequest {
     private String cover;
     private LocalDateTime date;
     private Integer sortOrder;
+    private Long parentId;
+    private String visibility;
+    private String password;
     private List<PhotoRequest> photos;
 }

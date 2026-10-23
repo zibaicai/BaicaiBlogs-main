@@ -26,11 +26,6 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    /**
-     * CORS 允许的前端来源列表，从配置文件 app.cors.allowed-origins 读取（逗号分隔）。
-     * dev 环境 = localhost:3000/3001/3002；prod 环境 = zibaicai.cn / www.zibaicai.cn / 服务器 IP。
-     * 冒号后为兜底默认值，避免配置缺失时启动失败。
-     */
     @Value("${app.cors.allowed-origins:http://localhost:3000,http://localhost:3001,http://localhost:3002}")
     private String allowedOriginsConfig;
 
@@ -42,15 +37,14 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // 按逗号拆分配置的来源列表并去除首尾空格，替代原先硬编码的 localhost 白名单
         List<String> origins = List.of(allowedOriginsConfig.split(","))
                 .stream()
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .toList();
         configuration.setAllowedOrigins(origins);
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-CSRF-Token"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
@@ -67,11 +61,12 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
-                // 公开读接口；非 GET（例如匿名评论）一律要求登录
+                // 公开 GET 接口（相册/文章/图片墙）免登录；原图下载接口在 Controller 内单独校验
                 .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll()
-                // 管理接口只允许 ADMIN（JWT 过滤器已注入 ROLE_xxx 权限）
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                // 兜底：默认拒绝匿名访问
+                // 管理接口允许 ADMIN 与 SUPER_ADMIN
+                .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
+                // 用户上传/相册管理接口需要登录
+                .requestMatchers("/api/user/**").authenticated()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

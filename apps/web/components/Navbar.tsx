@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { useSiteConfigContext } from "../context/SiteConfigProvider";
+import UserMenu from "./UserMenu";
 
 const NAV_LINKS = [
   { name: "首页", href: "/" },
@@ -76,14 +77,19 @@ export default function Navbar() {
             ))}
           </nav>
 
-          <button
-            type="button"
-            aria-label="打开导航"
-            onClick={() => setMobileOpen((v) => !v)}
-            className="lg:hidden w-10 h-10 rounded-xl bg-white/50 dark:bg-slate-800/50 flex items-center justify-center text-slate-700 dark:text-slate-200 border border-white/20 dark:border-white/10 shadow-sm"
-          >
-            {mobileOpen ? <X size={18} /> : <Menu size={18} />}
-          </button>
+          <div className="flex items-center gap-2">
+            <div className="hidden lg:flex">
+              <UserMenu />
+            </div>
+            <button
+              type="button"
+              aria-label="打开导航"
+              onClick={() => setMobileOpen((v) => !v)}
+              className="lg:hidden w-10 h-10 rounded-xl bg-white/50 dark:bg-slate-800/50 flex items-center justify-center text-slate-700 dark:text-slate-200 border border-white/20 dark:border-white/10 shadow-sm"
+            >
+              {mobileOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
+          </div>
         </div>
 
         <AnimatePresence>
@@ -108,6 +114,12 @@ export default function Navbar() {
                     {link.name}
                   </Link>
                 ))}
+                <Link
+                  href="/login"
+                  className="px-4 py-3 rounded-xl text-sm font-bold text-indigo-500 bg-indigo-500/10"
+                >
+                  登录 / 账号
+                </Link>
               </div>
             </motion.nav>
           )}

@@ -1,13 +1,40 @@
-﻿import Navbar from "../../components/Navbar";
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import Navbar from "../../components/Navbar";
 import PageTransition from "../../components/PageTransition";
-import { getAlbums } from "../../lib/server-api";
+import { DEFAULT_MISC } from "../../lib/site-config";
 
-export const dynamic = "force-dynamic";
-export const metadata = { title: "照片墙" };
+export interface GalleryAlbum {
+  albumId: string;
+  title: string;
+  description: string;
+  visibility: string;
+  photoCount: number;
+  coverThumbUrl: string | null;
+  coverStandardUrl: string | null;
+  hasPassword: boolean;
+}
 
-export default async function PhotoWallPage() {
-  const albums = await getAlbums();
-  const photoCount = albums.reduce((total, album) => total + (album.photos?.length || 0), 0);
+async function fetchAlbums(): Promise<GalleryAlbum[]> {
+  const res = await fetch("/api/public/gallery/albums", { credentials: "include" });
+  const json = await res.json();
+  if (!json?.success) throw new Error(json?.message || "加载失败");
+  return json.data || [];
+}
+
+export default function PhotoWallPage() {
+  const [albums, setAlbums] = useState<GalleryAlbum[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    void fetchAlbums()
+      .then(setAlbums)
+      .catch((e) => setError(e instanceof Error ? e.message : "加载失败"))
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <div className="min-h-screen relative pb-20">
@@ -19,54 +46,60 @@ export default async function PhotoWallPage() {
               照片墙
             </h1>
             <p className="text-slate-500 dark:text-slate-400 font-medium">
-              {albums.length} 个相册 · {photoCount} 张照片
+              {albums.length} 个公开相册 · 封面取权重最高的一张
             </p>
           </header>
 
-          {albums.length === 0 ? (
-            <div className="text-center py-24 text-slate-500 dark:text-slate-400 font-bold">
-              相册还没有公开内容。
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {albums.map((album) => (
-                <div
-                  key={album.albumId || album.id}
-                  className="group bg-white/60 dark:bg-slate-800/50 backdrop-blur-xl rounded-[40px] overflow-hidden border border-white/40 dark:border-white/10 shadow-xl"
-                >
-                  <div className="relative aspect-[16/10] overflow-hidden">
-                    <img
-                      src={album.cover}
-                      alt={album.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-                    <div className="absolute bottom-5 left-6 right-6">
-                      <h2 className="text-2xl font-black text-white drop-shadow">{album.title}</h2>
-                      <p className="text-xs text-white/80 mt-1">{album.description}</p>
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">
-                      {album.photos?.length || 0} 张照片
-                    </div>
-                    <div className="grid grid-cols-4 gap-2">
-                      {(album.photos || []).slice(0, 8).map((photo) => (
-                        <div key={photo.id || photo.url} className="aspect-square rounded-xl overflow-hidden bg-slate-200/60 dark:bg-slate-900/60">
-                          <img
-                            src={photo.url}
-                            alt={photo.caption || ""}
-                            loading="lazy"
-                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ))}
+          {loading && (
+            <div className="flex justify-center py-24">
+              <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
             </div>
           )}
+          {error && <div className="text-center py-20 text-red-400 font-bold">{error}</div>}
+
+          {!loading && !error && albums.length === 0 && (
+            <div className="text-center py-24 text-slate-500 dark:text-slate-400 font-bold">
+              还没有公开相册。
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {albums.map((album) => (
+              <Link
+                key={album.albumId}
+                href={`/photowall/${encodeURIComponent(album.albumId)}`}
+                className="group relative rounded-[40px] overflow-hidden border border-white/40 dark:border-white/10 shadow-xl bg-slate-900 min-h-[280px]"
+              >
+                {album.coverThumbUrl ? (
+                  <img
+                    src={album.coverThumbUrl}
+                    alt={album.title}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                ) : (
+                  <div
+                    className="absolute inset-0 bg-cover bg-center blur-2xl scale-110 opacity-60"
+                    style={{ backgroundImage: `url(${DEFAULT_MISC.photoWallImage})` }}
+                  />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+                <div className="absolute bottom-6 left-6 right-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-indigo-300 bg-black/40 backdrop-blur px-2 py-1 rounded-md">
+                      {album.photoCount} Photos
+                    </span>
+                    {album.visibility === "PASSWORD" && (
+                      <span className="text-[10px] font-black text-amber-300 bg-black/40 backdrop-blur px-2 py-1 rounded-md">
+                        密码
+                      </span>
+                    )}
+                  </div>
+                  <h2 className="text-3xl font-black text-white drop-shadow mb-1">{album.title}</h2>
+                  <p className="text-sm text-white/70 line-clamp-2">{album.description}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
         </main>
       </PageTransition>
     </div>

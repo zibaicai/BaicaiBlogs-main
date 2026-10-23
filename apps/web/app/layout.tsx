@@ -1,10 +1,11 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import Script from "next/script";
 import "katex/dist/katex.min.css";
 import "highlight.js/styles/atom-one-dark.css";
 import "./globals.css";
 
 import { ThemeProvider } from "../components/ThemeProvider";
+import { AuthProvider } from "../lib/auth";
 import { SiteConfigProvider } from "../context/SiteConfigProvider";
 import { ToastProvider } from "../components/ToastProvider";
 import { MusicProvider } from "../components/MusicProvider";
@@ -63,8 +64,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         suppressHydrationWarning
       >
         <ThemeProvider>
-          <SiteConfigProvider initial={config}>
-            <ToastProvider>
+          <AuthProvider>
+            <SiteConfigProvider initial={config}>
+              <ToastProvider>
               <SplashScreen />
               <MusicProvider>
                 <div id="app-mount-root" className="flex-1 flex flex-col transition-opacity duration-1000">
@@ -124,7 +126,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 />
               </MusicProvider>
             </ToastProvider>
-          </SiteConfigProvider>
+            </SiteConfigProvider>
+          </AuthProvider>
         </ThemeProvider>
         <CyberCat />
       </body>

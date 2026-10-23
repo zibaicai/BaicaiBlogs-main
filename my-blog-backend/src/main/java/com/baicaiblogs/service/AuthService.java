@@ -27,6 +27,9 @@ public class AuthService {
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("用户名或密码错误");
         }
+        if ("BANNED".equalsIgnoreCase(user.getStatus())) {
+            throw new RuntimeException("账号已被封禁");
+        }
 
         String token = jwtTokenProvider.generateToken(user.getUsername());
 
@@ -34,20 +37,30 @@ public class AuthService {
                 .token(token)
                 .tokenType("Bearer")
                 .expiresIn(jwtExpiration)
+                .userId(user.getId())
                 .username(user.getUsername())
+                .nickname(user.getNickname() != null ? user.getNickname() : user.getUsername())
                 .role(user.getRole())
+                .status(user.getStatus())
                 .build();
     }
 
     public void register(LoginRequest request) {
+        if (request.getUsername() == null || request.getUsername().trim().length() < 3) {
+            throw new RuntimeException("用户名至少 3 个字符");
+        }
+        if (request.getPassword() == null || request.getPassword().length() < 6) {
+            throw new RuntimeException("密码至少 6 个字符");
+        }
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new RuntimeException("用户名已存在");
         }
 
         User user = User.builder()
-                .username(request.getUsername())
+                .username(request.getUsername().trim())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role("USER")   // 公开注册只能创建普通用户，管理员由后台/数据库授予
+                .role("USER")
+                .status("ACTIVE")
                 .build();
 
         userRepository.save(user);

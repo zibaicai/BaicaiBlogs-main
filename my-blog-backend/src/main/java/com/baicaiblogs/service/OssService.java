@@ -2,8 +2,8 @@ package com.baicaiblogs.service;
 
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
-import com.aliyun.oss.model.ObjectMetadata;
-import com.aliyun.oss.model.PutObjectResult;
+import com.aliyun.oss.HttpMethod;
+import com.aliyun.oss.model.*;
 import com.baicaiblogs.config.OssProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +15,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -132,6 +133,132 @@ public class OssService {
         String shortUuid = UUID.randomUUID().toString().substring(0, 8);
         String safeSlug = (slug == null || slug.isEmpty()) ? "untitled" : slug.replaceAll("[^a-zA-Z0-9_-]", "-");
         return dateDir + "/" + safeSlug + "-" + shortUuid + ".md";
+    }
+
+    // ==================== 图片墙能力 ====================
+
+    /** 生成原图公开 URL（不经过图片处理）。 */
+    public String publicUrl(String objectKey) {
+        return buildPublicUrl(objectKey);
+    }
+
+    /** 生成 400px 缩略图 URL。 */
+    public String thumbUrl(String objectKey) {
+        return publicUrl(objectKey) + "?x-oss-process=image/resize,m_lfit,w_400/quality,q_75/format,webp";
+    }
+
+    /** 生成 800px 标清图 URL。 */
+    public String standardUrl(String objectKey) {
+        return publicUrl(objectKey) + "?x-oss-process=image/resize,m_lfit,w_800/quality,q_80/format,webp";
+    }
+
+    /** 生成带“白菜”水印的原图处理参数；实际下载由后端代理，避免原图直链。 */
+    public static final String WATERMARK_PROCESS =
+            "image/watermark,text_55m96I-c,type_d3F5LW1pY3JvaGVp,size_40,color_FFFFFF,t_35,g_se,x_20,y_20";
+
+    /**
+     * 生成浏览器直传 OSS 的预签名 PUT URL。
+     * key 必须是后端生成的固定前缀，过期时间建议 10 分钟。
+     */
+    public String presignPut(String objectKey, String contentType, Date expiration) {
+        assertConfigured();
+        OSS ossClient = buildClient();
+        try {
+            GeneratePresignedUrlRequest request =
+                    new GeneratePresignedUrlRequest(ossProperties.getBucketName(), objectKey, HttpMethod.PUT);
+            request.setExpiration(expiration);
+            if (contentType != null) request.setContentType(contentType);
+            URL url = ossClient.generatePresignedUrl(request);
+            return url.toString().replaceFirst("^http://", "https://");
+        } catch (Exception e) {
+            log.error("[OssService] 预签名失败: key={}", objectKey, e);
+            throw new RuntimeException("OSS 预签名失败: " + e.getMessage(), e);
+        } finally {
+            ossClient.shutdown();
+        }
+    }
+
+    /** 读取对象元数据；不存在时返回 null。 */
+    public ObjectMetadata headObject(String objectKey) {
+        assertConfigured();
+        OSS ossClient = buildClient();
+        try {
+            return ossClient.getObjectMetadata(ossProperties.getBucketName(), objectKey);
+        } catch (Exception e) {
+            return null;
+        } finally {
+            ossClient.shutdown();
+        }
+    }
+
+    /** 复制对象（举报证据快照）。 */
+    public void copyObject(String sourceKey, String destinationKey) {
+        assertConfigured();
+        OSS ossClient = buildClient();
+        try {
+            ossClient.copyObject(ossProperties.getBucketName(), sourceKey,
+                    ossProperties.getBucketName(), destinationKey);
+        } catch (Exception e) {
+            log.error("[OssService] 复制对象失败: {} -> {}", sourceKey, destinationKey, e);
+            throw new RuntimeException("OSS 复制失败: " + e.getMessage(), e);
+        } finally {
+            ossClient.shutdown();
+        }
+    }
+
+    /** 按对象键删除。 */
+    public void deleteObject(String objectKey) {
+        assertConfigured();
+        OSS ossClient = buildClient();
+        try {
+            ossClient.deleteObject(ossProperties.getBucketName(), objectKey);
+        } catch (Exception e) {
+            log.warn("[OssService] 删除对象失败: {}", objectKey, e);
+        } finally {
+            ossClient.shutdown();
+        }
+    }
+
+    /**
+     * 获取原始对象（不加图片处理）；调用方负责关闭 OSSObject。
+     */
+    public OSSObject getObject(String objectKey) {
+        assertConfigured();
+        OSS ossClient = buildClient();
+        try {
+            return ossClient.getObject(ossProperties.getBucketName(), objectKey);
+        } catch (Exception e) {
+            ossClient.shutdown();
+            throw new RuntimeException("OSS 对象读取失败: " + e.getMessage(), e);
+        }
+    }
+
+    /** 读取对象全部字节，供后端加水印。 */
+    public byte[] getObjectBytes(String objectKey) {
+        try (OSSObject object = getObject(objectKey);
+             InputStream in = object.getObjectContent()) {
+            return in.readAllBytes();
+        } catch (Exception e) {
+            throw new RuntimeException("OSS 原图读取失败: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 获取带水印的原图对象；调用方负责关闭 OSSObject。
+     * 使用 OSS 图片处理，避免在服务器上安装图像库。
+     */
+    public OSSObject getOriginalWithWatermark(String objectKey) {
+        assertConfigured();
+        OSS ossClient = buildClient();
+        try {
+            GetObjectRequest request = new GetObjectRequest(ossProperties.getBucketName(), objectKey);
+            request.setProcess(WATERMARK_PROCESS);
+            return ossClient.getObject(request);
+        } catch (Exception e) {
+            ossClient.shutdown();
+            log.error("[OssService] 获取原图失败: {}", objectKey, e);
+            throw new RuntimeException("OSS 原图读取失败: " + e.getMessage(), e);
+        }
     }
 
     // ==================== 私有辅助方法 ====================
