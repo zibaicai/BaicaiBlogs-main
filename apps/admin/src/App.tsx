@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink, Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { Link, NavLink, Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import {
   ArrowUpRight,
   BookOpen,
@@ -125,9 +125,7 @@ const NAV_ITEMS = [
 
 function Shell({ children }: { children: React.ReactNode }) {
   const nav = useNavigate();
-  const location = useLocation();
   const user = getAdminUser();
-  const isSettings = location.pathname.startsWith("/settings");
 
   const logout = () => {
     setToken("");
@@ -197,21 +195,21 @@ function Shell({ children }: { children: React.ReactNode }) {
               <div className="text-sm font-bold text-slate-200">内容与配置中心</div>
             </div>
           </div>
-          <a
-            href="https://www.zibaicai.cn"
-            target="_blank"
-            rel="noreferrer"
-            className="text-xs font-bold text-slate-400 hover:text-indigo-400 transition-colors flex items-center gap-1"
-          >
-            访问 C 端 <ArrowUpRight size={14} />
-          </a>
+          <div className="flex items-center gap-3 md:gap-4">
+            {/* 页面级操作由页面通过 Portal 注入，避免按钮跟随内容滚动 */}
+            <div id="admin-header-actions" className="flex items-center" />
+            <a
+              href="https://www.zibaicai.cn"
+              target="_blank"
+              rel="noreferrer"
+              className="hidden sm:flex text-xs font-bold text-slate-400 hover:text-indigo-400 transition-colors items-center gap-1"
+            >
+              访问 C 端 <ArrowUpRight size={14} />
+            </a>
+          </div>
         </header>
 
-        <main
-          className={`flex-1 min-h-0 overflow-y-auto overflow-x-hidden admin-scrollbar px-5 md:px-8 pb-5 md:pb-8 ${
-            isSettings ? "pt-0" : "pt-5 md:pt-8"
-          }`}
-        >
+        <main className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden admin-scrollbar px-5 md:px-8 pt-5 md:pt-8 pb-5 md:pb-8">
           {children}
         </main>
       </div>
