@@ -13,6 +13,7 @@ import SplashScreen from "../components/SplashScreen";
 import BackgroundEffects from "../components/BackgroundEffects";
 import BackgroundSlider from "../components/BackgroundSlider";
 import DanmakuBackground from "../components/DanmakuBackground";
+import DanmakuComposer from "../components/DanmakuComposer";
 import GlobalSnow from "../components/GlobalSnow";
 import FloatingPlayer from "../components/FloatingPlayer";
 import GlobalToolbox from "../components/GlobalToolbox";
@@ -89,6 +90,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   </div>
 
                   <DanmakuBackground />
+                  <DanmakuComposer />
                   <GlobalSnow />
 
                   <div className="relative z-10 flex-1 flex flex-col">

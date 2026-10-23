@@ -8,7 +8,6 @@ import { api } from "../lib/api";
 
 import ProfileSection from "../components/settings/ProfileSection";
 import BackgroundSection from "../components/settings/BackgroundSection";
-import DanmakuSection from "../components/settings/DanmakuSection";
 import MusicSection from "../components/settings/MusicSection";
 import CommentSection from "../components/settings/CommentSection";
 import RepoSection from "../components/settings/RepoSection";
@@ -20,7 +19,6 @@ import DisplaySection from "../components/settings/DisplaySection";
 const TABS = [
   { id: "profile", label: "站点信息", icon: "🪪" },
   { id: "background", label: "背景", icon: "🖼️" },
-  { id: "danmaku", label: "弹幕", icon: "💬" },
   { id: "music", label: "音乐", icon: "🎵" },
   { id: "comment", label: "评论", icon: "🗨️" },
   { id: "repo", label: "仓库", icon: "🗂️" },
@@ -200,7 +198,6 @@ export default function SettingsPage() {
       <motion.div key={activeTab} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
         {activeTab === "profile" && <ProfileSection {...panelProps} />}
         {activeTab === "background" && <BackgroundSection {...panelProps} />}
-        {activeTab === "danmaku" && <DanmakuSection {...panelProps} />}
         {activeTab === "music" && <MusicSection {...panelProps} />}
         {activeTab === "comment" && <CommentSection {...panelProps} />}
         {activeTab === "repo" && <RepoSection {...panelProps} />}
