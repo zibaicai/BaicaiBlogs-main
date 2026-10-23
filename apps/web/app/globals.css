@@ -379,6 +379,34 @@ input[type="number"] {
     @apply border-white/5 bg-slate-800/40 text-white;
   }
 
+
+  .directory-view-toggle {
+    @apply mx-auto mb-8 flex w-fit items-center gap-1 rounded-2xl border border-white/40 bg-white/50 p-1 shadow-inner backdrop-blur-md;
+  }
+
+  .dark .directory-view-toggle {
+    @apply border-white/10 bg-slate-900/50;
+  }
+
+  .directory-view-toggle-button {
+    @apply flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold text-slate-500 transition-all duration-300;
+  }
+
+  .dark .directory-view-toggle-button {
+    @apply text-slate-400;
+  }
+
+  .directory-view-toggle-button:hover {
+    @apply text-indigo-500;
+  }
+
+  .directory-view-toggle-active {
+    @apply bg-white text-indigo-500 shadow-sm;
+  }
+
+  .dark .directory-view-toggle-active {
+    @apply bg-slate-700 text-indigo-300;
+  }
   .directory-empty {
     @apply py-24 text-center text-sm font-bold text-slate-500;
   }
