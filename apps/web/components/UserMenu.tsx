@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { LogOut, User as UserIcon } from "lucide-react";
+import { Bell, LogOut, User as UserIcon } from "lucide-react";
 import { useAuth } from "../lib/auth";
 
 export default function UserMenu() {
@@ -45,6 +45,13 @@ export default function UserMenu() {
 
       {open && (
         <div className="absolute right-0 mt-2 w-48 rounded-2xl bg-white/90 dark:bg-slate-900/95 backdrop-blur-2xl border border-white/40 dark:border-white/10 shadow-2xl p-2 z-[120]">
+          <Link
+            href="/account/notifications"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-800"
+          >
+            <Bell size={13} /> 消息中心
+          </Link>
           <Link
             href="/account/photos"
             onClick={() => setOpen(false)}

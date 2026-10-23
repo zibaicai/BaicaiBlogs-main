@@ -11,7 +11,7 @@ interface Photo {
   id: number;
   thumbUrl: string;
   standardUrl: string;
-  originalUrl: string;
+  originalUrl: string | null;
   caption: string;
   width?: number;
   height?: number;
@@ -24,8 +24,13 @@ interface Album {
   title: string;
   description: string;
   visibility: string;
-  photoCount: number;
+  photoCount: number | null;
   photos: Photo[];
+  locked?: boolean;
+  isOwner?: boolean;
+  coverBlurUrl?: string | null;
+  hidePhotoCount?: boolean;
+  ownerLabel?: string | null;
 }
 
 export default function AlbumPage() {
@@ -39,6 +44,7 @@ export default function AlbumPage() {
   const [error, setError] = useState("");
   const [password, setPassword] = useState("");
   const [unlocking, setUnlocking] = useState(false);
+  const [unlockError, setUnlockError] = useState("");
 
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [originalSrc, setOriginalSrc] = useState<string | null>(null);
@@ -95,6 +101,10 @@ export default function AlbumPage() {
   };
 
   const loadOriginal = async (photo: Photo, download = false) => {
+    if (!photo.originalUrl) {
+      setOriginalError("当前授权仅支持标清图，不能查看或下载原图");
+      return;
+    }
     setOriginalBusy(true);
     setOriginalError("");
     try {
@@ -207,7 +217,47 @@ export default function AlbumPage() {
             </div>
           )}
 
-          {!loading && album && (
+          {!loading && album?.locked && (
+            <div className="max-w-md mx-auto rounded-3xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-white/40 dark:border-white/10 shadow-xl p-8 text-center">
+              {album.coverBlurUrl && (
+                <img src={album.coverBlurUrl} alt="" className="w-full h-32 object-cover rounded-2xl blur-[2px] mb-5" />
+              )}
+              <Lock className="mx-auto text-amber-400 mb-3" size={28} />
+              <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-2">{album.title}</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">
+                该相册受密码保护，输入密码后查看。
+              </p>
+              {!user ? (
+                <button
+                  onClick={() => router.push("/login")}
+                  className="w-full py-3 rounded-xl bg-indigo-500 text-white text-xs font-black"
+                >
+                  登录后输入密码
+                </button>
+              ) : (
+                <div className="flex gap-2">
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && void unlock()}
+                    placeholder="输入相册密码"
+                    className="flex-1 rounded-xl bg-white/60 dark:bg-slate-900/60 border border-white/40 dark:border-slate-700 px-4 py-2.5 text-sm outline-none"
+                  />
+                  <button
+                    onClick={unlock}
+                    disabled={unlocking}
+                    className="px-4 py-2.5 rounded-xl bg-indigo-500 text-white text-xs font-black disabled:opacity-50"
+                  >
+                    {unlocking ? "验证中" : "解锁"}
+                  </button>
+                </div>
+              )}
+              {unlockError && <div className="text-xs text-red-400 mt-3 font-bold">{unlockError}</div>}
+            </div>
+          )}
+
+          {!loading && album && !album.locked && (
             <>
               <header className="mb-10 text-center">
                 <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-3">
@@ -271,20 +321,24 @@ export default function AlbumPage() {
             />
             {originalError && <div className="text-xs text-amber-300 font-bold">{originalError}</div>}
             <div className="flex items-center gap-3">
-              <button
-                onClick={() => void loadOriginal(active, false)}
-                disabled={originalBusy}
-                className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-black disabled:opacity-50"
-              >
-                {originalBusy ? "加载中..." : "查看原图"}
-              </button>
-              <button
-                onClick={() => void loadOriginal(active, true)}
-                disabled={originalBusy}
-                className="px-4 py-2.5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-black disabled:opacity-50 flex items-center gap-1"
-              >
-                <Download size={14} /> 下载原图
-              </button>
+              {active.originalUrl && (
+                <button
+                  onClick={() => void loadOriginal(active, false)}
+                  disabled={originalBusy}
+                  className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-black disabled:opacity-50"
+                >
+                  {originalBusy ? "加载中..." : "查看原图"}
+                </button>
+              )}
+              {active.originalUrl && (
+                <button
+                  onClick={() => void loadOriginal(active, true)}
+                  disabled={originalBusy}
+                  className="px-4 py-2.5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-black disabled:opacity-50 flex items-center gap-1"
+                >
+                  <Download size={14} /> 下载原图
+                </button>
+              )}
               <button
                 onClick={reportActive}
                 className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-red-500/80 text-white text-xs font-black"

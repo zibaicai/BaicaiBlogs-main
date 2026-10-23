@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Download, ShieldAlert, Trash2, UserX } from "lucide-react";
 import { api } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
+import AuthImage from "../components/AuthImage";
 
 interface Report {
   id: number;
@@ -193,6 +194,12 @@ export default function ReportsPage() {
                   <div className="text-[10px] text-slate-500 mt-2">
                     状态：{report.status} · 证据：{report.evidenceKey || "无"}
                   </div>
+                  {report.evidenceKey && (
+                    <AuthImage
+                      src={`/api/admin/reports/${report.id}/evidence`}
+                      className="mt-3 max-h-40 rounded-xl border border-white/10 object-cover"
+                    />
+                  )}
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-2 shrink-0">

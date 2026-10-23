@@ -10,6 +10,7 @@ import java.util.List;
 public interface ReportRepository extends JpaRepository<Report, Long> {
     long countByTargetTypeAndTargetId(String targetType, Long targetId);
     boolean existsByReporterIdAndTargetTypeAndTargetId(Long reporterId, String targetType, Long targetId);
+    boolean existsByTargetTypeAndTargetIdAndReporterIp(String targetType, Long targetId, String reporterIp);
     List<Report> findByStatusOrderByCreatedAtDesc(String status);
     List<Report> findAllByOrderByCreatedAtDesc();
 }

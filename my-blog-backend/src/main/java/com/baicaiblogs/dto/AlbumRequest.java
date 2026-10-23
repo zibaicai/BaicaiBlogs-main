@@ -22,5 +22,6 @@ public class AlbumRequest {
     private Long parentId;
     private String visibility;
     private String password;
+    private Boolean hidePhotoCount;
     private List<PhotoRequest> photos;
 }
