@@ -151,8 +151,14 @@ const RichTextEditor = forwardRef<RichTextEditorHandle, EditorProps>(({ title, s
       Highlight.configure({ multicolor: true }),
       TaskList.configure({ HTMLAttributes: { class: 'not-prose space-y-3' } }),
       TaskItem.configure({ nested: true }),
+      Markdown.configure({
+        html: true,
+        tightLists: true,
+        linkify: false,
+        breaks: false,
+      }),
     ],
-    content: initialContent || '',
+    content: '',
     immediatelyRender: false,
     onUpdate: () => {
       if (onChange) onChange();
@@ -174,20 +180,16 @@ const RichTextEditor = forwardRef<RichTextEditorHandle, EditorProps>(({ title, s
     },
     getContent: () => {
       if (!editor) return '';
-      let html = editor.getHTML();
-
-      html = html.replace(/<p><\/p>/gi, '<br>&zwj;');
-      html = html.replace(/<p><br><\/p>/gi, '<br>&zwj;');
-
-      return html;
+      // 后端 content 字段约定为 Markdown，不能回写 HTML。
+      return ((editor.storage as any).markdown?.getMarkdown?.() || '').trim();
     }
   }), [editor, onChange]);
 
   useEffect(() => {
     if (!editor || !initialContent) return;
     if (loadedContentRef.current !== initialContent) {
-      const safeContent = initialContent.replace(/~~([\s\S]*?)~~/g, '<s>$1</s>');
-      editor.commands.setContent(safeContent, { emitUpdate: false });
+      // tiptap-markdown 会接管 setContent，把 Markdown 解析成 ProseMirror 文档。
+      editor.commands.setContent(initialContent, { emitUpdate: false });
       loadedContentRef.current = initialContent;
     }
   }, [editor, initialContent]);
