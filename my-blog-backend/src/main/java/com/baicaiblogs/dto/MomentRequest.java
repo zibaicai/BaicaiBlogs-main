@@ -17,4 +17,6 @@ public class MomentRequest {
     private String content;
     private LocalDateTime date;
     private List<String> images;
+    private String status;
+    private String visibility;
 }

@@ -4,7 +4,7 @@ import Navbar from "../../../components/Navbar";
 import PageTransition from "../../../components/PageTransition";
 import AuthorCard from "../../../components/AuthorCard";
 import BackButton from "../../../components/BackButton";
-import SidebarLyric from "../../../components/SidebarLyric";
+import ArticleToc from "../../../components/ArticleToc";
 import { formatDate, formatDay } from "../../../lib/api";
 import { getPost, getPosts } from "../../../lib/server-api";
 import { DEFAULT_BACKGROUND } from "../../../lib/site-config";
@@ -13,12 +13,11 @@ export const dynamic = "force-dynamic";
 
 export default async function PostDetail({ params }: { params: Promise<{ slug: string }> }) {
   const { slug: rawSlug } = await params;
-  // Next 动态段有时传入百分号编码值，直接 encodeURIComponent 会二次编码导致 403。
   let slug = rawSlug;
   try {
     slug = decodeURIComponent(rawSlug);
   } catch {
-    // 非法百分号序列时保留原值
+    // keep raw slug
   }
   const [post, allPosts] = await Promise.all([getPost(slug), getPosts()]);
 
@@ -47,23 +46,57 @@ export default async function PostDetail({ params }: { params: Promise<{ slug: s
     <div className="min-h-screen relative pb-20">
       <Navbar />
       <PageTransition>
-        <main className="w-[95%] md:w-[90%] max-w-6xl mx-auto mt-24 md:mt-28 flex flex-col lg:flex-row gap-6 md:gap-8 relative z-10">
-          <article className="flex-1 bg-white/60 dark:bg-slate-800/50 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/40 dark:border-white/10 overflow-hidden transition-colors duration-700">
-            <div className="w-full aspect-video bg-slate-200 dark:bg-slate-700 relative group">
-              <img
-                src={cover}
-                alt={post.title}
-                className="w-full h-full object-cover opacity-90 transition-transform duration-1000 group-hover:scale-105"
-              />
+        <main className="article-reading-grid w-[95%] md:w-[90%] max-w-6xl mx-auto mt-24 md:mt-28 relative z-10">
+          <div className="article-left-top">
+            <div className="article-card-slot article-card-author">
+              <AuthorCard />
             </div>
+            <div className="article-card-slot article-card-recommended">
+              <div className="bg-white/60 dark:bg-slate-800/50 backdrop-blur-xl rounded-3xl p-5 border border-white/40 dark:border-white/10 shadow-xl h-full overflow-hidden">
+                <h3 className="font-black text-slate-900 dark:text-white mb-3 border-l-4 border-indigo-500 pl-2 text-sm">
+                  RECOMMENDED
+                </h3>
+                <div className="space-y-3">
+                  {recentPosts.map((p) => (
+                    <Link key={p.slug} href={`/posts/${encodeURIComponent(p.slug)}`} className="group block">
+                      <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1">
+                        {p.title}
+                      </h4>
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 font-bold uppercase">
+                        {formatDay(p.date)}
+                      </p>
+                    </Link>
+                  ))}
+                  {recentPosts.length === 0 && (
+                    <p className="text-xs text-slate-400">暂无推荐文章</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
 
-            <div className="p-5 md:p-12 relative">
+          <div className="article-cover">
+            <img src={cover} alt={post.title} />
+          </div>
+
+          <aside className="article-left-bottom">
+            <ArticleToc />
+          </aside>
+
+          <article className="article-content bg-white/60 dark:bg-slate-800/50 backdrop-blur-xl rounded-b-3xl shadow-2xl border border-t-0 border-white/40 dark:border-white/10 overflow-hidden transition-colors duration-700">
+            <div className="p-5 md:p-10 relative">
               <BackButton fallbackHref="/posts" />
 
               <header className="mb-6 md:mb-8 border-b border-slate-300/50 dark:border-slate-700 pb-5 md:pb-6 relative">
-                <h1 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4 tracking-tight transition-colors duration-700 pr-16 md:pr-24 leading-snug">
+                <h1 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-white mb-3 tracking-tight transition-colors duration-700 pr-16 md:pr-24 leading-snug">
                   {post.title}
                 </h1>
+
+                {post.description && (
+                  <p className="article-summary text-sm md:text-base text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+                    {post.description}
+                  </p>
+                )}
 
                 {post.fileUrl && (
                   <a
@@ -103,30 +136,6 @@ export default async function PostDetail({ params }: { params: Promise<{ slug: s
               />
             </div>
           </article>
-
-          <aside className="w-full lg:w-[320px] flex flex-col gap-6 flex-shrink-0">
-            <AuthorCard />
-
-            <SidebarLyric />
-
-            <div className="bg-white/60 dark:bg-slate-800/50 backdrop-blur-xl rounded-3xl p-6 border border-white/40 dark:border-white/10 shadow-xl">
-              <h3 className="font-black text-slate-900 dark:text-white mb-4 border-l-4 border-indigo-500 pl-2 text-sm">
-                RECOMMENDED
-              </h3>
-              <div className="space-y-4">
-                {recentPosts.map((p) => (
-                  <Link key={p.slug} href={`/posts/${encodeURIComponent(p.slug)}`} className="group block">
-                    <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1">
-                      {p.title}
-                    </h4>
-                    <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 font-bold uppercase">
-                      {formatDay(p.date)}
-                    </p>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </aside>
         </main>
       </PageTransition>
     </div>

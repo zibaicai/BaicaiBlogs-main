@@ -37,6 +37,19 @@ public class Moment {
     @Column(columnDefinition = "JSON")
     private String images;
 
+    @Column(name = "user_id")
+    private Long userId;
+
+    /** DRAFT / PUBLISHED */
+    @Column(length = 16, nullable = false)
+    @Builder.Default
+    private String status = "PUBLISHED";
+
+    /** PUBLIC / PRIVATE */
+    @Column(length = 16, nullable = false)
+    @Builder.Default
+    private String visibility = "PUBLIC";
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

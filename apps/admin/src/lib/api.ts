@@ -56,6 +56,36 @@ export interface Post {
   updatedAt?: string;
 }
 
+export interface Moment {
+  id: number;
+  slug: string;
+  content: string;
+  htmlContent: string;
+  date: string;
+  images: string[];
+  userId?: number;
+  status: "DRAFT" | "PUBLISHED" | string;
+  visibility: "PUBLIC" | "PRIVATE" | string;
+  createdAt?: string;
+}
+
+export interface Chatter {
+  id: number;
+  slug: string;
+  title: string;
+  content: string;
+  htmlContent: string;
+  mood: string;
+  cover: string;
+  date: string;
+  tags: string[];
+  userId?: number;
+  status: "DRAFT" | "PUBLISHED" | string;
+  visibility: "PUBLIC" | "PRIVATE" | string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface Project {
   id: number;
   projectId: string;
@@ -149,6 +179,20 @@ export const api = {
       body: JSON.stringify({ visibility }),
     }),
 
+  myMoments: () => request<Moment[]>("/admin/moments/mine"),
+  createMoment: (moment: Partial<Moment>) =>
+    request<Moment>("/admin/moments", { method: "POST", body: JSON.stringify(moment) }),
+  updateMoment: (slug: string, moment: Partial<Moment>) =>
+    request<Moment>(`/admin/moments/${encodeURIComponent(slug)}`, { method: "PUT", body: JSON.stringify(moment) }),
+  deleteMoment: (slug: string) =>
+    request<void>(`/admin/moments/${encodeURIComponent(slug)}`, { method: "DELETE" }),
+  myChatters: () => request<Chatter[]>("/admin/chatters/mine"),
+  createChatter: (chatter: Partial<Chatter>) =>
+    request<Chatter>("/admin/chatters", { method: "POST", body: JSON.stringify(chatter) }),
+  updateChatter: (slug: string, chatter: Partial<Chatter>) =>
+    request<Chatter>(`/admin/chatters/${encodeURIComponent(slug)}`, { method: "PUT", body: JSON.stringify(chatter) }),
+  deleteChatter: (slug: string) =>
+    request<void>(`/admin/chatters/${encodeURIComponent(slug)}`, { method: "DELETE" }),
   getAllTags: () => request<string[]>("/admin/posts/all_tags"),
   getMyPostBySlug: (slug: string) => request<Post>(`/admin/posts/${encodeURIComponent(slug)}`),
 

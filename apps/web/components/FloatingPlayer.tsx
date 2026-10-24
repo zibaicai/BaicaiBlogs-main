@@ -9,16 +9,28 @@ export default function FloatingPlayer() {
   const pathname = usePathname();
   const { currentSong, isPlaying, togglePlay, nextSong, currentLyric, isLoading } = useMusic();
   const [isMounted, setIsMounted] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
+    try {
+      setVisible(localStorage.getItem("musicMiniPlayerVisible") === "true");
+    } catch {
+      setVisible(false);
+    }
+    const sync = (event: Event) => {
+      const detail = (event as CustomEvent<boolean>).detail;
+      setVisible(Boolean(detail));
+    };
+    window.addEventListener("music-player-visibility", sync);
+    return () => window.removeEventListener("music-player-visibility", sync);
   }, []);
 
   // 这里只拦截还没有初始化的情况，不拦截首页
   if (!isMounted || isLoading || !currentSong) return null;
 
-  // 【核心修复】：判断是否在首页。在首页时我们让它隐身，但不销毁它！
-  const isHidden = pathname === '/';
+  // 首页始终隐藏迷你播放器；非首页由工具栏控制
+  const isHidden = pathname === "/" || !visible;
 
   return (
     <div className="fixed bottom-6 right-6 z-[9999]" style={{ pointerEvents: 'none' }}>
