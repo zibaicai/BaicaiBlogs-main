@@ -18,7 +18,7 @@ import GlobalSnow from "../components/GlobalSnow";
 import FloatingPlayer from "../components/FloatingPlayer";
 import GlobalToolbox from "../components/GlobalToolbox";
 import ClickEffect from "../components/ClickEffect";
-import CyberCat from "../components/CyberCat";
+import WhalePet from "../components/WhalePet";
 import Footer from "../components/Footer";
 import { getPublicSiteConfig } from "../lib/server-api";
 
@@ -131,7 +131,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </SiteConfigProvider>
           </AuthProvider>
         </ThemeProvider>
-        <CyberCat />
+        <WhalePet />
       </body>
     </html>
   );
