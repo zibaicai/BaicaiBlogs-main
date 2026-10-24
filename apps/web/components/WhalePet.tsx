@@ -6,7 +6,7 @@ import { MessageCircle, Fish, X } from "lucide-react";
 
 type PetState = "idle" | "blink" | "eat" | "sleep" | "thinking";
 
-const EAT_ANIM = "/pet/whale-eat.webp"; // 暂时回滚为静态，等正式动画素材
+const EAT_ANIM = "/pet/whale-eat-final.webp";
 const FRAMES: Record<"idle" | "blink" | "eat", string> = {
   idle: "/pet/whale-idle.webp",
   blink: "/pet/whale-blink.webp",
@@ -122,7 +122,7 @@ export default function WhalePet() {
       setState("idle");
       showOkBadge();
       speak("吃饱了，200 OK。", 3200);
-    }, 3000);
+    }, 3400);
   };
 
   const handleChatSubmit = (e: React.FormEvent) => {
@@ -183,7 +183,7 @@ export default function WhalePet() {
         setIsDragging(false);
         lastActivity.current = Date.now();
       }}
-      whileDrag={{ scale: 1.04, cursor: "grabbing" }}
+      whileDrag={{ cursor: "grabbing" }}
       className="whale-pet fixed bottom-32 right-8 z-[90] flex w-[180px] cursor-grab flex-col items-center select-none active:cursor-grabbing"
     >
       <style dangerouslySetInnerHTML={{ __html: `
@@ -192,10 +192,10 @@ export default function WhalePet() {
           50% { transform: translateY(-5px); }
         }
         @keyframes whale-hop {
-          0% { transform: translateY(0) scale(1); }
-          35% { transform: translateY(-12px) scale(1.03); }
-          70% { transform: translateY(2px) scale(0.99); }
-          100% { transform: translateY(0) scale(1); }
+          0% { transform: translateY(0); }
+          35% { transform: translateY(-10px); }
+          70% { transform: translateY(2px); }
+          100% { transform: translateY(0); }
         }
         @keyframes whale-sleep {
           0%, 100% { transform: translateY(2px) rotate(-2deg); }
