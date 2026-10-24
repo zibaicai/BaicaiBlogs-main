@@ -6,6 +6,7 @@ import { MessageCircle, Fish, X } from "lucide-react";
 
 type PetState = "idle" | "blink" | "eat" | "sleep" | "thinking";
 
+const EAT_ANIM = "/pet/whale-eat-anim.webp";
 const FRAMES: Record<"idle" | "blink" | "eat", string> = {
   idle: "/pet/whale-idle.webp",
   blink: "/pet/whale-blink.webp",
@@ -39,9 +40,14 @@ export default function WhalePet() {
   const [inputValue, setInputValue] = useState("");
   const [isBouncing, setIsBouncing] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [isEating, setIsEating] = useState(false);
+  const [eatRun, setEatRun] = useState(0);
+  const [showStars, setShowStars] = useState(false);
+  const [showDrool, setShowDrool] = useState(false);
 
   const speechTimer = useRef<number | null>(null);
   const actionTimer = useRef<number | null>(null);
+  const eatTimer = useRef<number | null>(null);
   const lastActivity = useRef(Date.now());
 
   useEffect(() => {
@@ -57,12 +63,15 @@ export default function WhalePet() {
       const img = new Image();
       img.src = src;
     });
+    const eat = new Image();
+    eat.src = EAT_ANIM;
   }, []);
 
   useEffect(() => {
     return () => {
       if (speechTimer.current) window.clearTimeout(speechTimer.current);
       if (actionTimer.current) window.clearTimeout(actionTimer.current);
+      if (eatTimer.current) window.clearTimeout(eatTimer.current);
     };
   }, []);
 
@@ -83,6 +92,7 @@ export default function WhalePet() {
   };
 
   const handlePet = () => {
+    if (isEating) return;
     markActive();
     setState("idle");
     setIsBouncing(true);
@@ -92,19 +102,31 @@ export default function WhalePet() {
   };
 
   const handleFeed = () => {
-    if (state === "eat") return;
+    if (isEating || state === "thinking") return;
     markActive();
     setShowInput(false);
     setState("eat");
+    setIsEating(true);
+    setEatRun((v) => v + 1);
+    setShowStars(true);
+    setShowDrool(true);
     speak("开饭！这碗算力我先收下了。", 2600);
-    showOkBadge();
+
+    if (eatTimer.current) window.clearTimeout(eatTimer.current);
     if (actionTimer.current) window.clearTimeout(actionTimer.current);
-    actionTimer.current = window.setTimeout(() => setState("idle"), 2800);
+    window.setTimeout(() => setShowDrool(false), 720);
+    window.setTimeout(() => setShowStars(false), 920);
+    eatTimer.current = window.setTimeout(() => {
+      setIsEating(false);
+      setState("idle");
+      showOkBadge();
+      speak("吃饱了，200 OK。", 3200);
+    }, 3000);
   };
 
   const handleChatSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputValue.trim() || state === "thinking") return;
+    if (!inputValue.trim() || state === "thinking" || isEating) return;
     const message = inputValue.trim().slice(0, 100);
     setInputValue("");
     setShowInput(false);
@@ -124,7 +146,7 @@ export default function WhalePet() {
   useEffect(() => {
     if (!isDesktop) return;
     const timer = window.setInterval(() => {
-      if (showInput || isDragging || isBouncing || state !== "idle") return;
+      if (showInput || isDragging || isBouncing || isEating || state !== "idle") return;
       if (Date.now() - lastActivity.current > 90000) {
         setState("sleep");
         return;
@@ -135,7 +157,7 @@ export default function WhalePet() {
       }
     }, 5000);
     return () => window.clearInterval(timer);
-  }, [isDesktop, showInput, isDragging, isBouncing, state]);
+  }, [isDesktop, showInput, isDragging, isBouncing, isEating, state]);
 
   if (!isDesktop) return null;
 
@@ -181,8 +203,28 @@ export default function WhalePet() {
         .whale-bob { animation: whale-bob 4.8s ease-in-out infinite; }
         .whale-hop { animation: whale-hop 0.46s ease-out; }
         .whale-sleep { animation: whale-sleep 3.8s ease-in-out infinite; filter: brightness(0.88) saturate(0.9); }
+        @keyframes whale-star {
+          0%, 100% { opacity: 0; transform: scale(0.45) rotate(0deg); }
+          35%, 70% { opacity: 1; transform: scale(1.1) rotate(14deg); }
+        }
+        .whale-star {
+          animation: whale-star 0.46s ease-in-out infinite;
+          color: #fde68a;
+          text-shadow: 0 0 8px rgba(253, 230, 138, 0.9), 0 1px 2px rgba(15, 23, 42, 0.5);
+        }
+        @keyframes whale-drool {
+          0% { opacity: 0; transform: scaleY(0.2); }
+          25%, 75% { opacity: 1; transform: scaleY(1); }
+          100% { opacity: 0; transform: scaleY(0.8); }
+        }
+        .whale-drool {
+          animation: whale-drool 0.7s ease-in-out infinite;
+          transform-origin: top center;
+          background: linear-gradient(180deg, rgba(224, 242, 254, 0.4), rgba(125, 211, 252, 0.9));
+          box-shadow: 0 0 4px rgba(186, 230, 253, 0.8);
+        }
         @media (prefers-reduced-motion: reduce) {
-          .whale-bob, .whale-hop, .whale-sleep { animation: none !important; }
+          .whale-bob, .whale-hop, .whale-sleep, .whale-star, .whale-drool { animation: none !important; }
         }
       `}} />
 
@@ -234,7 +276,7 @@ export default function WhalePet() {
               e.stopPropagation();
               handleFeed();
             }}
-            disabled={state === "eat" || state === "thinking"}
+            disabled={isEating || state === "thinking"}
             className="flex h-9 w-9 items-center justify-center rounded-full border border-white/40 bg-white/85 text-base shadow-md backdrop-blur-md transition-transform hover:scale-110 active:scale-95 disabled:opacity-40 dark:border-white/10 dark:bg-slate-800/85"
             title="喂一碗米饭"
             aria-label="喂一碗米饭"
@@ -258,11 +300,34 @@ export default function WhalePet() {
           aria-label="和鲸鱼娘互动"
         >
           <img
-            src={FRAMES[frame]}
+            key={isEating ? "idle" : frame}
+            src={FRAMES[isEating ? "idle" : frame]}
             alt="鲸鱼娘桌宠"
             draggable={false}
-            className={`h-full w-full object-contain drop-shadow-[0_12px_18px_rgba(15,23,42,0.28)] ${frameClass}`}
+            className={`h-full w-full object-contain drop-shadow-[0_12px_18px_rgba(15,23,42,0.28)] ${
+              isEating ? "" : frameClass
+            }`}
           />
+          {isEating && (
+            <img
+              key={`eat-${eatRun}`}
+              src={EAT_ANIM}
+              alt=""
+              aria-hidden="true"
+              draggable={false}
+              className="pointer-events-none absolute inset-0 h-full w-full object-contain drop-shadow-[0_12px_18px_rgba(15,23,42,0.28)]"
+            />
+          )}
+          {showStars && (
+            <span className="pointer-events-none absolute inset-0 z-20">
+              <span className="whale-star absolute left-2 top-3 text-lg" style={{ animationDelay: "0ms" }}>✦</span>
+              <span className="whale-star absolute right-3 top-7 text-sm" style={{ animationDelay: "120ms" }}>✦</span>
+              <span className="whale-star absolute left-8 top-12 text-[10px]" style={{ animationDelay: "220ms" }}>✦</span>
+            </span>
+          )}
+          {showDrool && (
+            <span className="whale-drool pointer-events-none absolute left-[96px] top-[96px] z-20 h-3 w-[3px] rounded-full" />
+          )}
           {state === "sleep" && (
             <span className="pointer-events-none absolute -right-1 -top-2 text-xs font-black text-indigo-300/90">
               z <span className="text-[10px]">z</span> <span className="text-[8px]">z</span>
