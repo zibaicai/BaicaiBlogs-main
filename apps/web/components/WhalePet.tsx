@@ -44,6 +44,7 @@ export default function WhalePet() {
   const [eatRun, setEatRun] = useState(0);
   const [showStars, setShowStars] = useState(false);
   const [showDrool, setShowDrool] = useState(false);
+  const [eatReady, setEatReady] = useState(false);
 
   const speechTimer = useRef<number | null>(null);
   const actionTimer = useRef<number | null>(null);
@@ -306,7 +307,7 @@ export default function WhalePet() {
             draggable={false}
             className={`h-full w-full object-contain drop-shadow-[0_12px_18px_rgba(15,23,42,0.28)] ${
               isEating ? "" : frameClass
-            }`}
+            } ${isEating && eatReady ? "opacity-0" : ""}`}
           />
           {isEating && (
             <img
@@ -315,6 +316,7 @@ export default function WhalePet() {
               alt=""
               aria-hidden="true"
               draggable={false}
+              onLoad={() => setEatReady(true)}
               className="pointer-events-none absolute inset-0 h-full w-full object-contain drop-shadow-[0_12px_18px_rgba(15,23,42,0.28)]"
             />
           )}
