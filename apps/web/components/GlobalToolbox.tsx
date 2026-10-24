@@ -1,87 +1,147 @@
 "use client";
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Settings2, X } from "lucide-react";
 
-// 【引入你的独立工具模块】
-import CalculatorTool from './toolbox/CalculatorTool';
-// import TomatoClock from './toolbox/TomatoClock'; // 未来扩展预留
+type ToolId = "danmaku" | "click" | "pet";
 
-// 【核心架构：插件注册表】
-// 以后加新工具，只需要往这个数组里添加对象即可，完全解耦！
-const TOOL_REGISTRY = [
-  { id: 'calc', name: '计算器', icon: '🧮', component: <CalculatorTool /> },
-  // { id: 'tomato', name: '番茄钟', icon: '🍅', component: <TomatoClock /> },
+type Tool = {
+  id: ToolId;
+  name: string;
+  description: string;
+};
+
+const TOOLS: Tool[] = [
+  { id: "danmaku", name: "弹幕", description: "首页漂浮弹幕与发送入口" },
+  { id: "click", name: "点击特效", description: "点击页面时的水波涟漪" },
+  { id: "pet", name: "桌面宠物", description: "右下角的鲸鱼娘" },
 ];
+
+const DEFAULT_PREFS: Record<ToolId, boolean> = {
+  danmaku: true,
+  click: true,
+  pet: true,
+};
+
+function applyPrefs(prefs: Record<ToolId, boolean>) {
+  document.body.classList.toggle("tool-danmaku-off", !prefs.danmaku);
+  document.body.classList.toggle("tool-click-off", !prefs.click);
+  document.body.classList.toggle("tool-pet-off", !prefs.pet);
+}
 
 export default function GlobalToolbox() {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeToolId, setActiveToolId] = useState<string | null>(null);
+  const [prefs, setPrefs] = useState<Record<ToolId, boolean>>(DEFAULT_PREFS);
 
-  // 获取当前激活的工具对象
-  const activeTool = TOOL_REGISTRY.find(t => t.id === activeToolId);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("toolbox-prefs");
+      if (raw) {
+        const stored = JSON.parse(raw) as Partial<Record<ToolId, boolean>>;
+        const next = { ...DEFAULT_PREFS, ...stored };
+        setPrefs(next);
+        applyPrefs(next);
+        return;
+      }
+    } catch {
+      // ignore malformed local prefs
+    }
+    applyPrefs(DEFAULT_PREFS);
+  }, []);
+
+  const toggle = (id: ToolId) => {
+    setPrefs((current) => {
+      const next = { ...current, [id]: !current[id] };
+      applyPrefs(next);
+      try {
+        localStorage.setItem("toolbox-prefs", JSON.stringify(next));
+      } catch {
+        // ignore storage errors
+      }
+      return next;
+    });
+  };
 
   return (
     <div className="global-toolbox fixed bottom-6 left-6 z-[9999] flex flex-col items-start gap-3">
-
-      {/* 展开的面板区域 */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.9, transformOrigin: "bottom left" }}
+            initial={{ opacity: 0, y: 16, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            transition={{ duration: 0.3, type: "spring", stiffness: 300, damping: 25 }}
-            className="mb-2 bg-white/70 dark:bg-slate-800/80 backdrop-blur-2xl border border-white/50 dark:border-white/10 shadow-2xl rounded-3xl p-4 w-64 flex flex-col gap-4 overflow-hidden"
+            exit={{ opacity: 0, y: 16, scale: 0.96 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            className="tool-directory mb-1 w-[min(320px,calc(100vw-2rem))] overflow-hidden rounded-3xl border border-white/60 bg-white/90 shadow-2xl backdrop-blur-2xl dark:border-white/10 dark:bg-slate-900/92"
           >
-            {/* 动态渲染：工具箱导航栏 */}
-            <div className="flex flex-wrap gap-2 border-b border-slate-300/50 dark:border-slate-700/50 pb-3">
-              {TOOL_REGISTRY.map(tool => (
-                <button
-                  key={tool.id}
-                  onClick={() => setActiveToolId(activeToolId === tool.id ? null : tool.id)}
-                  className={`text-xs font-bold px-3 py-1.5 rounded-full transition-colors ${activeToolId === tool.id ? 'bg-indigo-500 text-white shadow-md' : 'bg-white/50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'}`}
-                >
-                  {tool.icon} {tool.name}
-                </button>
-              ))}
+            <div className="flex items-start justify-between border-b border-slate-200/70 px-5 py-4 dark:border-white/10">
+              <div>
+                <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-slate-400">TOOLS</span>
+                <h3 className="mt-1 text-base font-black text-slate-800 dark:text-white">工具目录</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="rounded-full p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-white"
+                aria-label="关闭工具目录"
+              >
+                <X size={16} />
+              </button>
             </div>
 
-            {/* 动态渲染：激活的工具组件 */}
-            <AnimatePresence mode="wait">
-              {activeTool ? (
-                // 直接渲染注册表里绑定的独立组件
-                <div key={activeTool.id}>
-                  {activeTool.component}
-                </div>
-              ) : (
-                // 空状态提醒
-                <motion.div
-                  key="empty"
-                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                  className="h-48 flex flex-col items-center justify-center text-slate-400 text-xs font-serif text-center px-4"
-                >
-                  <svg className="w-8 h-8 mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 00-1-1H4a1 1 0 01-1-1V4a1 1 0 011-1h3a1 1 0 001-1v-1z" /></svg>
-                  点击上方模块<br/>激活工具
-                </motion.div>
-              )}
-            </AnimatePresence>
+            <div className="p-2">
+              {TOOLS.map((tool) => {
+                const enabled = prefs[tool.id];
+                return (
+                  <div
+                    key={tool.id}
+                    className="flex items-center justify-between gap-4 rounded-2xl px-3 py-3 transition-colors hover:bg-slate-100/70 dark:hover:bg-white/5"
+                  >
+                    <div className="min-w-0">
+                      <div className="text-sm font-bold text-slate-800 dark:text-slate-100">{tool.name}</div>
+                      <div className="mt-0.5 truncate text-[10px] text-slate-400">{tool.description}</div>
+                    </div>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={enabled}
+                      aria-label={`${tool.name}${enabled ? "已开启" : "已关闭"}`}
+                      onClick={() => toggle(tool.id)}
+                      className={`tool-switch relative h-6 w-11 shrink-0 rounded-full transition-colors ${
+                        enabled ? "bg-indigo-500" : "bg-slate-300 dark:bg-slate-700"
+                      }`}
+                    >
+                      <span
+                        className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-all ${
+                          enabled ? "left-6" : "left-1"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+
+            <p className="border-t border-slate-200/70 px-5 py-3 text-[10px] text-slate-400 dark:border-white/10">
+              开关会保存在当前浏览器。
+            </p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* 悬浮主开关按钮 */}
       <button
-        onClick={() => { setIsOpen(!isOpen); if (!isOpen && !activeToolId) setActiveToolId(TOOL_REGISTRY[0].id); }}
-        className={`w-12 h-12 rounded-full flex items-center justify-center shadow-xl backdrop-blur-xl border border-white/40 dark:border-white/10 transition-all duration-500 hover:scale-110 active:scale-95 z-50
-          ${isOpen ? 'bg-indigo-500 text-white rotate-45' : 'bg-white/70 dark:bg-slate-800/80 text-slate-700 dark:text-white'}
-        `}
+        type="button"
+        onClick={() => setIsOpen((value) => !value)}
+        aria-label="打开工具目录"
+        aria-expanded={isOpen}
+        className={`flex h-12 w-12 items-center justify-center rounded-full border border-white/50 shadow-xl backdrop-blur-xl transition-all duration-300 hover:scale-105 active:scale-95 dark:border-white/10 ${
+          isOpen
+            ? "bg-indigo-500 text-white"
+            : "bg-white/80 text-slate-600 dark:bg-slate-900/80 dark:text-slate-200"
+        }`}
       >
-        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isOpen ? "M12 4v16m8-8H4" : "M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"} />
-        </svg>
+        {isOpen ? <X size={19} /> : <Settings2 size={19} />}
       </button>
-
     </div>
   );
 }

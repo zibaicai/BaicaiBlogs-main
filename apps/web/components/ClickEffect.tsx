@@ -94,7 +94,7 @@ export default function ClickEffect() {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-[9999]"
+      className="click-effect fixed inset-0 pointer-events-none z-[9999]"
     />
   );
 }

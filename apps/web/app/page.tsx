@@ -40,11 +40,16 @@ export default async function Home() {
       <Navbar />
       <PageTransition>
         <div className="home-v2-inner w-full max-w-[1180px] mx-auto px-4 sm:px-8 lg:pr-[200px] pt-28">
-          <HomeHero
-            postCount={posts.length}
-            chatterCount={chatters.length}
-            photoCount={photoCount}
-          />
+          <section className="hv-hero">
+            <HomeHero
+              postCount={posts.length}
+              chatterCount={chatters.length}
+              photoCount={photoCount}
+            />
+            <div className="hv-hero-music hv-panel">
+              <CloudPlayer />
+            </div>
+          </section>
 
           <div className="hv-toolbar">
             <div className="hv-search">
@@ -91,10 +96,6 @@ export default async function Home() {
             </section>
 
             <aside className="hv-side">
-              <div className="hv-panel hv-player">
-                <CloudPlayer />
-              </div>
-
               <Link href="/photowall" className="hv-photo-card">
                 <img src={latestAlbum.cover || DEFAULT_MISC.photoWallImage} alt={latestAlbum.title} />
                 <span className="hv-photo-shade" />
