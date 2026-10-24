@@ -72,7 +72,7 @@ export default function DanmakuBackground() {
   }, [list, round]);
 
   return (
-    <div className="fixed left-0 right-0 top-28 z-0 h-[30vh] overflow-hidden pointer-events-none select-none">
+    <div className="danmaku-layer fixed left-0 right-0 top-28 z-0 h-[30vh] overflow-hidden pointer-events-none select-none">
       {danmakus.map((item) => (
         <div
           key={item.id}

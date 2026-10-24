@@ -63,18 +63,6 @@ export default function SiteDashboard() {
           ))}
         </div>
 
-        {/* 备案信息 (🌟 从 siteInfo.icpConfig 读取链接和名称) */}
-        {siteInfo?.icpConfig && (
-          <a
-            href={siteInfo.icpConfig.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-indigo-500 transition-colors border-b border-dashed border-slate-400 dark:border-slate-500 pb-0.5"
-          >
-            {siteInfo.icpConfig.name}
-          </a>
-        )}
-
       </div>
     </div>
   );
