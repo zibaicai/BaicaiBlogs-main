@@ -6,7 +6,7 @@ import { MessageCircle, Fish, X } from "lucide-react";
 
 type PetState = "idle" | "blink" | "eat" | "sleep" | "thinking";
 
-const EAT_ANIM = "/pet/whale-eat-final.webp";
+const EAT_ANIM = "/pet/whale-eat-stopmotion.webp";
 const FRAMES: Record<"idle" | "blink" | "eat", string> = {
   idle: "/pet/whale-idle.webp",
   blink: "/pet/whale-blink.webp",
@@ -122,7 +122,7 @@ export default function WhalePet() {
       setState("idle");
       showOkBadge();
       speak("吃饱了，200 OK。", 3200);
-    }, 3400);
+    }, 3600);
   };
 
   const handleChatSubmit = (e: React.FormEvent) => {
