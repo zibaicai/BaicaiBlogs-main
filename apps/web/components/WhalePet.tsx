@@ -6,7 +6,7 @@ import { MessageCircle, Fish, X } from "lucide-react";
 
 type PetState = "idle" | "blink" | "eat" | "sleep" | "thinking";
 
-const EAT_ANIM = "/pet/whale-eat-anim.webp";
+const EAT_ANIM = "/pet/whale-eat.webp"; // 暂时回滚为静态，等正式动画素材
 const FRAMES: Record<"idle" | "blink" | "eat", string> = {
   idle: "/pet/whale-idle.webp",
   blink: "/pet/whale-blink.webp",
