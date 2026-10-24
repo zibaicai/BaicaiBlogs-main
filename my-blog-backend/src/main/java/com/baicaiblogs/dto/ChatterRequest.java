@@ -20,4 +20,6 @@ public class ChatterRequest {
     private String cover;
     private LocalDateTime date;
     private List<String> tags;
+    private String status;
+    private String visibility;
 }

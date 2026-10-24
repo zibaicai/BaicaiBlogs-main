@@ -22,6 +22,9 @@ public class ChatterResponse {
     private String cover;
     private LocalDateTime date;
     private List<String> tags;
+    private Long userId;
+    private String status;
+    private String visibility;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

@@ -27,6 +27,7 @@ import ReportsPage from "./pages/ReportsPage";
 import DanmakuPage from "./pages/DanmakuPage";
 import AccessPage from "./pages/AccessPage";
 import EditorPage from "./pages/EditorPage";
+import MomentsPage from "./pages/MomentsPage";
 
 type Any = Record<string, any>;
 
@@ -129,6 +130,7 @@ const NAV_ITEMS = [
   { to: "/posts", label: "文章", icon: BookOpen },
   { to: "/projects", label: "项目", icon: FolderKanban },
   { to: "/gallery", label: "图片墙", icon: Images },
+  { to: "/moments", label: "说说", icon: MessageSquareText },
   { to: "/danmaku", label: "弹幕", icon: MessageSquareText },
   { to: "/reports", label: "举报", icon: ShieldAlert },
   { to: "/access", label: "授权", icon: KeyRound },
@@ -549,6 +551,7 @@ export default function App() {
             <Route path="/timeline" element={<RequireAuth><Shell><TimelinePreview /></Shell></RequireAuth>} />
             <Route path="/gallery" element={<RequireAuth><Shell><GalleryPage /></Shell></RequireAuth>} />
             <Route path="/reports" element={<RequireAuth><Shell><ReportsPage /></Shell></RequireAuth>} />
+            <Route path="/moments" element={<RequireAuth><Shell><MomentsPage /></Shell></RequireAuth>} />
             <Route path="/danmaku" element={<RequireAuth><Shell><DanmakuPage /></Shell></RequireAuth>} />
             <Route path="/access" element={<RequireAuth><Shell><AccessPage /></Shell></RequireAuth>} />
             <Route path="/settings" element={<RequireAuth><Shell><SettingsPage /></Shell></RequireAuth>} />

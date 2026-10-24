@@ -40,6 +40,19 @@ public class Chatter {
     @Column(length = 500)
     private String cover;
 
+    @Column(name = "user_id")
+    private Long userId;
+
+    /** DRAFT / PUBLISHED */
+    @Column(length = 16, nullable = false)
+    @Builder.Default
+    private String status = "PUBLISHED";
+
+    /** PUBLIC / PRIVATE */
+    @Column(length = 16, nullable = false)
+    @Builder.Default
+    private String visibility = "PUBLIC";
+
     @Column(nullable = false)
     private LocalDateTime date;
 

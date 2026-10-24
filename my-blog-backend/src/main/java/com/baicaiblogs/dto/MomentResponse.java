@@ -19,5 +19,8 @@ public class MomentResponse {
     private String htmlContent;
     private LocalDateTime date;
     private List<String> images;
+    private Long userId;
+    private String status;
+    private String visibility;
     private LocalDateTime createdAt;
 }

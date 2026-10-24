@@ -17,4 +17,7 @@ public interface ChatterRepository extends JpaRepository<Chatter, Long> {
 
     List<Chatter> findAllByOrderByDateDesc();
     Page<Chatter> findAllByOrderByDateDesc(Pageable pageable);
+    List<Chatter> findByStatusAndVisibilityOrderByDateDesc(String status, String visibility);
+    List<Chatter> findByUserIdOrderByDateDesc(Long userId);
+    List<Chatter> findByStatusOrderByDateDesc(String status);
 }

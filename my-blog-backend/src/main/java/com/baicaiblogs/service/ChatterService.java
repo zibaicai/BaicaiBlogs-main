@@ -30,7 +30,7 @@ public class ChatterService {
 
     @Transactional(readOnly = true)
     public List<ChatterResponse> getAllChatters() {
-        return chatterRepository.findAllByOrderByDateDesc().stream()
+        return chatterRepository.findByStatusAndVisibilityOrderByDateDesc("PUBLISHED", "PUBLIC").stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
@@ -51,67 +51,95 @@ public class ChatterService {
     public ChatterResponse getChatterBySlug(String slug) {
         Chatter chatter = chatterRepository.findBySlug(slug)
                 .orElseThrow(() -> new RuntimeException("杂谈不存在: " + slug));
+        if (!"PUBLISHED".equals(chatter.getStatus()) || !"PUBLIC".equals(chatter.getVisibility())) {
+            throw new RuntimeException("杂谈不存在: " + slug);
+        }
         return toResponse(chatter);
     }
 
+    @Transactional(readOnly = true)
+    public List<ChatterResponse> getChattersForUser(Long userId) {
+        return chatterRepository.findByStatusOrderByDateDesc("PUBLISHED").stream()
+                .filter((item) -> "PUBLIC".equals(item.getVisibility())
+                        || (userId != null && userId.equals(item.getUserId())))
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<ChatterResponse> getMyChatters(Long userId) {
+        return chatterRepository.findByUserIdOrderByDateDesc(userId).stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
     @Transactional
-    public ChatterResponse createChatter(ChatterRequest request) {
+    public ChatterResponse createChatter(Long userId, ChatterRequest request) {
         if (chatterRepository.existsBySlug(request.getSlug())) {
             throw new RuntimeException("Slug 已存在: " + request.getSlug());
         }
-
-        String htmlContent = renderMarkdown(request.getContent());
-        String tagsJson = serializeTags(request.getTags());
-
         Chatter chatter = Chatter.builder()
                 .slug(request.getSlug())
                 .title(request.getTitle())
                 .content(request.getContent())
-                .htmlContent(htmlContent)
+                .htmlContent(renderMarkdown(request.getContent()))
                 .mood(request.getMood())
                 .cover(request.getCover())
                 .date(request.getDate() != null ? request.getDate() : LocalDateTime.now())
-                .tags(tagsJson)
+                .tags(serializeTags(request.getTags()))
+                .userId(userId)
+                .status(normalizeStatus(request.getStatus()))
+                .visibility(normalizeVisibility(request.getVisibility()))
                 .build();
-
         return toResponse(chatterRepository.save(chatter));
     }
 
     @Transactional
-    public ChatterResponse updateChatter(String slug, ChatterRequest request) {
+    public ChatterResponse updateChatter(Long userId, String slug, ChatterRequest request) {
         Chatter chatter = chatterRepository.findBySlug(slug)
                 .orElseThrow(() -> new RuntimeException("杂谈不存在: " + slug));
-
+        if (chatter.getUserId() != null && !chatter.getUserId().equals(userId)) {
+            throw new RuntimeException("无权操作该杂谈");
+        }
         chatter.setTitle(request.getTitle());
         chatter.setContent(request.getContent());
         chatter.setHtmlContent(renderMarkdown(request.getContent()));
         chatter.setMood(request.getMood());
         chatter.setCover(request.getCover());
         chatter.setTags(serializeTags(request.getTags()));
-        if (request.getDate() != null) {
-            chatter.setDate(request.getDate());
-        }
-
+        chatter.setStatus(normalizeStatus(request.getStatus()));
+        chatter.setVisibility(normalizeVisibility(request.getVisibility()));
+        if (request.getDate() != null) chatter.setDate(request.getDate());
+        if (chatter.getUserId() == null) chatter.setUserId(userId);
         return toResponse(chatterRepository.save(chatter));
     }
 
     @Transactional
-    public void deleteChatter(String slug) {
-        if (!chatterRepository.existsBySlug(slug)) {
-            throw new RuntimeException("杂谈不存在: " + slug);
+    public void deleteChatter(Long userId, String slug) {
+        Chatter chatter = chatterRepository.findBySlug(slug)
+                .orElseThrow(() -> new RuntimeException("杂谈不存在: " + slug));
+        if (chatter.getUserId() != null && !chatter.getUserId().equals(userId)) {
+            throw new RuntimeException("无权操作该杂谈");
         }
-        chatterRepository.deleteBySlug(slug);
+        chatterRepository.delete(chatter);
+    }
+
+    private String normalizeStatus(String value) {
+        return "DRAFT".equalsIgnoreCase(value) ? "DRAFT" : "PUBLISHED";
+    }
+
+    private String normalizeVisibility(String value) {
+        return "PRIVATE".equalsIgnoreCase(value) ? "PRIVATE" : "PUBLIC";
     }
 
     private String renderMarkdown(String markdown) {
+        if (markdown == null) return "";
         Node document = markdownParser.parse(markdown);
         return HtmlSanitizer.clean(htmlRenderer.render(document));
     }
 
     private String serializeTags(List<String> tags) {
-        if (tags == null || tags.isEmpty()) {
-            return "[]";
-        }
+        if (tags == null || tags.isEmpty()) return "[]";
         try {
             return objectMapper.writeValueAsString(tags);
         } catch (JsonProcessingException e) {
@@ -120,9 +148,7 @@ public class ChatterService {
     }
 
     private List<String> deserializeTags(String tagsJson) {
-        if (tagsJson == null || tagsJson.isEmpty()) {
-            return List.of();
-        }
+        if (tagsJson == null || tagsJson.isEmpty()) return List.of();
         try {
             return objectMapper.readValue(tagsJson, objectMapper.getTypeFactory().constructCollectionType(List.class, String.class));
         } catch (JsonProcessingException e) {
@@ -141,6 +167,9 @@ public class ChatterService {
                 .cover(chatter.getCover())
                 .date(chatter.getDate())
                 .tags(deserializeTags(chatter.getTags()))
+                .userId(chatter.getUserId())
+                .status(chatter.getStatus())
+                .visibility(chatter.getVisibility())
                 .createdAt(chatter.getCreatedAt())
                 .updatedAt(chatter.getUpdatedAt())
                 .build();

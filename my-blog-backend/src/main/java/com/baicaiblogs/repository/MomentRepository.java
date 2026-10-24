@@ -14,4 +14,7 @@ public interface MomentRepository extends JpaRepository<Moment, Long> {
     boolean existsBySlug(String slug);
 
     List<Moment> findAllByOrderByDateDesc();
+    List<Moment> findByStatusAndVisibilityOrderByDateDesc(String status, String visibility);
+    List<Moment> findByUserIdOrderByDateDesc(Long userId);
+    List<Moment> findByStatusOrderByDateDesc(String status);
 }
