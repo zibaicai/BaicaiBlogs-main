@@ -1619,3 +1619,28 @@ body.tool-pet-off .whale-pet {
 .nav-search-field {
   inset: 0 40px 0 0;
 }
+
+/* Search field/button seam + dropdown width */
+.nav-search-field {
+  inset: 0;
+}
+
+.nav-search-input {
+  padding-right: 52px;
+}
+
+.nav-search-trigger {
+  border-color: transparent;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.42);
+}
+
+.dark .nav-search-trigger {
+  border-color: transparent;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.09);
+}
+
+.nav-search-results {
+  left: 0;
+  right: 0;
+  width: 100%;
+}
