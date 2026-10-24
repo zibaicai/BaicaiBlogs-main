@@ -31,7 +31,9 @@ const Highlight = ({ text = "", query = "" }: { text?: string; query?: string })
 
 export default function NavSearch({ open, onOpenChange }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const fieldRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const firstRender = useRef(true);
   const [query, setQuery] = useState("");
   const [posts, setPosts] = useState<Post[]>([]);
   const [loaded, setLoaded] = useState(false);
@@ -59,6 +61,29 @@ export default function NavSearch({ open, onOpenChange }: Props) {
       cancelled = true;
     };
   }, [open, loaded]);
+
+  useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
+
+    const field = fieldRef.current;
+    if (!field) return;
+
+    const animation = field.animate(
+      open
+        ? [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }]
+        : [{ transform: "scaleX(1)" }, { transform: "scaleX(0)" }],
+      {
+        duration: 500,
+        easing: "cubic-bezier(0.33, 0, 0.67, 1)",
+        fill: "both",
+      }
+    );
+
+    return () => animation.cancel();
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -99,7 +124,7 @@ export default function NavSearch({ open, onOpenChange }: Props) {
 
   return (
     <div ref={rootRef} className={`nav-search ${open ? "is-open" : ""}`}>
-      <div className="nav-search-field">
+      <div ref={fieldRef} className="nav-search-field">
         <Search size={15} className="nav-search-icon" aria-hidden="true" />
         <input
           ref={inputRef}
