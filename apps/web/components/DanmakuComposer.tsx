@@ -45,7 +45,7 @@ export default function DanmakuComposer() {
   };
 
   return (
-    <div className="fixed bottom-20 left-4 sm:bottom-6 sm:left-24 z-40">
+    <div className="danmaku-composer fixed bottom-20 left-4 sm:bottom-6 sm:left-24 z-40">
       {!open ? (
         <button
           type="button"

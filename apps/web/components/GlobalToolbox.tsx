@@ -22,7 +22,7 @@ export default function GlobalToolbox() {
   const activeTool = TOOL_REGISTRY.find(t => t.id === activeToolId);
 
   return (
-    <div className="fixed bottom-6 left-6 z-[9999] flex flex-col items-start gap-3">
+    <div className="global-toolbox fixed bottom-6 left-6 z-[9999] flex flex-col items-start gap-3">
 
       {/* 展开的面板区域 */}
       <AnimatePresence>

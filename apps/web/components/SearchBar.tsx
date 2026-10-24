@@ -39,7 +39,7 @@ const Highlight = ({ text = '', query = '' }) => {
   );
 };
 
-export default function SearchBar({ posts = [] }: { posts: Post[] }) {
+export default function SearchBar({ posts = [], compact = false }: { posts: Post[]; compact?: boolean }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -68,14 +68,17 @@ export default function SearchBar({ posts = [] }: { posts: Post[] }) {
   }, [searchQuery, posts]);
 
   return (
-    <div className="relative w-full max-w-2xl mx-auto mb-10 z-[100]" ref={containerRef}>
+    <div className={compact ? "relative w-full z-[100]" : "relative w-full max-w-2xl mx-auto mb-10 z-[100]"} ref={containerRef}>
       <form className="relative group" onSubmit={(e) => e.preventDefault()}>
 
         {/* 先渲染 Input */}
         <input
           type="text"
-          className="w-full pl-14 pr-6 py-4 bg-white/50 dark:bg-slate-800/50 backdrop-blur-xl border border-white/40 dark:border-white/10 rounded-3xl shadow-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 text-slate-800 dark:text-slate-200 transition-all placeholder-slate-500 dark:placeholder-slate-400 font-medium text-lg relative z-0"
-          placeholder="搜寻标题、描述或标签..."
+          className={compact
+            ? "w-full pl-11 pr-5 py-3 bg-white/60 dark:bg-slate-900/65 backdrop-blur-xl border border-white/50 dark:border-white/10 rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/40 text-slate-800 dark:text-slate-100 transition-all placeholder-slate-500 dark:placeholder-slate-400 font-medium text-sm relative z-0"
+            : "w-full pl-14 pr-6 py-4 bg-white/50 dark:bg-slate-800/50 backdrop-blur-xl border border-white/40 dark:border-white/10 rounded-3xl shadow-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 text-slate-800 dark:text-slate-200 transition-all placeholder-slate-500 dark:placeholder-slate-400 font-medium text-lg relative z-0"
+          }
+          placeholder={compact ? "搜索文章、标签..." : "搜寻标题、描述或标签..."}
           value={searchQuery}
           onChange={(e) => {
             setSearchQuery(e.target.value);
@@ -87,7 +90,7 @@ export default function SearchBar({ posts = [] }: { posts: Post[] }) {
         />
 
         {/* 🌟 核心修复：把放大镜放在 input 之后，并且加上 z-10 强制置顶！ */}
-        <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none select-none z-10">
+        <div className={`absolute inset-y-0 left-0 flex items-center pointer-events-none select-none z-10 ${compact ? "pl-4" : "pl-5"}`}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -96,7 +99,7 @@ export default function SearchBar({ posts = [] }: { posts: Post[] }) {
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="w-5 h-5 text-slate-400 group-focus-within:text-indigo-500 transition-colors drop-shadow-sm"
+            className={compact ? "w-4 h-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors" : "w-5 h-5 text-slate-400 group-focus-within:text-indigo-500 transition-colors drop-shadow-sm"}
           >
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
