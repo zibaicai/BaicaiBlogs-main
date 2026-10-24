@@ -1573,3 +1573,49 @@ body.tool-pet-off .whale-pet {
   visibility: hidden;
   transition: max-width 0.38s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.22s ease, transform 0.3s ease, visibility 0s 0.2s;
 }
+
+/* Keep the nav cluster width fixed while search expands */
+.nav-cluster {
+  position: relative;
+  padding-right: 48px;
+}
+
+.nav-links {
+  max-width: none;
+  overflow: visible;
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: opacity 0.24s ease, visibility 0s 0s;
+}
+
+.nav-links.search-open {
+  max-width: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: none;
+  pointer-events: none;
+  transition: opacity 0.24s ease, visibility 0s 0.22s;
+}
+
+.nav-search {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  width: 40px;
+  height: 40px;
+  transform: translateY(-50%);
+  transition: width 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.nav-search.is-open {
+  width: calc(100% - 8px);
+}
+
+.nav-search-trigger {
+  top: 0;
+}
+
+.nav-search-field {
+  inset: 0 40px 0 0;
+}
