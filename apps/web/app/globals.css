@@ -1466,7 +1466,10 @@ body.tool-pet-off .whale-pet {
 .dark .nav-search-trigger:hover,
 .dark .nav-search.is-open .nav-search-trigger {
   color: #a5b4fc;
-  background: rgba(30, 41, 59, 0.92);
+  background: #0f172ac7;
+  width: 38px;
+  height: 38px;
+  margin: 1px;
 }
 
 .nav-search-results {
