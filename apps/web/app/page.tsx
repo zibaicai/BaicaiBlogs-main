@@ -2,7 +2,6 @@ import Link from "next/link";
 
 import Navbar from "../components/Navbar";
 import PageTransition from "../components/PageTransition";
-import SearchBar from "../components/SearchBar";
 import CloudPlayer from "../components/CloudPlayer";
 import HomeHero from "../components/HomeHero";
 import HomeThemeToggle from "../components/HomeThemeToggle";
@@ -51,10 +50,7 @@ export default async function Home() {
             </div>
           </section>
 
-          <div className="hv-toolbar">
-            <div className="hv-search">
-              <SearchBar posts={posts} compact />
-            </div>
+          <div className="hv-toolbar hv-toolbar-meta-only">
             <div className="hv-toolbar-meta">
               <span>PERSONAL ARCHIVE</span>
               <span className="hv-toolbar-dot" />

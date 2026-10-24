@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { useSiteConfigContext } from "../context/SiteConfigProvider";
 import UserMenu from "./UserMenu";
+import NavSearch from "./NavSearch";
 
 const NAV_LINKS = [
   { name: "首页", href: "/" },
@@ -23,6 +24,7 @@ export default function Navbar() {
   const [showNav, setShowNav] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const pathname = usePathname();
   const { siteInfo } = useSiteConfigContext();
 
@@ -36,7 +38,10 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  useEffect(() => setMobileOpen(false), [pathname]);
+  useEffect(() => {
+    setMobileOpen(false);
+    setSearchOpen(false);
+  }, [pathname]);
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -58,24 +63,28 @@ export default function Navbar() {
             {siteInfo?.navAfter}
           </Link>
 
-          <nav className="hidden lg:flex gap-8 text-sm font-bold">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`relative py-1 transition-colors ${
-                  isActive(link.href)
-                    ? "text-indigo-600 dark:text-indigo-400"
-                    : "text-slate-700 dark:text-slate-200 hover:text-indigo-500"
-                }`}
-              >
-                {link.name}
-                {isActive(link.href) && (
-                  <span className="absolute -bottom-0.5 left-0 right-0 h-0.5 rounded-full bg-indigo-500/70" />
-                )}
-              </Link>
-            ))}
-          </nav>
+          <div className="nav-cluster hidden lg:flex items-center gap-1">
+            <nav className={`nav-links flex gap-8 text-sm font-bold ${searchOpen ? "search-open" : ""}`}>
+              {NAV_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`relative py-1 transition-colors ${
+                    isActive(link.href)
+                      ? "text-indigo-600 dark:text-indigo-400"
+                      : "text-slate-700 dark:text-slate-200 hover:text-indigo-500"
+                  }`}
+                >
+                  {link.name}
+                  {isActive(link.href) && (
+                    <span className="absolute -bottom-0.5 left-0 right-0 h-0.5 rounded-full bg-indigo-500/70" />
+                  )}
+                </Link>
+              ))}
+            </nav>
+
+            <NavSearch open={searchOpen} onOpenChange={setSearchOpen} />
+          </div>
 
           <div className="flex items-center gap-2">
             <div className="hidden lg:flex">
