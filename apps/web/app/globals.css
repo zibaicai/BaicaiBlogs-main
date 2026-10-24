@@ -1671,3 +1671,123 @@ body.tool-pet-off .whale-pet {
 .nav-search.is-open .nav-search-trigger:hover {
   background: transparent;
 }
+
+/* Reveal the full-width search field from the right instead of animating width */
+.nav-search {
+  width: 100%;
+  pointer-events: none;
+  transition: none;
+}
+
+.nav-search.is-open {
+  width: 100%;
+  pointer-events: auto;
+}
+
+.nav-search-field {
+  opacity: 1;
+  transform: none;
+  pointer-events: none;
+  clip-path: inset(0 0 0 100%);
+  transition: clip-path 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.nav-search.is-open .nav-search-field {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  clip-path: inset(0 0 0 0);
+}
+
+.nav-search-trigger {
+  pointer-events: auto;
+}
+
+/* Hard fix: search field is always full-width, only revealed by clip-path */
+.nav-search {
+  width: 100%;
+  pointer-events: none;
+  transition: none;
+}
+
+.nav-search.is-open {
+  pointer-events: auto;
+}
+
+.nav-search-field {
+  inset: 0;
+  left: 0;
+  right: 0;
+  width: auto;
+  max-width: none;
+  opacity: 1;
+  transform: none;
+  visibility: hidden;
+  pointer-events: none;
+  clip-path: inset(0 0 0 100%);
+  transition: clip-path 0.38s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s 0.38s;
+}
+
+.nav-search.is-open .nav-search-field {
+  visibility: visible;
+  pointer-events: auto;
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 0.38s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s 0s;
+}
+
+.nav-search-input {
+  width: 100%;
+  max-width: none;
+}
+
+.nav-search:not(.is-open) .nav-search-input {
+  pointer-events: none;
+}
+
+.nav-search-trigger {
+  pointer-events: auto;
+}
+.nav-search-field {
+  transition: clip-path 0.52s cubic-bezier(0.33, 0, 0.67, 1), visibility 0s 0.52s;
+}
+
+.nav-search.is-open .nav-search-field {
+  transition: clip-path 0.52s cubic-bezier(0.33, 0, 0.67, 1), visibility 0s 0s;
+}
+.nav-search-field,
+.nav-search.is-open .nav-search-field {
+  visibility: visible;
+}
+
+.nav-search-field {
+  transition: clip-path 0.52s cubic-bezier(0.33, 0, 0.67, 1);
+}
+
+/* Reliable width reveal: scale the full-width field from the right */
+.nav-search-field {
+  clip-path: none !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  transform-origin: right center;
+  transform: scaleX(0);
+  pointer-events: none;
+  transition: transform 0.5s cubic-bezier(0.33, 0, 0.67, 1);
+}
+
+.nav-search.is-open .nav-search-field {
+  transform: scaleX(1);
+  pointer-events: auto;
+}
+
+.nav-search-input {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.nav-search.is-open .nav-search-input {
+  opacity: 1;
+  transition: opacity 0.15s ease 0.26s;
+}
+.nav-search-field {
+  transition: none !important;
+}
