@@ -1644,3 +1644,30 @@ body.tool-pet-off .whale-pet {
   right: 0;
   width: 100%;
 }
+
+/* Search fills the directory bar edge-to-edge */
+.nav-cluster {
+  padding-right: 44px;
+}
+
+.nav-search {
+  right: 0;
+}
+
+.nav-search.is-open {
+  width: 100%;
+}
+
+.nav-search.is-open .nav-search-trigger {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.nav-search.is-open .nav-search-trigger:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-search.is-open .nav-search-trigger:hover {
+  background: transparent;
+}
