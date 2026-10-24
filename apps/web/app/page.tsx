@@ -1,15 +1,12 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 
 import Navbar from "../components/Navbar";
 import PageTransition from "../components/PageTransition";
 import SearchBar from "../components/SearchBar";
 import CloudPlayer from "../components/CloudPlayer";
-import ThemeToggleBlock from "../components/ThemeToggleBlock";
-import ProfileCard from "../components/ProfileCard";
+import HomeHero from "../components/HomeHero";
+import HomeThemeToggle from "../components/HomeThemeToggle";
 import SiteDashboard from "../components/SiteDashboard";
-import LyricBar from "../components/LyricBar";
-import LatestPostsCarousel from "../components/LatestPostsCarousel";
-import LatestChatterCarousel from "../components/LatestChatterCarousel";
 import { formatDate } from "../lib/api";
 import { getAlbums, getChatters, getPosts } from "../lib/server-api";
 import { DEFAULT_MISC } from "../lib/site-config";
@@ -24,10 +21,9 @@ export default async function Home() {
     formattedDate: formatDate(p.date),
   }));
 
-  const top5Chatters = chatters.slice(0, 5).map((c) => ({
+  const top5Chatters = chatters.slice(0, 3).map((c) => ({
     ...c,
     description: c.description || c.content?.slice(0, 60) || "",
-    cover: c.cover || DEFAULT_MISC.photoWallImage,
     formattedDate: formatDate(c.date),
   }));
 
@@ -40,67 +36,110 @@ export default async function Home() {
   };
 
   return (
-    <div className="min-h-screen relative pb-10">
+    <div className="home-v2 min-h-screen relative pb-16">
       <Navbar />
       <PageTransition>
-        <div className="w-full max-w-6xl mx-auto mt-28 px-4 sm:px-10 relative z-10">
-          <SearchBar posts={posts} />
+        <div className="home-v2-inner w-full max-w-[1180px] mx-auto px-4 sm:px-8 lg:pr-[200px] pt-28">
+          <HomeHero
+            postCount={posts.length}
+            chatterCount={chatters.length}
+            photoCount={photoCount}
+          />
 
-          <main className="flex flex-col gap-6 w-full">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 w-full items-stretch">
-              <div className="md:col-span-7 flex">
-                <ProfileCard
-                  postCount={posts.length}
-                  chatterCount={chatters.length}
-                  photoCount={photoCount}
-                />
+          <div className="hv-toolbar">
+            <div className="hv-search">
+              <SearchBar posts={posts} compact />
+            </div>
+            <div className="hv-toolbar-meta">
+              <span>PERSONAL ARCHIVE</span>
+              <span className="hv-toolbar-dot" />
+              <span>UPDATED {top5Posts[0]?.formattedDate || "TODAY"}</span>
+            </div>
+          </div>
+
+          <main className="hv-layout">
+            <section className="hv-panel hv-posts">
+              <div className="hv-panel-head">
+                <div>
+                  <span className="hv-profile-label">LATEST NOTES</span>
+                  <h2>最近写下的</h2>
+                </div>
+                <Link href="/posts" className="hv-text-link">
+                  全部文章 <span>↗</span>
+                </Link>
               </div>
-              <div className="md:col-span-5 flex">
+
+              <div className="hv-post-list">
+                {top5Posts.map((post, index) => (
+                  <Link key={post.slug} href={`/posts/${post.slug}`} className="hv-post-row">
+                    <span className="hv-post-index">{String(index + 1).padStart(2, "0")}</span>
+                    <span className="hv-post-main">
+                      <strong>{post.title || "无题"}</strong>
+                      <span>{post.description || "继续阅读这篇记录。"}</span>
+                    </span>
+                    <span className="hv-post-meta">
+                      <time>{post.formattedDate}</time>
+                      <span className="hv-post-arrow">↗</span>
+                    </span>
+                  </Link>
+                ))}
+              </div>
+
+              {top5Posts.length === 0 && (
+                <p className="hv-empty">还没有文章，先写下第一篇吧。</p>
+              )}
+            </section>
+
+            <aside className="hv-side">
+              <div className="hv-panel hv-player">
                 <CloudPlayer />
               </div>
-            </div>
 
-            <div className="w-full mt-[-10px]">
-              <LyricBar />
-            </div>
+              <Link href="/photowall" className="hv-photo-card">
+                <img src={latestAlbum.cover || DEFAULT_MISC.photoWallImage} alt={latestAlbum.title} />
+                <span className="hv-photo-shade" />
+                <span className="hv-photo-copy">
+                  <span className="hv-profile-label">PHOTO WALL</span>
+                  <strong>{latestAlbum.title}</strong>
+                  <span>{latestAlbum.description}</span>
+                </span>
+                <span className="hv-photo-arrow">↗</span>
+              </Link>
+            </aside>
 
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 w-full items-stretch">
-              <div className="md:col-span-4 h-full">
-                <LatestPostsCarousel posts={top5Posts} />
-              </div>
-              <div className="md:col-span-8 flex flex-col gap-6 h-full">
-                <Link
-                  href="/photowall"
-                  className="flex-1 rounded-3xl bg-white/40 dark:bg-slate-800/50 backdrop-blur-md border border-white/40 dark:border-white/10 shadow-xl overflow-hidden transition-all duration-700 hover:scale-[1.02] relative group min-h-[220px]"
-                >
-                  <img
-                    src={latestAlbum.cover || DEFAULT_MISC.photoWallImage}
-                    alt={latestAlbum.title}
-                    className="w-full h-full absolute inset-0 object-cover transition-transform duration-700 group-hover:scale-105 opacity-90"
-                  />
-                  <div className="absolute inset-0 bg-black/20 dark:bg-black/50 group-hover:bg-transparent transition-colors duration-500" />
-                  <div className="absolute bottom-6 left-6 right-6">
-                    <h3 className="text-3xl font-bold text-white mb-2 underline decoration-pink-400">
-                      {latestAlbum.title}
-                    </h3>
-                    <p className="text-white/90 text-lg line-clamp-1">{latestAlbum.description}</p>
-                  </div>
-                </Link>
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-6 flex-1 min-h-[220px] items-stretch">
-                  <div className="md:col-span-8 h-full">
-                    <LatestChatterCarousel chatters={top5Chatters} />
-                  </div>
-                  <div className="md:col-span-4 h-full flex">
-                    <ThemeToggleBlock />
-                  </div>
+            <section className="hv-panel hv-moments">
+              <div className="hv-panel-head">
+                <div>
+                  <span className="hv-profile-label">SMALL MOMENTS</span>
+                  <h2>最近的碎碎念</h2>
                 </div>
+                <Link href="/moments" className="hv-text-link">
+                  全部说说 <span>↗</span>
+                </Link>
               </div>
-            </div>
 
-            <div className="w-full mt-2">
-              <SiteDashboard />
+              <div className="hv-moment-list">
+                {top5Chatters.map((chatter, index) => (
+                  <Link key={chatter.id || index} href="/moments" className="hv-moment-row">
+                    <span className="hv-moment-mark">{String(index + 1).padStart(2, "0")}</span>
+                    <span className="hv-moment-main">
+                      <strong>{chatter.description || "一条新的碎碎念。"}</strong>
+                      <span>{chatter.formattedDate}</span>
+                    </span>
+                  </Link>
+                ))}
+                {top5Chatters.length === 0 && <p className="hv-empty">暂时没有新的碎碎念。</p>}
+              </div>
+            </section>
+
+            <div className="hv-side-bottom">
+              <HomeThemeToggle />
             </div>
           </main>
+
+          <div className="hv-dashboard">
+            <SiteDashboard />
+          </div>
         </div>
       </PageTransition>
     </div>
