@@ -7,9 +7,16 @@ import com.baicaiblogs.service.OssService;
 import com.baicaiblogs.service.ImageCompressionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.http.CacheControl;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -42,10 +49,38 @@ public class PostController {
             String key = "covers/" + LocalDate.now() + "/" + UUID.randomUUID().toString().substring(0, 12)
                     + "." + compressed.extension();
             ossService.putObject(key, compressed.bytes(), compressed.contentType());
-            return ApiResponse.success("上传成功", ossService.publicUrl(key));
+            return ApiResponse.success("上传成功",
+                    "/api/public/covers?key=" + URLEncoder.encode(key, StandardCharsets.UTF_8));
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
         }
+    }
+
+    /** Public cover proxy; the existing OSS bucket does not allow public object ACLs. */
+    @GetMapping("/public/covers")
+    public ResponseEntity<byte[]> publicCover(@RequestParam String key) {
+        if (!key.startsWith("covers/") || key.contains("..") || key.contains("\\")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        try {
+            byte[] bytes = ossService.getObjectBytes(key);
+            return ResponseEntity.ok()
+                    .contentType(coverMediaType(key))
+                    .contentLength(bytes.length)
+                    .cacheControl(CacheControl.maxAge(Duration.ofDays(30)).cachePublic())
+                    .body(bytes);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    private MediaType coverMediaType(String key) {
+        String lower = key.toLowerCase();
+        if (lower.endsWith(".png")) return MediaType.IMAGE_PNG;
+        if (lower.endsWith(".gif")) return MediaType.IMAGE_GIF;
+        if (lower.endsWith(".webp")) return MediaType.parseMediaType("image/webp");
+        if (lower.endsWith(".avif")) return MediaType.parseMediaType("image/avif");
+        return MediaType.IMAGE_JPEG;
     }
 
     // ==================== 公开接口（无需登录） ====================

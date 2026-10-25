@@ -12,6 +12,44 @@ interface FloatingImageToolProps {
   mode?: 'insert' | 'cover';
 }
 
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+async function compressForUpload(file: File): Promise<File> {
+  const lowerName = file.name.toLowerCase();
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type) || lowerName.endsWith('.svg')) {
+    throw new Error('仅支持 JPEG / PNG / WebP 图片');
+  }
+  const bitmap = await createImageBitmap(file);
+  try {
+    const targetWidth = 1000;
+    const targetHeight = 563;
+    const targetRatio = targetWidth / targetHeight;
+    let cropWidth = bitmap.width;
+    let cropHeight = bitmap.height;
+    if (cropWidth / cropHeight > targetRatio) {
+      cropWidth = Math.round(cropHeight * targetRatio);
+    } else {
+      cropHeight = Math.round(cropWidth / targetRatio);
+    }
+    const cropX = Math.round((bitmap.width - cropWidth) / 2);
+    const cropY = Math.round((bitmap.height - cropHeight) / 2);
+    const canvas = document.createElement('canvas');
+    canvas.width = targetWidth;
+    canvas.height = targetHeight;
+    const context = canvas.getContext('2d');
+    if (!context) throw new Error('浏览器不支持图片压缩');
+    context.fillStyle = '#ffffff';
+    context.fillRect(0, 0, targetWidth, targetHeight);
+    context.drawImage(bitmap, cropX, cropY, cropWidth, cropHeight, 0, 0, targetWidth, targetHeight);
+    const blob = await new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob((value) => value ? resolve(value) : reject(new Error('图片压缩失败')), 'image/jpeg', 0.82);
+    });
+    return new File([blob], `${file.name.replace(/\.[^.]+$/, '') || 'cover'}.jpg`, { type: 'image/jpeg' });
+  } finally {
+    bitmap.close();
+  }
+}
+
 export default function FloatingImageTool({ isOpen, onClose, onInsert, mode = 'insert' }: FloatingImageToolProps) {
   const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<'upload' | 'url'>('url');
@@ -25,7 +63,8 @@ export default function FloatingImageTool({ isOpen, onClose, onInsert, mode = 'i
   const handleFileUpload = async (file: File) => {
     setIsUploading(true);
     try {
-      const res = await api.uploadImage(file);
+      const prepared = await compressForUpload(file);
+      const res = await api.uploadImage(prepared);
       if (!res.success || !res.data) throw new Error(res.message || "上传失败");
       if (mode === 'cover') {
         onInsert(res.data);
@@ -127,7 +166,7 @@ export default function FloatingImageTool({ isOpen, onClose, onInsert, mode = 'i
                   onClick={() => fileInputRef.current?.click()}
                   className={`w-full h-36 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all shadow-inner ${isDragging ? 'border-emerald-500 bg-emerald-50/80 dark:bg-emerald-900/40' : 'border-slate-300/80 dark:border-slate-600/80 hover:bg-white/60 dark:hover:bg-slate-800/60'}`}
                 >
-                  <input type="file" ref={fileInputRef} onChange={e => e.target.files && handleFileUpload(e.target.files[0])} accept="image/*" className="hidden" />
+                  <input type="file" ref={fileInputRef} onChange={e => e.target.files && handleFileUpload(e.target.files[0])} accept="image/jpeg,image/png,image/webp" className="hidden" />
                   <div className="text-4xl drop-shadow-sm">{isUploading ? '⏳' : '📥'}</div>
                   <div className="text-center">
                     <p className="text-sm font-bold text-slate-700 dark:text-slate-300">{isUploading ? '正在极速上传...' : '点击或拖拽图片'}</p>

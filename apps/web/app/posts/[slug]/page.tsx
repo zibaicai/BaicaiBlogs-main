@@ -47,7 +47,7 @@ export default async function PostDetail({ params }: { params: Promise<{ slug: s
     <div className="min-h-screen relative pb-20">
       <Navbar />
       <PageTransition>
-        <main className="article-reading-grid w-[100%] md:w-[90%] max-w-6xl mx-auto mt-24 md:mt-28 relative z-10">
+        <main className="article-reading-grid w-[95%] max-w-7xl mx-auto mt-24 md:mt-28 relative z-10">
           <div className="article-left-top">
             <div className="article-card-slot article-card-author">
               <AuthorCard />
