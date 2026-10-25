@@ -29,6 +29,7 @@ import {
   Type, ImageIcon, Quote, RemoveFormatting, ChevronDown,
   Pipette, Hash, Check, Link2, Superscript as SupIcon, Subscript as SubIcon, Minus, Palette, Lock
 } from 'lucide-react';
+import { Select } from '../ui/Select';
 
 const lowlight = createLowlight(all);
 
@@ -320,17 +321,17 @@ const RichTextEditor = forwardRef<RichTextEditorHandle, EditorProps>(({ title, s
         <div className="w-px h-6 bg-slate-400/20 mx-1" />
 
         <div className="flex items-center gap-1 bg-black/5 dark:bg-white/5 rounded-xl px-2">
-          <ChevronDown size={12} className="text-slate-400" />
-          <select
+          <Type size={12} className="text-slate-400" />
+          <Select
             value={currentFontSize}
-            onChange={(e) => {
-              editor.chain().focus().setFontSize(e.target.value).run();
-            }}
-            className="bg-transparent text-[10px] font-black p-2 outline-none text-slate-700 dark:text-slate-300"
-          >
-            <option value="default" disabled>字号</option>
-            {['14px', '16px', '18px', '20px', '24px', '32px', '48px'].map(s => <option key={s} value={s}>{s}</option>)}
-          </select>
+            onChange={(value) => editor.chain().focus().setFontSize(value).run()}
+            ariaLabel="字号"
+            className="!h-8 !w-[88px] !rounded-xl !border-0 !bg-transparent !px-2 !text-[10px]"
+            options={[
+              { value: "default", label: "字号", disabled: true },
+              ...['14px', '16px', '18px', '20px', '24px', '32px', '48px'].map((size) => ({ value: size, label: size })),
+            ]}
+          />
         </div>
 
         <div className="flex items-center gap-1">

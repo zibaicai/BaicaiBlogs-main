@@ -3,6 +3,7 @@
 import React, { useState, KeyboardEvent, useEffect } from 'react';
 import { ImageIcon, Tag, FileText, X, Clock, CloudUpload, Smile, Save, Send } from 'lucide-react';
 import type { Category } from '../../lib/api';
+import { Select } from '../ui/Select';
 
 interface Props {
   type: 'post' | 'chatter' | 'about';
@@ -80,18 +81,16 @@ export default function MetaMatrix({
           </div>
           <div className="flex flex-col gap-2">
             <span className="text-[9px] font-black uppercase tracking-[0.18em] text-slate-400">分类</span>
-            <select
+            <Select
               value={categoryId}
-              onChange={(event) => setCategoryId(event.target.value)}
-              className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-xs font-bold text-slate-200 outline-none focus:ring-2 focus:ring-indigo-500"
-            >
-              <option value="">未分类 / 请选择根分类</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.path}
-                </option>
-              ))}
-            </select>
+              onChange={setCategoryId}
+              ariaLabel="文章分类"
+              placeholder="未分类 / 请选择根分类"
+              options={[
+                { value: "", label: "未分类 / 请选择根分类" },
+                ...categories.map((category) => ({ value: String(category.id), label: category.path })),
+              ]}
+            />
             <span className="text-[9px] text-slate-500">必选一个分类；深层子分类可选。</span>
           </div>
         </div>

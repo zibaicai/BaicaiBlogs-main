@@ -15,6 +15,7 @@ import {
 import { api, uploadToOss, type GalleryAlbum, type GalleryPhoto } from "../lib/api";
 import AuthImage from "../components/AuthImage";
 import { useToast } from "../components/ToastProvider";
+import { Select } from "../components/ui/Select";
 
 function readImageSize(file: File): Promise<{ width: number; height: number }> {
   return new Promise((resolve) => {
@@ -244,15 +245,17 @@ export default function GalleryPage() {
               className="w-full rounded-xl bg-black/20 border border-white/10 px-4 py-2.5 text-sm text-slate-100 outline-none focus:ring-2 focus:ring-indigo-500"
             />
             <div className="flex gap-2">
-              <select
+              <Select
                 value={newVisibility}
-                onChange={(e) => setNewVisibility(e.target.value)}
-                className="flex-1 rounded-xl bg-black/20 border border-white/10 px-3 py-2.5 text-xs text-slate-100 outline-none"
-              >
-                <option value="PUBLIC">公开</option>
-                <option value="PASSWORD">密码</option>
-                <option value="PRIVATE">私密</option>
-              </select>
+                onChange={setNewVisibility}
+                ariaLabel="新相册可见性"
+                className="flex-1 !h-10"
+                options={[
+                  { value: "PUBLIC", label: "公开" },
+                  { value: "PASSWORD", label: "密码" },
+                  { value: "PRIVATE", label: "私密" },
+                ]}
+              />
               <button
                 onClick={createAlbum}
                 className="px-4 py-2.5 rounded-xl bg-indigo-500 text-white text-xs font-black flex items-center gap-1"
@@ -354,15 +357,17 @@ export default function GalleryPage() {
                     onChange={(e) => setSelected({ ...selected, title: e.target.value })}
                     className="rounded-xl bg-black/20 border border-white/10 px-4 py-2.5 text-sm text-slate-100"
                   />
-                  <select
+                  <Select
                     value={selected.visibility}
-                    onChange={(e) => setSelected({ ...selected, visibility: e.target.value })}
-                    className="rounded-xl bg-black/20 border border-white/10 px-3 py-2.5 text-sm text-slate-100"
-                  >
-                    <option value="PUBLIC">公开</option>
-                    <option value="PASSWORD">密码</option>
-                    <option value="PRIVATE">私密</option>
-                  </select>
+                    onChange={(value) => setSelected({ ...selected, visibility: value })}
+                    ariaLabel="相册可见性"
+                    className="!h-10"
+                    options={[
+                      { value: "PUBLIC", label: "公开" },
+                      { value: "PASSWORD", label: "密码" },
+                      { value: "PRIVATE", label: "私密" },
+                    ]}
+                  />
                   <input
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}

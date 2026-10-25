@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { FolderTree, Loader2, Plus, Trash2 } from "lucide-react";
 import { api, type Category } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
+import { Button, Card, Input, Select } from "../components/ui";
 
 export default function CategoriesPage() {
   const { showToast } = useToast();
@@ -69,35 +70,33 @@ export default function CategoriesPage() {
         <p className="mt-1 text-sm font-bold text-slate-400">最多 4 级；文章必须选择根分类，深层分类可选。</p>
       </div>
 
-      <div className="flex flex-col gap-3 rounded-3xl border border-white/10 bg-white/5 p-5 md:flex-row md:items-end">
-        <label className="flex-1 text-xs font-black text-slate-400">
-          分类名称
-          <input
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            placeholder="例如：前端 / React"
-            className="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-        </label>
-        <label className="text-xs font-black text-slate-400 md:w-64">
-          上级分类
-          <select
-            value={parentId}
-            onChange={(event) => setParentId(event.target.value)}
-            className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-800 px-4 py-3 text-sm text-white outline-none"
-          >
-            <option value="">根分类</option>
-            {parents.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.path}
-              </option>
-            ))}
-          </select>
-        </label>
-        <button onClick={create} disabled={busy} className="btn btn-primary flex items-center gap-2 rounded-2xl px-5 py-3 text-xs font-black disabled:opacity-50">
-          <Plus size={14} /> 新建分类
-        </button>
-      </div>
+      <Card className="p-5" padded={false}>
+        <div className="flex flex-col gap-3 md:flex-row md:items-end">
+          <div className="flex-1">
+            <Input
+              label="分类名称"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              placeholder="例如：前端 / React"
+            />
+          </div>
+          <div className="md:w-64">
+            <span className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">上级分类</span>
+            <Select
+              value={parentId}
+              onChange={setParentId}
+              ariaLabel="上级分类"
+              options={[
+                { value: "", label: "根分类" },
+                ...parents.map((item) => ({ value: String(item.id), label: item.path })),
+              ]}
+            />
+          </div>
+          <Button onClick={create} disabled={busy} className="shrink-0">
+            <Plus size={14} /> 新建分类
+          </Button>
+        </div>
+      </Card>
 
       {loading && <div className="flex items-center gap-2 text-slate-400"><Loader2 className="animate-spin" size={16} />加载中…</div>}
 

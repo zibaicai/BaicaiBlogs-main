@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Check, Hash, Loader2, Plus, X } from "lucide-react";
 import { api, type Tag } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
+import { Button, Card, Input } from "../components/ui";
 
 export default function TagsPage() {
   const { showToast } = useToast();
@@ -73,17 +74,14 @@ export default function TagsPage() {
         <p className="mt-1 text-sm font-bold text-slate-400">完全扁平标签；用户申请后在这里审批，通过/拒绝都会发站内信。</p>
       </div>
 
-      <div className="flex gap-2 rounded-3xl border border-white/10 bg-white/5 p-4">
-        <input
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          placeholder="直接添加标签，例如 React"
-          className="min-w-0 flex-1 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none focus:ring-2 focus:ring-indigo-500"
-        />
-        <button onClick={create} disabled={busy} className="btn btn-primary flex items-center gap-2 rounded-2xl px-5 py-3 text-xs font-black disabled:opacity-50">
+      <Card className="flex gap-2 p-4" padded={false}>
+        <div className="min-w-0 flex-1">
+          <Input value={name} onChange={(event) => setName(event.target.value)} placeholder="直接添加标签，例如 React" />
+        </div>
+        <Button onClick={create} disabled={busy} className="shrink-0">
           <Plus size={14} /> 添加
-        </button>
-      </div>
+        </Button>
+      </Card>
 
       <section>
         <h2 className="mb-3 text-xs font-black uppercase tracking-widest text-amber-300">待审批 {pending.length}</h2>

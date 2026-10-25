@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ImagePlus, Loader2, Pencil, Plus, Trash2, X } from "lucide-react";
 import { api, type Moment } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
+import { Button, Dialog, Input, Select, Textarea } from "../components/ui";
 
 type MomentDraft = {
   content: string;
@@ -179,36 +180,47 @@ export default function MomentsPage() {
 
       {!loading && filtered.length === 0 && <div className="py-16 text-center text-sm font-bold text-slate-500">暂无说说</div>}
 
-      {formOpen && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-          <div className="admin-scrollbar max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl border border-white/10 bg-slate-900 p-5 shadow-2xl">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-black text-white">{editing ? "编辑说说" : "新建说说"}</h2>
-              <button onClick={() => setFormOpen(false)} className="rounded-full p-2 text-slate-400 hover:bg-white/10"><X size={18} /></button>
-            </div>
-            <div className="mt-5 grid gap-3">
-              <textarea value={draft.content} onChange={(e) => setDraft({ ...draft, content: e.target.value })} rows={9} placeholder="说说内容，支持 Markdown" className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none focus:ring-2 focus:ring-indigo-500" />
-              <textarea value={draft.images} onChange={(e) => setDraft({ ...draft, images: e.target.value })} rows={3} placeholder="图片 URL，每行一个（可空）" className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none focus:ring-2 focus:ring-indigo-500" />
-              <div className="grid gap-3 sm:grid-cols-2">
-                <input type="date" value={draft.date} onChange={(e) => setDraft({ ...draft, date: e.target.value })} className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none focus:ring-2 focus:ring-indigo-500" />
-                <select value={draft.status} onChange={(e) => setDraft({ ...draft, status: e.target.value as MomentDraft["status"] })} className="rounded-2xl border border-white/10 bg-slate-800 px-4 py-3 text-sm text-white outline-none">
-                  <option value="DRAFT">保存为草稿</option>
-                  <option value="PUBLISHED">发布</option>
-                </select>
-                <select value={draft.visibility} onChange={(e) => setDraft({ ...draft, visibility: e.target.value as MomentDraft["visibility"] })} disabled={draft.status === "DRAFT"} className="rounded-2xl border border-white/10 bg-slate-800 px-4 py-3 text-sm text-white outline-none disabled:opacity-40">
-                  <option value="PRIVATE">私密</option>
-                  <option value="PUBLIC">公开</option>
-                </select>
-                <div className="flex items-center gap-2 text-[10px] text-slate-400"><ImagePlus size={13} /> 图片可为空</div>
-              </div>
-              <div className="mt-2 flex justify-end gap-3">
-                <button onClick={() => setFormOpen(false)} className="rounded-2xl border border-white/10 px-5 py-3 text-xs font-black text-slate-300">取消</button>
-                <button onClick={save} disabled={saving} className="rounded-2xl bg-indigo-500 px-5 py-3 text-xs font-black text-white disabled:opacity-50">{saving ? "保存中…" : "保存"}</button>
-              </div>
-            </div>
+      <Dialog
+        open={formOpen}
+        onClose={() => setFormOpen(false)}
+        title={editing ? "编辑说说" : "新建说说"}
+        description="支持 Markdown；草稿仅自己可见，私密说说仅拥有者可见。"
+        widthClassName="max-w-2xl"
+        footer={
+          <div className="flex justify-end gap-3">
+            <Button variant="ghost" onClick={() => setFormOpen(false)}>取消</Button>
+            <Button onClick={save} disabled={saving}>{saving ? "保存中…" : "保存"}</Button>
+          </div>
+        }
+      >
+        <div className="grid gap-3">
+          <Textarea value={draft.content} onChange={(e) => setDraft({ ...draft, content: e.target.value })} rows={9} placeholder="说说内容，支持 Markdown" />
+          <Textarea value={draft.images} onChange={(e) => setDraft({ ...draft, images: e.target.value })} rows={3} placeholder="图片 URL，每行一个（可空）" />
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Input type="date" value={draft.date} onChange={(e) => setDraft({ ...draft, date: e.target.value })} />
+            <Select
+              value={draft.status}
+              onChange={(value) => setDraft({ ...draft, status: value as MomentDraft["status"] })}
+              ariaLabel="说说状态"
+              options={[
+                { value: "DRAFT", label: "保存为草稿" },
+                { value: "PUBLISHED", label: "发布" },
+              ]}
+            />
+            <Select
+              value={draft.visibility}
+              onChange={(value) => setDraft({ ...draft, visibility: value as MomentDraft["visibility"] })}
+              disabled={draft.status === "DRAFT"}
+              ariaLabel="说说可见性"
+              options={[
+                { value: "PRIVATE", label: "私密" },
+                { value: "PUBLIC", label: "公开" },
+              ]}
+            />
+            <div className="flex items-center gap-2 text-[10px] text-slate-400"><ImagePlus size={13} /> 图片可为空</div>
           </div>
         </div>
-      )}
+      </Dialog>
     </div>
   );
 }
