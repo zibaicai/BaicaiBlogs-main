@@ -176,7 +176,8 @@ export default function MyPhotosPage() {
     <div className="min-h-screen relative pb-20">
       <Navbar />
       <PageTransition>
-        <main className="w-full max-w-6xl mx-auto mt-28 px-4 sm:px-10 relative z-10">
+        <main className="directory-shell">
+          <div className="max-w-6xl mx-auto">
           <header className="mb-8">
             <h1 className="text-4xl font-black text-slate-900 dark:text-white">我的图片</h1>
             <p className="text-sm text-slate-500 dark:text-slate-400 font-medium mt-2">
@@ -354,6 +355,7 @@ export default function MyPhotosPage() {
                 </>
               )}
             </section>
+          </div>
           </div>
         </main>
       </PageTransition>

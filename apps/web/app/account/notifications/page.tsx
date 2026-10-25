@@ -44,7 +44,8 @@ export default function NotificationsPage() {
     <div className="min-h-screen relative pb-20">
       <Navbar />
       <PageTransition>
-        <main className="w-full max-w-3xl mx-auto mt-28 px-4 sm:px-10 relative z-10">
+        <main className="directory-shell">
+          <div className="max-w-3xl mx-auto">
           <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-2 flex items-center gap-2">
             <Bell className="text-indigo-500" /> 消息中心
           </h1>
@@ -71,6 +72,7 @@ export default function NotificationsPage() {
                 </div>
               </div>
             ))}
+          </div>
           </div>
         </main>
       </PageTransition>

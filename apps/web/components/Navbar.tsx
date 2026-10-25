@@ -108,7 +108,7 @@ export default function Navbar() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden overflow-hidden bg-white/80 dark:bg-slate-900/90 backdrop-blur-2xl border-t border-white/20 dark:border-white/5"
+              className="lg:hidden overflow-hidden bg-transparent border-t border-white/20 dark:border-white/5"
             >
               <div className="w-[95%] max-w-7xl mx-auto py-4 grid grid-cols-2 gap-2">
                 {NAV_LINKS.map((link) => (

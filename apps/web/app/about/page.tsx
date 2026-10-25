@@ -1,4 +1,4 @@
-﻿import Navbar from "../../components/Navbar";
+import Navbar from "../../components/Navbar";
 import PageTransition from "../../components/PageTransition";
 import AuthorCard from "../../components/AuthorCard";
 import { getPublicSiteConfig } from "../../lib/server-api";
@@ -13,7 +13,8 @@ export default async function AboutPage() {
     <div className="min-h-screen relative pb-20">
       <Navbar />
       <PageTransition>
-        <main className="w-full max-w-5xl mx-auto mt-28 px-4 sm:px-10 relative z-10">
+        <main className="directory-shell">
+          <div className="max-w-5xl mx-auto">
           <header className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-4">
               关于
@@ -64,6 +65,7 @@ export default async function AboutPage() {
                 </div>
               </div>
             </section>
+          </div>
           </div>
         </main>
       </PageTransition>

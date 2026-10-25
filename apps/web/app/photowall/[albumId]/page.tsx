@@ -290,7 +290,7 @@ export default function AlbumPage() {
                       src={photo.thumbUrl}
                       alt={photo.caption || ""}
                       loading="lazy"
-                      className="relative w-full h-full object-contain p-1 transition-transform duration-500 group-hover:scale-105"
+                      className="relative w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
                     />
                   </button>
                 ))}

@@ -240,7 +240,7 @@ input[type="number"] {
    ======================================================== */
 @layer components {
   .directory-shell {
-    @apply w-[95%] max-w-7xl mx-auto mt-28 px-4 relative z-10 pb-20;
+    @apply w-[95%] md:w-[90%] max-w-7xl mx-auto mt-28 px-4 relative z-10 pb-20;
   }
 
   .directory-grid {
