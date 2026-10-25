@@ -7,7 +7,7 @@ export default function AuthorCard() {
   const { siteInfo } = useSiteConfigContext();
 
   return (
-    <div className="flex h-full flex-col rounded-3xl border border-white/40 bg-white/60 p-5 text-left shadow-xl backdrop-blur-xl transition-colors duration-700 dark:border-white/10 dark:bg-slate-800/50">
+    <div className="flex h-full flex-col justify-evenly rounded-3xl border border-white/40 bg-white/60 p-5 text-left shadow-xl backdrop-blur-xl transition-colors duration-700 dark:border-white/10 dark:bg-slate-800/50">
       <div className="flex items-start gap-4">
         <div className="h-16 w-16 shrink-0 rounded-full bg-gradient-to-tr from-[var(--ui-accent)] to-[var(--ui-accent-hover)] p-1 shadow-md transition-transform duration-500 hover:rotate-3">
           <img
@@ -25,7 +25,7 @@ export default function AuthorCard() {
           </p>
         </div>
       </div>
-      <div className="mt-auto border-t border-slate-300/35 pt-3 dark:border-white/10">
+      <div className="border-t border-slate-300/35 pt-3 dark:border-white/10">
         <ClientSocials align="start" />
       </div>
     </div>
