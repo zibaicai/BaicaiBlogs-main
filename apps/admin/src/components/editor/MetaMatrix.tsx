@@ -4,6 +4,7 @@ import React, { useState, KeyboardEvent, useEffect } from 'react';
 import { ImageIcon, Tag, FileText, X, Clock, CloudUpload, Smile, Save, Send } from 'lucide-react';
 import type { Category } from '../../lib/api';
 import { Select } from '../ui/Select';
+import MediaField from '../ui/MediaField';
 
 interface Props {
   type: 'post' | 'chatter' | 'about';
@@ -66,18 +67,16 @@ export default function MetaMatrix({
         {/* 1. 封面图区 */}
         <div className="flex flex-col">
           <Label icon={ImageIcon} text="Cover Image" color="border-indigo-500" />
-          <div onClick={onOpenImageTool} className="w-full aspect-video bg-black/10 dark:bg-black/40 rounded-[32px] border-2 border-dashed border-white/10 flex items-center justify-center overflow-hidden mb-4 group relative cursor-pointer shadow-inner transition-all">
-            {cover ? (
-              <img src={cover} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-            ) : (
-              <div className="flex flex-col items-center gap-2 text-slate-400">
-                <CloudUpload size={28} className="opacity-30 group-hover:opacity-100 group-hover:text-indigo-400 transition-all" />
-                <span className="text-[9px] font-black uppercase tracking-widest">Click to Upload</span>
-              </div>
-            )}
-            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center backdrop-blur-sm transition-opacity">
-              <span className="text-white text-xs font-bold tracking-widest">更换封面</span>
-            </div>
+          <div className="mb-4">
+            <MediaField
+              label="封面图"
+              hint="16:9，上传后自动压缩"
+              value={cover ? [cover] : []}
+              onChange={(images) => setCover(images[0] || "")}
+              multiple={false}
+              max={1}
+              kind="image"
+            />
           </div>
           <div className="flex flex-col gap-2">
             <span className="text-[9px] font-black uppercase tracking-[0.18em] text-slate-400">分类</span>

@@ -52,6 +52,7 @@ export default async function PostsPage() {
             items={items}
             filters={filters}
             featuredFirst
+            compact
             searchPlaceholder="搜索标题、摘要、分类或标签..."
             empty="还没有写下第一篇。"
           />

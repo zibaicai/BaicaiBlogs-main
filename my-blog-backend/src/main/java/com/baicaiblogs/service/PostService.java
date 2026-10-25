@@ -761,6 +761,7 @@ public class PostService {
                 .cover(post.getCover())
                 .date(post.getDate())
                 .status(post.getStatus())
+                .visibility(post.getVisibility())
                 .views(post.getViews())
                 .tags(deserializeTags(post.getTags()))
                 .categoryId(post.getCategoryId())

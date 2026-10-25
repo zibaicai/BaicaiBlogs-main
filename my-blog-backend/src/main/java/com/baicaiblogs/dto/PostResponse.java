@@ -25,6 +25,7 @@ public class PostResponse {
     private String cover;
     private LocalDateTime date;
     private String status;
+    private String visibility;
     private Integer views;
     /** 标签列表 */
     private List<String> tags;

@@ -483,11 +483,11 @@ input[type="number"] {
 
 /* Homepage v2 — editorial / bento */
 .home-v2 {
-  --hv-text: #1c2733;
-  --hv-muted: #6e7a86;
-  --hv-line: rgba(29, 45, 60, 0.14);
-  --hv-panel: rgba(255, 255, 255, 0.28);
-  --hv-panel-border: rgba(255, 255, 255, 0.48);
+  --hv-text: #14202b;
+  --hv-muted: #4b5a68;
+  --hv-line: rgba(29, 45, 60, 0.16);
+  --hv-panel: rgba(255, 255, 255, 0.38);
+  --hv-panel-border: rgba(255, 255, 255, 0.55);
   --hv-accent: var(--ui-accent);
   --hv-accent-soft: var(--ui-accent-soft);
   color: var(--hv-text);
@@ -2931,4 +2931,314 @@ html[data-custom-theme="true"] .btn-secondary {
   .timeline-row:nth-child(even) {
     margin-top: 0;
   }
+}
+
+/* Daytime contrast: the background is image-driven, so keep a small local
+   reading halo while preserving the translucent editorial surfaces. */
+html:not(.dark) .hv-hero-copy,
+html:not(.dark) .hv-eyebrow,
+html:not(.dark) .hv-profile-label,
+html:not(.dark) .hv-post-meta,
+html:not(.dark) .hv-empty {
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.65), 0 0 16px rgba(255, 255, 255, 0.3);
+}
+
+html:not(.dark) .hv-hero-copy {
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7), 0 0 24px rgba(255, 255, 255, 0.34);
+}
+
+.hv-toolbar-meta-only .hv-toolbar-meta {
+  border: 1px solid var(--hv-panel-border);
+  border-radius: 999px;
+  padding: 5px 10px;
+  background: var(--hv-panel);
+  backdrop-filter: blur(14px);
+}
+
+.hv-toolbar-meta {
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.hv-profile-label,
+.hv-eyebrow {
+  font-weight: 800;
+}
+
+.hv-post-meta,
+.hv-metric-note {
+  font-size: 10px;
+}
+
+.hv-post-main span,
+.hv-empty {
+  color: var(--hv-muted);
+  font-weight: 600;
+}
+
+.hv-empty {
+  font-size: 12px;
+}
+
+.hv-side .hv-moment-main span {
+  color: var(--hv-muted);
+  font-size: 10px;
+}
+
+/* Compact archive layout and horizontal album cards */
+.directory-shell {
+  margin-top: 6.5rem;
+}
+
+.directory-header {
+  margin-bottom: 1.25rem;
+  text-align: left;
+}
+
+.directory-eyebrow {
+  margin-bottom: 0.4rem;
+}
+
+.directory-title {
+  font-size: clamp(2rem, 3.2vw, 2.65rem);
+  line-height: 1.05;
+}
+
+.directory-subtitle {
+  justify-content: flex-start;
+  margin-top: 0.55rem;
+  gap: 0.5rem;
+}
+
+.directory-toolbar {
+  position: sticky;
+  top: 4.5rem;
+  z-index: 60;
+  margin-bottom: 1.25rem;
+  flex-direction: row;
+  align-items: center;
+  padding: 0.45rem;
+  border-radius: 1.1rem;
+  gap: 0.75rem;
+}
+
+.directory-tabs {
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.directory-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.directory-view-toggle {
+  flex: 0 0 auto;
+}
+
+.directory-grid.directory-grid-compact {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.directory-grid.directory-grid-compact > * {
+  grid-column: auto;
+}
+
+.archive-card {
+  display: grid;
+  grid-template-columns: 182px minmax(0, 1fr);
+  min-height: 154px;
+  overflow: hidden;
+  border: 1px solid var(--hv-panel-border);
+  border-radius: 1.25rem;
+  background: var(--hv-panel);
+  box-shadow: 0 14px 40px rgba(24, 38, 55, 0.08);
+  backdrop-filter: blur(24px) saturate(135%);
+  transition: border-color 0.25s ease, transform 0.25s ease, background 0.25s ease;
+}
+
+.archive-card:hover {
+  border-color: var(--ui-accent);
+  background: color-mix(in srgb, var(--hv-panel) 78%, white);
+  transform: translateY(-2px);
+}
+
+.dark .archive-card:hover {
+  background: color-mix(in srgb, var(--hv-panel) 78%, #1e293b);
+}
+
+.archive-card-media {
+  min-height: 154px;
+  overflow: hidden;
+  background: rgba(15, 23, 42, 0.3);
+}
+
+.archive-card-body {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1rem 1.1rem;
+}
+
+.archive-card-eyebrow {
+  margin-bottom: 0.3rem;
+  color: var(--hv-accent);
+  font-family: Consolas, monospace;
+  font-size: 0.55rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.archive-card-title {
+  overflow: hidden;
+  color: var(--hv-text);
+  font-family: "Songti SC", "Noto Serif SC", Georgia, serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.archive-card-description {
+  display: -webkit-box;
+  overflow: hidden;
+  margin-top: 0.35rem;
+  color: var(--hv-muted);
+  font-size: 0.72rem;
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.archive-card-foot {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.7rem;
+}
+
+.archive-card-meta {
+  margin-left: auto;
+  color: var(--hv-muted);
+  font-family: Consolas, monospace;
+  font-size: 0.58rem;
+  white-space: nowrap;
+}
+
+.archive-card-arrow {
+  color: var(--hv-accent);
+  font-size: 0.9rem;
+}
+
+.archive-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  border-radius: 999px;
+  padding: 2px 6px;
+  color: var(--hv-muted);
+  background: rgba(15, 23, 42, 0.12);
+  font-size: 0.55rem;
+  font-weight: 700;
+}
+
+.dark .archive-badge {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.archive-badge-amber { color: #b45309; background: rgba(245, 158, 11, 0.14); }
+.archive-badge-sky { color: #0369a1; background: rgba(14, 165, 233, 0.14); }
+.archive-badge-emerald { color: #047857; background: rgba(16, 185, 129, 0.14); }
+
+.dark .archive-badge-amber { color: #fcd34d; }
+.dark .archive-badge-sky { color: #7dd3fc; }
+.dark .archive-badge-emerald { color: #6ee7b7; }
+
+@media (max-width: 767px) {
+  .directory-toolbar {
+    top: 4rem;
+    flex-wrap: wrap;
+  }
+
+  .directory-grid.directory-grid-compact {
+    grid-template-columns: 1fr;
+  }
+
+  .archive-card {
+    grid-template-columns: 108px minmax(0, 1fr);
+    min-height: 128px;
+  }
+
+  .archive-card-media {
+    min-height: 128px;
+  }
+
+  .archive-card-body {
+    padding: 0.8rem;
+  }
+
+  .archive-card-title {
+    font-size: 1.05rem;
+  }
+
+  .archive-card-description {
+    -webkit-line-clamp: 1;
+  }
+}
+
+/* Compact post rows: the post card already has media + body, so it can share
+   the horizontal archive rhythm without changing its data mapping. */
+.directory-grid.directory-grid-compact > * .directory-card:not(.archive-card) {
+  display: grid;
+  grid-template-columns: 182px minmax(0, 1fr);
+  min-height: 154px;
+}
+
+.directory-grid.directory-grid-compact > * .directory-card:not(.archive-card) .directory-card-media {
+  height: 100%;
+  min-height: 154px;
+}
+
+.directory-grid.directory-grid-compact > * .directory-card:not(.archive-card) .directory-card-body {
+  justify-content: center;
+  padding: 16px 18px;
+}
+
+.directory-grid.directory-grid-compact > * .directory-card:not(.archive-card) .directory-card-title {
+  font-size: 1.15rem;
+}
+
+@media (max-width: 767px) {
+  .directory-grid.directory-grid-compact > * .directory-card:not(.archive-card) {
+    grid-template-columns: 108px minmax(0, 1fr);
+    min-height: 128px;
+  }
+
+  .directory-grid.directory-grid-compact > * .directory-card:not(.archive-card) .directory-card-media {
+    min-height: 128px;
+  }
+
+  .directory-grid.directory-grid-compact > * .directory-card:not(.archive-card) .directory-card-body {
+    padding: 12px;
+  }
+}
+
+/* Archive pages live outside .home-v2, so give the shared card its own tokens. */
+.archive-card {
+  --hv-text: #14202b;
+  --hv-muted: #4b5a68;
+  --hv-panel: rgba(255, 255, 255, 0.42);
+  --hv-panel-border: rgba(255, 255, 255, 0.58);
+}
+
+.dark .archive-card {
+  --hv-text: #edf3fa;
+  --hv-muted: #96a5b6;
+  --hv-panel: rgba(8, 15, 26, 0.5);
+  --hv-panel-border: rgba(255, 255, 255, 0.12);
 }

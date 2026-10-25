@@ -185,6 +185,7 @@ export const api = {
   logout: () => request<void>("/auth/logout", { method: "POST", credentials: "include" }),
   myPosts: () => request<Post[]>("/admin/posts/mine"),
   myProjects: () => request<Project[]>("/admin/projects/mine"),
+  getOverview: () => request<any>("/admin/overview"),
   publicPosts: () => request<Post[]>("/public/posts"),
 
   setPostVisibility: (slug: string, visibility: string) =>

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 // 🌟 引入你的图床工具组件 (请根据你实际的文件夹层级调整相对路径)
 import FloatingImageTool from '../editor/FloatingImageTool';
+import MediaField from '../ui/MediaField';
 
 export default function ProfileSection({ formData, handleUpdate, pushToQueue }: any) {
   // 🌟 终极防崩溃兜底
@@ -99,15 +100,17 @@ export default function ProfileSection({ formData, handleUpdate, pushToQueue }: 
                 </div>
               </div>
 
-              {/* 头像 URL */}
+              {/* 头像上传 */}
               <div className="col-span-1 md:col-span-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase ml-1">头像 URL (Avatar)</label>
-                <div className="flex gap-2 mt-1">
-                  <input type="text" value={safeData.avatarUrl || ''} onChange={e => handleUpdate('avatarUrl', e.target.value)} className="flex-1 bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-indigo-500" />
-                  <button onClick={() => openImageTool('avatarUrl')} className="px-4 bg-indigo-100 hover:bg-indigo-200 dark:bg-indigo-500/20 dark:hover:bg-indigo-500/40 text-indigo-600 dark:text-indigo-300 rounded-2xl font-black text-xs transition-colors whitespace-nowrap flex items-center gap-1 shadow-sm">
-                    ☁️ 图床
-                  </button>
-                </div>
+                <MediaField
+                  label="头像"
+                  hint="建议使用正方形图片"
+                  value={safeData.avatarUrl ? [safeData.avatarUrl] : []}
+                  onChange={(images) => handleUpdate('avatarUrl', images[0] || '')}
+                  multiple={false}
+                  max={1}
+                  kind="image"
+                />
               </div>
 
               <div className="col-span-1 md:col-span-2">

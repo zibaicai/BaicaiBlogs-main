@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { DEFAULT_DANMAKU } from '../lib/site-config';
+import { useEffect, useRef, useState } from "react";
+import { DEFAULT_DANMAKU } from "../lib/site-config";
 
-interface DanmakuItem {
+interface DanmakuLane {
   id: number;
   text: string;
   top: number;
@@ -11,93 +11,135 @@ interface DanmakuItem {
   delay: number;
 }
 
-const LANE_COUNT = 8;
+const LANE_MIN = 8;
+const LANE_MAX = 12;
+
+function shuffle<T>(items: T[]): T[] {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function laneCountFor(total: number) {
+  return Math.min(LANE_MAX, LANE_MIN + Math.floor(total / 250));
+}
 
 /**
- * 只读背景弹幕：数据库驱动，按固定轨道播放，避免多条弹幕叠在同一行。
- * 输入框在 DanmakuComposer，发送成功后通过 danmaku-updated 事件刷新。
+ * Decorative background danmaku.
+ *
+ * Lanes are stable and animated by CSS. When a lane finishes a pass we only
+ * replace its text, so changing the pool or adding messages never restarts the
+ * whole animation. The pool can grow to 1k strings while only 8-12 lanes are
+ * ever mounted.
  */
 export default function DanmakuBackground() {
-  const [danmakus, setDanmakus] = useState<DanmakuItem[]>([]);
-  const [list, setList] = useState<string[]>([]);
-  const [round, setRound] = useState(0);
+  const [pool, setPool] = useState<string[]>([]);
+  const [lanes, setLanes] = useState<DanmakuLane[]>([]);
+  const poolRef = useRef<string[]>([]);
+  const bagRef = useRef<string[]>([]);
+
+  const takeText = () => {
+    if (bagRef.current.length === 0) {
+      bagRef.current = shuffle(poolRef.current.length ? poolRef.current : DEFAULT_DANMAKU);
+    }
+    return bagRef.current.pop() || DEFAULT_DANMAKU[0];
+  };
 
   useEffect(() => {
     let cancelled = false;
 
     const load = async () => {
       try {
-        const res = await fetch('/api/public/danmaku', { cache: 'no-store' });
+        const res = await fetch("/api/public/danmaku", { cache: "no-store" });
         const json = await res.json();
         if (!cancelled && json?.success && Array.isArray(json.data)) {
-          const items = json.data.filter((x: unknown) => typeof x === 'string' && x.trim()).slice(0, 500);
-          setList(items.length > 0 ? items : DEFAULT_DANMAKU);
+          const items = json.data
+            .filter((x: unknown) => typeof x === "string" && x.trim())
+            .slice(0, 1000);
+          const next = items.length > 0 ? items : DEFAULT_DANMAKU;
+          poolRef.current = next;
+          bagRef.current = shuffle(next);
+          setPool(next);
         }
       } catch {
-        if (!cancelled) setList(DEFAULT_DANMAKU);
+        if (!cancelled) {
+          poolRef.current = DEFAULT_DANMAKU;
+          bagRef.current = shuffle(DEFAULT_DANMAKU);
+          setPool(DEFAULT_DANMAKU);
+        }
       }
     };
 
     const onUpdated = () => void load();
     void load();
-    window.addEventListener('danmaku-updated', onUpdated);
-    const poll = window.setInterval(load, 30000);
+    window.addEventListener("danmaku-updated", onUpdated);
+
     return () => {
       cancelled = true;
-      window.removeEventListener('danmaku-updated', onUpdated);
-      window.clearInterval(poll);
+      window.removeEventListener("danmaku-updated", onUpdated);
     };
   }, []);
 
-  // 每 45 秒换一批文本，避免长时间反复看到同样 8 条
   useEffect(() => {
-    const timer = window.setInterval(() => setRound((r) => r + 1), 45000);
-    return () => window.clearInterval(timer);
-  }, []);
+    if (pool.length === 0) return;
+    const count = laneCountFor(pool.length);
+    setLanes((previous) => {
+      const next: DanmakuLane[] = [];
+      for (let id = 0; id < count; id += 1) {
+        const existing = previous.find((lane) => lane.id === id);
+        const duration = 32 + Math.random() * 12;
+        const top = 8 + (id * 84) / Math.max(1, count - 1);
+        next.push(
+          existing
+            ? { ...existing, top }
+            : {
+                id,
+                text: takeText(),
+                top,
+                duration,
+                // Start mid-cycle: no initial queue at the left edge.
+                delay: -Math.random() * duration,
+              }
+        );
+      }
+      return next;
+    });
+    // takeText reads refs; the lane count only needs to react to pool size.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pool.length]);
 
-  useEffect(() => {
-    if (list.length === 0) {
-      setDanmakus([]);
-      return;
-    }
-
-    // 每个轨道只放一条，且轨道之间垂直间距固定，彻底避免叠字
-    setDanmakus(
-      Array.from({ length: LANE_COUNT }, (_, i) => ({
-        id: i,
-        text: list[Math.floor(Math.random() * list.length)],
-        top: 8 + (i * 84) / Math.max(1, LANE_COUNT - 1),
-        duration: 32 + Math.random() * 12,
-        delay: i * 3.8,
-      }))
+  const advance = (id: number) => {
+    setLanes((previous) =>
+      previous.map((lane) => (lane.id === id ? { ...lane, text: takeText() } : lane))
     );
-  }, [list, round]);
+  };
 
   return (
     <div className="danmaku-layer fixed left-0 right-0 top-28 z-0 h-[30vh] overflow-hidden pointer-events-none select-none">
-      {danmakus.map((item) => (
+      {lanes.map((lane) => (
         <div
-          key={item.id}
-          className="danmaku-item absolute left-0 whitespace-nowrap font-bold text-[13px] tracking-wider text-white/60 dark:text-white/30 md:text-[15px]"
+          key={lane.id}
+          className="danmaku-item absolute left-0 whitespace-nowrap font-medium text-[12px] tracking-[0.06em] text-white/35 dark:text-white/25 md:text-[14px]"
           style={{
-            top: `${item.top}%`,
-            animation: `danmaku-flow ${item.duration}s linear ${item.delay}s infinite`,
-            textShadow: "0 1px 4px rgba(15,23,42,0.75)",
+            top: `${lane.top}%`,
+            animation: `danmaku-flow ${lane.duration}s linear ${lane.delay}s infinite`,
+            animationFillMode: "both",
+            textShadow: "0 1px 3px rgba(15,23,42,0.42)",
           }}
+          onAnimationIteration={() => advance(lane.id)}
         >
-          {item.text}
+          {lane.text}
         </div>
       ))}
 
       <style dangerouslySetInnerHTML={{
         __html: `
         @keyframes danmaku-flow {
-          0% {
-            transform: translate3d(100vw, -50%, 0);
-          }
-          100% {
-            transform: translate3d(-100%, -50%, 0);
-          }
+          0% { transform: translate3d(100vw, -50%, 0); }
+          100% { transform: translate3d(-100%, -50%, 0); }
         }
 
         .danmaku-item {

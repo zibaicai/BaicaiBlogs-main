@@ -8,3 +8,4 @@ export { Dialog } from "./Dialog";
 export type { DialogProps } from "./Dialog";
 export { Card } from "./Card";
 export type { CardProps } from "./Card";
+export { default as MediaField } from "./MediaField";

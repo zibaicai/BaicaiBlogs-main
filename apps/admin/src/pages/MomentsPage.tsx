@@ -2,11 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { ImagePlus, Loader2, Pencil, Plus, Trash2, X } from "lucide-react";
 import { api, type Moment } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
-import { Button, Dialog, Input, Select, Textarea } from "../components/ui";
+import { Button, Dialog, Input, MediaField, Select, Textarea } from "../components/ui";
 
 type MomentDraft = {
   content: string;
-  images: string;
+  images: string[];
   date: string;
   status: "DRAFT" | "PUBLISHED";
   visibility: "PUBLIC" | "PRIVATE";
@@ -14,7 +14,7 @@ type MomentDraft = {
 
 const emptyDraft = (): MomentDraft => ({
   content: "",
-  images: "",
+  images: [],
   date: new Date().toISOString().slice(0, 10),
   status: "DRAFT",
   visibility: "PRIVATE",
@@ -65,7 +65,7 @@ export default function MomentsPage() {
     setEditing(item);
     setDraft({
       content: item.content || "",
-      images: (item.images || []).join("\n"),
+      images: item.images || [],
       date: item.date ? String(item.date).slice(0, 10) : new Date().toISOString().slice(0, 10),
       status: item.status === "DRAFT" ? "DRAFT" : "PUBLISHED",
       visibility: item.visibility === "PRIVATE" ? "PRIVATE" : "PUBLIC",
@@ -82,7 +82,7 @@ export default function MomentsPage() {
     try {
       const payload = {
         content: draft.content,
-        images: draft.images.split(/\r?\n/).map((url) => url.trim()).filter(Boolean),
+        images: draft.images,
         date: `${draft.date}T00:00:00`,
         status: draft.status,
         visibility: draft.status === "DRAFT" ? "PRIVATE" : draft.visibility,
@@ -195,7 +195,15 @@ export default function MomentsPage() {
       >
         <div className="grid gap-3">
           <Textarea value={draft.content} onChange={(e) => setDraft({ ...draft, content: e.target.value })} rows={9} placeholder="说说内容，支持 Markdown" />
-          <Textarea value={draft.images} onChange={(e) => setDraft({ ...draft, images: e.target.value })} rows={3} placeholder="图片 URL，每行一个（可空）" />
+          <MediaField
+            label="说说图片"
+            hint="支持 JPG / PNG / WebP，最多 9 张"
+            value={draft.images}
+            onChange={(images) => setDraft({ ...draft, images })}
+            multiple
+            max={9}
+            kind="image"
+          />
           <div className="grid gap-3 sm:grid-cols-2">
             <Input type="date" value={draft.date} onChange={(e) => setDraft({ ...draft, date: e.target.value })} />
             <Select

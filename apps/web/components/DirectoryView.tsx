@@ -35,22 +35,24 @@ export default function DirectoryView({
   items,
   mode,
   featuredFirst = false,
+  compact = false,
 }: {
   items: ReactNode[];
   mode: DirectoryViewMode;
   featuredFirst?: boolean;
+  compact?: boolean;
 }) {
   if (mode === "timeline") return <TimelineView items={items} />;
 
   return (
-    <div className="directory-grid">
+    <div className={`directory-grid ${compact ? "directory-grid-compact" : ""}`}>
       {items.map((item, index) => (
         <motion.div
           key={index}
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, delay: Math.min(index, 7) * 0.035, ease: [0.22, 1, 0.36, 1] }}
-          className={`h-full ${featuredFirst && index === 0 ? "directory-featured" : ""}`}
+          className={`h-full ${featuredFirst && !compact && index === 0 ? "directory-featured" : ""}`}
         >
           {item}
         </motion.div>

@@ -1,11 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
 import { Lock, ShieldCheck } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import PageTransition from "../../components/PageTransition";
 import DirectoryExplorer from "../../components/DirectoryExplorer";
+import ArchiveCard from "../../components/ArchiveCard";
 import { DEFAULT_MISC } from "../../lib/site-config";
 import { useAuth } from "../../lib/auth";
 
@@ -71,53 +71,28 @@ export default function PhotoWallPage() {
     return {
       key: album.albumId,
       node: (
-        <Link
+        <ArchiveCard
           href={`/photowall/${encodeURIComponent(album.albumId)}`}
-          className="directory-card group min-h-[320px] bg-slate-900 p-0"
-        >
-          {cover ? (
-            <img
-              src={cover}
-              alt={album.title}
-              className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${
-                album.locked ? "blur-[3px] scale-105" : ""
-              }`}
-            />
-          ) : (
-            <div
-              className="absolute inset-0 bg-cover bg-center blur-2xl scale-110 opacity-60"
-              style={{ backgroundImage: `url(${DEFAULT_MISC.photoWallImage})` }}
-            />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
-          <div className="absolute bottom-6 left-6 right-6">
-            <div className="flex flex-wrap items-center gap-2 mb-2">
-              <span className="text-[10px] font-black uppercase tracking-widest text-indigo-300 bg-black/40 backdrop-blur px-2 py-1 rounded-md">
-                {album.photoCount == null ? "照片数已隐藏" : `${album.photoCount} Photos`}
-              </span>
+          image={cover || DEFAULT_MISC.photoWallImage}
+          alt={album.title}
+          imageClassName={album.locked ? "blur-[3px] scale-105" : ""}
+          eyebrow={album.visibility === "PUBLIC" ? "公开" : album.visibility === "PASSWORD" ? "密码" : "私密"}
+          title={album.title}
+          description={album.description}
+          meta={album.photoCount == null ? "照片数已隐藏" : `${album.photoCount} 张照片`}
+          badges={
+            <>
               {album.visibility === "PASSWORD" && (
-                <span className="text-[10px] font-black text-amber-300 bg-black/40 backdrop-blur px-2 py-1 rounded-md flex items-center gap-1">
-                  <Lock size={10} /> {album.locked ? "密码相册" : "我的密码相册"}
-                </span>
+                <span className="archive-badge archive-badge-amber"><Lock size={9} /> {album.locked ? "密码相册" : "我的密码相册"}</span>
               )}
               {album.visibility === "PRIVATE" && (
-                <span className="text-[10px] font-black text-sky-300 bg-black/40 backdrop-blur px-2 py-1 rounded-md flex items-center gap-1">
-                  <ShieldCheck size={10} /> {album.isOwner ? "我的私密" : "私密"}
-                </span>
+                <span className="archive-badge archive-badge-sky"><ShieldCheck size={9} /> {album.isOwner ? "我的私密" : "私密"}</span>
               )}
-              {album.visibility === "PUBLIC" && (
-                <span className="text-[10px] font-black text-emerald-300 bg-black/40 backdrop-blur px-2 py-1 rounded-md">
-                  公开
-                </span>
-              )}
-            </div>
-            <h2 className="text-3xl font-black text-white drop-shadow mb-1">{album.title}</h2>
-            <p className="text-sm text-white/70 line-clamp-2">{album.description}</p>
-            {album.ownerLabel && (
-              <p className="text-[10px] text-white/50 mt-1">{album.ownerLabel}</p>
-            )}
-          </div>
-        </Link>
+              {album.visibility === "PUBLIC" && <span className="archive-badge archive-badge-emerald">公开</span>}
+              {album.ownerLabel && <span className="archive-badge">{album.ownerLabel}</span>}
+            </>
+          }
+        />
       ),
       searchText: [album.title, album.description, album.ownerLabel].filter(Boolean).join(" "),
       filterValues: [album.visibility.toLowerCase()],
@@ -143,6 +118,8 @@ export default function PhotoWallPage() {
               count={`${albums.length} 个可见相册`}
               items={items}
               filters={filters}
+              compact
+              showTimeline={false}
               searchPlaceholder="搜索相册标题或简介..."
               empty="还没有公开的影像。"
             />

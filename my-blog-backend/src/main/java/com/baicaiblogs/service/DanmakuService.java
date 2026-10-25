@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DanmakuService {
 
-    public static final int MAX_MESSAGES = 500;
+    public static final int MAX_MESSAGES = 1000;
     public static final int MAX_LENGTH = 100;
     private static final int RATE_LIMIT_PER_MINUTE = 5;
 
@@ -29,7 +29,7 @@ public class DanmakuService {
     @Transactional(readOnly = true)
     public List<String> publicList() {
         return repository.findAllByOrderByCreatedAtDesc().stream()
-                .limit(MAX_MESSAGES)
+                .limit(1000)
                 .map(DanmakuMessage::getText)
                 .toList();
     }
