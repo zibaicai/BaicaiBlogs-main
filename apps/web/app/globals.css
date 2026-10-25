@@ -412,7 +412,15 @@ input[type="number"] {
     @apply bg-white/70 text-indigo-500;
   }
 
+  .directory-tab:not(.directory-tab-active):hover {
+    @apply bg-white/70 text-indigo-500;
+  }
+
   .dark .directory-tab:hover {
+    @apply bg-slate-700/60 text-indigo-300;
+  }
+
+  .dark .directory-tab:not(.directory-tab-active):hover {
     @apply bg-slate-700/60 text-indigo-300;
   }
 
@@ -421,6 +429,10 @@ input[type="number"] {
   }
 
   .dark .directory-tab-active {
+    @apply bg-indigo-500 text-white;
+  }
+
+  .directory-tab-active:hover {
     @apply bg-indigo-500 text-white;
   }
 
@@ -2822,4 +2834,101 @@ html[data-custom-theme="true"] .btn-secondary {
 
 @media (prefers-reduced-motion: reduce) {
   .music-ripple { animation: none; opacity: 0; }
+}
+
+/* Editorial directory grid + compact alternating timeline */
+.directory-grid {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.directory-grid > * {
+  grid-column: span 4;
+  min-width: 0;
+}
+
+.directory-grid > .directory-featured {
+  grid-column: 1 / -1;
+}
+
+.directory-featured .directory-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
+  min-height: 310px;
+}
+
+.directory-featured .directory-card-media {
+  height: 100%;
+  min-height: 310px;
+}
+
+.directory-featured .directory-card-body {
+  justify-content: center;
+  padding: 32px;
+}
+
+.directory-featured .directory-card-title {
+  font-size: clamp(26px, 2.4vw, 34px);
+  line-height: 1.15;
+}
+
+.directory-featured .directory-card-description {
+  font-size: 14px;
+}
+
+.timeline-row:nth-child(even) {
+  margin-top: -88px;
+}
+
+@media (max-width: 1023px) {
+  .directory-grid > * {
+    grid-column: span 6;
+  }
+
+  .directory-grid > .directory-featured {
+    grid-column: 1 / -1;
+  }
+
+  .directory-featured .directory-card {
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 0.8fr);
+    min-height: 270px;
+  }
+
+  .directory-featured .directory-card-media {
+    min-height: 270px;
+  }
+
+  .timeline-row:nth-child(even) {
+    margin-top: -64px;
+  }
+}
+
+@media (max-width: 640px) {
+  .directory-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .directory-grid > *,
+  .directory-featured {
+    grid-column: 1 / -1;
+  }
+
+  .directory-featured .directory-card {
+    display: flex;
+    min-height: 0;
+  }
+
+  .directory-featured .directory-card-media {
+    height: 210px;
+    min-height: 210px;
+  }
+
+  .directory-featured .directory-card-body {
+    padding: 20px;
+  }
+
+  .timeline-row:nth-child(even) {
+    margin-top: 0;
+  }
 }

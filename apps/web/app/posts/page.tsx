@@ -51,6 +51,7 @@ export default async function PostsPage() {
             count={`共 ${posts.length} 篇记录`}
             items={items}
             filters={filters}
+            featuredFirst
             searchPlaceholder="搜索标题、摘要、分类或标签..."
             empty="还没有写下第一篇。"
           />

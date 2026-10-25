@@ -26,6 +26,7 @@ export default function DirectoryExplorer({
   items,
   filters = [{ value: "all", label: "全部" }],
   initialMode = "card",
+  featuredFirst = false,
   empty = "暂无内容",
 }: {
   eyebrow: string;
@@ -36,6 +37,7 @@ export default function DirectoryExplorer({
   filters?: DirectoryFilter[];
   searchPlaceholder?: string;
   initialMode?: DirectoryViewMode;
+  featuredFirst?: boolean;
   empty?: ReactNode;
 }) {
   const [activeFilter, setActiveFilter] = useState("all");
@@ -105,7 +107,7 @@ export default function DirectoryExplorer({
       {filtered.length === 0 ? (
         <div className="directory-empty">{empty}</div>
       ) : (
-        <DirectoryView items={filtered.map((item) => item.node)} mode={mode} />
+        <DirectoryView items={filtered.map((item) => item.node)} mode={mode} featuredFirst={featuredFirst} />
       )}
     </>
   );
