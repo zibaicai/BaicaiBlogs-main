@@ -56,6 +56,41 @@ public class PostController {
         }
     }
 
+    /** Upload a full-screen background image; stored at up to 1920x1080. */
+    @PostMapping("/admin/backgrounds")
+    public ApiResponse<String> uploadBackground(@RequestParam("file") MultipartFile file) {
+        try {
+            if (file.isEmpty()) throw new RuntimeException("图片文件不能为空");
+            String original = file.getOriginalFilename() == null ? "background" : file.getOriginalFilename();
+            ImageCompressionService.CompressedImage compressed =
+                    imageCompressionService.compressBackground(file.getBytes(), original);
+            String key = "backgrounds/" + LocalDate.now() + "/" + UUID.randomUUID().toString().substring(0, 12)
+                    + "." + compressed.extension();
+            ossService.putObject(key, compressed.bytes(), compressed.contentType());
+            return ApiResponse.success("上传成功",
+                    "/api/public/backgrounds?key=" + URLEncoder.encode(key, StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/public/backgrounds")
+    public ResponseEntity<byte[]> publicBackground(@RequestParam String key) {
+        if (!key.startsWith("backgrounds/") || key.contains("..") || key.contains("\\")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        try {
+            byte[] bytes = ossService.getObjectBytes(key);
+            return ResponseEntity.ok()
+                    .contentType(coverMediaType(key))
+                    .contentLength(bytes.length)
+                    .cacheControl(CacheControl.maxAge(Duration.ofDays(30)).cachePublic())
+                    .body(bytes);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     /** Public cover proxy; the existing OSS bucket does not allow public object ACLs. */
     @GetMapping("/public/covers")
     public ResponseEntity<byte[]> publicCover(@RequestParam String key) {

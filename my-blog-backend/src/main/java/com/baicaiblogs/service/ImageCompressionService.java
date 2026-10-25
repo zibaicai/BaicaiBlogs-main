@@ -31,6 +31,48 @@ public class ImageCompressionService {
 
     public record CompressedImage(byte[] bytes, String contentType, String extension) {}
 
+    public CompressedImage compressBackground(byte[] original, String originalFilename) {
+        validateMagic(original);
+        try (ImageInputStream input = ImageIO.createImageInputStream(new ByteArrayInputStream(original))) {
+            if (input == null) throw new RuntimeException("无法读取图片数据");
+            Iterator<ImageReader> readers = ImageIO.getImageReaders(input);
+            if (!readers.hasNext()) throw new RuntimeException("图片格式无法识别，仅支持 JPEG / PNG / WebP");
+            ImageReader reader = readers.next();
+            try {
+                reader.setInput(input, true, true);
+                int width = reader.getWidth(0);
+                int height = reader.getHeight(0);
+                if (width <= 0 || height <= 0 || (long) width * height > MAX_PIXELS) {
+                    throw new RuntimeException("图片像素尺寸过大");
+                }
+                BufferedImage source = reader.read(0);
+                if (source == null) throw new RuntimeException("图片解码失败");
+                double scale = Math.min(1d, Math.min(1920d / width, 1080d / height));
+                int targetWidth = Math.max(1, (int) Math.round(width * scale));
+                int targetHeight = Math.max(1, (int) Math.round(height * scale));
+                BufferedImage target = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+                Graphics2D graphics = target.createGraphics();
+                try {
+                    graphics.setColor(Color.WHITE);
+                    graphics.fillRect(0, 0, targetWidth, targetHeight);
+                    graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                    graphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+                    graphics.drawImage(source, 0, 0, targetWidth, targetHeight, null);
+                } finally {
+                    graphics.dispose();
+                }
+                return new CompressedImage(writeJpeg(target, 0.86f), "image/jpeg", "jpg");
+            } finally {
+                reader.dispose();
+            }
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            log.warn("Background compression failed: {}", originalFilename, e);
+            throw new RuntimeException("背景图处理失败，请换一张图片重试");
+        }
+    }
+
     public CompressedImage compressCover(byte[] original, String originalFilename) {
         validateMagic(original);
         try (ImageInputStream input = ImageIO.createImageInputStream(new ByteArrayInputStream(original))) {

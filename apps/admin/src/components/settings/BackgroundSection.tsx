@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '../ToastProvider';
+import { api } from '../../lib/api';
 
 export default function BackgroundSection({ formData, handleUpdate, pushToQueue }: any) {
   const { showToast } = useToast();
@@ -33,10 +34,24 @@ export default function BackgroundSection({ formData, handleUpdate, pushToQueue 
   };
 
   // 新后端未提供图床代理上传，背景图统一走 URL 列表。
-  const handleFileUpload = async (_file: File) => {
-    setIsUploading(false);
+  const handleFileUpload = async (file: File) => {
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      showToast("仅支持 JPEG / PNG / WebP 背景图", "warning");
+      return;
+    }
+    setIsUploading(true);
     setPendingImageUrl(null);
-    showToast("当前后端未接入图床代理，请在下方直接粘贴图片 URL 添加", "warning");
+    try {
+      const res = await api.uploadBackground(file);
+      if (!res.success || !res.data) throw new Error(res.message || "上传失败");
+      setPendingImageUrl(res.data);
+      showToast("背景图已上传，请确认是否加入背景库", "success");
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "背景图上传失败", "warning");
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
   };
 
   // 确认或取消加入背景
@@ -112,7 +127,7 @@ export default function BackgroundSection({ formData, handleUpdate, pushToQueue 
               ${isDragging ? 'border-indigo-500 bg-indigo-500/10 scale-[1.02]' : 'border-slate-300 dark:border-slate-600 hover:bg-slate-100/50 dark:hover:bg-slate-800/50 hover:border-indigo-400'}
             `}
           >
-            <input type="file" ref={fileInputRef} onChange={e => e.target.files && handleFileUpload(e.target.files[0])} className="hidden" accept="image/*" />
+            <input type="file" ref={fileInputRef} onChange={e => e.target.files && handleFileUpload(e.target.files[0])} className="hidden" accept="image/jpeg,image/png,image/webp" />
 
             <div className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl shadow-xl transition-all duration-300 ${isDragging ? 'bg-indigo-500 text-white rotate-12' : 'bg-white dark:bg-slate-800 text-slate-500'}`}>
               {isUploading ? "⏳" : "☁️"}
