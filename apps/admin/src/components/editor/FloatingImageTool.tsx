@@ -27,8 +27,15 @@ export default function FloatingImageTool({ isOpen, onClose, onInsert, mode = 'i
     try {
       const res = await api.uploadImage(file);
       if (!res.success || !res.data) throw new Error(res.message || "上传失败");
-      setUploadedUrl(res.data);
-      showToast("图片已上传", "success");
+      if (mode === 'cover') {
+        onInsert(res.data);
+        setUploadedUrl('');
+        onClose();
+        showToast("封面已更新，请点击保存或发布", "success");
+      } else {
+        setUploadedUrl(res.data);
+        showToast("图片已上传", "success");
+      }
     } catch (error) {
       showToast(error instanceof Error ? error.message : "上传失败", "warning");
     } finally {
@@ -51,6 +58,13 @@ export default function FloatingImageTool({ isOpen, onClose, onInsert, mode = 'i
     }
     if (!externalUrl.match(/\.(jpeg|jpg|gif|png|webp|svg|avif)$|^data:image/i)) {
         showToast("这似乎不是一个标准的图片链接，但仍尝试预览", "warning");
+    }
+    if (mode === 'cover') {
+      onInsert(externalUrl);
+      setExternalUrl('');
+      onClose();
+      showToast("封面已更新，请点击保存或发布", "success");
+      return;
     }
     setUploadedUrl(externalUrl);
     showToast("预览已生成", "success");
