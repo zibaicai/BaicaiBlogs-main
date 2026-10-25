@@ -2130,7 +2130,6 @@ body[data-nav-hidden="true"] .article-toc {
 .markdown-reader[data-md-theme="github-light"] .markdown-body,
 .markdown-reader[data-md-theme="github-dark"] .markdown-body {
   border-radius: 18px;
-  padding: 1.25rem;
   border: 1px solid #d1d9e0;
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
@@ -2139,11 +2138,30 @@ body[data-nav-hidden="true"] .article-toc {
   border-color: #3d444d;
 }
 
+/* Shared gutter: header, theme bar and every markdown theme align to the same edges. */
+.article-content {
+  --article-gutter-x: 1.25rem;
+  --article-gutter-y: 1.25rem;
+}
+
 @media (min-width: 768px) {
-  .markdown-reader[data-md-theme="github-light"] .markdown-body,
-  .markdown-reader[data-md-theme="github-dark"] .markdown-body {
-    padding: 1.75rem 2rem;
+  .article-content {
+    --article-gutter-x: 2rem;
+    --article-gutter-y: 1.75rem;
   }
+}
+
+.article-header {
+  padding: var(--article-gutter-y) var(--article-gutter-x);
+}
+
+.markdown-reader .markdown-content {
+  padding: var(--article-gutter-y) var(--article-gutter-x);
+}
+
+.markdown-theme-bar {
+  padding-left: var(--article-gutter-x);
+  padding-right: var(--article-gutter-x);
 }
 
 /* Keep the existing site typography preference for every markdown theme:
