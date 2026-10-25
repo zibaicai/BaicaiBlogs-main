@@ -27,7 +27,10 @@ export default function AlbumAccordion({ albums }: { albums: Album[] }) {
     <div className="album-accordion" role="group" aria-label="相册手风琴">
       {visible.map((album, index) => {
         const isActive = index === active;
-        const cover = album.cover || DEFAULT_MISC.photoWallImage;
+        const firstPhoto = album.photos?.[0];
+        const cover =
+          album.cover ||
+          (firstPhoto ? `/api/public/photos/${firstPhoto.id}/thumb` : DEFAULT_MISC.photoWallImage);
         const count = album.photos?.length || 0;
         return (
           <button

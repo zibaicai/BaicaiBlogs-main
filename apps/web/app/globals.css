@@ -2361,7 +2361,7 @@ html[data-custom-theme="true"] .btn-secondary {
   text-align: left;
   cursor: pointer;
   isolation: isolate;
-  transition: flex-basis 0.55s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.25s ease;
+  transition: flex-grow 0.55s cubic-bezier(0.22, 1, 0.36, 1), flex-basis 0.55s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.25s ease;
 }
 
 .album-panel:hover,
@@ -2371,7 +2371,9 @@ html[data-custom-theme="true"] .btn-secondary {
 }
 
 .album-panel.is-active {
-  flex: 1 1 auto;
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0%;
 }
 
 .album-panel > img {
