@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 public class SiteConfigService {
 
     private final SiteConfigRepository siteConfigRepository;
+    private final MediaCleanupService mediaCleanupService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     // ============ 分组配置方法 ============
@@ -106,10 +107,13 @@ public class SiteConfigService {
         SiteConfig config = siteConfigRepository.findByConfigKey(configKey)
                 .orElseThrow(() -> new RuntimeException("配置项不存在: " + configKey));
 
+        String oldValue = config.getConfigValue();
         config.setConfigValue(request.getConfigValue());
         config.setDescription(request.getDescription());
 
-        return toResponse(siteConfigRepository.save(config));
+        SiteConfig saved = siteConfigRepository.save(config);
+        mediaCleanupService.cleanupRemoved(oldValue, request.getConfigValue());
+        return toResponse(saved);
     }
 
     @Transactional

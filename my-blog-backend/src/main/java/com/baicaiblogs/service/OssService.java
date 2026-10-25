@@ -122,6 +122,41 @@ public class OssService {
     }
 
     /**
+     * Delete only images managed by the site (covers/backgrounds).
+     * External URLs and unrelated OSS objects are ignored.
+     */
+    public boolean deleteManagedImage(String fileUrl) {
+        String objectKey = resolveManagedImageKey(fileUrl);
+        if (objectKey == null) return false;
+        deleteObject(objectKey);
+        return true;
+    }
+
+    private String resolveManagedImageKey(String fileUrl) {
+        if (fileUrl == null || fileUrl.isBlank()) return null;
+        try {
+            String value = fileUrl.trim();
+            int keyQuery = value.indexOf("key=");
+            if (keyQuery >= 0) {
+                String encoded = value.substring(keyQuery + 4);
+                int amp = encoded.indexOf('&');
+                if (amp >= 0) encoded = encoded.substring(0, amp);
+                value = java.net.URLDecoder.decode(encoded, StandardCharsets.UTF_8);
+            } else {
+                value = extractObjectKey(value);
+            }
+            if (value == null) return null;
+            value = value.startsWith("/") ? value.substring(1) : value;
+            if (value.contains("..") || value.contains("\\")) return null;
+            if (!value.startsWith("covers/") && !value.startsWith("backgrounds/")) return null;
+            return value;
+        } catch (Exception e) {
+            log.warn("[OssService] 无法解析托管图片地址: {}", fileUrl, e);
+            return null;
+        }
+    }
+
+    /**
      * 按公开 URL 下载 UTF-8 文本（用于从 OSS 原始 .md 修复被编辑器破坏的文章）。
      */
     public String downloadTextByUrl(String fileUrl) {
