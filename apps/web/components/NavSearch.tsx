@@ -3,12 +3,24 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Search, X } from "lucide-react";
-import type { Post } from "../lib/api";
+import type { Album, Friend, Moment, Post, Project } from "../lib/api";
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
+
+type ResultKind = "文章" | "说说" | "相册" | "项目" | "友链";
+
+interface GlobalResult {
+  key: string;
+  kind: ResultKind;
+  title: string;
+  description: string;
+  href: string;
+  date?: string;
+  searchText: string;
+}
 
 const Highlight = ({ text = "", query = "" }: { text?: string; query?: string }) => {
   if (!query.trim() || !text) return <>{text}</>;
@@ -29,13 +41,23 @@ const Highlight = ({ text = "", query = "" }: { text?: string; query?: string })
   );
 };
 
+async function fetchData<T>(path: string): Promise<T[]> {
+  const res = await fetch(path, { cache: "no-store" });
+  const json = await res.json().catch(() => null);
+  return Array.isArray(json?.data) ? json.data : [];
+}
+
+function stripHtml(value?: string) {
+  return (value || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
 export default function NavSearch({ open, onOpenChange }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
   const fieldRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const firstRender = useRef(true);
   const [query, setQuery] = useState("");
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [items, setItems] = useState<GlobalResult[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -43,20 +65,86 @@ export default function NavSearch({ open, onOpenChange }: Props) {
     if (!open || loaded) return;
     let cancelled = false;
     setLoading(true);
-    fetch("/api/public/posts", { cache: "no-store" })
-      .then((res) => res.json())
-      .then((json) => {
-        if (!cancelled) {
-          setPosts(Array.isArray(json?.data) ? json.data : []);
-          setLoaded(true);
+
+    Promise.allSettled([
+      fetchData<Post>("/api/public/posts"),
+      fetchData<Moment>("/api/public/moments"),
+      fetchData<Album>("/api/public/albums"),
+      fetchData<Project>("/api/public/projects"),
+      fetchData<Friend>("/api/public/friends"),
+    ])
+      .then(([postRes, momentRes, albumRes, projectRes, friendRes]) => {
+        if (cancelled) return;
+        const next: GlobalResult[] = [];
+
+        if (postRes.status === "fulfilled") {
+          next.push(...postRes.value.map((post) => ({
+            key: `post-${post.slug}`,
+            kind: "文章" as const,
+            title: post.title || "无题",
+            description: post.description || "继续阅读这篇记录。",
+            href: `/posts/${encodeURIComponent(post.slug)}`,
+            date: post.date,
+            searchText: [post.title, post.description, ...(post.tags || [])].join(" "),
+          })));
         }
-      })
-      .catch(() => {
-        if (!cancelled) setPosts([]);
+
+        if (momentRes.status === "fulfilled") {
+          next.push(...momentRes.value.map((moment) => {
+            const text = stripHtml(moment.htmlContent) || moment.content || "";
+            return {
+              key: `moment-${moment.slug}`,
+              kind: "说说" as const,
+              title: "说说",
+              description: text.slice(0, 100) || "一条碎碎念。",
+              href: "/moments",
+              date: moment.date,
+              searchText: [moment.content, text].join(" "),
+            };
+          }));
+        }
+
+        if (albumRes.status === "fulfilled") {
+          next.push(...albumRes.value.map((album) => ({
+            key: `album-${album.albumId}`,
+            kind: "相册" as const,
+            title: album.title || "相册",
+            description: album.description || `${album.photos?.length || 0} 张照片`,
+            href: `/photowall/${encodeURIComponent(album.albumId)}`,
+            date: album.date,
+            searchText: [album.title, album.description].join(" "),
+          })));
+        }
+
+        if (projectRes.status === "fulfilled") {
+          next.push(...projectRes.value.map((project) => ({
+            key: `project-${project.projectId}`,
+            kind: "项目" as const,
+            title: project.name || "项目",
+            description: project.description || "查看项目详情。",
+            href: "/projects",
+            searchText: [project.name, project.description, ...(project.tags || [])].join(" "),
+          })));
+        }
+
+        if (friendRes.status === "fulfilled") {
+          next.push(...friendRes.value.map((friend) => ({
+            key: `friend-${friend.friendId}`,
+            kind: "友链" as const,
+            title: friend.name || "朋友",
+            description: friend.description || friend.url || "访问友链。",
+            href: "/friends",
+            searchText: [friend.name, friend.description, friend.url].join(" "),
+          })));
+        }
+
+        setItems(next);
+        setLoaded(true);
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
+
     return () => {
       cancelled = true;
     };
@@ -112,13 +200,10 @@ export default function NavSearch({ open, onOpenChange }: Props) {
   const results = useMemo(() => {
     const trimmed = query.trim().toLowerCase();
     if (!trimmed) return [];
-    return posts.filter((post) => {
-      const title = (post.title || "").toLowerCase();
-      const description = (post.description || "").toLowerCase();
-      const tags = (post.tags || []).join(" ").toLowerCase();
-      return title.includes(trimmed) || description.includes(trimmed) || tags.includes(trimmed);
-    }).slice(0, 8);
-  }, [posts, query]);
+    return items
+      .filter((item) => item.searchText.toLowerCase().includes(trimmed))
+      .slice(0, 12);
+  }, [items, query]);
 
   const showResults = open && query.trim().length > 0;
 
@@ -128,11 +213,12 @@ export default function NavSearch({ open, onOpenChange }: Props) {
         <Search size={15} className="nav-search-icon" aria-hidden="true" />
         <input
           ref={inputRef}
+          type="text"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder="搜索文章、标签..."
+          placeholder="搜索文章、说说、相册、项目..."
           className="nav-search-input"
-          aria-label="搜索文章"
+          aria-label="全站搜索"
           autoComplete="off"
           spellCheck={false}
         />
@@ -151,12 +237,12 @@ export default function NavSearch({ open, onOpenChange }: Props) {
       {showResults && (
         <div className="nav-search-results">
           {loading ? (
-            <div className="nav-search-empty">正在加载文章...</div>
+            <div className="nav-search-empty">正在索引全站内容...</div>
           ) : results.length > 0 ? (
-            results.map((post) => (
+            results.map((item) => (
               <Link
-                key={post.slug}
-                href={`/posts/${post.slug}`}
+                key={item.key}
+                href={item.href}
                 onClick={() => {
                   setQuery("");
                   onOpenChange(false);
@@ -164,16 +250,17 @@ export default function NavSearch({ open, onOpenChange }: Props) {
                 className="nav-search-result"
               >
                 <span className="nav-search-result-title">
-                  <Highlight text={post.title} query={query} />
+                  <span className="nav-search-result-kind">{item.kind}</span>
+                  <Highlight text={item.title} query={query} />
                 </span>
                 <span className="nav-search-result-desc">
-                  <Highlight text={post.description || "继续阅读"} query={query} />
+                  <Highlight text={item.description} query={query} />
                 </span>
-                {post.date && <span className="nav-search-result-date">{String(post.date).slice(0, 10)}</span>}
+                {item.date && <span className="nav-search-result-date">{String(item.date).slice(0, 10)}</span>}
               </Link>
             ))
           ) : (
-            <div className="nav-search-empty">没有找到关于 “{query}” 的文章</div>
+            <div className="nav-search-empty">没有找到关于“{query}”的内容</div>
           )}
         </div>
       )}

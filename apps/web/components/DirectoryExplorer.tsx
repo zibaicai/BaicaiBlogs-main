@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, type ReactNode } from "react";
-import { LayoutGrid, ListTree, Search } from "lucide-react";
+import { LayoutGrid, ListTree } from "lucide-react";
 import DirectoryHeader from "./DirectoryHeader";
 import DirectoryView, { type DirectoryViewMode } from "./DirectoryView";
 
@@ -25,7 +25,6 @@ export default function DirectoryExplorer({
   count,
   items,
   filters = [{ value: "all", label: "全部" }],
-  searchPlaceholder = "搜索目录...",
   initialMode = "card",
   empty = "暂无内容",
 }: {
@@ -39,18 +38,15 @@ export default function DirectoryExplorer({
   initialMode?: DirectoryViewMode;
   empty?: ReactNode;
 }) {
-  const [query, setQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
   const [mode, setMode] = useState<DirectoryViewMode>(initialMode);
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
     return items.filter((item) => {
       if (activeFilter !== "all" && !(item.filterValues || []).includes(activeFilter)) return false;
-      if (!q) return true;
-      return item.searchText.toLowerCase().includes(q);
+      return true;
     });
-  }, [items, query, activeFilter]);
+  }, [items, activeFilter]);
 
   return (
     <>
@@ -60,19 +56,6 @@ export default function DirectoryExplorer({
         subtitle={subtitle}
         count={count}
       />
-
-      <div className="mb-6 flex w-full justify-center">
-        <div className="relative w-full max-w-lg group">
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={searchPlaceholder}
-            className="directory-search"
-          />
-          <Search className="absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-indigo-500" />
-        </div>
-      </div>
 
       <div className="directory-toolbar">
         <div className="directory-tabs">

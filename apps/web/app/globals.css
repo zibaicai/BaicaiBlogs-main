@@ -2597,3 +2597,26 @@ html[data-custom-theme="true"] .btn-secondary {
     padding: 6px 0;
   }
 }
+
+.nav-search-result-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.nav-search-result-kind {
+  flex: 0 0 auto;
+  border-radius: 5px;
+  padding: 2px 5px;
+  color: #6366f1;
+  background: rgba(99, 102, 241, 0.1);
+  font-family: Consolas, monospace;
+  font-size: 8px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.dark .nav-search-result-kind {
+  color: #a5b4fc;
+  background: rgba(99, 102, 241, 0.16);
+}
