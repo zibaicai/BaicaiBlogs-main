@@ -107,6 +107,11 @@ export interface Album {
   title: string;
   description: string;
   cover: string;
+  coverThumbUrl?: string;
+  coverStandardUrl?: string;
+  coverBlurUrl?: string;
+  locked?: boolean;
+  visibility?: string;
   date: string;
   sortOrder: number;
   photos: Photo[];

@@ -68,7 +68,9 @@ export default function AlbumAccordion({ albums }: { albums: Album[] }) {
                 <ArrowUpRight size={12} />
               </span>
             )}
-            {(!album.cover || album.cover.includes("blur")) && <Lock size={11} className="album-panel-lock" />}
+            {((album as Album & { locked?: boolean; visibility?: string }).locked || album.visibility === "PASSWORD") && (
+              <Lock size={11} className="album-panel-lock" />
+            )}
           </button>
         );
       })}
