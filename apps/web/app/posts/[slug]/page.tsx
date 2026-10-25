@@ -40,7 +40,7 @@ export default async function PostDetail({ params }: { params: Promise<{ slug: s
     );
   }
 
-  const recentPosts = allPosts.filter((p) => p.slug !== slug).slice(0, 3);
+  const recentPosts = allPosts.filter((p) => p.slug !== slug).slice(0, 4);
   const cover = post.cover || DEFAULT_BACKGROUND.defaultPostCover;
 
   return (

@@ -29,7 +29,7 @@ function SocialBtn({ type, url, onClick }: { type: string, url?: string, onClick
   return url ? <a href={url} target="_blank" rel="noopener noreferrer">{content}</a> : content;
 }
 
-export default function ClientSocials() {
+export default function ClientSocials({ align = "center" }: { align?: "center" | "start" }) {
   const { siteInfo } = useSiteConfigContext();
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
@@ -37,7 +37,7 @@ export default function ClientSocials() {
   };
 
   return (
-    <div className="flex gap-2 flex-wrap justify-center mt-4">
+    <div className={`flex flex-wrap gap-1.5 ${align === "start" ? "justify-start" : "justify-center"} mt-0`}>
       <SocialBtn type="github" url={siteInfo?.social?.github} />
       <SocialBtn type="gitee" url={siteInfo?.social?.gitee} />
       <SocialBtn type="google" url={siteInfo?.social?.google} />

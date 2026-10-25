@@ -7,19 +7,27 @@ export default function AuthorCard() {
   const { siteInfo } = useSiteConfigContext();
 
   return (
-    <div className="bg-white/60 dark:bg-slate-800/50 backdrop-blur-xl rounded-3xl p-6 border border-white/40 dark:border-white/10 shadow-xl text-center">
-      <div className="w-20 h-20 mx-auto rounded-full p-1 bg-gradient-to-tr from-[var(--ui-accent)] to-[var(--ui-accent-hover)] shadow-md mb-4 transition-transform duration-500 hover:rotate-3">
-        <img
-          src={siteInfo.avatarUrl}
-          alt="avatar"
-          className="w-full h-full rounded-full object-cover bg-white"
-        />
+    <div className="flex h-full flex-col rounded-3xl border border-white/40 bg-white/60 p-5 text-left shadow-xl backdrop-blur-xl transition-colors duration-700 dark:border-white/10 dark:bg-slate-800/50">
+      <div className="flex items-start gap-4">
+        <div className="h-16 w-16 shrink-0 rounded-full bg-gradient-to-tr from-[var(--ui-accent)] to-[var(--ui-accent-hover)] p-1 shadow-md transition-transform duration-500 hover:rotate-3">
+          <img
+            src={siteInfo.avatarUrl}
+            alt="avatar"
+            className="h-full w-full rounded-full bg-white object-cover"
+          />
+        </div>
+        <div className="min-w-0 flex-1">
+          <h3 className="truncate text-lg font-bold leading-tight text-slate-900 dark:text-white">
+            {siteInfo.authorName}
+          </h3>
+          <p className="mt-1.5 line-clamp-3 text-[11px] font-medium leading-relaxed text-slate-700 dark:text-slate-300">
+            {siteInfo.bio}
+          </p>
+        </div>
       </div>
-      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{siteInfo.authorName}</h3>
-      <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium mb-4">
-        {siteInfo.bio}
-      </p>
-      <ClientSocials />
+      <div className="mt-auto border-t border-slate-300/35 pt-3 dark:border-white/10">
+        <ClientSocials align="start" />
+      </div>
     </div>
   );
 }
