@@ -78,13 +78,11 @@ export default function DanmakuBackground() {
       {danmakus.map((item) => (
         <div
           key={item.id}
-          className="absolute whitespace-nowrap font-bold text-[13px] tracking-wider text-white/60 drop-shadow-[0_1px_4px_rgba(15,23,42,0.75)] dark:text-white/30 md:text-[15px]"
+          className="danmaku-item absolute left-0 whitespace-nowrap font-bold text-[13px] tracking-wider text-white/60 dark:text-white/30 md:text-[15px]"
           style={{
             top: `${item.top}%`,
-            left: '100%',
-            transform: 'translateY(-50%)',
             animation: `danmaku-flow ${item.duration}s linear ${item.delay}s infinite`,
-            willChange: 'transform',
+            textShadow: "0 1px 4px rgba(15,23,42,0.75)",
           }}
         >
           {item.text}
@@ -95,13 +93,21 @@ export default function DanmakuBackground() {
         __html: `
         @keyframes danmaku-flow {
           0% {
-            left: 100%;
-            transform: translate(0, -50%);
+            transform: translate3d(100vw, -50%, 0);
           }
           100% {
-            left: 0;
-            transform: translate(-100%, -50%);
+            transform: translate3d(-100%, -50%, 0);
           }
+        }
+
+        .danmaku-item {
+          contain: layout style;
+          backface-visibility: hidden;
+          will-change: transform;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .danmaku-item { animation: none !important; opacity: 0; }
         }
       `}} />
     </div>
