@@ -2,37 +2,30 @@ import Link from "next/link";
 
 import Navbar from "../components/Navbar";
 import PageTransition from "../components/PageTransition";
-import CloudPlayer from "../components/CloudPlayer";
+import AlbumAccordion from "../components/AlbumAccordion";
 import HomeHero from "../components/HomeHero";
 import HomeThemeToggle from "../components/HomeThemeToggle";
 import SiteDashboard from "../components/SiteDashboard";
 import { formatDate } from "../lib/api";
 import { getAlbums, getChatters, getPosts } from "../lib/server-api";
-import { DEFAULT_MISC } from "../lib/site-config";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const [posts, chatters, albums] = await Promise.all([getPosts(), getChatters(), getAlbums()]);
 
-  const top5Posts = posts.slice(0, 5).map((p) => ({
+  const recentPosts = posts.slice(0, 4).map((p) => ({
     ...p,
     formattedDate: formatDate(p.date),
   }));
 
-  const top5Chatters = chatters.slice(0, 3).map((c) => ({
+  const recentChatters = chatters.slice(0, 3).map((c) => ({
     ...c,
     description: c.description || c.content?.slice(0, 60) || "",
     formattedDate: formatDate(c.date),
   }));
 
   const photoCount = albums.reduce((total, album) => total + (album.photos?.length || 0), 0);
-  const latestAlbum = albums[0] || {
-    albumId: "empty",
-    title: "照片墙",
-    description: "查看摄影",
-    cover: DEFAULT_MISC.photoWallImage,
-  };
 
   return (
     <div className="home-v2 min-h-screen relative pb-16">
@@ -45,16 +38,14 @@ export default async function Home() {
               chatterCount={chatters.length}
               photoCount={photoCount}
             />
-            <div className="hv-hero-music hv-panel">
-              <CloudPlayer />
-            </div>
+            <AlbumAccordion albums={albums} />
           </section>
 
           <div className="hv-toolbar hv-toolbar-meta-only">
             <div className="hv-toolbar-meta">
               <span>PERSONAL ARCHIVE</span>
               <span className="hv-toolbar-dot" />
-              <span>UPDATED {top5Posts[0]?.formattedDate || "TODAY"}</span>
+              <span>UPDATED {recentPosts[0]?.formattedDate || "TODAY"}</span>
             </div>
           </div>
 
@@ -71,7 +62,7 @@ export default async function Home() {
               </div>
 
               <div className="hv-post-list">
-                {top5Posts.map((post, index) => (
+                {recentPosts.map((post, index) => (
                   <Link key={post.slug} href={`/posts/${post.slug}`} className="hv-post-row">
                     <span className="hv-post-index">{String(index + 1).padStart(2, "0")}</span>
                     <span className="hv-post-main">
@@ -86,52 +77,39 @@ export default async function Home() {
                 ))}
               </div>
 
-              {top5Posts.length === 0 && (
+              {recentPosts.length === 0 && (
                 <p className="hv-empty">还没有文章，先写下第一篇吧。</p>
               )}
             </section>
 
             <aside className="hv-side">
-              <Link href="/photowall" className="hv-photo-card">
-                <img src={latestAlbum.cover || DEFAULT_MISC.photoWallImage} alt={latestAlbum.title} />
-                <span className="hv-photo-shade" />
-                <span className="hv-photo-copy">
-                  <span className="hv-profile-label">PHOTO WALL</span>
-                  <strong>{latestAlbum.title}</strong>
-                  <span>{latestAlbum.description}</span>
-                </span>
-                <span className="hv-photo-arrow">↗</span>
-              </Link>
-            </aside>
-
-            <section className="hv-panel hv-moments">
-              <div className="hv-panel-head">
-                <div>
-                  <span className="hv-profile-label">SMALL MOMENTS</span>
-                  <h2>最近的碎碎念</h2>
-                </div>
-                <Link href="/moments" className="hv-text-link">
-                  全部说说 <span>↗</span>
-                </Link>
-              </div>
-
-              <div className="hv-moment-list">
-                {top5Chatters.map((chatter, index) => (
-                  <Link key={chatter.id || index} href="/moments" className="hv-moment-row">
-                    <span className="hv-moment-mark">{String(index + 1).padStart(2, "0")}</span>
-                    <span className="hv-moment-main">
-                      <strong>{chatter.description || "一条新的碎碎念。"}</strong>
-                      <span>{chatter.formattedDate}</span>
-                    </span>
+              <section className="hv-panel hv-moments">
+                <div className="hv-panel-head">
+                  <div>
+                    <span className="hv-profile-label">SMALL MOMENTS</span>
+                    <h2>最近的碎碎念</h2>
+                  </div>
+                  <Link href="/moments" className="hv-text-link">
+                    全部说说 <span>↗</span>
                   </Link>
-                ))}
-                {top5Chatters.length === 0 && <p className="hv-empty">暂时没有新的碎碎念。</p>}
-              </div>
-            </section>
+                </div>
 
-            <div className="hv-side-bottom">
+                <div className="hv-moment-list">
+                  {recentChatters.map((chatter, index) => (
+                    <Link key={chatter.id || index} href="/moments" className="hv-moment-row">
+                      <span className="hv-moment-mark">{String(index + 1).padStart(2, "0")}</span>
+                      <span className="hv-moment-main">
+                        <strong>{chatter.description || "一条新的碎碎念。"}</strong>
+                        <span>{chatter.formattedDate}</span>
+                      </span>
+                    </Link>
+                  ))}
+                  {recentChatters.length === 0 && <p className="hv-empty">暂时没有新的碎碎念。</p>}
+                </div>
+              </section>
+
               <HomeThemeToggle />
-            </div>
+            </aside>
           </main>
 
           <div className="hv-dashboard">

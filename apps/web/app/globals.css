@@ -2336,3 +2336,240 @@ html[data-custom-theme="true"] .btn-secondary {
   color: var(--ui-text) !important;
   border-color: var(--ui-border) !important;
 }
+
+/* Homepage album accordion */
+.album-accordion {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  height: 360px;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 24px;
+}
+
+.album-panel {
+  position: relative;
+  display: block;
+  flex: 0 0 58px;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--hv-panel-border);
+  border-radius: 22px;
+  background: #0f172a;
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+  isolation: isolate;
+  transition: flex-basis 0.55s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.25s ease;
+}
+
+.album-panel:hover,
+.album-panel:focus-visible {
+  border-color: var(--ui-accent);
+  outline: none;
+}
+
+.album-panel.is-active {
+  flex: 1 1 auto;
+}
+
+.album-panel > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s ease;
+}
+
+.album-panel.is-active:hover > img {
+  transform: scale(1.025);
+}
+
+.album-panel-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.04) 28%, rgba(3, 8, 16, 0.86));
+  z-index: 1;
+}
+
+.album-panel-index {
+  position: absolute;
+  left: 13px;
+  bottom: 13px;
+  z-index: 2;
+  font-family: Consolas, monospace;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.album-panel-lock {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  z-index: 3;
+  opacity: 0.7;
+}
+
+.album-panel-collapsed {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 38px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.album-panel-collapsed svg {
+  display: none;
+}
+
+.album-panel-content {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: 18px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.album-panel-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: rgba(255, 255, 255, 0.68);
+  font-family: Consolas, monospace;
+  font-size: 9px;
+  letter-spacing: 0.16em;
+}
+
+.album-panel-content strong {
+  max-width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: "Songti SC", "Noto Serif SC", Georgia, serif;
+  font-size: clamp(22px, 2.4vw, 34px);
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.album-panel-desc {
+  max-width: 80%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.album-panel-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 3px;
+  color: rgba(255, 255, 255, 0.62);
+  font-family: Consolas, monospace;
+  font-size: 9px;
+}
+
+.album-accordion-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--hv-panel-border);
+  background: var(--hv-panel);
+}
+
+.album-empty-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--hv-muted);
+  font-size: 11px;
+}
+
+.album-empty-copy strong {
+  color: var(--hv-text);
+  font-family: "Songti SC", Georgia, serif;
+  font-size: 18px;
+}
+
+@media (max-width: 1023px) {
+  .album-accordion {
+    height: 240px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .album-accordion::-webkit-scrollbar { display: none; }
+
+  .album-panel {
+    flex: 0 0 210px;
+  }
+
+  .album-panel.is-active {
+    flex: 0 0 300px;
+  }
+
+  .album-panel-collapsed {
+    writing-mode: initial;
+    bottom: 14px;
+    right: 14px;
+    justify-content: space-between;
+  }
+
+  .album-panel-collapsed svg { display: block; }
+}
+
+/* Homepage right column: moments + theme switch in the old photo slot */
+.hv-side .hv-moments {
+  grid-column: auto;
+  flex: 1;
+}
+
+.hv-side .hv-moments .hv-moment-list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.hv-side .hv-moments .hv-moment-row {
+  padding: 11px 0;
+}
+
+.hv-side .hv-theme {
+  flex: 0 0 auto;
+}
+
+/* Homepage v3: compact hero + album accordion, reordered lower grid */
+@media (min-width: 1024px) {
+  .hv-hero {
+    grid-template-columns: minmax(260px, 0.82fr) minmax(0, 1.18fr);
+    gap: 32px;
+    align-items: stretch;
+    padding: 10px 0 30px;
+  }
+
+  .hv-hero-copy {
+    min-height: 0;
+    padding: 6px 0;
+  }
+}

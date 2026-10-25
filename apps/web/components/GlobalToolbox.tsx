@@ -52,11 +52,12 @@ export default function GlobalToolbox() {
       } else {
         applyPrefs(DEFAULT_PREFS);
       }
-      setMusicVisible(localStorage.getItem("musicMiniPlayerVisible") === "true");
+      const storedVisibility = localStorage.getItem("musicMiniPlayerVisible");
+      setMusicVisible(storedVisibility === null ? pathname === "/" : storedVisibility === "true");
     } catch {
       applyPrefs(DEFAULT_PREFS);
     }
-  }, []);
+  }, [pathname]);
 
   const toggle = (id: ToolId) => {
     setPrefs((current) => {
@@ -72,7 +73,6 @@ export default function GlobalToolbox() {
   };
 
   const toggleMusicVisible = () => {
-    if (pathname === "/") return;
     setMusicVisible((current) => {
       const next = !current;
       try {
@@ -169,7 +169,7 @@ export default function GlobalToolbox() {
                     <button
                       type="button"
                       onClick={toggleMusicVisible}
-                      disabled={pathname === "/" || !currentSong}
+                      disabled={!currentSong}
                       aria-label={musicVisible ? "隐藏迷你播放器" : "显示迷你播放器"}
                       className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 text-slate-500 disabled:opacity-30 dark:border-white/10 dark:text-slate-300"
                     >

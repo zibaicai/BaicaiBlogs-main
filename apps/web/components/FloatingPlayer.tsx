@@ -14,9 +14,10 @@ export default function FloatingPlayer() {
   useEffect(() => {
     setIsMounted(true);
     try {
-      setVisible(localStorage.getItem("musicMiniPlayerVisible") === "true");
+      const stored = localStorage.getItem("musicMiniPlayerVisible");
+      setVisible(stored === null ? pathname === "/" : stored === "true");
     } catch {
-      setVisible(false);
+      setVisible(pathname === "/");
     }
     const sync = (event: Event) => {
       const detail = (event as CustomEvent<boolean>).detail;
@@ -24,13 +25,13 @@ export default function FloatingPlayer() {
     };
     window.addEventListener("music-player-visibility", sync);
     return () => window.removeEventListener("music-player-visibility", sync);
-  }, []);
+  }, [pathname]);
 
-  // 这里只拦截还没有初始化的情况，不拦截首页
+  // 这里只拦截还没有初始化的情况
   if (!isMounted || isLoading || !currentSong) return null;
 
-  // 首页始终隐藏迷你播放器；非首页由工具栏控制
-  const isHidden = pathname === "/" || !visible;
+  // 全局迷你播放器；首页默认显示，非首页默认隐藏，均可在工具目录切换。
+  const isHidden = !visible;
 
   return (
     <div className="fixed bottom-6 right-6 z-[9999]" style={{ pointerEvents: 'none' }}>
