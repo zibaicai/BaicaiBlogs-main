@@ -141,7 +141,7 @@ export default function CloudPlayer() {
                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
             </button>
 
-            <button onClick={safeTogglePlay} className="w-12 h-12 bg-indigo-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-indigo-600 hover:scale-110 transition-all border-2 border-white/50 dark:border-slate-600 relative z-20">
+            <button onClick={safeTogglePlay} className="btn btn-primary w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all border-2 border-white/50 dark:border-slate-600 relative z-20">
               {isPlaying ? <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg> : <svg className="w-5 h-5 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>}
             </button>
 

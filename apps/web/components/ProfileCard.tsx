@@ -22,7 +22,7 @@ export default function ProfileCard({ postCount, chatterCount, photoCount }: { p
     >
       <div className="flex items-start justify-between relative z-10">
         <div className="flex items-center gap-6">
-          <div className="w-24 h-24 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-500 p-1 shadow-lg flex-shrink-0 transition-transform duration-500 group-hover:rotate-3">
+          <div className="w-24 h-24 rounded-2xl bg-gradient-to-tr from-[var(--ui-accent)] to-[var(--ui-accent-hover)] p-1 shadow-lg flex-shrink-0 transition-transform duration-500 group-hover:rotate-3">
             <img src={siteInfo?.avatarUrl} alt="avatar" className="w-full h-full rounded-xl object-cover bg-white" />
           </div>
           <div>
@@ -35,11 +35,11 @@ export default function ProfileCard({ postCount, chatterCount, photoCount }: { p
       <div className="flex flex-col md:flex-row items-end md:items-center justify-between mt-8 gap-6 relative z-10">
         {/* 数据统计区 */}
         <div className="flex gap-6 w-full md:w-auto justify-around md:justify-start">
-          <StatItem count={postCount} label="文章" color="text-indigo-600 dark:text-indigo-400" />
+          <StatItem count={postCount} label="文章" color="text-[var(--ui-accent)]" />
           <div className="w-px h-10 bg-slate-300/50 dark:bg-slate-700 hidden md:block"></div>
-          <StatItem count={chatterCount} label="杂谈" color="text-purple-600 dark:text-purple-400" />
+          <StatItem count={chatterCount} label="杂谈" color="text-[var(--ui-accent)]" />
           <div className="w-px h-10 bg-slate-300/50 dark:bg-slate-700 hidden md:block"></div>
-          <StatItem count={photoCount} label="照片" color="text-pink-600 dark:text-pink-400" />
+          <StatItem count={photoCount} label="照片" color="text-[var(--ui-accent)]" />
         </div>
 
         {/* 社交图标区 - 阻止冒泡防止触发卡片跳转 */}

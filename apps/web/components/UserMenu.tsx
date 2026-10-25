@@ -24,7 +24,7 @@ export default function UserMenu() {
     return (
       <Link
         href="/login"
-        className="px-4 py-2 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-black shadow-md transition-colors"
+        className="btn btn-primary px-4 py-2 rounded-xl text-xs font-black shadow-md"
       >
         登录
       </Link>
@@ -37,7 +37,7 @@ export default function UserMenu() {
         onClick={() => setOpen((v) => !v)}
         className="flex items-center gap-2 px-2 py-1.5 rounded-xl bg-white/50 dark:bg-slate-800/60 border border-white/40 dark:border-white/10 text-xs font-bold text-slate-700 dark:text-slate-200"
       >
-        <span className="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 text-white flex items-center justify-center">
+        <span className="w-7 h-7 rounded-full bg-gradient-to-tr from-[var(--ui-accent)] to-[var(--ui-accent-hover)] text-[var(--ui-accent-contrast)] flex items-center justify-center">
           {user.nickname?.slice(0, 1) || <UserIcon size={13} />}
         </span>
         <span className="hidden md:inline max-w-[90px] truncate">{user.nickname}</span>

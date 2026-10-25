@@ -43,7 +43,7 @@ export default function LoginPage() {
           onSubmit={submit}
           className="rounded-[40px] bg-white/60 dark:bg-slate-800/60 backdrop-blur-2xl border border-white/40 dark:border-white/10 shadow-2xl p-8 md:p-10"
         >
-          <div className="w-14 h-14 rounded-3xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-2xl shadow-lg mb-6">
+          <div className="w-14 h-14 rounded-3xl bg-[var(--ui-accent)] flex items-center justify-center text-2xl shadow-lg mb-6 text-white">
             {mode === "login" ? <LogIn size={24} /> : <UserPlus size={24} />}
           </div>
           <h1 className="text-3xl font-black text-slate-900 dark:text-white mb-2">
@@ -79,7 +79,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={busy}
-            className="w-full mt-7 py-4 rounded-2xl bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 text-white font-black text-sm shadow-lg shadow-indigo-500/30 transition-all flex items-center justify-center gap-2"
+            className="btn btn-primary w-full mt-7 py-4 rounded-2xl disabled:opacity-50 font-black text-sm transition-all flex items-center justify-center gap-2"
           >
             {busy && <Loader2 className="animate-spin" size={16} />}
             {mode === "login" ? "登 录" : "注 册"}

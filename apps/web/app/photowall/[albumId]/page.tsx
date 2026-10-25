@@ -202,7 +202,7 @@ export default function AlbumPage() {
                   <button
                     onClick={unlock}
                     disabled={unlocking}
-                    className="px-4 py-2.5 rounded-xl bg-indigo-500 text-white text-xs font-black disabled:opacity-50"
+                    className="btn btn-primary px-4 py-2.5 rounded-xl text-xs font-black disabled:opacity-50"
                   >
                     {unlocking ? "验证中" : "解锁"}
                   </button>
@@ -211,7 +211,7 @@ export default function AlbumPage() {
               {!user && (
                 <button
                   onClick={() => router.push("/login")}
-                  className="mt-4 px-5 py-2.5 rounded-xl bg-indigo-500 text-white text-xs font-black"
+                  className="btn btn-primary mt-4 px-5 py-2.5 rounded-xl text-xs font-black"
                 >
                   去登录
                 </button>
@@ -232,7 +232,7 @@ export default function AlbumPage() {
               {!user ? (
                 <button
                   onClick={() => router.push("/login")}
-                  className="w-full py-3 rounded-xl bg-indigo-500 text-white text-xs font-black"
+                  className="btn btn-primary w-full py-3 rounded-xl text-xs font-black"
                 >
                   登录后输入密码
                 </button>
@@ -249,7 +249,7 @@ export default function AlbumPage() {
                   <button
                     onClick={unlock}
                     disabled={unlocking}
-                    className="px-4 py-2.5 rounded-xl bg-indigo-500 text-white text-xs font-black disabled:opacity-50"
+                    className="btn btn-primary px-4 py-2.5 rounded-xl text-xs font-black disabled:opacity-50"
                   >
                     {unlocking ? "验证中" : "解锁"}
                   </button>
@@ -336,14 +336,14 @@ export default function AlbumPage() {
                 <button
                   onClick={() => void loadOriginal(active, true)}
                   disabled={originalBusy}
-                  className="px-4 py-2.5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-black disabled:opacity-50 flex items-center gap-1"
+                  className="btn btn-primary px-4 py-2.5 rounded-xl text-xs font-black disabled:opacity-50 flex items-center gap-1"
                 >
                   <Download size={14} /> 下载原图
                 </button>
               )}
               <button
                 onClick={reportActive}
-                className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-red-500/80 text-white text-xs font-black"
+                className="btn btn-danger px-4 py-2.5 rounded-xl text-xs font-black"
               >
                 举报
               </button>

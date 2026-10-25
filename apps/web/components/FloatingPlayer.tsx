@@ -70,7 +70,7 @@ export default function FloatingPlayer() {
           <button
             onClick={(e) => { e.stopPropagation(); togglePlay(); }}
             onPointerDown={(e) => e.stopPropagation()}
-            className="w-8 h-8 bg-indigo-500 text-white rounded-full flex items-center justify-center shadow-md hover:scale-110 transition-transform cursor-pointer"
+            className="btn btn-primary w-8 h-8 rounded-full flex items-center justify-center shadow-md hover:scale-110 transition-transform cursor-pointer"
           >
             {isPlaying ? <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg> : <svg className="w-3.5 h-3.5 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>}
           </button>

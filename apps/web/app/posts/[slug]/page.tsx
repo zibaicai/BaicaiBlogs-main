@@ -104,7 +104,7 @@ export default async function PostDetail({ params }: { params: Promise<{ slug: s
                       href={post.fileUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="absolute top-0 right-0 p-2.5 md:p-3 rounded-xl md:rounded-2xl bg-white/50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 hover:bg-emerald-500 hover:text-white transition-all shadow-sm border border-slate-200 dark:border-slate-700 flex items-center gap-2"
+                      className="btn btn-secondary absolute top-0 right-0 p-2.5 md:p-3 rounded-xl md:rounded-2xl transition-all shadow-sm border flex items-center gap-2"
                       title="下载原始 Markdown 文件"
                     >
                       <Download size={18} />
@@ -123,7 +123,7 @@ export default async function PostDetail({ params }: { params: Promise<{ slug: s
                     {(post.tags || []).map((tag) => (
                       <div
                         key={tag}
-                        className="flex items-center gap-1 text-pink-600 dark:text-pink-400 font-bold bg-white/30 dark:bg-slate-900/50 px-2.5 md:px-3 py-1.5 md:py-2 rounded-full text-xs md:text-sm shadow-sm border border-white/20 dark:border-white/5"
+                        className="flex items-center gap-1 text-[var(--ui-accent-strong)] dark:text-[var(--ui-accent)] font-bold bg-[var(--ui-accent-soft)] px-2.5 md:px-3 py-1.5 md:py-2 rounded-full text-xs md:text-sm shadow-sm border border-white/20 dark:border-white/5"
                       >
                         <span className="text-[10px] md:text-xs opacity-70">#</span> {tag}
                       </div>

@@ -206,7 +206,7 @@ export default function CyberCat() {
               type="submit"
               disabled={isThinking || !inputValue.trim()}
               className={`rounded-full p-1.5 ml-1 flex items-center justify-center transition-colors ${
-                isThinking || !inputValue.trim() ? 'bg-gray-300 text-gray-500' : 'bg-blue-500 hover:bg-blue-600 text-white'
+                isThinking || !inputValue.trim() ? 'bg-slate-300 text-slate-500' : 'btn btn-primary'
               }`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">

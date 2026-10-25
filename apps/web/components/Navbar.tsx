@@ -117,7 +117,7 @@ export default function Navbar() {
                     href={link.href}
                     className={`px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
                       isActive(link.href)
-                        ? "bg-indigo-500 text-white"
+                        ? "bg-[var(--ui-accent)] text-[var(--ui-accent-contrast)]"
                         : "text-slate-700 dark:text-slate-200 hover:bg-white/60 dark:hover:bg-slate-800/60"
                     }`}
                   >
@@ -126,7 +126,7 @@ export default function Navbar() {
                 ))}
                 <Link
                   href="/login"
-                  className="px-4 py-3 rounded-xl text-sm font-bold text-indigo-500 bg-indigo-500/10"
+                  className="px-4 py-3 rounded-xl text-sm font-bold text-[var(--ui-accent)] bg-[var(--ui-accent-soft)]"
                 >
                   登录 / 账号
                 </Link>

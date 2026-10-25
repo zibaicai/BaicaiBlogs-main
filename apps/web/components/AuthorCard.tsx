@@ -8,7 +8,7 @@ export default function AuthorCard() {
 
   return (
     <div className="bg-white/60 dark:bg-slate-800/50 backdrop-blur-xl rounded-3xl p-6 border border-white/40 dark:border-white/10 shadow-xl text-center">
-      <div className="w-20 h-20 mx-auto rounded-full p-1 bg-gradient-to-tr from-indigo-500 to-purple-500 shadow-md mb-4 transition-transform duration-500 hover:rotate-3">
+      <div className="w-20 h-20 mx-auto rounded-full p-1 bg-gradient-to-tr from-[var(--ui-accent)] to-[var(--ui-accent-hover)] shadow-md mb-4 transition-transform duration-500 hover:rotate-3">
         <img
           src={siteInfo.avatarUrl}
           alt="avatar"

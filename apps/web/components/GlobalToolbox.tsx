@@ -128,7 +128,7 @@ export default function GlobalToolbox() {
                       aria-label={`${tool.name}${enabled ? "已开启" : "已关闭"}`}
                       onClick={() => toggle(tool.id)}
                       className={`tool-switch relative h-6 w-11 shrink-0 rounded-full transition-colors ${
-                        enabled ? "bg-indigo-500" : "bg-slate-300 dark:bg-slate-700"
+                        enabled ? "bg-[var(--ui-accent)]" : "bg-slate-300 dark:bg-slate-700"
                       }`}
                     >
                       <span
@@ -160,7 +160,7 @@ export default function GlobalToolbox() {
                       onClick={togglePlay}
                       disabled={!currentSong}
                       aria-label={isPlaying ? "暂停音乐" : "播放音乐"}
-                      className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-500 text-white disabled:opacity-40"
+                      className="btn btn-primary flex h-8 w-8 items-center justify-center rounded-full disabled:opacity-40"
                     >
                       {isPlaying ? <Pause size={13} /> : <Play size={13} />}
                     </button>
@@ -192,7 +192,7 @@ export default function GlobalToolbox() {
         aria-expanded={isOpen}
         className={`flex h-12 w-12 items-center justify-center rounded-full border border-white/50 shadow-xl backdrop-blur-xl transition-all duration-300 hover:scale-105 active:scale-95 dark:border-white/10 ${
           isOpen
-            ? "bg-indigo-500 text-white"
+            ? "bg-[var(--ui-accent)] text-[var(--ui-accent-contrast)]"
             : "bg-white/80 text-slate-600 dark:bg-slate-900/80 dark:text-slate-200"
         }`}
       >

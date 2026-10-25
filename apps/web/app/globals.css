@@ -8,6 +8,43 @@
 @layer base {
   :root {
     --font-serif: "Source Han Serif SC", "Noto Serif SC", "Songti SC", "SimSun", Georgia, serif;
+    --ui-accent: #6366f1;
+    --ui-accent-hover: #4f46e5;
+    --ui-accent-strong: #4338ca;
+    --ui-accent-soft: rgba(99, 102, 241, 0.12);
+    --ui-accent-contrast: #ffffff;
+    --ui-success: #10b981;
+    --ui-success-hover: #059669;
+    --ui-success-contrast: #ffffff;
+    --ui-warning: #f59e0b;
+    --ui-warning-hover: #d97706;
+    --ui-warning-contrast: #111827;
+    --ui-danger: #ef4444;
+    --ui-danger-hover: #dc2626;
+    --ui-danger-contrast: #ffffff;
+    --ui-secondary-bg: rgba(255, 255, 255, 0.52);
+    --ui-secondary-text: #334155;
+    --ui-secondary-border: rgba(255, 255, 255, 0.55);
+  }
+
+  .dark {
+    --ui-accent: #818cf8;
+    --ui-accent-hover: #a5b4fc;
+    --ui-accent-strong: #c7d2fe;
+    --ui-accent-soft: rgba(129, 140, 248, 0.14);
+    --ui-accent-contrast: #0f172a;
+    --ui-success: #34d399;
+    --ui-success-hover: #6ee7b7;
+    --ui-success-contrast: #052e16;
+    --ui-warning: #fbbf24;
+    --ui-warning-hover: #fcd34d;
+    --ui-warning-contrast: #271300;
+    --ui-danger: #f87171;
+    --ui-danger-hover: #fca5a5;
+    --ui-danger-contrast: #2b0707;
+    --ui-secondary-bg: rgba(15, 23, 42, 0.62);
+    --ui-secondary-text: #e2e8f0;
+    --ui-secondary-border: rgba(255, 255, 255, 0.12);
   }
 
   body {
@@ -439,8 +476,8 @@ input[type="number"] {
   --hv-line: rgba(29, 45, 60, 0.14);
   --hv-panel: rgba(255, 255, 255, 0.64);
   --hv-panel-border: rgba(255, 255, 255, 0.72);
-  --hv-accent: #9d4a35;
-  --hv-accent-soft: rgba(157, 74, 53, 0.1);
+  --hv-accent: var(--ui-accent);
+  --hv-accent-soft: var(--ui-accent-soft);
   color: var(--hv-text);
   font-family: "Microsoft YaHei", "Noto Sans SC", sans-serif;
 }
@@ -451,8 +488,8 @@ input[type="number"] {
   --hv-line: rgba(255, 255, 255, 0.1);
   --hv-panel: rgba(12, 19, 30, 0.72);
   --hv-panel-border: rgba(255, 255, 255, 0.09);
-  --hv-accent: #d7a071;
-  --hv-accent-soft: rgba(215, 160, 113, 0.1);
+  --hv-accent: var(--ui-accent);
+  --hv-accent-soft: var(--ui-accent-soft);
 }
 
 .home-v2::before {
@@ -563,18 +600,18 @@ input[type="number"] {
 
 .hv-button-primary {
   border-color: transparent;
-  background: var(--hv-text);
-  color: #fff;
+  background: var(--ui-accent);
+  color: var(--ui-accent-contrast);
 }
 
 .dark .hv-button-primary {
-  background: #e8eef7;
-  color: #101823;
+  background: var(--ui-accent);
+  color: var(--ui-accent-contrast);
 }
 
 .hv-button-primary:hover {
-  background: var(--hv-accent);
-  color: #fff;
+  background: var(--ui-accent-hover);
+  color: var(--ui-accent-contrast);
   border-color: transparent;
 }
 
@@ -2172,4 +2209,81 @@ body[data-nav-hidden="true"] .article-toc {
 
 .markdown-reader .markdown-content :where(p, li, td, th, figcaption) :where(strong, b) {
   font-size: 1rem;
+}
+/* Unified action buttons. These only set color/type; layout stays with each component. */
+.btn-primary,
+.btn-success,
+.btn-warning,
+.btn-danger,
+.btn-secondary,
+.btn-ghost {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.btn-primary {
+  background-color: var(--ui-accent);
+  color: var(--ui-accent-contrast);
+  border-color: transparent;
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--ui-accent) 24%, transparent);
+}
+
+.btn-primary:hover {
+  background-color: var(--ui-accent-hover);
+  color: var(--ui-accent-contrast);
+}
+
+.btn-secondary {
+  background-color: var(--ui-secondary-bg);
+  color: var(--ui-secondary-text);
+  border-color: var(--ui-secondary-border);
+}
+
+.btn-secondary:hover {
+  color: var(--ui-accent-strong);
+  border-color: var(--ui-accent);
+  background-color: var(--ui-accent-soft);
+}
+
+.btn-success {
+  background-color: var(--ui-success);
+  color: var(--ui-success-contrast);
+  border-color: transparent;
+}
+
+.btn-success:hover {
+  background-color: var(--ui-success-hover);
+  color: var(--ui-success-contrast);
+}
+
+.btn-warning {
+  background-color: var(--ui-warning);
+  color: var(--ui-warning-contrast);
+  border-color: transparent;
+}
+
+.btn-warning:hover {
+  background-color: var(--ui-warning-hover);
+  color: var(--ui-warning-contrast);
+}
+
+.btn-danger {
+  background-color: var(--ui-danger);
+  color: var(--ui-danger-contrast);
+  border-color: transparent;
+}
+
+.btn-danger:hover {
+  background-color: var(--ui-danger-hover);
+  color: var(--ui-danger-contrast);
+}
+
+.btn-ghost {
+  background-color: transparent;
+  color: var(--ui-secondary-text);
+  border-color: transparent;
+}
+
+.btn-ghost:hover {
+  background-color: var(--ui-accent-soft);
+  color: var(--ui-accent-strong);
 }

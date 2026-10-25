@@ -206,7 +206,7 @@ export default function MyPhotosPage() {
                     <option value="PASSWORD">密码</option>
                     <option value="PUBLIC">公开</option>
                   </select>
-                  <button onClick={createAlbum} className="px-4 py-2.5 rounded-xl bg-indigo-500 text-white text-xs font-black flex items-center gap-1">
+                  <button onClick={createAlbum} className="btn btn-primary px-4 py-2.5 rounded-xl text-xs font-black flex items-center gap-1">
                     <Plus size={14} /> 新建
                   </button>
                 </div>

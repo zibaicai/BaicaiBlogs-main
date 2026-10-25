@@ -358,7 +358,7 @@ export default function WhalePet() {
             <button
               type="submit"
               disabled={state === "thinking" || !inputValue.trim()}
-              className="rounded-full bg-indigo-500 px-3 py-1.5 text-[10px] font-black text-white disabled:opacity-40"
+              className="btn btn-primary rounded-full px-3 py-1.5 text-[10px] font-black disabled:opacity-40"
             >
               发送
             </button>

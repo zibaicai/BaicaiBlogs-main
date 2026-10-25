@@ -74,7 +74,7 @@ export default function DanmakuComposer() {
           {!user ? (
             <Link
               href="/login"
-              className="block rounded-xl bg-indigo-500 px-3 py-2.5 text-center text-xs font-black text-white"
+              className="btn btn-primary block rounded-xl px-3 py-2.5 text-center text-xs font-black text-white"
             >
               登录后发弹幕
             </Link>
@@ -95,7 +95,7 @@ export default function DanmakuComposer() {
                   type="button"
                   onClick={() => void send()}
                   disabled={sending}
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-500 text-white disabled:opacity-50"
+                  className="btn btn-primary flex h-9 w-9 shrink-0 items-center justify-center rounded-xl disabled:opacity-50"
                   aria-label="发送"
                 >
                   <Send size={15} />

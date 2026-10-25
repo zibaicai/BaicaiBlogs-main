@@ -52,7 +52,7 @@ export default function SplashScreen() {
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                className="absolute -inset-1.5 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 opacity-60 blur-[3px]"
+                className="absolute -inset-1.5 rounded-full bg-gradient-to-r from-[var(--ui-accent)] via-[var(--ui-accent-hover)] to-[var(--ui-accent)] opacity-60 blur-[3px]"
               />
               <div className="relative w-full h-full rounded-full p-1.5 bg-white dark:bg-slate-900 shadow-xl">
                 <img src={siteInfo?.avatarUrl} alt="Avatar" className="w-full h-full rounded-full object-cover" />
