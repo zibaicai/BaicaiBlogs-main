@@ -14,19 +14,19 @@ const FRAMES: Record<"idle" | "blink" | "eat", string> = {
 };
 
 const LINES = [
-  "200 OK，今天也要好好写代码。",
-  "抓到一只在摸鱼的铲屎官。",
-  "饭碗见底了，请求补充算力。",
-  "我在加载中……其实是在发呆。",
+  "200 OK，今天也一起把想做的事做完吧。",
+  "海面很安静，适合写一点东西。",
+  "浮力不足，需要一杯水和五分钟休息。",
+  "我在加载中……其实是在看海。",
   "这个请求我收下了，返回 200 OK。",
   "摸鱼可以，但记得保存。",
-  "今天的 bug 也会变成明天的经验。",
+  "今天的 bug，会变成明天的航线。",
 ];
 
 const CHAT_REPLIES = [
-  "收到，200 OK。先去把手里的事情做完吧。",
-  "这个问题有点深，建议先保存一下再继续折腾。",
-  "我听见了。虽然只是一只桌宠，但我会在这里陪着你。",
+  "收到，200 OK。先把手里的事做完，再去看海。",
+  "这个问题有点深，先保存，再慢慢拆。",
+  "我听见了。虽然只是一只住在网页里的鲸鱼娘，但我会在这里陪着你。",
   "先喝口水，再回来解决它。",
   "请求已记录，返回 200 OK。",
 ];
@@ -111,7 +111,7 @@ export default function WhalePet() {
     setEatRun((v) => v + 1);
     setShowStars(true);
     setShowDrool(true);
-    speak("开饭！这碗算力我先收下了。", 2600);
+    speak("补给到账，这碗浮力我先收下了。", 2600);
 
     if (eatTimer.current) window.clearTimeout(eatTimer.current);
     if (actionTimer.current) window.clearTimeout(actionTimer.current);
@@ -121,7 +121,7 @@ export default function WhalePet() {
       setIsEating(false);
       setState("idle");
       showOkBadge();
-      speak("吃饱了，200 OK。", 3200);
+      speak("补给完成，继续下潜。", 3200);
     }, 3600);
   };
 
@@ -266,8 +266,8 @@ export default function WhalePet() {
               setShowInput((v) => !v);
             }}
             className="flex h-9 w-9 items-center justify-center rounded-full border border-white/40 bg-white/85 text-indigo-500 shadow-md backdrop-blur-md transition-transform hover:scale-110 active:scale-95 dark:border-white/10 dark:bg-slate-800/85"
-            title="和小深聊天"
-            aria-label="和小深聊天"
+            title="和鲸鱼娘聊天"
+            aria-label="和鲸鱼娘聊天"
           >
             {showInput ? <X size={15} /> : <MessageCircle size={15} />}
           </button>
@@ -279,8 +279,8 @@ export default function WhalePet() {
             }}
             disabled={isEating || state === "thinking"}
             className="flex h-9 w-9 items-center justify-center rounded-full border border-white/40 bg-white/85 text-base shadow-md backdrop-blur-md transition-transform hover:scale-110 active:scale-95 disabled:opacity-40 dark:border-white/10 dark:bg-slate-800/85"
-            title="喂一碗米饭"
-            aria-label="喂一碗米饭"
+            title="投喂一块小鱼干"
+            aria-label="投喂一块小鱼干"
           >
             <Fish size={15} className="text-sky-500" />
           </button>
@@ -291,7 +291,7 @@ export default function WhalePet() {
           onClick={() => {
             if (state === "sleep") {
               markActive();
-              speak("醒了醒了，200 OK。");
+              speak("浮上来了，200 OK。");
               showOkBadge();
               return;
             }
@@ -303,7 +303,7 @@ export default function WhalePet() {
           <img
             key={isEating ? "idle" : frame}
             src={FRAMES[isEating ? "idle" : frame]}
-            alt="鲸鱼娘桌宠"
+            alt="鲸鱼娘"
             draggable={false}
             className={`h-full w-full object-contain drop-shadow-[0_12px_18px_rgba(15,23,42,0.28)] ${
               isEating ? "" : frameClass
@@ -350,7 +350,7 @@ export default function WhalePet() {
             <input
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value.slice(0, 100))}
-              placeholder="跟小深说点啥..."
+              placeholder="和鲸鱼娘说点什么..."
               maxLength={100}
               disabled={state === "thinking"}
               className="min-w-0 flex-1 bg-transparent px-3 py-1.5 text-xs font-bold text-slate-700 outline-none placeholder:text-slate-400 dark:text-slate-200"

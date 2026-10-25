@@ -32,7 +32,7 @@ export default async function FriendsPage() {
           </h2>
         </div>
         <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-3">
-          {friend.description || "一位认真记录的朋友。"}
+          {friend.description || "一位也在认真记录的人。"}
         </p>
       </a>
     ),
@@ -44,10 +44,10 @@ export default async function FriendsPage() {
     <div className="max-w-2xl mx-auto directory-card p-10 text-center">
       <div className="text-5xl mb-5">🌱</div>
       <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-3">
-        友链正在生长中...
+        友链正在靠岸...
       </h2>
       <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-        暂时还没有公开友链。如果你想交换链接，可以按下面的格式准备信息：
+        暂时还没有公开友链。想交换链接的话，可以按下面的格式准备信息：
       </p>
       <pre className="mt-5 text-left text-xs leading-relaxed whitespace-pre-wrap bg-slate-900/90 text-slate-200 rounded-2xl p-5 overflow-x-auto">
         {`
@@ -66,9 +66,9 @@ export default async function FriendsPage() {
       <PageTransition>
         <main className="directory-shell">
           <DirectoryExplorer
-            eyebrow="BAICAI / FRIENDS"
+            eyebrow="BAICAI / NEIGHBORS"
             title="友链"
-            subtitle="在云朵里，留下了通往你那片云的路。"
+            subtitle="海面很宽，认识一些同样在记录的人。"
             count={`${friends.length} 位朋友`}
             items={items}
             filters={[

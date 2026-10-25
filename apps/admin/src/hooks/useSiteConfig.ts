@@ -85,13 +85,13 @@ export interface SiteConfigState {
 }
 
 const DEFAULT_SITE_INFO: SiteInfo = {
-  title: "YeLuo の 云间小屋",
+  title: "YeLuo / 云端小屋",
   faviconUrl: "https://github.com/zibaicai/BaicaiBlogs-main/blob/master/picture/00.png?raw=true",
   authorName: "YeLuo",
-  bio: "在代码、学术与分子动力学模拟间穿梭的普通人。近期正埋头于 GROMACS 模拟研究与神经网络计算。",
+  bio: "写代码，也拍照片。把项目、音乐和日常里值得留下的片段，收进同一片海。",
   navTitle: "YeLuo",
-  navSuffix: "の",
-  navAfter: "云间小屋",
+  navSuffix: "/",
+  navAfter: "云端小屋",
   avatarUrl: "https://github.com/zibaicai/BaicaiBlogs-main/blob/master/picture/00.png?raw=true",
   buildDate: "2026-03-23T00:00:00",
   enableLevelSystem: true,
@@ -121,29 +121,29 @@ const DEFAULT_BACKGROUND: BackgroundConfig = {
 };
 
 const DEFAULT_DANMAKU: string[] = [
-  "在干嘛呢？", "有笨蛋嘛？", "前方高能反应！", "GROMACS 跑起来了吗？",
-  "MD 模拟什么时候才能出图啊", "Graph Neural Networks 炼丹中...",
-  "BUG 修复进度 99%", "今天背单词了吗？", "Tailwind CSS 拯救前端",
-  "写算法中", "睡大觉中", "到底在干嘛？",
+  "今天也要好好写代码", "海风把 bug 吹走了", "这张照片值得留下",
+  "正在整理一些想法", "鲸鱼娘在摸鱼", "先保存，再继续折腾",
+  "这个项目还在生长", "听一首歌再写", "把复杂的事做简单",
+  "今天的灵感来自海边", "写完这段就去休息", "海面很安静",
 ];
 
 const DEFAULT_AI_CONFIG: AiConfig = {
   modelId: "gemini-2.5-flash-lite",
   systemPrompt:
-    "你现在是一只傲娇、聪明、有点毒舌但很可爱的暹罗猫。你的名字叫煤球。你的主人是一个喜欢折腾代码的极客。你说话的特点是：1.必须简短，每次最多一两句话。2.喜欢在句尾加上喵~或者喵呜~。3.经常抱怨肚子饿，喜欢要小鱼干。4.回复字数不能超过100字。5.绝对不要承认自己是一个AI模型，你就是一只真实的猫。6.笨猫。",
+    "你是「云端小屋」的鲸鱼娘助手小鲸。你住在网站右下角，性格温柔、清醒、偶尔有一点俏皮的冷幽默。你的主人是一个写代码、拍照片、做项目的人。你说话的特点是：1.必须简短，每次最多一两句话。2.偶尔用海洋、潮汐、浮力相关的比喻，但不要每句都用。3.会提醒主人保存、休息、喝水，也会认真接住主人的情绪。4.回复字数最多不超过100字。5.不承认自己是AI模型，你就是一只住在网页里的鲸鱼娘。6.不要使用猫、喵、小鱼干之类的猫娘设定。",
   maxOutputTokens: 150,
   temperature: 0.85,
 };
 
 const DEFAULT_MISC: MiscConfig = {
-  chatterTitle: "云端杂谈",
-  chatterDescription: "代码、学术、提瓦特与泰拉大陆的碎片记录",
+  chatterTitle: "海面杂谈",
+  chatterDescription: "代码、照片、音乐与日常的碎片记录",
   picBedName: "图床",
   picBedUrl: "",
   picBedToken: "",
   cloudMusicIds: ["1809646618", "3361076230", "1859390262"],
   friendLinkApplyFormat:
-    "名称：YeLuoの云间小屋\n简介：今天我也要学习吗\n链接：https://www.YeLuo.top\n头像：https://github.com/zibaicai/BaicaiBlogs-main/blob/master/picture/00.png?raw=true",
+    "名称：YeLuo / 云端小屋\n简介：写代码，也拍照片。把项目、音乐和日常里值得留下的片段，收进同一片海。\n链接：https://www.zibaicai.cn\n头像：https://github.com/zibaicai/BaicaiBlogs-main/blob/master/picture/00.png?raw=true",
   photoWallImage: "https://bu.dusays.com/2026/03/24/69c1e38b4c370.jpg",
   counts: { photos: 128 },
   footerBadges: [

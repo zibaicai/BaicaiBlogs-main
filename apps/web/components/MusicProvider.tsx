@@ -72,7 +72,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [lyrics, setLyrics] = useState<{ time: number; text: string }[]>([]);
-  const [currentLyric, setCurrentLyric] = useState("正在连接高可用神经云端...");
+  const [currentLyric, setCurrentLyric] = useState("正在接收海面信号...");
   const [isLoading, setIsLoading] = useState(true);
 
   // 🌟 2. 新增音量和播放模式状态
@@ -102,7 +102,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
 
         if (isMounted) {
           if (mergedPlaylist.length > 0) setPlaylist(mergedPlaylist);
-          else setCurrentLyric("云端链路受阻");
+          else setCurrentLyric("海面信号暂时走远了");
           setIsLoading(false);
         }
       } catch (error) {

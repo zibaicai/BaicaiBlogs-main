@@ -102,8 +102,8 @@ export default function MomentsPage() {
           ) : (
             <DirectoryExplorer
               eyebrow="BAICAI / MOMENTS"
-              title="说说"
-              subtitle="那些没说完的话，先放在云边。"
+              title="碎片频道"
+              subtitle="一些没写成长文，但值得留下的瞬间。"
               count={`${moments.length} 条记录`}
               items={items}
               filters={filters}
@@ -113,7 +113,7 @@ export default function MomentsPage() {
                   <div className="mb-5 text-5xl">🫧</div>
                   <h2 className="mb-3 text-xl font-bold text-slate-800 dark:text-white">这里还很安静</h2>
                   <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-                    说说模块已接入，等第一条记录出现时，它会在这里亮起来。
+                    第一条碎片出现时，这里会亮起来。
                   </p>
                 </div>
               }

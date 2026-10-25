@@ -137,14 +137,14 @@ export default function PhotoWallPage() {
           {error && <div className="text-center py-20 text-red-400 font-bold">{error}</div>}
           {!loading && !error && (
             <DirectoryExplorer
-              eyebrow="BAICAI / GALLERY"
-              title="照片墙"
-              subtitle="把光与影收进云层，私密的那一页只留给你。"
+              eyebrow="BAICAI / FRAMES"
+              title="影像档案"
+              subtitle="把光、颜色和路过的地方留下来。"
               count={`${albums.length} 个可见相册`}
               items={items}
               filters={filters}
               searchPlaceholder="搜索相册标题或简介..."
-              empty="暂无可见相册。"
+              empty="还没有公开的影像。"
             />
           )}
         </main>

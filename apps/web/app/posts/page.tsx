@@ -5,7 +5,7 @@ import PostCard from "../../components/PostCard";
 import { getCategories, getPosts } from "../../lib/server-api";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "全部文章" };
+export const metadata = { title: "文字档案" };
 
 export default async function PostsPage() {
   const [posts, categories] = await Promise.all([getPosts(), getCategories()]);
@@ -45,14 +45,14 @@ export default async function PostsPage() {
       <PageTransition>
         <main className="directory-shell">
           <DirectoryExplorer
-            eyebrow="BAICAI / ARCHIVE"
-            title="研究档案"
-            subtitle="把走过的路，写成一页页可以回望的云。"
-            count={`共 ${posts.length} 篇公开记录`}
+            eyebrow="BAICAI / NOTES"
+            title="文字档案"
+            subtitle="写代码，也写代码之外的事。"
+            count={`共 ${posts.length} 篇记录`}
             items={items}
             filters={filters}
             searchPlaceholder="搜索标题、摘要、分类或标签..."
-            empty="没有匹配的研究记录。"
+            empty="还没有写下第一篇。"
           />
         </main>
       </PageTransition>

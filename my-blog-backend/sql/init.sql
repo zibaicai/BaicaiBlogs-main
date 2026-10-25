@@ -201,16 +201,16 @@ CREATE TABLE `site_config` (
 
 -- 插入默认站点配置
 INSERT INTO `site_config` (`config_key`, `config_value`, `description`) VALUES
-('site_title', 'XingHuiSama の 宝藏之地', '网站标题'),
-('author_name', 'XingHuiSama', '博主名称'),
-('author_bio', '在代码、学术与分子动力学模拟间穿梭的普通人。', '博主简介'),
+('site_title', 'YeLuo / 云端小屋', '网站标题'),
+('author_name', 'YeLuo', '博主名称'),
+('author_bio', '写代码，也拍照片。把项目、音乐和日常里值得留下的片段，收进同一片海。', '博主简介'),
 ('avatar_url', 'https://bu.dusays.com/2026/03/24/69c1e38ac1846.jpg', '头像 URL'),
 ('favicon_url', 'https://bu.dusays.com/2026/03/24/69c1e38ac1846.jpg', 'Favicon URL'),
 ('default_post_cover', 'https://bu.dusays.com/2026/03/24/69c1e38b346cb.jpg', '默认文章封面'),
-('photo_wall_image', 'https://bu.dusays.com/2026/03/24/69c1e38b4c370.jpg', '照片墙预览图'),
-('chatter_title', '云端杂谈', '杂谈模块标题'),
-('chatter_description', '代码、学术、提瓦特与泰拉大陆的碎片记录', '杂谈模块描述'),
-('social_github', 'https://github.com/heiehiehi', 'GitHub 链接'),
+('photo_wall_image', 'https://bu.dusays.com/2026/03/24/69c1e38b4c370.jpg', '影像档案预览图'),
+('chatter_title', '海面杂谈', '碎片模块标题'),
+('chatter_description', '代码、照片、音乐与日常的碎片记录', '碎片模块描述'),
+('social_github', 'https://github.com/zibaicai', 'GitHub 链接'),
 ('social_email', '<redacted>', '邮箱'),
 ('build_date', '2026-03-23T00:00:00', '建站日期');
 
@@ -220,7 +220,7 @@ INSERT INTO `site_config` (`config_key`, `config_value`, `description`) VALUES
 
 -- 示例文章
 INSERT INTO `posts` (`slug`, `title`, `description`, `content`, `cover`, `date`, `status`) VALUES
-('welcome-to-baicaiblogs', '欢迎来到宝藏之地', '这是第一篇示例文章，欢迎来到我的博客！', '# 欢迎来到宝藏之地\n\n这是一个使用 **Java + MySQL** 后端驱动的博客系统。\n\n## 技术栈\n\n- Spring Boot 3.x\n- Spring Data JPA\n- MySQL 8\n- Next.js 16\n\n> 开始你的写作之旅吧！', 'https://bu.dusays.com/2026/03/24/69c1e38b4c370.jpg', '2026-08-12 10:00:00', 'PUBLISHED');
+('welcome-to-baicaiblogs', '把第一束光留在这里', '一个用来存放文字、影像和未完成想法的地方。', '# 把第一束光留在这里\n\n这是一个由 **Spring Boot + Next.js** 驱动的个人档案站。\n\n## 这里会有什么\n\n- 写过的代码与项目\n- 拍下的照片\n- 一些没写成长文的碎片\n\n> 海面每天都在换颜色，记录也是。', 'https://bu.dusays.com/2026/03/24/69c1e38b4c370.jpg', '2026-08-12 10:00:00', 'PUBLISHED');
 
 -- 示例标签
 INSERT INTO `tags` (`name`) VALUES
@@ -230,23 +230,23 @@ INSERT INTO `tags` (`name`) VALUES
 INSERT INTO `post_tags` (`post_id`, `tag_id`) VALUES
 (1, 1), (1, 2), (1, 3), (1, 4), (1, 5);
 
--- 示例杂谈
+-- 示例碎片
 INSERT INTO `chatters` (`slug`, `title`, `content`, `mood`, `cover`, `date`, `tags`) VALUES
-('first-chatter', '第一次杂谈', '今天搭建了新的博客系统，感觉很开心！', '开心', 'https://bu.dusays.com/2026/03/24/69c1e38b4c370.jpg', '2026-08-12 11:00:00', '["日常", "技术"]');
+('first-chatter', '第一片潮汐', '今天把新的首页、相册和鲸鱼娘都放进了同一片海。', '平静', 'https://bu.dusays.com/2026/03/24/69c1e38b4c370.jpg', '2026-08-12 11:00:00', '["日常", "记录"]');
 
 -- 示例项目
 INSERT INTO `projects` (`project_id`, `name`, `description`, `icon`, `github_url`, `tags`, `sort_order`) VALUES
-('proj_001', 'Computational Chemistry Tool', '整合了分子动力学模拟常用工具的 Python 脚本集合', '🚀', 'https://github.com/heiehiehi/Computational_Chemistry_Tool', '["Gromacs", "RMSF", "Python"]', 1);
+('proj_001', 'Tide Archive', '把文章、影像、音乐与项目收进同一片海的个人档案站。', '🌊', 'https://github.com/zibaicai', '["Next.js", "Spring Boot", "Archive"]', 1);
 
 -- 示例友链
 INSERT INTO `friends` (`friend_id`, `name`, `url`, `description`, `avatar`, `theme_color`, `sort_order`) VALUES
-('amiya', '罗德岛 PRTS', 'https://prts.wiki/', '记录泰拉大陆的各项数据与前文明遗迹', 'https://bu.dusays.com/2026/03/24/69c1e38b4c370.jpg', 'rgba(16, 185, 129, 0.5)', 1);
+('tide-neighbor', '潮汐观测站', 'https://www.zibaicai.cn/', '一个同样在记录光、代码与日常的地方。', 'https://bu.dusays.com/2026/03/24/69c1e38b4c370.jpg', 'rgba(16, 185, 129, 0.5)', 1);
 
 -- 示例相册
 INSERT INTO `albums` (`album_id`, `title`, `description`, `cover`, `date`, `sort_order`) VALUES
-('album_001', '旅行日记', '记录旅途中的美好瞬间', 'https://bu.dusays.com/2026/03/24/69c1e38b4c370.jpg', '2026-07-01', 1);
+('album_001', '旅行日记', '记录旅途中被光照到的地方。', 'https://bu.dusays.com/2026/03/24/69c1e38b4c370.jpg', '2026-07-01', 1);
 
 -- 示例照片
 INSERT INTO `photos` (`album_id`, `url`, `caption`, `sort_order`) VALUES
-(1, 'https://bu.dusays.com/2026/03/24/69c1e38b4c370.jpg', '风景照 1', 1),
-(1, 'https://bu.dusays.com/2026/03/24/69c26fe4acdb5.jpg', '风景照 2', 2);
+(1, 'https://bu.dusays.com/2026/03/24/69c1e38b4c370.jpg', '潮汐与风 1', 1),
+(1, 'https://bu.dusays.com/2026/03/24/69c26fe4acdb5.jpg', '潮汐与风 2', 2);

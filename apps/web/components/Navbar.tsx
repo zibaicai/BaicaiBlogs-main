@@ -11,13 +11,13 @@ import NavSearch from "./NavSearch";
 
 const NAV_LINKS = [
   { name: "首页", href: "/" },
-  { name: "文章", href: "/posts" },
+  { name: "文字", href: "/posts" },
   { name: "项目", href: "/projects" },
-  { name: "照片", href: "/photowall" },
+  { name: "影像", href: "/photowall" },
   { name: "归档", href: "/timeline" },
   { name: "关于", href: "/about" },
   { name: "友链", href: "/friends" },
-  { name: "说说", href: "/moments" },
+  { name: "碎片", href: "/moments" },
 ];
 
 export default function Navbar() {
@@ -59,7 +59,7 @@ export default function Navbar() {
             className="text-xl font-black text-slate-800 dark:text-white tracking-tighter whitespace-nowrap"
           >
             {siteInfo?.navTitle}
-            <span className="text-indigo-500 mx-1">{siteInfo?.navSuffix || "の"}</span>
+            <span className="text-indigo-500 mx-1">{siteInfo?.navSuffix || "/"}</span>
             {siteInfo?.navAfter}
           </Link>
 

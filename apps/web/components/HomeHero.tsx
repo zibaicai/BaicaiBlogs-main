@@ -23,7 +23,7 @@ export default function HomeHero({ postCount, chatterCount, photoCount }: Props)
     <div className="hv-hero-copy">
       <div className="hv-eyebrow">
         <span className="hv-live-dot" />
-        PERSONAL SPACE <span className="hv-slash">/</span> 2026
+        TIDE ARCHIVE <span className="hv-slash">/</span> 2026
       </div>
 
       <div className="hv-author-row">
@@ -35,24 +35,24 @@ export default function HomeHero({ postCount, chatterCount, photoCount }: Props)
           )}
         </div>
         <div className="hv-author-id">
-          <span className="hv-profile-label">AUTHOR / OWNER</span>
+          <span className="hv-profile-label">MAKER / OWNER</span>
           <strong>{siteInfo?.authorName || "YeLuo"}</strong>
         </div>
-        <span className="hv-online"><Radio size={10} /> ONLINE</span>
+        <span className="hv-online"><Radio size={10} /> PRESENT</span>
       </div>
 
       <p className="hv-intro-copy">
-        把代码、照片，和一些没有结论的夜晚，
+        把代码、照片、音乐，和一些未完成的想法，
         <br className="hidden sm:block" />
-        放在同一个地方。
+        收进同一片海。
       </p>
 
       <div className="hv-hero-actions">
         <Link href="/posts" className="hv-button hv-button-primary">
-          阅读文章 <ArrowUpRight size={15} />
+          翻阅档案 <ArrowUpRight size={15} />
         </Link>
         <Link href="/about" className="hv-button">
-          关于我
+          认识我
         </Link>
       </div>
 
@@ -64,7 +64,7 @@ export default function HomeHero({ postCount, chatterCount, photoCount }: Props)
           </div>
           <div>
             <strong>{String(chatterCount).padStart(2, "0")}</strong>
-            <span>杂谈</span>
+            <span>说说</span>
           </div>
           <div>
             <strong>{String(photoCount).padStart(2, "0")}</strong>

@@ -43,7 +43,7 @@ export default async function Home() {
 
           <div className="hv-toolbar hv-toolbar-meta-only">
             <div className="hv-toolbar-meta">
-              <span>PERSONAL ARCHIVE</span>
+              <span>TIDE ARCHIVE</span>
               <span className="hv-toolbar-dot" />
               <span>UPDATED {recentPosts[0]?.formattedDate || "TODAY"}</span>
             </div>
@@ -53,11 +53,11 @@ export default async function Home() {
             <section className="hv-panel hv-posts">
               <div className="hv-panel-head">
                 <div>
-                  <span className="hv-profile-label">LATEST NOTES</span>
+                  <span className="hv-profile-label">LATEST WRITING</span>
                   <h2>最近写下的</h2>
                 </div>
                 <Link href="/posts" className="hv-text-link">
-                  全部文章 <span>↗</span>
+                  全部文字 <span>↗</span>
                 </Link>
               </div>
 
@@ -78,7 +78,7 @@ export default async function Home() {
               </div>
 
               {recentPosts.length === 0 && (
-                <p className="hv-empty">还没有文章，先写下第一篇吧。</p>
+                <p className="hv-empty">还没有写下第一篇。</p>
               )}
             </section>
 
@@ -86,11 +86,11 @@ export default async function Home() {
               <section className="hv-panel hv-moments">
                 <div className="hv-panel-head">
                   <div>
-                    <span className="hv-profile-label">SMALL MOMENTS</span>
-                    <h2>最近的碎碎念</h2>
+                    <span className="hv-profile-label">SMALL FRAGMENTS</span>
+                    <h2>最近的碎片</h2>
                   </div>
                   <Link href="/moments" className="hv-text-link">
-                    全部说说 <span>↗</span>
+                    全部碎片 <span>↗</span>
                   </Link>
                 </div>
 

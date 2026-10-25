@@ -16,9 +16,9 @@ type Tool = {
 };
 
 const TOOLS: Tool[] = [
-  { id: "danmaku", name: "弹幕", description: "首页漂浮弹幕与发送入口" },
-  { id: "click", name: "点击特效", description: "点击页面时的水波涟漪" },
-  { id: "pet", name: "桌面宠物", description: "右下角的鲸鱼娘" },
+  { id: "danmaku", name: "海面弹幕", description: "让一些话从海面上飘过" },
+  { id: "click", name: "水波", description: "点击页面，荡开一圈涟漪" },
+  { id: "pet", name: "鲸鱼娘", description: "陪你写代码，也提醒你休息" },
 ];
 
 const DEFAULT_PREFS: Record<ToolId, boolean> = {

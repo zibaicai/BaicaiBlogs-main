@@ -1,12 +1,12 @@
-﻿import Navbar from "../../components/Navbar";
+import Navbar from "../../components/Navbar";
 import PageTransition from "../../components/PageTransition";
 import ProjectsBoard from "../../components/ProjectsBoard";
 import { getProjects } from "../../lib/server-api";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "项目矩阵",
-  description: "开源项目与代码仓库展示",
+  title: "项目现场",
+  description: "正在生长与已经落地的项目记录",
 };
 
 export default async function ProjectsPage() {

@@ -78,14 +78,14 @@ export default function ProjectsBoard({ projects }: { projects: Project[] }) {
   return (
     <div className="directory-shell mt-0 py-0">
       <DirectoryExplorer
-        eyebrow="BAICAI / PROJECTS"
-        title="项目矩阵"
-        subtitle="把脑中的星图，慢慢搭成可以落脚的云。"
+        eyebrow="BAICAI / BUILDS"
+        title="项目现场"
+        subtitle="一些正在生长、也允许慢慢完成的东西。"
         count={`${projects.length} 个项目`}
         items={items}
         filters={filters}
         searchPlaceholder="搜索项目、代号或技术栈..."
-        empty="没有匹配的项目。"
+        empty="还没有公开的项目。"
       />
     </div>
   );

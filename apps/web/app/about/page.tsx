@@ -20,7 +20,7 @@ export default async function AboutPage() {
               关于
             </h1>
             <p className="text-slate-500 dark:text-slate-400 font-medium">
-              代码、学术与分子动力学之间的碎片
+              代码、照片、音乐，以及一些还在路上的想法
             </p>
           </header>
 
@@ -37,8 +37,8 @@ export default async function AboutPage() {
                 {siteInfo.bio}
               </p>
               <p className="text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
-                这里记录公开的研究笔记、项目折腾与一些零散的想法。评论与后台入口已迁移，
-                当前站点只保留公开阅读能力。
+                这里记录公开的文章、项目、影像和一些零散想法。评论、后台和更多功能都还在继续生长，
+                就像海面每天都会换一种颜色。
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

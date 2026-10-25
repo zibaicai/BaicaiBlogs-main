@@ -32,12 +32,12 @@ export default function TimelineClient({
     <div className="directory-shell">
       <DirectoryExplorer
         eyebrow="BAICAI / TIMELINE"
-        title="研究终端"
-        subtitle="沿着时间的云层，打捞那些发过光的片段。"
+        title="时间档案"
+        subtitle="沿着时间线，打捞那些发过光的片段。"
         count={`总计 ${posts.length} 篇`}
         items={items}
         filters={filters}
-        searchPlaceholder="搜寻被封存的知识..."
+        searchPlaceholder="搜索标题、标签或关键词..."
         initialMode="timeline"
         empty="这个频段没有接收到任何信号 📡"
       />

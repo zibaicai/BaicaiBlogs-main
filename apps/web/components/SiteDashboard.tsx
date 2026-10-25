@@ -47,7 +47,7 @@ export default function SiteDashboard() {
         {/* 运行时间 */}
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-          <span>系统已稳定运行：<span className="text-indigo-600 dark:text-indigo-400 font-black">{uptimeStr}</span></span>
+          <span>这座小屋已运行：<span className="text-indigo-600 dark:text-indigo-400 font-black">{uptimeStr}</span></span>
         </div>
 
         {/* 技术栈徽章 (🌟 动态映射 misc.footerBadges 里的数组) */}

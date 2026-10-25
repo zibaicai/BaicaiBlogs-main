@@ -179,7 +179,7 @@ export default function AlbumPage() {
       <Navbar />
       <PageTransition>
         <main className="w-full max-w-6xl mx-auto mt-28 px-4 sm:px-10 relative z-10">
-          <BackButton fallbackHref="/photowall" label="返回照片墙" />
+          <BackButton fallbackHref="/photowall" label="返回影像档案" />
           {loading && (
             <div className="flex justify-center py-24">
               <Loader2 className="animate-spin text-indigo-400" size={28} />

@@ -10,7 +10,7 @@ export default function HomeThemeToggle() {
     <button type="button" onClick={toggleTheme} className="hv-theme">
       <span className="hv-theme-icon">{isDark ? <Moon size={16} /> : <Sun size={16} />}</span>
       <span className="hv-theme-copy">
-        <span className="hv-profile-label">APPEARANCE</span>
+        <span className="hv-profile-label">ATMOSPHERE</span>
         <strong>{isDark ? "夜间模式" : "日间模式"}</strong>
       </span>
       <span className="hv-theme-switch" aria-hidden="true">

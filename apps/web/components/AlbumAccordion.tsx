@@ -16,7 +16,7 @@ export default function AlbumAccordion({ albums }: { albums: Album[] }) {
       <div className="album-accordion album-accordion-empty">
         <div className="album-empty-copy">
           <Images size={20} />
-          <strong>相册还在等待第一束光</strong>
+          <strong>相册正在等第一束光</strong>
           <span>整理好照片后，它们会在这里展开。</span>
         </div>
       </div>
@@ -24,7 +24,7 @@ export default function AlbumAccordion({ albums }: { albums: Album[] }) {
   }
 
   return (
-    <div className="album-accordion" role="group" aria-label="相册手风琴">
+    <div className="album-accordion" role="group" aria-label="影像相册">
       {visible.map((album, index) => {
         const isActive = index === active;
         const firstPhoto = album.photos?.[0];
@@ -54,10 +54,10 @@ export default function AlbumAccordion({ albums }: { albums: Album[] }) {
             {isActive ? (
               <span className="album-panel-content">
                 <span className="album-panel-kicker">
-                  <Images size={11} /> PHOTO WALL
+                  <Images size={11} /> VISUAL ARCHIVE
                 </span>
                 <strong>{album.title}</strong>
-                <span className="album-panel-desc">{album.description || "记录一些光影与停留。"}</span>
+                <span className="album-panel-desc">{album.description || "把光、颜色和路过的地方留下来。"}</span>
                 <span className="album-panel-meta">
                   {count} 张照片 <ArrowUpRight size={12} />
                 </span>
