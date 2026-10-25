@@ -5,6 +5,7 @@ import PageTransition from "../../../components/PageTransition";
 import AuthorCard from "../../../components/AuthorCard";
 import BackButton from "../../../components/BackButton";
 import ArticleToc from "../../../components/ArticleToc";
+import MarkdownReader from "../../../components/MarkdownReader";
 import { formatDate, formatDay } from "../../../lib/api";
 import { getPost, getPosts } from "../../../lib/server-api";
 import { DEFAULT_BACKGROUND } from "../../../lib/site-config";
@@ -130,10 +131,7 @@ export default async function PostDetail({ params }: { params: Promise<{ slug: s
                 </div>
               </header>
 
-              <div
-                className="article-prose prose prose-slate dark:prose-invert prose-base md:prose-lg max-w-none text-slate-800 dark:text-slate-200 transition-colors duration-700 scroll-smooth"
-                dangerouslySetInnerHTML={{ __html: post.htmlContent || "" }}
-              />
+              <MarkdownReader html={post.htmlContent || ""} />
             </div>
           </article>
         </main>

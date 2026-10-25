@@ -3,6 +3,8 @@ import Script from "next/script";
 import "katex/dist/katex.min.css";
 import "highlight.js/styles/atom-one-dark.css";
 import "./globals.css";
+import "./github-markdown-light.css";
+import "./github-markdown-dark.css";
 
 import { ThemeProvider } from "../components/ThemeProvider";
 import { AuthProvider } from "../lib/auth";

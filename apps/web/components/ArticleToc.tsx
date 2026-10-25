@@ -31,7 +31,7 @@ export default function ArticleToc() {
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    const root = document.querySelector<HTMLElement>(".article-prose");
+    const root = document.querySelector<HTMLElement>(".markdown-content");
     if (!root) return;
 
     const nodes = Array.from(root.querySelectorAll<HTMLElement>("h1, h2, h3, h4, h5, h6"));

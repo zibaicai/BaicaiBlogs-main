@@ -2054,3 +2054,104 @@ body[data-nav-hidden="true"] .article-toc {
 .article-prose :where(p, li, td, th, figcaption) :where(strong, b) {
   font-size: var(--article-body);
 }
+
+/* Markdown reader theme switch — scoped to the markdown body only */
+.markdown-reader {
+  position: relative;
+  width: 100%;
+}
+
+.markdown-theme-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 0.1rem 0 0.8rem;
+}
+
+.markdown-theme-label {
+  font-family: Consolas, monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.markdown-theme-options {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.48);
+  backdrop-filter: blur(10px);
+}
+
+.dark .markdown-theme-options {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.58);
+}
+
+.markdown-theme-option {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.32rem 0.55rem;
+  background: transparent;
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.18s ease, background-color 0.18s ease;
+}
+
+.dark .markdown-theme-option {
+  color: #94a3b8;
+}
+
+.markdown-theme-option:hover {
+  color: #4f46e5;
+}
+
+.markdown-theme-option.is-active {
+  background: #6366f1;
+  color: #ffffff;
+}
+
+.dark .markdown-theme-option.is-active {
+  background: #818cf8;
+  color: #0f172a;
+}
+
+/* GitHub markdown surface: only this body gets a real light/dark canvas */
+.markdown-reader[data-md-theme="github-light"] .markdown-body,
+.markdown-reader[data-md-theme="github-dark"] .markdown-body {
+  border-radius: 18px;
+  padding: 1.25rem;
+  border: 1px solid #d1d9e0;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.markdown-reader[data-md-theme="github-dark"] .markdown-body {
+  border-color: #3d444d;
+}
+
+@media (min-width: 768px) {
+  .markdown-reader[data-md-theme="github-light"] .markdown-body,
+  .markdown-reader[data-md-theme="github-dark"] .markdown-body {
+    padding: 1.75rem 2rem;
+  }
+}
+
+/* Keep the existing site typography preference for every markdown theme:
+   normal text is 1px smaller, inline bold remains at the original size. */
+.markdown-reader .markdown-content :where(p, li, td, th, figcaption) {
+  font-size: 0.9375rem;
+}
+
+.markdown-reader .markdown-content :where(p, li, td, th, figcaption) :where(strong, b) {
+  font-size: 1rem;
+}
