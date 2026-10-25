@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import { DEFAULT_DANMAKU } from '../lib/site-config';
 
 interface DanmakuItem {
   id: number;
@@ -29,10 +30,11 @@ export default function DanmakuBackground() {
         const res = await fetch('/api/public/danmaku', { cache: 'no-store' });
         const json = await res.json();
         if (!cancelled && json?.success && Array.isArray(json.data)) {
-          setList(json.data.filter((x: unknown) => typeof x === 'string' && x.trim()).slice(0, 500));
+          const items = json.data.filter((x: unknown) => typeof x === 'string' && x.trim()).slice(0, 500);
+          setList(items.length > 0 ? items : DEFAULT_DANMAKU);
         }
       } catch {
-        // 背景弹幕失败不影响主页面
+        if (!cancelled) setList(DEFAULT_DANMAKU);
       }
     };
 
