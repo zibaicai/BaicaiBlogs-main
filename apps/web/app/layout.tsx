@@ -21,6 +21,8 @@ import FloatingPlayer from "../components/FloatingPlayer";
 import GlobalToolbox from "../components/GlobalToolbox";
 import ClickEffect from "../components/ClickEffect";
 import WhalePet from "../components/WhalePet";
+import PageViewTracker from "../components/PageViewTracker";
+import PresenceHeartbeat from "../components/PresenceHeartbeat";
 import Footer from "../components/Footer";
 import { getPublicSiteConfig } from "../lib/server-api";
 
@@ -70,6 +72,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <AuthProvider>
             <SiteConfigProvider initial={config}>
               <ToastProvider>
+              <PageViewTracker />
+              <PresenceHeartbeat />
               <SplashScreen />
               <MusicProvider>
                 <div id="app-mount-root" className="flex-1 flex flex-col transition-opacity duration-1000">

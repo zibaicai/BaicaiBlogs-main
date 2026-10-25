@@ -45,6 +45,8 @@ export default function WhalePet() {
   const [showStars, setShowStars] = useState(false);
   const [showDrool, setShowDrool] = useState(false);
   const [eatReady, setEatReady] = useState(false);
+  const [clock, setClock] = useState("--:--");
+  const [clockDate, setClockDate] = useState("SUN · --.--");
 
   const speechTimer = useRef<number | null>(null);
   const actionTimer = useRef<number | null>(null);
@@ -57,6 +59,18 @@ export default function WhalePet() {
     update();
     mq.addEventListener("change", update);
     return () => mq.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
+    const tick = () => {
+      const now = new Date();
+      setClock(now.toLocaleTimeString("en-GB", { hour12: false, hour: "2-digit", minute: "2-digit" }));
+      const weekday = now.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase();
+      setClockDate(`${weekday} · ${String(now.getMonth() + 1).padStart(2, "0")}.${String(now.getDate()).padStart(2, "0")}`);
+    };
+    tick();
+    const timer = window.setInterval(tick, 1000);
+    return () => window.clearInterval(timer);
   }, []);
 
   useEffect(() => {
@@ -184,7 +198,7 @@ export default function WhalePet() {
         lastActivity.current = Date.now();
       }}
       whileDrag={{ cursor: "grabbing" }}
-      className="whale-pet fixed bottom-32 right-8 z-[90] flex w-[180px] cursor-grab flex-col items-center select-none active:cursor-grabbing"
+      className="whale-pet fixed bottom-48 right-8 z-[90] flex w-[180px] cursor-grab flex-col items-center select-none active:cursor-grabbing"
     >
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes whale-bob {
@@ -336,6 +350,15 @@ export default function WhalePet() {
             </span>
           )}
         </button>
+      </div>
+
+      <div className="whale-clock-card pointer-events-none mt-2 flex w-[138px] flex-col items-center rounded-2xl border border-white/35 bg-white/30 px-3 py-2 shadow-lg backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/40">
+        <time className="font-mono text-[19px] font-black tracking-[0.12em] text-slate-800 dark:text-slate-100" dateTime={clock}>
+          {clock}
+        </time>
+        <span className="mt-0.5 font-mono text-[8px] font-bold tracking-[0.16em] text-slate-500 dark:text-slate-400">
+          {clockDate}
+        </span>
       </div>
 
       <AnimatePresence>

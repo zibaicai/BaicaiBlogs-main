@@ -132,6 +132,22 @@ public class OssService {
         return true;
     }
 
+    /** Lightweight connectivity check used by the public dashboard. */
+    public boolean isHealthy() {
+        if (!ossProperties.isConfigured()) return false;
+        OSS ossClient = buildClient();
+        try {
+            // A missing healthcheck object is still a healthy bucket; transport errors are not.
+            ossClient.doesObjectExist(ossProperties.getBucketName(), "healthcheck");
+            return true;
+        } catch (Exception e) {
+            log.warn("[OssService] 健康检查失败: {}", e.getMessage());
+            return false;
+        } finally {
+            ossClient.shutdown();
+        }
+    }
+
     private String resolveManagedImageKey(String fileUrl) {
         if (fileUrl == null || fileUrl.isBlank()) return null;
         try {

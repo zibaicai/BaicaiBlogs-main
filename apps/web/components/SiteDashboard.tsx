@@ -1,69 +1,117 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { useSiteConfigContext } from '../context/SiteConfigProvider';
+import { useEffect, useState } from "react";
+import { Activity, Clock3, Eye, HeartPulse, Users } from "lucide-react";
+
+interface DashboardData {
+  uptime: { startAt: string; days: number; hours: number };
+  visits: { total: number; type: "PV" };
+  online: { count: number; windowSeconds: number };
+  health: {
+    status: "ok" | "degraded" | "error";
+    checks: Record<string, string>;
+    checkedAt: string;
+  };
+  updatedAt: string;
+}
+
+const HEALTH_COPY = {
+  ok: { label: "正常", dot: "bg-emerald-400", text: "text-emerald-500 dark:text-emerald-400" },
+  degraded: { label: "注意", dot: "bg-amber-400", text: "text-amber-500 dark:text-amber-400" },
+  error: { label: "异常", dot: "bg-red-400", text: "text-red-500 dark:text-red-400" },
+};
 
 export default function SiteDashboard() {
-  const [timeStr, setTimeStr] = useState('');
-  const [uptimeStr, setUptimeStr] = useState('');
-  const { siteInfo, misc } = useSiteConfigContext();
-
-  // 🌟 从配置中读取建站时间
-  const START_DATE = new Date(siteInfo?.buildDate || '2026-03-23T00:00:00').getTime();
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      // 格式化当前时间为 HH:MM:SS
-      setTimeStr(now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    let cancelled = false;
+    let controller: AbortController | null = null;
 
-      // 计算运行时间
-      const diff = now.getTime() - START_DATE;
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-      setUptimeStr(`${days}天 ${hours}小时`);
+    const load = async () => {
+      controller?.abort();
+      controller = new AbortController();
+      try {
+        const res = await fetch("/api/public/dashboard", {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        const json = await res.json();
+        if (!cancelled && json?.success && json.data) {
+          setData(json.data);
+          setFailed(false);
+        }
+      } catch (error) {
+        if (!cancelled && !(error instanceof DOMException && error.name === "AbortError")) {
+          setFailed(true);
+        }
+      }
     };
 
-    updateTime(); // 初始执行一次
-    const timer = setInterval(updateTime, 1000);
-    return () => clearInterval(timer);
-  }, [START_DATE]);
+    void load();
+    const timer = window.setInterval(load, 60_000);
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void load();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+
+    return () => {
+      cancelled = true;
+      controller?.abort();
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, []);
+
+  const online = data?.online.count ?? 0;
+  const health = data?.health.status ?? "error";
+  const healthCopy = HEALTH_COPY[health];
+  const healthDetail = data
+    ? Object.entries(data.health.checks).map(([key, value]) => `${key}: ${value}`).join(" · ")
+    : "等待健康检查";
 
   return (
-    // 横向铺满 12 列的长条矩阵
-    <div className="md:col-span-12 rounded-3xl bg-white/40 dark:bg-slate-800/50 backdrop-blur-md border border-white/40 dark:border-white/10 shadow-xl overflow-hidden flex flex-col md:flex-row items-stretch transition-colors duration-700 h-auto md:h-20 group">
-
-      {/* 左侧：翻页时钟特效 (使用等宽字体) */}
-      <div className="bg-slate-900 dark:bg-black text-white px-8 py-4 md:py-0 flex items-center justify-center font-mono text-2xl md:text-3xl font-black tracking-widest shadow-inner relative overflow-hidden group-hover:text-indigo-400 transition-colors">
-        <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none"></div>
-        {timeStr || '00:00:00'}
-        {/* 模拟翻页中间的分割线 */}
-        <div className="absolute left-0 right-0 top-1/2 h-px bg-black/50"></div>
+    <section className="hv-panel hv-metrics" aria-label="小屋仪表盘">
+      <div className="hv-metric">
+        <div className="hv-metric-icon"><Clock3 size={15} /></div>
+        <span className="hv-metric-label">RUNNING</span>
+        <strong className="hv-metric-value">
+          {data ? <>{data.uptime.days}<em>天</em> {data.uptime.hours}<em>小时</em></> : "--"}
+        </strong>
+        <span className="hv-metric-note">自 {data?.uptime.startAt?.slice(0, 10) || "2025-12-31"}</span>
       </div>
 
-      {/* 中间与右侧：状态信息 */}
-      <div className="flex-1 px-6 py-4 md:py-0 flex flex-wrap items-center justify-between gap-4 text-xs md:text-sm font-bold text-slate-600 dark:text-slate-300">
-
-        {/* 运行时间 */}
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-          <span>这座小屋已运行：<span className="text-indigo-600 dark:text-indigo-400 font-black">{uptimeStr}</span></span>
-        </div>
-
-        {/* 技术栈徽章 (🌟 动态映射 misc.footerBadges 里的数组) */}
-        <div className="flex gap-2">
-          {misc?.footerBadges?.map((badge, index) => (
-            <span
-              key={index}
-              className="px-2 py-1 bg-white/50 dark:bg-slate-700/50 rounded-md shadow-sm flex items-center gap-1 border border-white/40 dark:border-slate-600"
-            >
-              <svg className={`w-3.5 h-3.5 ${badge.color}`} fill="currentColor" viewBox="0 0 24 24" dangerouslySetInnerHTML={{ __html: badge.svg }} />
-              {badge.name}
-            </span>
-          ))}
-        </div>
-
+      <div className="hv-metric">
+        <div className="hv-metric-icon"><Eye size={15} /></div>
+        <span className="hv-metric-label">VISITS</span>
+        <strong className="hv-metric-value">
+          {data ? data.visits.total.toLocaleString("zh-CN") : "--"}
+        </strong>
+        <span className="hv-metric-note">累计访问 · {data?.visits.type || "PV"}</span>
       </div>
-    </div>
+
+      <div className="hv-metric">
+        <div className="hv-metric-icon"><Users size={15} /></div>
+        <span className="hv-metric-label">ONLINE</span>
+        <strong className="hv-metric-value hv-metric-online">
+          <span className={`hv-metric-dot ${online > 0 ? "is-live" : ""}`} />
+          {data ? String(online).padStart(2, "0") : "--"}
+        </strong>
+        <span className="hv-metric-note">已登录 · 3 分钟窗口</span>
+      </div>
+
+      <div className="hv-metric" title={healthDetail}>
+        <div className="hv-metric-icon"><HeartPulse size={15} /></div>
+        <span className="hv-metric-label">STATUS</span>
+        <strong className={`hv-metric-value ${healthCopy.text}`}>
+          <span className={`hv-metric-dot ${healthCopy.dot}`} />
+          {data ? healthCopy.label : failed ? "未知" : "--"}
+        </strong>
+        <span className="hv-metric-note">API · 数据库 · 对象存储</span>
+      </div>
+
+      <span className="hv-metrics-refresh"><Activity size={10} /> 每分钟刷新</span>
+    </section>
   );
 }
