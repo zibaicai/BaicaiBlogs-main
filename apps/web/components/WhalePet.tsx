@@ -352,7 +352,10 @@ export default function WhalePet() {
         </button>
       </div>
 
-      <div className="whale-clock-card pointer-events-none relative z-0 flex w-[152px] flex-col items-center rounded-2xl border border-white/35 bg-white/30 px-3 py-2 shadow-lg backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/40">
+      <div
+        className="whale-clock-card pointer-events-none relative z-0 flex w-[152px] flex-col items-center rounded-2xl border border-white/35 bg-white/30 px-3 py-2 shadow-lg backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/40"
+        style={{ transform: "translateY(-16px)" }}
+      >
         <time className="font-mono text-[19px] font-black tracking-[0.12em] text-slate-800 dark:text-slate-100" dateTime={clock}>
           {clock}
         </time>
