@@ -474,8 +474,8 @@ input[type="number"] {
   --hv-text: #1c2733;
   --hv-muted: #6e7a86;
   --hv-line: rgba(29, 45, 60, 0.14);
-  --hv-panel: rgba(255, 255, 255, 0.64);
-  --hv-panel-border: rgba(255, 255, 255, 0.72);
+  --hv-panel: rgba(255, 255, 255, 0.28);
+  --hv-panel-border: rgba(255, 255, 255, 0.48);
   --hv-accent: var(--ui-accent);
   --hv-accent-soft: var(--ui-accent-soft);
   color: var(--hv-text);
@@ -486,8 +486,8 @@ input[type="number"] {
   --hv-text: #edf3fa;
   --hv-muted: #96a5b6;
   --hv-line: rgba(255, 255, 255, 0.1);
-  --hv-panel: rgba(12, 19, 30, 0.72);
-  --hv-panel-border: rgba(255, 255, 255, 0.09);
+  --hv-panel: rgba(8, 15, 26, 0.38);
+  --hv-panel-border: rgba(255, 255, 255, 0.12);
   --hv-accent: var(--ui-accent);
   --hv-accent-soft: var(--ui-accent-soft);
 }
@@ -811,7 +811,7 @@ input[type="number"] {
   border-radius: 22px;
   background: var(--hv-panel);
   box-shadow: 0 20px 60px rgba(24, 38, 55, 0.08);
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(30px) saturate(145%);
   padding: 24px;
 }
 
@@ -1061,7 +1061,7 @@ input[type="number"] {
   border-radius: 22px;
   background: var(--hv-panel);
   box-shadow: 0 20px 60px rgba(24, 38, 55, 0.08);
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(30px) saturate(145%);
   padding: 18px;
   color: var(--hv-text);
   text-align: left;
