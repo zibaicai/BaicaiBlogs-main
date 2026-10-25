@@ -44,6 +44,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="zh-CN" className="h-full antialiased" suppressHydrationWarning>
       <head>
+        <Script id="theme-bootstrap" strategy="beforeInteractive">
+          {`
+            try {
+              if (localStorage.getItem('blog-theme') === 'dark') {
+                document.documentElement.classList.add('dark');
+              }
+            } catch (e) {}
+          `}
+        </Script>
         <style
           suppressHydrationWarning
           dangerouslySetInnerHTML={{

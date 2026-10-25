@@ -132,7 +132,7 @@ function loadThemes(): Record<ThemeMode, ThemePalette | null> {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [isDark, setIsDark] = useState(true);
+  const [isDark, setIsDark] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [customThemes, setCustomThemes] = useState<Record<ThemeMode, ThemePalette | null>>({
     light: null,
@@ -144,7 +144,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setMounted(true);
     const savedTheme = localStorage.getItem("blog-theme");
-    const isDarkMode = savedTheme !== "light";
+    // 默认日间模式：只有用户显式存过 "dark" 才用夜间
+    const isDarkMode = savedTheme === "dark";
     setIsDark(isDarkMode);
     setCustomThemes(loadThemes());
 
