@@ -53,11 +53,11 @@ export default async function PostDetail({ params }: { params: Promise<{ slug: s
               <AuthorCard />
             </div>
             <div className="article-card-slot article-card-recommended">
-              <div className="bg-white/60 dark:bg-slate-800/50 backdrop-blur-xl rounded-3xl p-5 border border-white/40 dark:border-white/10 shadow-xl h-full overflow-hidden">
-                <h3 className="font-black text-slate-900 dark:text-white mb-3 border-l-4 border-indigo-500 pl-2 text-sm">
+              <div className="flex h-full flex-col rounded-3xl border border-white/40 bg-white/60 p-5 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/50">
+                <h3 className="mb-2 border-l-4 border-indigo-500 pl-2 text-sm font-black text-slate-900 dark:text-white">
                   RECOMMENDED
                 </h3>
-                <div className="space-y-3">
+                <div className="flex flex-1 flex-col justify-evenly">
                   {recentPosts.map((p) => (
                     <Link key={p.slug} href={`/posts/${encodeURIComponent(p.slug)}`} className="group block">
                       <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1">
