@@ -3,14 +3,16 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '../ToastProvider';
+import { api } from '../../lib/api';
 
 interface FloatingImageToolProps {
   isOpen: boolean;
   onClose: () => void;
   onInsert: (url: string) => void;
+  mode?: 'insert' | 'cover';
 }
 
-export default function FloatingImageTool({ isOpen, onClose, onInsert }: FloatingImageToolProps) {
+export default function FloatingImageTool({ isOpen, onClose, onInsert, mode = 'insert' }: FloatingImageToolProps) {
   const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<'upload' | 'url'>('url');
   const [isUploading, setIsUploading] = useState(false);
@@ -20,10 +22,19 @@ export default function FloatingImageTool({ isOpen, onClose, onInsert }: Floatin
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 新后端尚未提供图床代理上传接口，这里只做明确提示，避免请求不存在的本地 Python 服务。
-  const handleFileUpload = async (_file: File) => {
-    setIsUploading(false);
-    showToast("当前后端未接入图床代理，请切换到「外链插入」并粘贴图片地址", "warning");
-    if (fileInputRef.current) fileInputRef.current.value = '';
+  const handleFileUpload = async (file: File) => {
+    setIsUploading(true);
+    try {
+      const res = await api.uploadImage(file);
+      if (!res.success || !res.data) throw new Error(res.message || "上传失败");
+      setUploadedUrl(res.data);
+      showToast("图片已上传", "success");
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "上传失败", "warning");
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -68,7 +79,7 @@ export default function FloatingImageTool({ isOpen, onClose, onInsert }: Floatin
           {/* 标题栏 */}
           <div className="flex justify-between items-center p-5 border-b border-white/30 dark:border-slate-700/50 bg-white/50 dark:bg-slate-800/50">
             <h3 className="text-sm font-black text-slate-800 dark:text-slate-100 flex items-center gap-2">
-              <span className="text-emerald-500 text-lg">☁️</span> 图床工作台
+              <span className="text-emerald-500 text-lg">☁️</span> {mode === 'cover' ? '封面工作台' : '图床工作台'}
             </h3>
             <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/50 dark:bg-slate-700/50 flex items-center justify-center text-slate-500 hover:bg-red-500 hover:text-white transition-all cursor-pointer shadow-sm">✕</button>
           </div>
@@ -142,7 +153,7 @@ export default function FloatingImageTool({ isOpen, onClose, onInsert }: Floatin
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <button onClick={copyUrlToClipboard} className="py-2.5 rounded-xl bg-white/60 dark:bg-slate-800/60 text-slate-700 dark:text-slate-200 font-bold text-xs hover:bg-white dark:hover:bg-slate-700 transition-all shadow-sm">🔗 复制链接</button>
-                  <button onClick={() => { onInsert(uploadedUrl); setUploadedUrl(''); setExternalUrl(''); }} className="py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black text-xs shadow-lg shadow-emerald-500/30 hover:from-emerald-600 hover:to-teal-600 transition-all active:scale-95">✨ 嵌入正文</button>
+                  <button onClick={() => { onInsert(uploadedUrl); setUploadedUrl(''); setExternalUrl(''); }} className="py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black text-xs shadow-lg shadow-emerald-500/30 hover:from-emerald-600 hover:to-teal-600 transition-all active:scale-95">✨ {mode === 'cover' ? '设为封面' : '嵌入正文'}</button>
                 </div>
               </div>
             )}

@@ -169,26 +169,6 @@ export default function EditorPage() {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">分类</span>
-          <select
-            value={categoryId}
-            onChange={(event) => setCategoryId(event.target.value)}
-            className="min-w-[220px] rounded-xl border border-white/10 bg-slate-800 px-3 py-2 text-xs font-bold text-white outline-none"
-          >
-            <option value="">未分类 / 请选择根分类</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.path}
-              </option>
-            ))}
-          </select>
-          <span className="text-[10px] text-slate-500">必选一个分类；深层子分类可选。</span>
-          {libraryTags.length > 0 && (
-            <span className="ml-auto text-[10px] text-slate-500">标签库 {libraryTags.filter((tag) => tag.status === "ACTIVE").length} 个</span>
-          )}
-        </div>
-
         <div className="flex flex-col xl:flex-row gap-5" style={{ minHeight: "calc(100vh - 120px)" }}>
           <section className="flex-1 bg-white/30 dark:bg-slate-800/40 backdrop-blur-[60px] rounded-[40px] shadow-2xl border border-white/30 dark:border-white/10 flex flex-col overflow-hidden min-h-[70vh]">
             <RichTextEditor
@@ -207,7 +187,7 @@ export default function EditorPage() {
             />
           </section>
 
-          <aside className="w-full xl:w-[360px] shrink-0 bg-white/30 dark:bg-slate-800/40 backdrop-blur-[60px] rounded-[40px] shadow-2xl border border-white/30 dark:border-white/10 flex flex-col overflow-hidden">
+          <aside className="w-full xl:w-[360px] shrink-0 bg-white/30 dark:bg-slate-800/40 backdrop-blur-[60px] rounded-[40px] shadow-2xl border border-white/30 dark:border-white/10 flex flex-col overflow-hidden xl:sticky xl:top-4 xl:h-[calc(100vh-2rem)]">
             <MetaMatrix
               type="post"
               tags={tags}
@@ -216,6 +196,9 @@ export default function EditorPage() {
               setCover={setCover}
               summary={summary}
               setSummary={setSummary}
+              categories={categories}
+              categoryId={categoryId}
+              setCategoryId={setCategoryId}
               allHistoryPostTags={historyTags}
               allHistoryChatterTags={[]}
               isLoadingTags={isLoadingTags}
@@ -234,6 +217,7 @@ export default function EditorPage() {
 
       <FloatingImageTool
         isOpen={imageToolOpen}
+        mode={imageTarget === "cover" ? "cover" : "insert"}
         onClose={() => setImageToolOpen(false)}
         onInsert={(url) => {
           if (imageTarget === "editor") {

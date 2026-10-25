@@ -3,12 +3,15 @@ package com.baicaiblogs.controller;
 import com.baicaiblogs.dto.*;
 import com.baicaiblogs.entity.User;
 import com.baicaiblogs.service.PostService;
+import com.baicaiblogs.service.OssService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * 文章控制器
@@ -25,6 +28,21 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
+    private final OssService ossService;
+
+    @PostMapping("/admin/images")
+    public ApiResponse<String> uploadImage(@RequestParam("file") MultipartFile file) {
+        try {
+            if (file.isEmpty()) throw new RuntimeException("图片文件不能为空");
+            String original = file.getOriginalFilename() == null ? "cover" : file.getOriginalFilename();
+            String ext = original.contains(".") ? original.substring(original.lastIndexOf('.') + 1).toLowerCase() : "jpg";
+            String key = "covers/" + LocalDate.now() + "/" + UUID.randomUUID().toString().substring(0, 12) + "." + ext;
+            ossService.putObject(key, file.getBytes(), file.getContentType() == null ? "image/jpeg" : file.getContentType());
+            return ApiResponse.success("上传成功", ossService.publicUrl(key));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
 
     // ==================== 公开接口（无需登录） ====================
 

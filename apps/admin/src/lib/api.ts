@@ -249,6 +249,12 @@ export const api = {
     return request<Post>("/admin/posts/upload", { method: "POST", body: form });
   },
 
+  uploadImage: (file: File) => {
+    const form = new FormData();
+    form.append("file", file);
+    return request<string>("/admin/images", { method: "POST", body: form });
+  },
+
   repairPost: (slug: string) =>
     request<Post>(`/admin/posts/${encodeURIComponent(slug)}/repair`, { method: "POST" }),
 

@@ -2,12 +2,16 @@
 
 import React, { useState, KeyboardEvent, useEffect } from 'react';
 import { ImageIcon, Tag, FileText, X, Clock, CloudUpload, Smile, Save, Send } from 'lucide-react';
+import type { Category } from '../../lib/api';
 
 interface Props {
   type: 'post' | 'chatter' | 'about';
   tags: string[]; setTags: React.Dispatch<React.SetStateAction<string[]>>;
   cover: string; setCover: (val: string) => void;
   summary: string; setSummary: (val: string) => void;
+  categories: Category[];
+  categoryId: string;
+  setCategoryId: (val: string) => void;
   mood?: string; setMood?: (val: string) => void;
   allHistoryPostTags: string[];
   allHistoryChatterTags: string[];
@@ -20,7 +24,7 @@ interface Props {
 }
 
 export default function MetaMatrix({
-  type, tags, setTags, cover, setCover, summary, setSummary, mood, setMood,
+  type, tags, setTags, cover, setCover, summary, setSummary, categories, categoryId, setCategoryId, mood, setMood,
   allHistoryPostTags, allHistoryChatterTags, isLoadingTags, allHistoryMoods, onSave, isSaving, lastSaved, onOpenImageTool
 }: Props) {
   const [tagInput, setTagInput] = useState('');
@@ -48,12 +52,15 @@ export default function MetaMatrix({
   return (
     <div className="flex flex-col h-full overflow-hidden relative">
       {/* 头部标题 */}
-      <div className="shrink-0 p-8 pb-4 flex flex-col border-b border-white/10 bg-white/5">
-        <span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.3em]">{type} Mode</span>
-        <h2 className="text-xl font-black text-slate-900 dark:text-white">属性设置</h2>
+      <div className="shrink-0 px-5 py-3 flex items-center justify-between border-b border-white/10 bg-white/5">
+        <div>
+          <span className="text-[9px] font-black text-indigo-500 uppercase tracking-[0.25em]">{type} Mode</span>
+          <h2 className="text-base font-black text-slate-900 dark:text-white leading-tight">属性设置</h2>
+        </div>
+        <span className="text-[9px] font-bold text-slate-500">内部滚动</span>
       </div>
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-8 flex flex-col gap-10">
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-5 flex flex-col gap-6">
 
         {/* 1. 封面图区 */}
         <div className="flex flex-col">
@@ -71,10 +78,22 @@ export default function MetaMatrix({
               <span className="text-white text-xs font-bold tracking-widest">更换封面</span>
             </div>
           </div>
-          <input
-            type="text" value={cover} onChange={(e) => setCover(e.target.value)} placeholder="或手动粘贴 URL..."
-            className="w-full bg-white/10 dark:bg-black/20 rounded-2xl px-5 py-3.5 text-xs text-slate-800 dark:text-slate-200 border border-white/10 outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
-          />
+          <div className="flex flex-col gap-2">
+            <span className="text-[9px] font-black uppercase tracking-[0.18em] text-slate-400">分类</span>
+            <select
+              value={categoryId}
+              onChange={(event) => setCategoryId(event.target.value)}
+              className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-xs font-bold text-slate-200 outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              <option value="">未分类 / 请选择根分类</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.path}
+                </option>
+              ))}
+            </select>
+            <span className="text-[9px] text-slate-500">必选一个分类；深层子分类可选。</span>
+          </div>
         </div>
 
         {/* 2. 标签区 */}
@@ -139,8 +158,8 @@ export default function MetaMatrix({
       </div>
 
       {/* 底部按钮 */}
-      <div className="shrink-0 p-8 border-t border-white/10 bg-white/5 backdrop-blur-md">
-        <div className="flex flex-col gap-4">
+      <div className="shrink-0 p-4 border-t border-white/10 bg-white/5 backdrop-blur-md">
+        <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2 text-[9px] font-bold text-slate-400">
             <Clock size={12} />
             {isSaving ? "正在落盘至本地系统..." : lastSaved ? `最近落盘: ${lastSaved}` : "文档尚未在本地生成"}
