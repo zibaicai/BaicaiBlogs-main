@@ -29,4 +29,5 @@ public class PostRequest {
     private String status;
     /** 标签列表，例如 ["React","Spring Boot"] */
     private List<String> tags;
+    private Long categoryId;
 }

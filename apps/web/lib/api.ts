@@ -16,6 +16,16 @@ export interface PageResponse<T> {
   size: number;
 }
 
+export interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  parentId?: number | null;
+  path: string;
+  depth: number;
+  sort: number;
+}
+
 export interface Post {
   id: number;
   slug: string;
@@ -28,6 +38,9 @@ export interface Post {
   status: string;
   views: number;
   tags: string[];
+  categoryId?: number;
+  categoryName?: string;
+  categoryPath?: string;
   fileUrl?: string;
   createdAt: string;
   updatedAt: string;

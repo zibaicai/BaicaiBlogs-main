@@ -120,10 +120,12 @@ interface EditorProps {
   initialContent?: string;
   onOpenImageTool: () => void;
   isTitleLocked?: boolean;
+  summary?: string;
+  setSummary?: (val: string) => void;
   onChange?: () => void;
 }
 
-const RichTextEditor = forwardRef<RichTextEditorHandle, EditorProps>(({ title, setTitle, initialContent, onOpenImageTool, isTitleLocked, onChange }, ref) => {
+const RichTextEditor = forwardRef<RichTextEditorHandle, EditorProps>(({ title, setTitle, initialContent, onOpenImageTool, isTitleLocked, summary, setSummary, onChange }, ref) => {
   const [textColors, setTextColors] = useState<string[]>(['#6366F1', '#000000']);
   const [highlightColors, setHighlightColors] = useState<string[]>(['#FEF08A', '#BBF7D0']);
   const [showTextPicker, setShowTextPicker] = useState(false);
@@ -298,6 +300,20 @@ const RichTextEditor = forwardRef<RichTextEditorHandle, EditorProps>(({ title, s
           </div>
         )}
       </div>
+
+      {setSummary && (
+        <div className="shrink-0 px-12 pb-4">
+          <textarea
+            value={summary || ""}
+            onChange={(event) => setSummary(event.target.value)}
+            rows={2}
+            maxLength={200}
+            placeholder="文章摘要：显示在标题下方、首页卡片和搜索结果中"
+            className="w-full resize-none rounded-2xl border border-white/30 bg-white/30 px-4 py-3 text-xs font-medium leading-relaxed text-slate-700 outline-none backdrop-blur-md transition focus:ring-2 focus:ring-indigo-500/40 dark:border-white/10 dark:bg-slate-900/30 dark:text-slate-200"
+          />
+          <div className="mt-1 text-right text-[9px] font-bold text-slate-400">{(summary || "").length}/200</div>
+        </div>
+      )}
 
       <div className="shrink-0 px-8 py-2.5 border-y border-white/20 dark:border-white/10 flex flex-wrap items-center gap-1.5 bg-white/10 dark:bg-black/20 backdrop-blur-md z-50">
         <div className="flex items-center gap-1"><Btn onClick={() => editor.chain().focus().undo().run()}><Undo2 size={16}/></Btn><Btn onClick={() => editor.chain().focus().redo().run()}><Redo2 size={16}/></Btn><Btn onClick={() => editor.chain().focus().unsetAllMarks().run()}><RemoveFormatting size={16}/></Btn></div>

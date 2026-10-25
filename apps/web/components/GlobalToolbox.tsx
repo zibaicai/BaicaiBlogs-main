@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Eye, EyeOff, Music2, Pause, Play, Settings2, X } from "lucide-react";
+import { Eye, EyeOff, Music2, Palette, Pause, Play, Settings2, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useMusic } from "./MusicProvider";
+import ThemeStudio from "./ThemeStudio";
 
 type ToolId = "danmaku" | "click" | "pet";
 
@@ -36,6 +37,7 @@ export default function GlobalToolbox() {
   const [isOpen, setIsOpen] = useState(false);
   const [prefs, setPrefs] = useState<Record<ToolId, boolean>>(DEFAULT_PREFS);
   const [musicVisible, setMusicVisible] = useState(false);
+  const [themeOpen, setThemeOpen] = useState(false);
   const pathname = usePathname();
   const { currentSong, isPlaying, togglePlay } = useMusic();
 
@@ -176,6 +178,30 @@ export default function GlobalToolbox() {
                   </div>
                 </div>
               </div>
+
+              <div className="mt-1 border-t border-slate-200/70 px-3 py-3 dark:border-white/10">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[var(--ui-accent-soft)] text-[var(--ui-accent)]">
+                      <Palette size={15} />
+                    </span>
+                    <div className="min-w-0">
+                      <div className="text-sm font-bold text-slate-800 dark:text-slate-100">配色工作台</div>
+                      <div className="truncate text-[10px] text-slate-400">日间 / 夜间独立自定义</div>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsOpen(false);
+                      setThemeOpen(true);
+                    }}
+                    className="rounded-full bg-[var(--ui-accent)] px-3 py-2 text-[10px] font-black text-[var(--ui-accent-contrast)]"
+                  >
+                    调整
+                  </button>
+                </div>
+              </div>
             </div>
 
             <p className="border-t border-slate-200/70 px-5 py-3 text-[10px] text-slate-400 dark:border-white/10">
@@ -198,6 +224,7 @@ export default function GlobalToolbox() {
       >
         {isOpen ? <X size={19} /> : <Settings2 size={19} />}
       </button>
+      <ThemeStudio open={themeOpen} onClose={() => setThemeOpen(false)} />
     </div>
   );
 }

@@ -17,4 +17,5 @@ public interface MomentRepository extends JpaRepository<Moment, Long> {
     List<Moment> findByStatusAndVisibilityOrderByDateDesc(String status, String visibility);
     List<Moment> findByUserIdOrderByDateDesc(Long userId);
     List<Moment> findByStatusOrderByDateDesc(String status);
+    List<Moment> findByVisibilityOrderByDateDesc(String visibility);
 }

@@ -2,34 +2,42 @@ import Navbar from "../../components/Navbar";
 import PageTransition from "../../components/PageTransition";
 import DirectoryExplorer from "../../components/DirectoryExplorer";
 import PostCard from "../../components/PostCard";
-import { getPosts } from "../../lib/server-api";
+import { getCategories, getPosts } from "../../lib/server-api";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "全部文章" };
 
 export default async function PostsPage() {
-  const posts = await getPosts();
+  const [posts, categories] = await Promise.all([getPosts(), getCategories()]);
+  const roots = categories.filter((category) => category.depth === 1);
+  const rootByPost = (categoryPath?: string) =>
+    roots.find((root) => categoryPath === root.path || categoryPath?.startsWith(`${root.path}/`));
 
-  const tagCounts: Record<string, number> = {};
-  posts.forEach((post) => {
-    (post.tags || []).forEach((tag) => {
-      tagCounts[tag] = (tagCounts[tag] || 0) + 1;
-    });
-  });
+  const rootsWithResources = roots
+    .map((root) => ({
+      root,
+      count: posts.filter((post) => rootByPost(post.categoryPath)?.id === root.id).length,
+    }))
+    .filter((item) => item.count > 0);
 
   const filters = [
     { value: "all", label: "全部档案", count: posts.length },
-    ...Object.keys(tagCounts)
-      .map((tag) => ({ value: tag, label: tag, count: tagCounts[tag] }))
-      .sort((a, b) => b.count - a.count),
+    ...rootsWithResources.map(({ root, count }) => ({
+      value: `category-${root.id}`,
+      label: root.path,
+      count,
+    })),
   ];
 
-  const items = posts.map((post) => ({
-    key: post.slug,
-    node: <PostCard key={post.slug} post={post} />,
-    searchText: [post.title, post.description, ...(post.tags || [])].join(" "),
-    filterValues: post.tags || [],
-  }));
+  const items = posts.map((post) => {
+    const root = rootByPost(post.categoryPath);
+    return {
+      key: post.slug,
+      node: <PostCard key={post.slug} post={post} />,
+      searchText: [post.title, post.description, post.categoryPath, ...(post.tags || [])].join(" "),
+      filterValues: root ? [`category-${root.id}`] : [],
+    };
+  });
 
   return (
     <div className="min-h-screen relative pb-20">
@@ -43,7 +51,7 @@ export default async function PostsPage() {
             count={`共 ${posts.length} 篇公开记录`}
             items={items}
             filters={filters}
-            searchPlaceholder="搜索标题、摘要或标签..."
+            searchPlaceholder="搜索标题、摘要、分类或标签..."
             empty="没有匹配的研究记录。"
           />
         </main>

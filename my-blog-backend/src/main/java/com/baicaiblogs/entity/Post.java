@@ -60,6 +60,9 @@ public class Post {
     @Column(name = "user_id")
     private Long userId;
 
+    @Column(name = "category_id")
+    private Long categoryId;
+
     /** MD 原文件在阿里云 OSS 上的完整 URL（公开访问地址），用于下载原始 MD 文件 */
     @Column(name = "file_url", length = 1000)
     private String fileUrl;

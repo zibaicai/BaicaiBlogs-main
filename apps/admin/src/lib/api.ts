@@ -86,6 +86,26 @@ export interface Chatter {
   updatedAt?: string;
 }
 
+export interface Tag {
+  id: number;
+  name: string;
+  status: string;
+  requestedBy?: number;
+  approvedBy?: number;
+  reviewNote?: string;
+  createdAt?: string;
+}
+
+export interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  parentId?: number | null;
+  path: string;
+  depth: number;
+  sort: number;
+}
+
 export interface Project {
   id: number;
   projectId: string;
@@ -179,6 +199,25 @@ export const api = {
       body: JSON.stringify({ visibility }),
     }),
 
+  getCategories: () => request<Category[]>("/admin/categories"),
+  createCategory: (category: Partial<Category>) =>
+    request<Category>("/admin/categories", { method: "POST", body: JSON.stringify(category) }),
+  updateCategory: (id: number, category: Partial<Category>) =>
+    request<Category>(`/admin/categories/${id}`, { method: "PUT", body: JSON.stringify(category) }),
+  deleteCategory: (id: number) =>
+    request<void>(`/admin/categories/${id}`, { method: "DELETE" }),
+
+  getTags: () => request<Tag[]>("/admin/tags"),
+  getPendingTags: () => request<Tag[]>("/admin/tags/pending"),
+  createTag: (name: string) =>
+    request<Tag>("/admin/tags", { method: "POST", body: JSON.stringify({ name }) }),
+  approveTag: (id: number) =>
+    request<Tag>(`/admin/tags/${id}/approve`, { method: "POST" }),
+  rejectTag: (id: number, note: string) =>
+    request<Tag>(`/admin/tags/${id}/reject?note=${encodeURIComponent(note)}`, { method: "POST" }),
+  recommendTags: (categoryId?: number) =>
+    request<string[]>(`/admin/tags/recommend${categoryId ? `?categoryId=${categoryId}` : ""}`),
+
   myMoments: () => request<Moment[]>("/admin/moments/mine"),
   createMoment: (moment: Partial<Moment>) =>
     request<Moment>("/admin/moments", { method: "POST", body: JSON.stringify(moment) }),
@@ -186,6 +225,8 @@ export const api = {
     request<Moment>(`/admin/moments/${encodeURIComponent(slug)}`, { method: "PUT", body: JSON.stringify(moment) }),
   deleteMoment: (slug: string) =>
     request<void>(`/admin/moments/${encodeURIComponent(slug)}`, { method: "DELETE" }),
+  getPrivateMoments: (reason: string) =>
+    request<Moment[]>(`/admin/moments/private?reason=${encodeURIComponent(reason)}`),
   myChatters: () => request<Chatter[]>("/admin/chatters/mine"),
   createChatter: (chatter: Partial<Chatter>) =>
     request<Chatter>("/admin/chatters", { method: "POST", body: JSON.stringify(chatter) }),

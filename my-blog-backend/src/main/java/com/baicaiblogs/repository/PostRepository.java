@@ -49,4 +49,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Optional<Post> findBySlugAndVisibility(String slug, String visibility);
 
     boolean existsBySlug(String slug);
+    long countByCategoryId(Long categoryId);
+    List<Post> findByCategoryId(Long categoryId);
 }

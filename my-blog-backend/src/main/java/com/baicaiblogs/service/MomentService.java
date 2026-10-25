@@ -49,6 +49,13 @@ public class MomentService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<MomentResponse> getPrivateMomentsForAudit() {
+        return momentRepository.findByVisibilityOrderByDateDesc("PRIVATE").stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public MomentResponse createMoment(Long userId, MomentRequest request) {
         if (momentRepository.existsBySlug(request.getSlug())) {

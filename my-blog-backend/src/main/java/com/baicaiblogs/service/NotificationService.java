@@ -42,6 +42,18 @@ public class NotificationService {
         albumRepository.save(album);
     }
 
+    @Transactional
+    public void notifyUser(Long userId, String type, String title, String body) {
+        if (userId == null) return;
+        repository.save(Notification.builder()
+                .userId(userId)
+                .type(type)
+                .title(title)
+                .body(body)
+                .read(false)
+                .build());
+    }
+
     public List<Notification> list(User user) {
         return repository.findByUserIdOrderByCreatedAtDesc(user.getId());
     }

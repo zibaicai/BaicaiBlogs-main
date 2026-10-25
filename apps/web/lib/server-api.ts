@@ -1,5 +1,5 @@
 // 服务端数据读取：直接访问内网后端，避免浏览器跨域；带 60s ISR 缓存。
-import type { Album, Chatter, Friend, Moment, Post, Project } from "./api";
+import type { Album, Category, Chatter, Friend, Moment, Post, Project } from "./api";
 import {
   DEFAULT_AI_CONFIG,
   DEFAULT_BACKGROUND,
@@ -63,6 +63,11 @@ export async function getAlbums(): Promise<Album[]> {
 
 export async function getFriends(): Promise<Friend[]> {
   const data = await getJson<Friend[]>("/api/public/friends");
+  return data || [];
+}
+
+export async function getCategories(): Promise<Category[]> {
+  const data = await getJson<Category[]>("/api/public/categories");
   return data || [];
 }
 

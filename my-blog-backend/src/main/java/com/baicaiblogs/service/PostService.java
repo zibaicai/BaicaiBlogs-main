@@ -3,6 +3,7 @@ package com.baicaiblogs.service;
 import com.baicaiblogs.dto.*;
 import com.baicaiblogs.entity.Post;
 import com.baicaiblogs.repository.PostRepository;
+import com.baicaiblogs.repository.CategoryRepository;
 import com.baicaiblogs.util.HtmlSanitizer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,6 +43,7 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final CategoryRepository categoryRepository;
     /** commonmark Markdown 解析器，用于将 Markdown 原文渲染为 HTML */
     private final Parser markdownParser = Parser.builder().build();
     private final HtmlRenderer htmlRenderer = HtmlRenderer.builder().build();
@@ -517,6 +519,7 @@ public class PostService {
                 .content(request.getContent())
                 .htmlContent(htmlContent)
                 .tags(serializeTags(request.getTags()))
+                .categoryId(request.getCategoryId())
                 .cover(request.getCover())
                 .date(request.getDate() != null ? request.getDate() : java.time.LocalDateTime.now())
                 .status(request.getStatus() != null ? request.getStatus() : "PUBLISHED")
@@ -549,6 +552,7 @@ public class PostService {
         // 内容变更后重新渲染 HTML
         post.setHtmlContent(renderMarkdown(request.getContent()));
         post.setTags(serializeTags(request.getTags()));
+        post.setCategoryId(request.getCategoryId());
         post.setCover(request.getCover());
         if (request.getDate() != null) {
             post.setDate(request.getDate());
@@ -759,6 +763,9 @@ public class PostService {
                 .status(post.getStatus())
                 .views(post.getViews())
                 .tags(deserializeTags(post.getTags()))
+                .categoryId(post.getCategoryId())
+                .categoryName(post.getCategoryId() == null ? null : categoryRepository.findById(post.getCategoryId()).map(c -> c.getName()).orElse(null))
+                .categoryPath(post.getCategoryId() == null ? null : categoryRepository.findById(post.getCategoryId()).map(c -> c.getPath()).orElse(null))
                 .fileUrl(post.getFileUrl())
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())

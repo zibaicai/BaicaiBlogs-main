@@ -28,6 +28,9 @@ public class PostResponse {
     private Integer views;
     /** 标签列表 */
     private List<String> tags;
+    private Long categoryId;
+    private String categoryName;
+    private String categoryPath;
     /** MD 原文件在阿里云 OSS 上的完整 URL（公开访问），前端可直接下载原始 MD */
     private String fileUrl;
     private LocalDateTime createdAt;

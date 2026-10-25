@@ -136,21 +136,6 @@ export default function MetaMatrix({
             </div>
           </div>
         )}
-
-        {/* 🌟 4. 摘要区 (补回丢失的代码) */}
-        {type !== 'about' && (
-          <div className="flex flex-col animate-in fade-in slide-in-from-bottom duration-700">
-            <Label icon={FileText} text="Description" color="border-emerald-500" />
-            <textarea
-              rows={6}
-              value={summary}
-              onChange={(e) => setSummary(e.target.value)}
-              placeholder="记录一下这篇内容的核心思绪..."
-              className="w-full bg-white/10 dark:bg-black/20 rounded-[32px] px-6 py-5 text-xs text-slate-800 dark:text-slate-200 border border-white/10 outline-none focus:ring-2 focus:ring-emerald-500 resize-none shadow-inner leading-relaxed placeholder:text-slate-500 font-medium"
-            />
-            <p className="mt-2 text-[9px] text-slate-400 italic px-2">提示：摘要将显示在首页卡片和搜索预览中。</p>
-          </div>
-        )}
       </div>
 
       {/* 底部按钮 */}

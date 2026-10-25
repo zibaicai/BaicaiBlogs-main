@@ -5,7 +5,7 @@ import RichTextEditor, { type RichTextEditorHandle } from "../components/editor/
 import MetaMatrix from "../components/editor/MetaMatrix";
 import FloatingImageTool from "../components/editor/FloatingImageTool";
 import { useToast } from "../components/ToastProvider";
-import { api } from "../lib/api";
+import { api, type Category, type Tag } from "../lib/api";
 
 export default function EditorPage() {
   const { slug } = useParams<{ slug?: string }>();
@@ -21,6 +21,9 @@ export default function EditorPage() {
   const [summary, setSummary] = useState("");
   const [content, setContent] = useState("");
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
+  const [categoryId, setCategoryId] = useState<string>("");
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [libraryTags, setLibraryTags] = useState<Tag[]>([]);
 
   const [historyTags, setHistoryTags] = useState<string[]>([]);
   const [isLoadingTags, setIsLoadingTags] = useState(true);
@@ -36,8 +39,19 @@ export default function EditorPage() {
     let active = true;
     (async () => {
       try {
-        const res = await api.getAllTags();
-        if (active && res.success) setHistoryTags(res.data || []);
+        const [historyRes, categoryRes, tagRes] = await Promise.all([
+          api.getAllTags(),
+          api.getCategories(),
+          api.getTags(),
+        ]);
+        if (!active) return;
+        if (historyRes.success) setHistoryTags(historyRes.data || []);
+        if (categoryRes.success) setCategories(categoryRes.data || []);
+        if (tagRes.success) {
+          setLibraryTags(tagRes.data || []);
+          const activeNames = (tagRes.data || []).filter((tag) => tag.status === "ACTIVE").map((tag) => tag.name);
+          setHistoryTags((current) => [...new Set([...activeNames, ...current])]);
+        }
       } catch {
         /* 标签历史失败不影响写作 */
       } finally {
@@ -48,6 +62,21 @@ export default function EditorPage() {
       active = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (!categoryId) return;
+    let active = true;
+    api.recommendTags(Number(categoryId))
+      .then((res) => {
+        if (active && res.success) {
+          setHistoryTags((current) => [...new Set([...(res.data || []), ...current])]);
+        }
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, [categoryId]);
 
   useEffect(() => {
     if (isNew) return;
@@ -65,6 +94,7 @@ export default function EditorPage() {
         setSummary(post.description || "");
         setContent(post.content || "");
         setDate(post.date ? String(post.date).slice(0, 10) : new Date().toISOString().slice(0, 10));
+        setCategoryId(post.categoryId ? String(post.categoryId) : "");
       } catch (error) {
         showToast(error instanceof Error ? error.message : "加载失败", "error");
       } finally {
@@ -92,6 +122,7 @@ export default function EditorPage() {
         date: `${date || new Date().toISOString().slice(0, 10)}T00:00:00`,
         status: isPublish ? "PUBLISHED" : "DRAFT",
         tags,
+        categoryId: categoryId ? Number(categoryId) : null,
       };
 
       if (isNew) {
@@ -138,6 +169,26 @@ export default function EditorPage() {
           </div>
         </div>
 
+        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">分类</span>
+          <select
+            value={categoryId}
+            onChange={(event) => setCategoryId(event.target.value)}
+            className="min-w-[220px] rounded-xl border border-white/10 bg-slate-800 px-3 py-2 text-xs font-bold text-white outline-none"
+          >
+            <option value="">未分类 / 请选择根分类</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.path}
+              </option>
+            ))}
+          </select>
+          <span className="text-[10px] text-slate-500">必选一个分类；深层子分类可选。</span>
+          {libraryTags.length > 0 && (
+            <span className="ml-auto text-[10px] text-slate-500">标签库 {libraryTags.filter((tag) => tag.status === "ACTIVE").length} 个</span>
+          )}
+        </div>
+
         <div className="flex flex-col xl:flex-row gap-5" style={{ minHeight: "calc(100vh - 120px)" }}>
           <section className="flex-1 bg-white/30 dark:bg-slate-800/40 backdrop-blur-[60px] rounded-[40px] shadow-2xl border border-white/30 dark:border-white/10 flex flex-col overflow-hidden min-h-[70vh]">
             <RichTextEditor
@@ -146,6 +197,8 @@ export default function EditorPage() {
               setTitle={setTitle}
               initialContent={content}
               isTitleLocked={false}
+              summary={summary}
+              setSummary={setSummary}
               onOpenImageTool={() => {
                 setImageTarget("editor");
                 setImageToolOpen(true);
