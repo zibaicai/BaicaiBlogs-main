@@ -39,7 +39,7 @@ export default async function PostsPage() {
           <DirectoryExplorer
             eyebrow="BAICAI / ARCHIVE"
             title="研究档案"
-            subtitle="把零散的知识，整理成可被检索的坐标"
+            subtitle="把走过的路，写成一页页可以回望的云。"
             count={`共 ${posts.length} 篇公开记录`}
             items={items}
             filters={filters}

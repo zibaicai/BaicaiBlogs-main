@@ -80,7 +80,7 @@ export default function ProjectsBoard({ projects }: { projects: Project[] }) {
       <DirectoryExplorer
         eyebrow="BAICAI / PROJECTS"
         title="项目矩阵"
-        subtitle="代码与日常的折腾记录"
+        subtitle="把脑中的星图，慢慢搭成可以落脚的云。"
         count={`${projects.length} 个项目`}
         items={items}
         filters={filters}

@@ -139,7 +139,7 @@ export default function PhotoWallPage() {
             <DirectoryExplorer
               eyebrow="BAICAI / GALLERY"
               title="照片墙"
-              subtitle="密码相册以模糊封面展示，私密相册只对自己可见"
+              subtitle="把光与影收进云层，私密的那一页只留给你。"
               count={`${albums.length} 个可见相册`}
               items={items}
               filters={filters}

@@ -33,7 +33,7 @@ export default function TimelineClient({
       <DirectoryExplorer
         eyebrow="BAICAI / TIMELINE"
         title="研究终端"
-        subtitle="沿着时间轴，检索被封存的知识"
+        subtitle="沿着时间的云层，打捞那些发过光的片段。"
         count={`总计 ${posts.length} 篇`}
         items={items}
         filters={filters}

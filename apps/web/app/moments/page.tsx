@@ -103,7 +103,7 @@ export default function MomentsPage() {
             <DirectoryExplorer
               eyebrow="BAICAI / MOMENTS"
               title="说说"
-              subtitle="零散的念头，落在时间里"
+              subtitle="那些没说完的话，先放在云边。"
               count={`${moments.length} 条记录`}
               items={items}
               filters={filters}
