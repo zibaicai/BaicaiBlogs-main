@@ -7,6 +7,7 @@ import { ChevronDown, ChevronUp, Image as ImageIcon, Loader2, Plus, Trash2, Uplo
 import Navbar from "../../../components/Navbar";
 import PageTransition from "../../../components/PageTransition";
 import { useAuth } from "../../../lib/auth";
+import Select from "../../../components/ui/Select";
 import {
   galleryRequest,
   imageSize,
@@ -197,15 +198,17 @@ export default function MyPhotosPage() {
                   className="w-full rounded-xl bg-white/60 dark:bg-slate-900/50 border border-white/40 dark:border-slate-700 px-4 py-2.5 text-sm outline-none"
                 />
                 <div className="flex gap-2">
-                  <select
+                  <Select
                     value={visibility}
-                    onChange={(e) => setVisibility(e.target.value)}
-                    className="flex-1 rounded-xl bg-white/60 dark:bg-slate-900/50 border border-white/40 dark:border-slate-700 px-3 py-2.5 text-xs outline-none"
-                  >
-                    <option value="PRIVATE">私密</option>
-                    <option value="PASSWORD">密码</option>
-                    <option value="PUBLIC">公开</option>
-                  </select>
+                    onChange={setVisibility}
+                    ariaLabel="新相册可见性"
+                    className="!h-10 flex-1"
+                    options={[
+                      { value: "PRIVATE", label: "私密" },
+                      { value: "PASSWORD", label: "密码" },
+                      { value: "PUBLIC", label: "公开" },
+                    ]}
+                  />
                   <button onClick={createAlbum} className="btn btn-primary px-4 py-2.5 rounded-xl text-xs font-black flex items-center gap-1">
                     <Plus size={14} /> 新建
                   </button>
