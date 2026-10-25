@@ -2044,7 +2044,7 @@ body[data-nav-hidden="true"] .article-toc {
 /* Article body typography: normal text is 0.125rem smaller, bold keeps original size */
 .article-prose {
   --article-body: 1rem;
-  --article-body-small: calc(var(--article-body) - 0.125rem);
+  --article-body-small: calc(var(--article-body) - 0.0625rem);
 }
 
 .article-prose :where(p, li, td, th, figcaption) {
