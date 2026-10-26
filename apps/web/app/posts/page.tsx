@@ -60,6 +60,7 @@ export default async function PostsPage({
             views={["grid", "timeline", "masonry"]}
             featuredFirst
             compact
+            gridClassName="posts-grid"
             pageSize={9}
             initialPage={initialPage}
             searchPlaceholder="搜索标题、摘要、分类或标签..."
