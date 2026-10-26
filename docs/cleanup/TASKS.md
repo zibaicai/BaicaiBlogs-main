@@ -122,3 +122,24 @@
 - 不在未备份情况下删除 legacy。
 - 不在公开仓库保留旧 DB 密码和个人信息。
 - 不把靶场数据库和生产数据库混用。
+
+---
+
+## 执行进度（2026-10-26）
+
+- [x] 外部备份目录、Git bundle、项目归档、MySQL dump、OSS 清单
+- [x] account.txt（MySQL / admin / superadmin 来源与状态）
+- [x] 创建唯一 `superadmin`，`admin` 调整为普通 ADMIN
+- [x] README 移除默认密码
+- [x] `application-prod.yml` 改为环境变量，服务器使用 `/etc/baicai/backend.env`
+- [x] 删除 legacy 目录、旧根配置、旧截图和旧更新器
+- [x] 提交新静态资源、`theme-demos`、`deploy.mjs`、`start.mjs`
+- [x] 补 `ASSETS.md`
+- [x] C 端默认资源相对 URL，管理端公开站点绝对 URL
+- [x] 公开配置过滤 `email`、`qq`、`wechat`、`google`、`picBedToken`
+- [x] 普通管理员敏感字段脱敏、申请、超级管理员审批 1 小时
+- [x] 数据库替换外部图片与失效 Typora 图片引用
+- [x] Git 历史重写：移除 legacy、旧截图、默认密码和旧 DB 密码
+- [x] C 端和管理端最终构建
+- [ ] 最新提交推送（当前网络重试中）
+- [ ] 最终部署后完整验收与回滚演练
