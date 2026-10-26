@@ -6,6 +6,7 @@ import { Download, Image as ImageIcon, Loader2, Lock, X } from "lucide-react";
 import Navbar from "../../../components/Navbar";
 import PageTransition from "../../../components/PageTransition";
 import BackButton from "../../../components/BackButton";
+import CommentSection from "../../../components/comments/CommentSection";
 import { useAuth } from "../../../lib/auth";
 
 interface Photo {
@@ -21,6 +22,7 @@ interface Photo {
 }
 
 interface Album {
+  id: number;
   albumId: string;
   title: string;
   description: string;
@@ -301,6 +303,8 @@ export default function AlbumPage() {
                   <ImageIcon size={28} /> 这个相册还没有图片
                 </div>
               )}
+
+              <CommentSection targetType="ALBUM" targetId={album.id} />
             </>
           )}
         </main>

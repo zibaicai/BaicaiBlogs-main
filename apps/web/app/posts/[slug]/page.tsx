@@ -6,6 +6,7 @@ import AuthorCard from "../../../components/AuthorCard";
 import BackButton from "../../../components/BackButton";
 import ArticleToc from "../../../components/ArticleToc";
 import MarkdownReader from "../../../components/MarkdownReader";
+import CommentSection from "../../../components/comments/CommentSection";
 import { formatDate, formatDay } from "../../../lib/api";
 import { getPost, getPosts } from "../../../lib/server-api";
 import { DEFAULT_BACKGROUND } from "../../../lib/site-config";
@@ -135,6 +136,10 @@ export default async function PostDetail({ params }: { params: Promise<{ slug: s
               <MarkdownReader html={post.htmlContent || ""} />
             </div>
           </article>
+
+          <div className="article-comments">
+            <CommentSection targetType="POST" targetId={post.id} />
+          </div>
         </main>
       </PageTransition>
     </div>

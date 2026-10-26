@@ -13,4 +13,5 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
     boolean existsByTargetTypeAndTargetIdAndReporterIp(String targetType, Long targetId, String reporterIp);
     List<Report> findByStatusOrderByCreatedAtDesc(String status);
     List<Report> findAllByOrderByCreatedAtDesc();
+    void deleteByTargetTypeAndTargetId(String targetType, Long targetId);
 }

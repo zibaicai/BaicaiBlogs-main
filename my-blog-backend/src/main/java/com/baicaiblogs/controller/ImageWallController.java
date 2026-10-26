@@ -47,6 +47,7 @@ public class ImageWallController {
     private final AuditService auditService;
     private final PasswordAttemptService passwordAttemptService;
     private final NotificationService notificationService;
+    private final CommentRepository commentRepository;
 
     // ==================== 公开浏览 ====================
 
@@ -419,6 +420,11 @@ public class ImageWallController {
                     if (restore) album.setReportCount(0);
                     albumRepository.save(album);
                 }
+            } else if ("comment".equalsIgnoreCase(report.getTargetType())) {
+                commentRepository.findById(report.getTargetId()).ifPresent(comment -> {
+                    comment.setStatus(restore ? "VISIBLE" : "HIDDEN");
+                    commentRepository.save(comment);
+                });
             }
             return ApiResponse.success("处理完成", null);
         } catch (Exception e) {

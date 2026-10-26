@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Download, ShieldAlert, Trash2, UserX } from "lucide-react";
-import { api } from "../lib/api";
+import { api, getAdminRole } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
 import AuthImage from "../components/AuthImage";
 
@@ -20,6 +20,7 @@ interface Report {
 
 export default function ReportsPage() {
   const { showToast } = useToast();
+  const isSuperAdmin = getAdminRole() === "SUPER_ADMIN";
   const [reports, setReports] = useState<Report[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
   const [appeals, setAppeals] = useState<any[]>([]);
@@ -215,6 +216,23 @@ export default function ReportsPage() {
                 >
                   下架
                 </button>
+                {report.targetType === "comment" && isSuperAdmin && (
+                  <button
+                    onClick={async () => {
+                      if (!window.confirm("永久删除这条评论？")) return;
+                      try {
+                        await api.deleteComment(report.targetId);
+                        await load();
+                        showToast("评论已永久删除", "success");
+                      } catch (e) {
+                        showToast(e instanceof Error ? e.message : "删除失败", "error");
+                      }
+                    }}
+                    className="px-3 py-2 rounded-xl bg-red-500/15 text-red-400 text-[10px] font-black"
+                  >
+                    永久删除评论
+                  </button>
+                )}
                 <button
                   onClick={() => ban(report.targetUserId)}
                   className="px-3 py-2 rounded-xl bg-red-500/10 text-red-400 text-[10px] font-black flex items-center gap-1"

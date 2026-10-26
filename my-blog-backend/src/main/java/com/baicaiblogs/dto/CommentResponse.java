@@ -13,13 +13,17 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CommentResponse {
     private Long id;
-    private Long postId;
-    private Long chatterId;
-    private Long momentId;
+    private String targetType;
+    private Long targetId;
+    private Long userId;
     private String author;
-    private String email;
-    private String content;
     private String avatar;
+    private String content;
     private String status;
     private LocalDateTime createdAt;
+    private long likeCount;
+    private long dislikeCount;
+    private String myReaction;
+    private boolean canDelete;
+    private boolean canReport;
 }

@@ -4584,3 +4584,200 @@ html:not(.dark) .hv-empty {
     max-width: 88%;
   }
 }
+
+/* Unified comments */
+.comment-section {
+  margin: 48px auto 0;
+  padding: 22px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--radius-panel);
+  background: color-mix(in srgb, var(--ui-secondary-bg) 88%, transparent);
+  backdrop-filter: blur(18px);
+}
+
+.comment-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--ui-border);
+}
+
+.comment-eyebrow {
+  color: var(--ui-accent);
+  font-family: Consolas, monospace;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .16em;
+}
+
+.comment-head h2 {
+  margin: 4px 0 0;
+  color: var(--ui-text);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.comment-head h2 span {
+  margin-left: 7px;
+  color: var(--ui-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.comment-head > svg { color: var(--ui-text-muted); }
+
+.comment-composer {
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--radius-control);
+  background: color-mix(in srgb, var(--ui-bg) 42%, transparent);
+}
+
+.comment-composer textarea {
+  width: 100%;
+  resize: vertical;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ui-text);
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.comment-composer-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--ui-text-faint);
+  font-size: 10px;
+}
+
+.comment-composer-foot button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 999px;
+  background: var(--ui-accent);
+  color: var(--ui-accent-contrast);
+  padding: 7px 14px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.comment-composer-foot button:disabled { opacity: .45; }
+
+.comment-login-hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding: 14px 16px;
+  border: 1px dashed var(--ui-border);
+  border-radius: var(--radius-control);
+  color: var(--ui-text-muted);
+  font-size: 12px;
+}
+
+.comment-login-hint a {
+  color: var(--ui-accent);
+  font-weight: 800;
+}
+
+.comment-message {
+  margin-top: 12px;
+  color: var(--ui-success);
+  font-size: 11px;
+  font-weight: 700;
+}
+.comment-message.is-error { color: var(--ui-danger); }
+
+.comment-loading,
+.comment-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 88px;
+  color: var(--ui-text-faint);
+  font-size: 12px;
+}
+
+.comment-list {
+  display: flex;
+  flex-direction: column;
+  margin-top: 8px;
+}
+
+.comment-item {
+  display: flex;
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--ui-border) 70%, transparent);
+}
+.comment-item:last-child { border-bottom: 0; }
+
+.comment-avatar {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--ui-accent-soft);
+  color: var(--ui-accent-strong);
+  font-size: 12px;
+  font-weight: 800;
+}
+.comment-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.comment-main { min-width: 0; flex: 1; }
+
+.comment-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.comment-meta strong { color: var(--ui-text); font-size: 12px; }
+.comment-meta time { color: var(--ui-text-faint); font-size: 9px; }
+
+.comment-content {
+  margin: 6px 0 10px;
+  color: var(--ui-text);
+  font-size: 13px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.comment-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--ui-text-faint);
+}
+.comment-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  transition: color .2s;
+}
+.comment-actions button:hover:not(:disabled),
+.comment-actions button.is-active { color: var(--ui-accent); }
+.comment-actions button:disabled { cursor: default; opacity: .5; }
+
+@media (max-width: 640px) {
+  .comment-section { margin-top: 28px; padding: 16px; }
+  .comment-head h2 { font-size: 18px; }
+}
+
+.article-comments { grid-column: 1 / -1; width: 100%; }

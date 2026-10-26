@@ -18,6 +18,7 @@ const NAV_LINKS = [
   { name: "关于", href: "/about" },
   { name: "友链", href: "/friends" },
   { name: "碎片", href: "/moments" },
+  { name: "音乐", href: "/music" },
 ];
 
 export default function Navbar() {

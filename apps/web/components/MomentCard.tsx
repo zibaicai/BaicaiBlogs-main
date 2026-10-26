@@ -70,7 +70,7 @@ export default function MomentCard({
 
       <div className="moment-foot">
         <span>{commentCount > 0 ? `${commentCount} \u6761\u8bc4\u8bba` : "\u6682\u65e0\u8bc4\u8bba"}</span>
-        <Link href={`/moments#${encodeURIComponent(moment.slug)}`} className="moment-permalink">{"\u67e5\u770b \u2192"}</Link>
+        <Link href={`/moments/${encodeURIComponent(moment.slug)}`} className="moment-permalink">{"\u67e5\u770b \u2192"}</Link>
       </div>
     </article>
   );

@@ -10,11 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommentRequest {
-    private Long postId;
-    private Long chatterId;
-    private Long momentId;
-    private String author;
-    private String email;
+    private String targetType;
+    private Long targetId;
     private String content;
-    private String avatar;
 }

@@ -134,6 +134,66 @@ export interface MusicResponse {
   error?: string;
 }
 
+export interface MusicTrack {
+  id: number;
+  platform: string;
+  externalTrackId: string;
+  title: string;
+  artist?: string;
+  cover?: string;
+  duration?: number;
+  externalUrl?: string;
+  status: string;
+}
+
+export interface MusicPlaylist {
+  id: number;
+  slug: string;
+  title: string;
+  cover?: string;
+  description?: string;
+  type: "CURATED" | "PERSONAL";
+  visibility: string;
+  status: string;
+  trackCount: number;
+  heatScore: number;
+  recommenderName?: string;
+  likeCount: number;
+  dislikeCount: number;
+  favoriteCount: number;
+  myReaction?: "LIKE" | "DISLIKE" | null;
+  favorited: boolean;
+  tracks?: MusicTrack[];
+  createdAt: string;
+}
+
+async function musicRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const res = await fetch(`/api${path}`, {
+    credentials: "include",
+    headers: { "Content-Type": "application/json", ...(init.headers as Record<string, string>) },
+    ...init,
+  });
+  const json = await res.json().catch(() => null);
+  if (!res.ok || !json?.success) throw new Error(json?.message || `请求失败 (${res.status})`);
+  return json.data as T;
+}
+
+export const musicApi = {
+  publicPlaylists: () => musicRequest<MusicPlaylist[]>("/public/music/playlists"),
+  publicPlaylist: (slug: string) => musicRequest<MusicPlaylist>(`/public/music/playlists/${encodeURIComponent(slug)}`),
+  publicTrack: (id: number) => musicRequest<MusicTrack>(`/public/music/tracks/${id}`),
+  myPlaylists: () => musicRequest<MusicPlaylist[]>("/user/music/playlists"),
+  react: (id: number, type: "LIKE" | "DISLIKE") =>
+    musicRequest<MusicPlaylist>(`/user/music/playlists/${id}/reaction`, {
+      method: "POST",
+      body: JSON.stringify({ type }),
+    }),
+  favorite: (id: number) =>
+    musicRequest<MusicPlaylist>(`/user/music/playlists/${id}/favorite`, { method: "POST" }),
+  apply: (payload: Record<string, unknown>) =>
+    musicRequest<any>("/user/music/applications", { method: "POST", body: JSON.stringify(payload) }),
+};
+
 async function publicRequest<T>(path: string): Promise<ApiResponse<T>> {
   const res = await fetch(`/api${path}`, { cache: "no-store" });
   const json = (await res.json().catch(() => null)) as ApiResponse<T> | null;

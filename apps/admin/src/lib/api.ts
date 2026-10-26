@@ -360,6 +360,22 @@ export const api = {
   },
   resolveReport: (id: number, action: string) =>
     request<void>(`/admin/reports/${id}/resolve?action=${encodeURIComponent(action)}`, { method: "POST" }),
+
+  adminMusicPlaylists: () => request<any[]>("/admin/music/playlists"),
+  adminMusicApplications: () => request<any[]>("/admin/music/applications"),
+  createMusicPlaylist: (payload: any) =>
+    request<any>("/admin/music/playlists", { method: "POST", body: JSON.stringify(payload) }),
+  upsertMusicTrack: (payload: any) =>
+    request<any>("/admin/music/tracks", { method: "POST", body: JSON.stringify(payload) }),
+  reviewMusicApplication: (id: number, approve: boolean, note = "") =>
+    request<any>(`/admin/music/applications/${id}/review?approve=${approve}&note=${encodeURIComponent(note)}`, { method: "POST" }),
+  setMusicPlaylistStatus: (id: number, status: string) =>
+    request<any>(`/admin/music/playlists/${id}/status?status=${encodeURIComponent(status)}`, { method: "POST" }),
+  setMusicPlaylistTracks: (id: number, trackIds: number[]) =>
+    request<any>(`/admin/music/playlists/${id}/tracks`, { method: "PUT", body: JSON.stringify({ trackIds }) }),
+  deleteComment: (id: number) => request<void>(`/admin/comments/${id}`, { method: "DELETE" }),
+  hideComment: (id: number) => request<void>(`/admin/comments/${id}/hide`, { method: "POST" }),
+  restoreComment: (id: number) => request<void>(`/admin/comments/${id}/restore`, { method: "POST" }),
 };
 
 export async function uploadToOss(url: string, file: File, onProgress?: (percent: number) => void) {

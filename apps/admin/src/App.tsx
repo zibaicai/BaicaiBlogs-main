@@ -11,6 +11,7 @@ import {
   Hash,
   Images,
   MessageSquareText,
+  Music2,
   ShieldAlert,
   KeyRound,
   LayoutDashboard,
@@ -37,6 +38,7 @@ import MomentsPage from "./pages/MomentsPage";
 import CategoriesPage from "./pages/CategoriesPage";
 import PrivacyAuditPage from "./pages/PrivacyAuditPage";
 import TagsPage from "./pages/TagsPage";
+import MusicAdminPage from "./pages/MusicAdminPage";
 
 type Any = Record<string, any>;
 
@@ -141,6 +143,7 @@ const NAV_ITEMS = [
   { to: "/projects", label: "项目", icon: FolderKanban },
   { to: "/gallery", label: "图片墙", icon: Images },
   { to: "/moments", label: "说说", icon: MessageSquareText },
+  { to: "/music", label: "音乐", icon: Music2 },
   { to: "/categories", label: "分类", icon: FolderTree },
   { to: "/tags", label: "标签", icon: Hash },
   { to: "/privacy", label: "隐私审计", icon: Eye },
@@ -681,6 +684,7 @@ export default function App() {
             <Route path="/gallery" element={<RequireAuth><Shell><GalleryPage /></Shell></RequireAuth>} />
             <Route path="/reports" element={<RequireAuth><Shell><ReportsPage /></Shell></RequireAuth>} />
             <Route path="/moments" element={<RequireAuth><Shell><MomentsPage /></Shell></RequireAuth>} />
+            <Route path="/music" element={<RequireAuth><Shell><MusicAdminPage /></Shell></RequireAuth>} />
             <Route path="/categories" element={<RequireAuth><Shell><CategoriesPage /></Shell></RequireAuth>} />
             <Route path="/tags" element={<RequireAuth><Shell><TagsPage /></Shell></RequireAuth>} />
             <Route path="/privacy" element={<RequireAuth><Shell><PrivacyAuditPage /></Shell></RequireAuth>} />
