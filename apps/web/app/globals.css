@@ -3845,7 +3845,7 @@ html:not(.dark) .hv-empty {
 
 .directory-card-description {
   flex: 0 0 auto;
-  margin-top: 6px;
+  margin-top: 0;
   line-height: 1.55;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -3853,18 +3853,24 @@ html:not(.dark) .hv-empty {
 
 .archive-card-description {
   flex: 0 0 auto;
-  margin-top: 6px;
+  margin-top: 0;
   -webkit-line-clamp: 2;
 }
 
 .directory-card-foot,
 .archive-card-foot {
-  margin-top: 8px;
+  margin-top: 2px;
+  padding-top: 0;
+}
+
+.directory-card-tags {
+  margin-top: 0;
 }
 
 .directory-card-body,
 .archive-card-body {
   min-height: 0;
+  gap: 6px;
 }
 
 /* Keep media children that are not images (project icon, fallback) inside
