@@ -242,6 +242,60 @@ public class SiteConfigService {
     }
 
     @Transactional
+    public SiteConfigResponse updateConfig(String configKey, SiteConfigRequest request,
+                                           boolean superAdmin, boolean socialGrant) {
+        if ("site_info".equals(configKey) && !(superAdmin || socialGrant)) {
+            request.setConfigValue(mergePrivateSiteInfo(configKey, request.getConfigValue()));
+        } else if ("misc".equals(configKey) && !superAdmin) {
+            request.setConfigValue(mergePrivateMisc(configKey, request.getConfigValue()));
+        }
+        return updateConfig(configKey, request);
+    }
+
+    @SuppressWarnings("unchecked")
+    private String mergePrivateSiteInfo(String configKey, String newValue) {
+        try {
+            Map<String, Object> current = getConfigAsMap(configKey);
+            Map<String, Object> incoming = objectMapper.readValue(newValue, Map.class);
+            Object currentSocial = current.get("social");
+            Object incomingSocial = incoming.get("social");
+            if (currentSocial instanceof Map<?, ?> oldSocial && incomingSocial instanceof Map<?, ?> newSocial) {
+                Map<String, Object> merged = new LinkedHashMap<>((Map<String, Object>) newSocial);
+                for (String key : List.of("email", "qq", "wechat", "google")) {
+                    merged.put(key, oldSocial.get(key));
+                }
+                incoming.put("social", merged);
+            }
+            incoming.remove("__restricted");
+            return objectMapper.writeValueAsString(incoming);
+        } catch (Exception e) {
+            return newValue;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private String mergePrivateMisc(String configKey, String newValue) {
+        try {
+            Map<String, Object> current = getConfigAsMap(configKey);
+            Map<String, Object> incoming = objectMapper.readValue(newValue, Map.class);
+            if (current.get("picBedToken") != null && incoming.get("picBedToken") == null) {
+                incoming.put("picBedToken", current.get("picBedToken"));
+            }
+            Object currentGitalk = current.get("gitalkConfig");
+            Object incomingGitalk = incoming.get("gitalkConfig");
+            if (currentGitalk instanceof Map<?, ?> oldGitalk && incomingGitalk instanceof Map<?, ?> newGitalk) {
+                Map<String, Object> merged = new LinkedHashMap<>((Map<String, Object>) newGitalk);
+                merged.put("clientSecret", oldGitalk.get("clientSecret"));
+                incoming.put("gitalkConfig", merged);
+            }
+            incoming.remove("__restricted");
+            return objectMapper.writeValueAsString(incoming);
+        } catch (Exception e) {
+            return newValue;
+        }
+    }
+
+    @Transactional
     public SiteConfigResponse updateConfig(String configKey, SiteConfigRequest request) {
         SiteConfig config = siteConfigRepository.findByConfigKey(configKey)
                 .orElseThrow(() -> new RuntimeException("配置项不存在: " + configKey));

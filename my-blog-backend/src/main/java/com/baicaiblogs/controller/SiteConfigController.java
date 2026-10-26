@@ -152,9 +152,11 @@ public class SiteConfigController {
 
     @PutMapping("/admin/config/{configKey}")
     public ApiResponse<SiteConfigResponse> updateConfig(@PathVariable String configKey,
-                                                        @RequestBody SiteConfigRequest request) {
+                                                        @RequestBody SiteConfigRequest request,
+                                                        Authentication authentication) {
         try {
-            return ApiResponse.success("更新成功", siteConfigService.updateConfig(configKey, request));
+            return ApiResponse.success("更新成功", siteConfigService.updateConfig(
+                    configKey, request, isSuperAdmin(authentication), canViewSensitive(authentication)));
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
         }
