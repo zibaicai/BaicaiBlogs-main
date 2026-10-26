@@ -52,6 +52,25 @@ export default function MusicPlaylistPage({ params }: { params: Promise<{ slug: 
     }
   };
 
+  const savePersonal = async () => {
+    if (!playlist) return;
+    if (!user) {
+      window.location.href = "/login";
+      return;
+    }
+    try {
+      await musicApi.createPersonal({
+        title: `${playlist.title} · 私人`,
+        cover: playlist.cover,
+        description: playlist.description,
+        trackIds: (playlist.tracks || []).map((track) => track.id),
+      });
+      setMessage("已保存到我的私人歌单");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "保存失败");
+    }
+  };
+
   return (
     <div className="min-h-screen relative pb-20">
       <Navbar />
@@ -90,6 +109,9 @@ export default function MusicPlaylistPage({ params }: { params: Promise<{ slug: 
                     </button>
                     <button onClick={() => void act("FAVORITE")} className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-black ${playlist.favorited ? "bg-amber-400 text-slate-900" : "bg-white/15 text-slate-600 dark:text-slate-300"}`}>
                       ★ {playlist.favorited ? "已收藏" : "收藏"}
+                    </button>
+                    <button onClick={() => void savePersonal()} className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-4 py-2 text-xs font-black text-slate-600 dark:text-slate-300">
+                      保存为私人歌单
                     </button>
                     <span className="inline-flex items-center gap-1 text-[10px] font-bold text-slate-400">
                       <Flame size={12} /> 热度 {playlist.heatScore}

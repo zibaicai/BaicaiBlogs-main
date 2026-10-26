@@ -183,6 +183,8 @@ export const musicApi = {
   publicPlaylist: (slug: string) => musicRequest<MusicPlaylist>(`/public/music/playlists/${encodeURIComponent(slug)}`),
   publicTrack: (id: number) => musicRequest<MusicTrack>(`/public/music/tracks/${id}`),
   myPlaylists: () => musicRequest<MusicPlaylist[]>("/user/music/playlists"),
+  createPersonal: (payload: Record<string, unknown>) =>
+    musicRequest<MusicPlaylist>("/user/music/playlists", { method: "POST", body: JSON.stringify(payload) }),
   react: (id: number, type: "LIKE" | "DISLIKE") =>
     musicRequest<MusicPlaylist>(`/user/music/playlists/${id}/reaction`, {
       method: "POST",
