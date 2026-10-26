@@ -23,7 +23,8 @@ export interface SelectProps {
 
 interface MenuRect {
   left: number;
-  top: number;
+  top?: number;
+  bottom?: number;
   width: number;
   maxHeight: number;
 }
@@ -65,7 +66,11 @@ export function Select({
     const maxHeight = Math.max(120, Math.min(300, openAbove ? above : below));
     setRect({
       left: Math.max(margin, Math.min(bounds.left, window.innerWidth - bounds.width - margin)),
-      top: openAbove ? Math.max(margin, bounds.top - Math.min(300, maxHeight) - 6) : bounds.bottom + 6,
+      // Anchor the menu by its bottom edge when it opens upward. Using a
+      // guessed 300px height here left short menus floating far above the
+      // trigger.
+      top: openAbove ? undefined : bounds.bottom + 6,
+      bottom: openAbove ? Math.max(margin, window.innerHeight - bounds.top + 6) : undefined,
       width: bounds.width,
       maxHeight,
     });
@@ -175,6 +180,7 @@ export function Select({
               position: "fixed",
               left: rect.left,
               top: rect.top,
+              bottom: rect.bottom,
               width: rect.width,
               maxHeight: rect.maxHeight,
               zIndex: 400,
