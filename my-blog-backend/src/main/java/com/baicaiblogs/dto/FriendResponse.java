@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -18,4 +20,5 @@ public class FriendResponse {
     private String avatar;
     private String themeColor;
     private Integer sortOrder;
+    private LocalDateTime createdAt;
 }

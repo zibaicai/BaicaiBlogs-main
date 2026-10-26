@@ -77,6 +77,7 @@ public class FriendService {
                 .avatar(friend.getAvatar())
                 .themeColor(friend.getThemeColor())
                 .sortOrder(friend.getSortOrder())
+                .createdAt(friend.getCreatedAt())
                 .build();
     }
 }

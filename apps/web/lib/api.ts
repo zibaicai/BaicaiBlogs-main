@@ -96,6 +96,7 @@ export interface Friend {
   avatar: string;
   themeColor: string;
   sortOrder: number;
+  createdAt?: string;
 }
 
 export interface Photo {

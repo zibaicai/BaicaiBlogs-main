@@ -3,6 +3,7 @@ import PageTransition from "../../components/PageTransition";
 import ArchiveItemCard from "../../components/ArchiveItemCard";
 import DirectoryExplorer from "../../components/DirectoryExplorer";
 import { getFriends } from "../../lib/server-api";
+import { formatDay } from "../../lib/api";
 import { DEFAULT_SITE_INFO } from "../../lib/site-config";
 
 export const dynamic = "force-dynamic";
@@ -27,6 +28,7 @@ export default async function FriendsPage() {
         href={friend.url}
         title={friend.name}
         description={friend.description || "一位也在认真记录的人。"}
+        label={friend.createdAt ? formatDay(friend.createdAt) : undefined}
         category="NEIGHBOR"
         meta={hostOf(friend.url)}
         media={{ kind: "avatar", src: friend.avatar || DEFAULT_SITE_INFO.avatarUrl, alt: friend.name }}
