@@ -59,7 +59,7 @@ export function ArchiveGrid({
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, delay: Math.min(index, 7) * 0.035, ease: [0.22, 1, 0.36, 1] }}
-          className={`h-full ${featuredFirst && !compact && index === 0 ? "directory-featured" : ""}`}
+          className={`${compact ? "self-start" : "h-full"} ${featuredFirst && !compact && index === 0 ? "directory-featured" : ""}`}
         >
           {item}
         </motion.div>

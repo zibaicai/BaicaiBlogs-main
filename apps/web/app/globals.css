@@ -3756,3 +3756,91 @@ html:not(.dark) .hv-empty {
     --archive-card-gap: 10px;
   }
 }
+
+/* Content-driven horizontal rows: the media is an absolute fill layer so its
+   intrinsic aspect ratio cannot decide the card height. */
+.directory-grid.directory-grid-compact {
+  align-items: start;
+}
+
+.directory-grid.directory-grid-compact > * {
+  align-self: start;
+}
+
+.archive-card-media,
+.directory-grid.directory-grid-compact > * .directory-card:not(.archive-card) .directory-card-media,
+.archive-timeline .directory-card:not(.archive-card) .directory-card-media,
+.archive-timeline .archive-card-media,
+.archive-masonry .directory-card:not(.archive-card) .directory-card-media {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+}
+
+.archive-card-media img,
+.directory-grid.directory-grid-compact > * .directory-card:not(.archive-card) .directory-card-media img,
+.archive-timeline .directory-card:not(.archive-card) .directory-card-media img,
+.archive-timeline .archive-card-media img,
+.archive-masonry .directory-card:not(.archive-card) .directory-card-media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.archive-card-body,
+.directory-grid.directory-grid-compact > * .directory-card:not(.archive-card) .directory-card-body,
+.archive-timeline .directory-card:not(.archive-card) .directory-card-body,
+.archive-timeline .archive-card-body,
+.archive-masonry .directory-card:not(.archive-card) .directory-card-body {
+  justify-content: flex-start;
+}
+
+.directory-card-title,
+.archive-card-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.directory-card-description {
+  flex: 0 0 auto;
+  margin-top: 6px;
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.archive-card-description {
+  flex: 0 0 auto;
+  margin-top: 6px;
+  -webkit-line-clamp: 2;
+}
+
+.directory-card-foot,
+.archive-card-foot {
+  margin-top: 8px;
+}
+
+.directory-card-body,
+.archive-card-body {
+  min-height: 0;
+}
+
+/* Keep media children that are not images (project icon, fallback) inside
+   the row without creating a second intrinsic height source. */
+.archive-card-media > * {
+  min-height: 0;
+}
+
+@media (max-width: 767px) {
+  .directory-grid.directory-grid-compact {
+    align-items: start;
+  }
+
+  .archive-card-description,
+  .directory-card-description {
+    -webkit-line-clamp: 2;
+  }
+}
