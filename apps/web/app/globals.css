@@ -4392,3 +4392,16 @@ html:not(.dark) .hv-empty {
   align-content: flex-end;
   align-items: flex-end;
 }
+
+/* Keep the meta row pinned to the bottom, but center the plain category
+   label with the tag pills inside that row. */
+.directory-grid.directory-grid-compact.posts-grid > * .directory-card:not(.archive-card) .directory-card-foot {
+  align-items: center;
+}
+
+.directory-grid.directory-grid-compact.posts-grid > * .directory-card:not(.archive-card) .directory-card-category {
+  display: inline-flex;
+  height: 19px;
+  align-items: center;
+  line-height: 1;
+}
