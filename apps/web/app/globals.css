@@ -4385,3 +4385,10 @@ html:not(.dark) .hv-empty {
   }
 }
 
+
+/* Keep the reserved two-line meta block, but pin its visible rows to the
+   bottom edge so left/bottom breathing room stays equal. */
+.directory-grid.directory-grid-compact.posts-grid > * .directory-card:not(.archive-card) .directory-card-foot {
+  align-content: flex-end;
+  align-items: flex-end;
+}
