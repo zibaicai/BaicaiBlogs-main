@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
 @theme inline {
@@ -40,10 +40,10 @@
   --radius-media: 8px;
 }
 
-/* 1. 声明暗黑模式变体 */
+/* 1. 澹版槑鏆楅粦妯″紡鍙樹綋 */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* 2. 基础环境与性能优化 */
+/* 2. 鍩虹鐜涓庢€ц兘浼樺寲 */
 @layer base {
   :root {
     --font-serif: "Source Han Serif SC", "Noto Serif SC", "Songti SC", "SimSun", Georgia, serif;
@@ -141,7 +141,7 @@
   }
 }
 
-/* 3. 音乐播放器进度条样式 */
+/* 3. 闊充箰鎾斁鍣ㄨ繘搴︽潯鏍峰紡 */
 input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
@@ -151,7 +151,7 @@ input[type=range]::-webkit-slider-thumb {
   cursor: pointer;
 }
 
-/* 4. 火狐专项优化与布局兜底 */
+/* 4. 鐏嫄涓撻」浼樺寲涓庡竷灞€鍏滃簳 */
 @layer base {
   [class*="backdrop-blur-"] {
     will-change: backdrop-filter;
@@ -171,7 +171,7 @@ input[type=range]::-webkit-slider-thumb {
 }
 
 /* ========================================================
-   5. 全局滚动条美化 (Chrome, Edge, Safari)
+   5. 鍏ㄥ眬婊氬姩鏉＄編鍖?(Chrome, Edge, Safari)
    ======================================================== */
 ::-webkit-scrollbar {
   width: 6px;
@@ -189,24 +189,24 @@ input[type=range]::-webkit-slider-thumb {
 }
 
 /* ========================================================
-   6. Firefox 浏览器的兼容写法
+   6. Firefox 娴忚鍣ㄧ殑鍏煎鍐欐硶
    ======================================================== */
 * {
   scrollbar-width: thin;
   scrollbar-color: rgba(99, 102, 241, 0.3) transparent;
 }
 
-/* 彻底隐藏所有数字输入框的上下滑动箭头 */
+/* 褰诲簳闅愯棌鎵€鏈夋暟瀛楄緭鍏ユ鐨勪笂涓嬫粦鍔ㄧ澶?*/
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 input[type="number"] {
-  -moz-appearance: textfield; /* 针对 Firefox 的兼容 */
+  -moz-appearance: textfield; /* 閽堝 Firefox 鐨勫吋瀹?*/
 }
 
-/* 修复 Tailwind Prose 抹除列表符号的问题 */
+/* 淇 Tailwind Prose 鎶归櫎鍒楄〃绗﹀彿鐨勯棶棰?*/
 .prose ul { list-style-type: disc !important; padding-left: 1.5em !important; }
 .prose ol { list-style-type: decimal !important; padding-left: 1.5em !important; }
 .prose ul[data-type="taskList"] { list-style-type: none !important; padding-left: 0 !important; }
@@ -216,18 +216,18 @@ input[type="number"] {
   cursor: pointer;
   accent-color: #6366f1;
 }
-/* 自定义滚动条美化 */
+/* 鑷畾涔夋粴鍔ㄦ潯缇庡寲 */
 .custom-scrollbar::-webkit-scrollbar { width: 6px; }
 .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(100, 116, 139, 0.2); border-radius: 10px; }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.4); }
 
 /* ========================================================
-   7. 文章正文（后端返回的 sanitized HTML）
+   7. 鏂囩珷姝ｆ枃锛堝悗绔繑鍥炵殑 sanitized HTML锛?
    ======================================================== */
 .article-prose {
   font-size: 1rem;
   line-height: 1.85;
-  /* 正文使用常规字重，避免继承标题/全局粗体；加粗标记单独提高字重 */
+  /* 姝ｆ枃浣跨敤甯歌瀛楅噸锛岄伩鍏嶇户鎵挎爣棰?鍏ㄥ眬绮椾綋锛涘姞绮楁爣璁板崟鐙彁楂樺瓧閲?*/
   font-family: "Noto Serif SC", "Songti SC", SimSun, Georgia, serif;
   font-weight: 400;
   font-synthesis: none;
@@ -334,8 +334,8 @@ input[type="number"] {
 .article-prose .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.5rem 0; }
 
 /* ========================================================
-   8. C 端目录页统一卡片体系
-   卡片最小宽度 380px；1440 宽屏 3 列，1680+ 宽屏 4 列
+   8. C 绔洰褰曢〉缁熶竴鍗＄墖浣撶郴
+   鍗＄墖鏈€灏忓搴?380px锛?440 瀹藉睆 3 鍒楋紝1680+ 瀹藉睆 4 鍒?
    ======================================================== */
 @layer components {
   .directory-shell {
@@ -543,7 +543,7 @@ input[type="number"] {
   }
 }
 
-/* Homepage v2 — editorial / bento */
+/* Homepage v2 鈥?editorial / bento */
 .home-v2 {
   --hv-text: var(--ui-text);
   --hv-muted: var(--ui-text-muted);
@@ -2167,7 +2167,7 @@ body[data-nav-hidden="true"] .article-toc {
   font-size: var(--article-body);
 }
 
-/* Markdown reader theme switch — scoped to the markdown body only */
+/* Markdown reader theme switch 鈥?scoped to the markdown body only */
 .markdown-reader {
   position: relative;
   width: 100%;
@@ -4319,3 +4319,69 @@ html:not(.dark) .hv-empty {
     top: 46%;
   }
 }
+
+/* Four-column desktop grid: keep the cover square while giving the text
+   a little more breathing room. */
+.directory-grid.posts-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (max-width: 1200px) {
+  .directory-grid.posts-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .directory-grid.posts-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .directory-grid.posts-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 1201px) {
+  .directory-grid.directory-grid-compact.posts-grid > * .directory-card:not(.archive-card) .directory-card-copy {
+    top: 40%;
+  }
+
+  .directory-grid.directory-grid-compact.posts-grid > * .directory-card:not(.archive-card) .directory-card-title {
+    font-size: 15px;
+    line-height: 1.45;
+    letter-spacing: 0.025em;
+  }
+
+  .directory-grid.directory-grid-compact.posts-grid > * .directory-card:not(.archive-card) .directory-card-description {
+    margin-top: 7px;
+    font-size: 11.5px;
+    line-height: 1.6;
+    letter-spacing: 0.01em;
+  }
+
+  .directory-grid.directory-grid-compact.posts-grid > * .directory-card:not(.archive-card) .directory-card-time {
+    height: 21px;
+    margin-bottom: 7px;
+  }
+
+  .directory-grid.directory-grid-compact.posts-grid > * .directory-card:not(.archive-card) .directory-card-foot {
+    min-height: 38px;
+    max-height: 38px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .directory-grid.directory-grid-compact.posts-grid > * .directory-card:not(.archive-card) .directory-card-copy {
+    top: 45%;
+  }
+}
+
+@media (max-width: 900px) {
+  .directory-grid.directory-grid-compact.posts-grid > * .directory-card:not(.archive-card) .directory-card-copy {
+    top: 47%;
+  }
+}
+
