@@ -4503,3 +4503,44 @@ html:not(.dark) .hv-empty {
     display: none;
   }
 }
+
+/* Full-SVG moment bubble. The transparent canvas margin is the card's
+   safe area; the SVG body and tail are one shape, so there is no seam. */
+.moment-card {
+  border: 30px solid transparent;
+  border-image-source: url("/moments/bubble-left-light.svg");
+  border-image-slice: 60 60 80 60 fill;
+  border-image-width: 30px;
+  border-image-repeat: stretch;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  overflow: visible;
+  filter: drop-shadow(0 16px 32px rgba(24, 38, 55, 0.12));
+}
+
+.dark .moment-card {
+  border-image-source: url("/moments/bubble-left-dark.svg");
+  filter: drop-shadow(0 16px 32px rgba(0, 0, 0, 0.32));
+}
+
+.archive-masonry-column:nth-child(even) .moment-card {
+  border-image-source: url("/moments/bubble-right-light.svg");
+}
+
+.dark .archive-masonry-column:nth-child(even) .moment-card {
+  border-image-source: url("/moments/bubble-right-dark.svg");
+}
+
+.moment-card::after,
+.moment-tail {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .moment-card {
+    border-width: 24px;
+    border-image-width: 24px;
+  }
+}

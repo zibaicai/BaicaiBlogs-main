@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Lock } from "lucide-react";
 import { formatDate } from "../lib/api";
-import MomentTail from "./MomentTail";
 
 export interface MomentStory {
   id?: number;
@@ -26,19 +25,20 @@ export default function MomentCard({
   const images = (moment.images || []).slice(0, 9);
   const total = moment.images?.length || 0;
   const html = moment.htmlContent || moment.content || "";
+  const fallbackAuthor = moment.authorName || "\u533f\u540d\u7528\u6237";
 
   return (
     <article className="moment-card" id={moment.slug}>
       <div className="moment-head">
         <div className="moment-author">
           <span className="moment-avatar">
-            {moment.authorAvatar ? <img src={moment.authorAvatar} alt="" /> : (moment.authorName || "匿").slice(0, 1)}
+            {moment.authorAvatar ? <img src={moment.authorAvatar} alt="" /> : fallbackAuthor.slice(0, 1)}
           </span>
-          <strong>{moment.authorName || "匿名用户"}</strong>
+          <strong>{fallbackAuthor}</strong>
         </div>
         <time>{formatDate(moment.date)}</time>
         {moment.visibility === "PRIVATE" && (
-          <span className="archive-badge archive-badge-sky"><Lock size={9} /> 仅自己可见</span>
+          <span className="archive-badge archive-badge-sky"><Lock size={9} /> {"\u4ec5\u81ea\u5df1\u53ef\u89c1"}</span>
         )}
       </div>
 
@@ -57,7 +57,7 @@ export default function MomentCard({
                 target="_blank"
                 rel="noopener noreferrer"
                 className="moment-image"
-                aria-label={`查看第 ${index + 1} 张图片`}
+                aria-label={`View image ${index + 1}`}
               >
                 <img src={image} alt="" loading="lazy" />
               </a>
@@ -69,11 +69,9 @@ export default function MomentCard({
       )}
 
       <div className="moment-foot">
-        <span>{commentCount > 0 ? `${commentCount} 条评论` : "暂无评论"}</span>
-        <Link href={`/moments#${encodeURIComponent(moment.slug)}`} className="moment-permalink">查看 →</Link>
+        <span>{commentCount > 0 ? `${commentCount} \u6761\u8bc4\u8bba` : "\u6682\u65e0\u8bc4\u8bba"}</span>
+        <Link href={`/moments#${encodeURIComponent(moment.slug)}`} className="moment-permalink">{"\u67e5\u770b \u2192"}</Link>
       </div>
-
-      <MomentTail />
     </article>
   );
 }
