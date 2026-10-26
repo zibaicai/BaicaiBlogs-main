@@ -1,6 +1,6 @@
 import Navbar from "../../components/Navbar";
 import PageTransition from "../../components/PageTransition";
-import ArchiveCard from "../../components/ArchiveCard";
+import ArchiveItemCard from "../../components/ArchiveItemCard";
 import DirectoryExplorer from "../../components/DirectoryExplorer";
 import { getFriends } from "../../lib/server-api";
 import { DEFAULT_SITE_INFO } from "../../lib/site-config";
@@ -22,15 +22,14 @@ export default async function FriendsPage() {
   const items = friends.map((friend) => ({
     key: String(friend.friendId || friend.id),
     node: (
-      <ArchiveCard
+      <ArchiveItemCard
         external
         href={friend.url}
-        image={friend.avatar || DEFAULT_SITE_INFO.avatarUrl}
-        alt={friend.name}
         title={friend.name}
         description={friend.description || "一位也在认真记录的人。"}
-        badges={<span className="archive-badge">NEIGHBOR</span>}
+        category="NEIGHBOR"
         meta={hostOf(friend.url)}
+        media={{ kind: "avatar", src: friend.avatar || DEFAULT_SITE_INFO.avatarUrl, alt: friend.name }}
       />
     ),
     searchText: [friend.name, friend.description, friend.url].join(" "),
@@ -39,7 +38,7 @@ export default async function FriendsPage() {
 
   const empty = (
     <div className="directory-card p-10 text-center">
-      <div className="mb-5 text-5xl">🌱</div>
+      <div className="mb-5 text-5xl">🤝</div>
       <h2 className="mb-3 text-xl font-bold text-slate-800 dark:text-white">友链正在靠岸...</h2>
       <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
         暂时还没有公开友链。想交换链接的话，可以按下面的格式准备信息：
@@ -65,7 +64,9 @@ export default async function FriendsPage() {
             count={`${friends.length} 位朋友`}
             items={items}
             filters={[{ value: "all", label: "全部朋友", count: friends.length }]}
+            views={["grid", "timeline", "masonry"]}
             compact
+            gridClassName="cover-grid"
             searchPlaceholder="搜索朋友、简介或链接..."
             empty={empty}
           />

@@ -1,4 +1,4 @@
-import ArchiveCard from "../components/ArchiveCard";
+﻿import ArchiveItemCard from "../components/ArchiveItemCard";
 import DirectoryExplorer from "../components/DirectoryExplorer";
 import type { Project } from "../lib/api";
 
@@ -20,22 +20,15 @@ export default function ProjectsBoard({ projects }: { projects: Project[] }) {
   const items = projects.map((project) => ({
     key: project.projectId,
     node: (
-      <ArchiveCard
+      <ArchiveItemCard
         external
         href={project.githubUrl || "#"}
-        alt={project.name}
-        media={
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-indigo-500/20 via-purple-500/10 to-slate-900/30 text-5xl">
-            {project.icon || "🚀"}
-          </div>
-        }
-        eyebrow="PROJECT"
         title={project.name}
         description={project.description}
-        badges={(project.tags || []).map((tag) => (
-          <span key={tag} className="archive-badge">#{tag}</span>
-        ))}
+        category="PROJECT"
+        tags={project.tags || []}
         meta={project.githubUrl ? "GitHub" : undefined}
+        media={{ kind: "icon", content: project.icon || "🚀" }}
       />
     ),
     searchText: [project.name, project.description, ...(project.tags || [])].join(" "),
@@ -51,7 +44,9 @@ export default function ProjectsBoard({ projects }: { projects: Project[] }) {
         count={`${projects.length} 个项目`}
         items={items}
         filters={filters}
+        views={["grid", "timeline", "masonry"]}
         compact
+        gridClassName="cover-grid"
         searchPlaceholder="搜索项目、代号或技术栈..."
         empty="还没有公开的项目。"
       />

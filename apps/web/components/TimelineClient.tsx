@@ -34,15 +34,16 @@ export default function TimelineClient({
         eyebrow="BAICAI / TIMELINE"
         title="时间档案"
         subtitle="沿着时间线，打捞那些发过光的片段。"
-        count={`总计 ${posts.length} 篇`}
+        count={`总共 ${posts.length} 篇`}
         items={items}
         filters={filters}
-        compact
         views={["grid", "timeline", "masonry"]}
-        pageSize={9}
+        compact
+        gridClassName="cover-grid"
+        pageSize={12}
         searchPlaceholder="搜索标题、标签或关键词..."
         initialMode="timeline"
-        empty="这个频段没有接收到任何信号 📡"
+        empty="这个频道没有接收到任何信号 📡"
       />
     </div>
   );
