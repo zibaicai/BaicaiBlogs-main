@@ -1,5 +1,43 @@
 @import "tailwindcss";
 
+@theme inline {
+  --radius-lg: var(--radius-control);
+  --radius-xl: var(--radius-control);
+  --radius-2xl: var(--radius-card);
+  --radius-3xl: var(--radius-panel);
+  --radius-4xl: var(--radius-modal);
+}
+
+:root {
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
+  --radius-control: 10px;
+  --radius-card: 14px;
+  --radius-panel: 18px;
+  --radius-modal: 22px;
+  --radius-media: 8px;
+}
+
+[data-density="compact"] {
+  --radius-control: 8px;
+  --radius-card: 12px;
+  --radius-panel: 16px;
+  --radius-modal: 20px;
+  --radius-media: 6px;
+}
+
+[data-density="comfortable"] {
+  --radius-control: 10px;
+  --radius-card: 14px;
+  --radius-panel: 18px;
+  --radius-modal: 22px;
+  --radius-media: 8px;
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {

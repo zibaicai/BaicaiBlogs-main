@@ -1,6 +1,45 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+@theme inline {
+  --radius-lg: var(--radius-control);
+  --radius-xl: var(--radius-control);
+  --radius-2xl: var(--radius-card);
+  --radius-3xl: var(--radius-panel);
+  --radius-4xl: var(--radius-modal);
+}
+
+/* Shared radius scale. Use semantic tokens for new components. */
+:root {
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
+  --radius-control: 10px;
+  --radius-card: 14px;
+  --radius-panel: 18px;
+  --radius-modal: 22px;
+  --radius-media: 8px;
+}
+
+[data-density="compact"] {
+  --radius-control: 8px;
+  --radius-card: 12px;
+  --radius-panel: 16px;
+  --radius-modal: 20px;
+  --radius-media: 6px;
+}
+
+[data-density="comfortable"] {
+  --radius-control: 10px;
+  --radius-card: 14px;
+  --radius-panel: 18px;
+  --radius-modal: 22px;
+  --radius-media: 8px;
+}
+
 /* 1. 声明暗黑模式变体 */
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -3842,5 +3881,48 @@ html:not(.dark) .hv-empty {
   .archive-card-description,
   .directory-card-description {
     -webkit-line-clamp: 2;
+  }
+}
+
+/* Radius migration: semantic surfaces. */
+.hv-panel,
+.directory-card,
+.moment-card {
+  border-radius: var(--radius-panel);
+}
+
+.archive-card,
+.directory-grid.directory-grid-compact > * .directory-card:not(.archive-card),
+.archive-timeline .directory-card:not(.archive-card),
+.archive-masonry .directory-card:not(.archive-card) {
+  border-radius: var(--radius-card);
+}
+
+.archive-card-media,
+.directory-grid.directory-grid-compact > * .directory-card:not(.archive-card) .directory-card-media,
+.archive-timeline .directory-card:not(.archive-card) .directory-card-media,
+.archive-timeline .archive-card-media,
+.archive-masonry .directory-card:not(.archive-card) .directory-card-media {
+  border-radius: var(--radius-media);
+}
+
+.moment-card {
+  border-radius: var(--radius-panel) var(--radius-panel) var(--radius-panel) var(--radius-xs);
+}
+
+.archive-masonry-column:nth-child(2) .moment-card {
+  border-radius: var(--radius-panel) var(--radius-panel) var(--radius-xs) var(--radius-panel);
+}
+
+.hv-toolbar-meta-only .hv-toolbar-meta {
+  border-radius: var(--radius-pill);
+}
+
+/* Compact surfaces stay on the smaller step without changing component code. */
+@media (max-width: 767px) {
+  :root {
+    --radius-card: 12px;
+    --radius-panel: 16px;
+    --radius-media: 6px;
   }
 }
