@@ -24,7 +24,7 @@ spring:
 # 生产环境允许的前端来源
 app:
   cors:
-    allowed-origins: http://zibaicai.cn,http://www.zibaicai.cn,http://8.153.164.215
+    allowed-origins: https://www.zibaicai.cn,https://zibaicai.cn,https://admin.zibaicai.cn,http://zibaicai.cn,http://www.zibaicai.cn,http://8.153.164.215
 
 # 生产环境降低日志级别，减少日志量
 logging:
