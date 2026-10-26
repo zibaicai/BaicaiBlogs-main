@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowUpRight, Code2, Mail, Radio } from "lucide-react";
+import { ArrowUpRight, Code2, Radio } from "lucide-react";
 import { useSiteConfigContext } from "../context/SiteConfigProvider";
 
 type Props = {
@@ -16,7 +16,6 @@ export default function HomeHero({ postCount, momentCount, photoCount }: Props) 
   const socials = [
     { label: "GitHub", href: siteInfo?.social?.github, icon: Code2 },
     { label: "Gitee", href: siteInfo?.social?.gitee, icon: Code2 },
-    { label: "Email", href: siteInfo?.social?.email ? `mailto:${siteInfo.social.email}` : undefined, icon: Mail },
   ].filter((item) => item.href);
 
   return (

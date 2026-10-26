@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { Check, KeyRound, ShieldCheck, X } from "lucide-react";
-import { api } from "../lib/api";
+import { api, getAdminRole } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
+
+const isSuper = getAdminRole() === "SUPER_ADMIN";
 
 interface AccessRequest {
   id: number;
@@ -28,6 +30,7 @@ export default function AccessPage() {
   const [requests, setRequests] = useState<AccessRequest[]>([]);
   const [grants, setGrants] = useState<AccessGrant[]>([]);
   const [logs, setLogs] = useState<any[]>([]);
+  const [sensitive, setSensitive] = useState<any[]>([]);
   const [auditAllowed, setAuditAllowed] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -37,6 +40,12 @@ export default function AccessPage() {
       const [req, grant] = await Promise.all([api.accessRequests(), api.accessGrants()]);
       setRequests(req.data || []);
       setGrants(grant.data || []);
+      try {
+        const sensitiveReq = await api.sensitiveAccessRequests();
+        setSensitive(sensitiveReq.data || []);
+      } catch {
+        setSensitive([]);
+      }
       try {
         const audit = await api.auditLogs();
         if (audit.success) {
@@ -61,6 +70,17 @@ export default function AccessPage() {
     try {
       if (approve) await api.approveAccess(id);
       else await api.rejectAccess(id);
+      showToast(approve ? "已批准，1 小时有效" : "已拒绝", "success");
+      await load();
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : "操作失败", "error");
+    }
+  };
+
+  const actSensitive = async (id: number, approve: boolean) => {
+    try {
+      if (approve) await api.approveSensitiveAccess(id);
+      else await api.rejectSensitiveAccess(id);
       showToast(approve ? "已批准，1 小时有效" : "已拒绝", "success");
       await load();
     } catch (e) {
@@ -94,7 +114,7 @@ export default function AccessPage() {
                   <p className="text-xs text-slate-400 mt-1 max-w-2xl">{r.reason}</p>
                   <div className="text-[10px] text-slate-500 mt-1">{r.createdAt}</div>
                 </div>
-                {r.status === "PENDING" && (
+                {r.status === "PENDING" && isSuper && (
                   <div className="flex gap-2">
                     <button onClick={() => void act(r.id, true)} className="px-3 py-2 rounded-xl bg-emerald-500/10 text-emerald-400 text-[10px] font-black flex items-center gap-1">
                       <Check size={12} /> 批准
@@ -108,6 +128,38 @@ export default function AccessPage() {
             </div>
           ))}
           {requests.length === 0 && <div className="text-xs text-slate-500">暂无申请</div>}
+        </div>
+      </section>
+
+      <section className="rounded-3xl bg-white/5 border border-white/10 p-5">
+        <h2 className="text-lg font-black text-white mb-3">敏感社交字段申请</h2>
+        <div className="flex flex-col gap-2">
+          {sensitive.map((r) => (
+            <div key={r.id} className="rounded-2xl bg-black/15 border border-white/5 p-4">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <div>
+                  <div className="text-sm font-bold text-slate-200">
+                    #{r.id} · 管理员 #{r.adminId} · {r.resourceType} · {r.status}
+                  </div>
+                  <p className="text-xs text-slate-400 mt-1 max-w-2xl">{r.reason}</p>
+                  <div className="text-[10px] text-slate-500 mt-1">
+                    {r.createdAt}{r.expiresAt ? ` · 到期 ${r.expiresAt}` : ""}
+                  </div>
+                </div>
+                {r.status === "PENDING" && isSuper && (
+                  <div className="flex gap-2">
+                    <button onClick={() => void actSensitive(r.id, true)} className="px-3 py-2 rounded-xl bg-emerald-500/10 text-emerald-400 text-[10px] font-black flex items-center gap-1">
+                      <Check size={12} /> 批准
+                    </button>
+                    <button onClick={() => void actSensitive(r.id, false)} className="px-3 py-2 rounded-xl bg-red-500/10 text-red-400 text-[10px] font-black flex items-center gap-1">
+                      <X size={12} /> 拒绝
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+          {sensitive.length === 0 && <div className="text-xs text-slate-500">暂无敏感字段申请</div>}
         </div>
       </section>
 

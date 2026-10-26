@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Eye, Loader2, ShieldAlert } from "lucide-react";
-import { api, getAdminUser, type Moment } from "../lib/api";
+import { api, getAdminRole, type Moment } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
 
 export default function PrivacyAuditPage() {
@@ -9,7 +9,7 @@ export default function PrivacyAuditPage() {
   const [items, setItems] = useState<Moment[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const user = getAdminUser();
+  const userRole = getAdminRole();
 
   const load = async () => {
     if (!reason.trim()) {
@@ -28,7 +28,7 @@ export default function PrivacyAuditPage() {
     }
   };
 
-  if (user?.role !== "SUPER_ADMIN") {
+  if (userRole !== "SUPER_ADMIN") {
     return (
       <div className="rounded-3xl border border-red-500/20 bg-red-500/5 p-8 text-center">
         <ShieldAlert className="mx-auto mb-3 text-red-400" size={28} />

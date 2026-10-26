@@ -1,11 +1,14 @@
 const BASE = "/api";
 const TOKEN_KEY = "bc_admin_token";
 const USER_KEY = "bc_admin_user";
+const ROLE_KEY = "bc_admin_role";
 
 export const getToken = () => localStorage.getItem(TOKEN_KEY) || "";
 export const setToken = (t: string) => (t ? localStorage.setItem(TOKEN_KEY, t) : localStorage.removeItem(TOKEN_KEY));
 export const getAdminUser = () => localStorage.getItem(USER_KEY) || "";
 export const setAdminUser = (u: string) => (u ? localStorage.setItem(USER_KEY, u) : localStorage.removeItem(USER_KEY));
+export const getAdminRole = () => localStorage.getItem(ROLE_KEY) || "";
+export const setAdminRole = (r: string) => (r ? localStorage.setItem(ROLE_KEY, r) : localStorage.removeItem(ROLE_KEY));
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -268,9 +271,20 @@ export const api = {
   deletePost: (slug: string) =>
     request<void>(`/admin/posts/${encodeURIComponent(slug)}`, { method: "DELETE" }),
 
-  getAllConfigs: () => request<SiteConfigItem[]>("/public/config"),
+  getAllConfigs: () => request<SiteConfigItem[]>("/admin/config"),
 
-  getConfigGroup: <T = any>(group: string) => request<T>(`/public/config/group/${group}`),
+  getConfigGroup: <T = any>(group: string) => request<T>(`/admin/config/group/${group}`),
+
+  sensitiveAccessRequests: () => request<any[]>("/admin/sensitive-access"),
+  requestSensitiveAccess: (resourceType: string, reason: string) =>
+    request<any>("/admin/sensitive-access", {
+      method: "POST",
+      body: JSON.stringify({ resourceType, reason }),
+    }),
+  approveSensitiveAccess: (id: number) =>
+    request<any>(`/admin/sensitive-access/${id}/approve`, { method: "POST" }),
+  rejectSensitiveAccess: (id: number) =>
+    request<any>(`/admin/sensitive-access/${id}/reject`, { method: "POST" }),
 
   updateConfig: (key: string, configValue: string, description = "") =>
     request<SiteConfigItem>(`/admin/config/${encodeURIComponent(key)}`, {

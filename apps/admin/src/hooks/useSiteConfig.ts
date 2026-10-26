@@ -86,22 +86,22 @@ export interface SiteConfigState {
 
 const DEFAULT_SITE_INFO: SiteInfo = {
   title: "YeLuo / 云端小屋",
-  faviconUrl: "https://github.com/zibaicai/BaicaiBlogs-main/blob/master/picture/00.png?raw=true",
+  faviconUrl: "https://www.zibaicai.cn/favicon.ico",
   authorName: "YeLuo",
   bio: "写代码，也拍照片。把项目、音乐和日常里值得留下的片段，收进同一片海。",
   navTitle: "YeLuo",
   navSuffix: "/",
   navAfter: "云端小屋",
-  avatarUrl: "https://github.com/zibaicai/BaicaiBlogs-main/blob/master/picture/00.png?raw=true",
+  avatarUrl: "https://www.zibaicai.cn/avatar.jpg",
   buildDate: "2026-03-23T00:00:00",
   enableLevelSystem: true,
   social: {
     github: "https://github.com/zibaicai",
     gitee: "https://github.com/zibaicai",
-    google: "mailto:<redacted>",
-    email: "<redacted>",
-    qq: "1165441364",
-    wechat: "<redacted>",
+    google: "",
+    email: "",
+    qq: "",
+    wechat: "",
   },
   icpConfig: {
     name: "豫ICP备 2024102131号",
@@ -113,11 +113,12 @@ const DEFAULT_BACKGROUND: BackgroundConfig = {
   useGradient: false,
   themeColors: ["#a18cd1", "#fbc2eb", "#a1c4fd", "#c2e9fb"],
   bgImages: [
-    "https://bu.dusays.com/2026/03/24/69c1e38b4c370.jpg",
-    "https://bu.dusays.com/2026/03/24/69c26fe4acdb5.jpg",
-    "https://bu.dusays.com/2026/03/24/69c26fe4d9486.jpg",
+    "https://www.zibaicai.cn/bg-1.webp",
+    "https://www.zibaicai.cn/bg-2.webp",
+    "https://www.zibaicai.cn/bg-3.webp",
+    "https://www.zibaicai.cn/bg-5.webp",
   ],
-  defaultPostCover: "https://bu.dusays.com/2026/03/24/69c1e38b346cb.jpg",
+  defaultPostCover: "https://www.zibaicai.cn/bg-3.webp",
 };
 
 const DEFAULT_DANMAKU: string[] = [
@@ -143,8 +144,8 @@ const DEFAULT_MISC: MiscConfig = {
   picBedToken: "",
   cloudMusicIds: ["1809646618", "3361076230", "1859390262"],
   friendLinkApplyFormat:
-    "名称：YeLuo / 云端小屋\n简介：写代码，也拍照片。把项目、音乐和日常里值得留下的片段，收进同一片海。\n链接：https://www.zibaicai.cn\n头像：https://github.com/zibaicai/BaicaiBlogs-main/blob/master/picture/00.png?raw=true",
-  photoWallImage: "https://bu.dusays.com/2026/03/24/69c1e38b4c370.jpg",
+    "名称：YeLuo / 云端小屋\n简介：写代码，也拍照片。把项目、音乐和日常里值得留下的片段，收进同一片海。\n链接：https://www.zibaicai.cn\n头像：https://www.zibaicai.cn/avatar.jpg",
+  photoWallImage: "https://www.zibaicai.cn/bg-4.webp",
   counts: { photos: 128 },
   footerBadges: [
     { name: "Next.js 16", color: "text-sky-500", svg: "<path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z\"/>" },
@@ -168,12 +169,14 @@ export function useSiteConfig() {
   const fetchAllConfigs = useCallback(async () => {
     setState((prev) => ({ ...prev, loading: true, error: null }));
     try {
+      const token = localStorage.getItem("bc_admin_token") || "";
+      const authHeaders: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
       const [siteInfoRes, bgRes, danmakuRes, aiRes, miscRes] = await Promise.all([
-        fetch(`${API_BASE_URL}/api/public/config/group/site-info`),
-        fetch(`${API_BASE_URL}/api/public/config/group/background`),
-        fetch(`${API_BASE_URL}/api/public/config/group/danmaku`),
-        fetch(`${API_BASE_URL}/api/public/config/group/ai`),
-        fetch(`${API_BASE_URL}/api/public/config/group/misc`),
+        fetch(`${API_BASE_URL}/api/admin/config/group/site-info`, { headers: authHeaders }),
+        fetch(`${API_BASE_URL}/api/admin/config/group/background`, { headers: authHeaders }),
+        fetch(`${API_BASE_URL}/api/admin/config/group/danmaku`, { headers: authHeaders }),
+        fetch(`${API_BASE_URL}/api/admin/config/group/ai`, { headers: authHeaders }),
+        fetch(`${API_BASE_URL}/api/admin/config/group/misc`, { headers: authHeaders }),
       ]);
 
       const [siteInfoJson, bgJson, danmakuJson, aiJson, miscJson] = await Promise.all([
@@ -187,7 +190,7 @@ export function useSiteConfig() {
       setState({
         siteInfo: siteInfoJson?.data || DEFAULT_SITE_INFO,
         background: bgJson?.data || DEFAULT_BACKGROUND,
-        danmakuList: danmakuJson?.data || DEFAULT_DANMAKU,
+        danmakuList: danmakuJson?.data?.items || danmakuJson?.data || DEFAULT_DANMAKU,
         aiConfig: aiJson?.data || DEFAULT_AI_CONFIG,
         misc: miscJson?.data || DEFAULT_MISC,
         loading: false,

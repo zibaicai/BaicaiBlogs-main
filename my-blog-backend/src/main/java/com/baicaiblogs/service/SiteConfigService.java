@@ -26,6 +26,43 @@ public class SiteConfigService {
         return getConfigAsMap("site_info");
     }
 
+    /** Public view: never expose private contact fields. */
+    @Transactional(readOnly = true)
+    public Map<String, Object> getPublicSiteInfo() {
+        Map<String, Object> info = new LinkedHashMap<>(getConfigAsMap("site_info"));
+        Object rawSocial = info.get("social");
+        Map<String, Object> publicSocial = new LinkedHashMap<>();
+        if (rawSocial instanceof Map<?, ?> social) {
+            for (String key : new String[]{"github", "gitee"}) {
+                Object value = social.get(key);
+                if (value != null) publicSocial.put(key, value);
+            }
+        }
+        info.put("social", publicSocial);
+        return info;
+    }
+
+    /** Admin view; ordinary admins receive masked private fields. */
+    public Map<String, Object> getAdminSiteInfo(boolean superAdmin) {
+        Map<String, Object> info = new LinkedHashMap<>(getConfigAsMap("site_info"));
+        if (!superAdmin) {
+            Object rawSocial = info.get("social");
+            Map<String, Object> masked = new LinkedHashMap<>();
+            if (rawSocial instanceof Map<?, ?> social) {
+                for (String key : new String[]{"github", "gitee"}) {
+                    Object value = social.get(key);
+                    if (value != null) masked.put(key, value);
+                }
+                for (String key : new String[]{"email", "qq", "wechat", "google"}) {
+                    if (social.get(key) != null) masked.put(key, "***");
+                }
+            }
+            info.put("social", masked);
+            info.put("__restricted", List.of("email", "qq", "wechat", "google"));
+        }
+        return info;
+    }
+
     @Transactional(readOnly = true)
     public Map<String, Object> getBackgroundConfig() {
         return getConfigAsMap("background");
@@ -44,6 +81,39 @@ public class SiteConfigService {
     @Transactional(readOnly = true)
     public Map<String, Object> getMiscConfig() {
         return getConfigAsMap("misc");
+    }
+
+    /** Public view: remove tokens and private integration secrets. */
+    @Transactional(readOnly = true)
+    public Map<String, Object> getPublicMiscConfig() {
+        Map<String, Object> misc = new LinkedHashMap<>(getConfigAsMap("misc"));
+        misc.remove("picBedToken");
+        Object gitalk = misc.get("gitalkConfig");
+        if (gitalk instanceof Map<?, ?> source) {
+            Map<String, Object> safe = new LinkedHashMap<>();
+            for (String key : new String[]{"clientID", "repo", "owner", "admin"}) {
+                if (source.get(key) != null) safe.put(key, source.get(key));
+            }
+            misc.put("gitalkConfig", safe);
+        }
+        return misc;
+    }
+
+    public Map<String, Object> getAdminMiscConfig(boolean superAdmin) {
+        Map<String, Object> misc = new LinkedHashMap<>(getConfigAsMap("misc"));
+        if (!superAdmin) {
+            misc.remove("picBedToken");
+            Object gitalk = misc.get("gitalkConfig");
+            if (gitalk instanceof Map<?, ?> source) {
+                Map<String, Object> safe = new LinkedHashMap<>();
+                for (String key : new String[]{"clientID", "repo", "owner", "admin"}) {
+                    if (source.get(key) != null) safe.put(key, source.get(key));
+                }
+                misc.put("gitalkConfig", safe);
+            }
+            misc.put("__restricted", List.of("picBedToken", "gitalkConfig.clientSecret"));
+        }
+        return misc;
     }
 
     private Map<String, Object> getConfigAsMap(String key) {
@@ -78,6 +148,75 @@ public class SiteConfigService {
         return siteConfigRepository.findAll().stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
+    }
+
+    public List<SiteConfigResponse> getAdminConfigs(boolean superAdmin, boolean socialGrant) {
+        Set<String> allowed = Set.of("site_info", "background", "danmaku_list", "misc", "ai_config");
+        return siteConfigRepository.findAll().stream()
+                .filter(config -> allowed.contains(config.getConfigKey()))
+                .map(config -> sanitizeResponse(config, superAdmin, socialGrant))
+                .collect(Collectors.toList());
+    }
+
+    public List<SiteConfigResponse> getPublicConfigs() {
+        Set<String> allowed = Set.of("site_info", "background", "danmaku_list", "misc", "ai_config");
+        return siteConfigRepository.findAll().stream()
+                .filter(config -> allowed.contains(config.getConfigKey()))
+                .map(this::sanitizeResponse)
+                .collect(Collectors.toList());
+    }
+
+    public SiteConfigResponse getPublicByKey(String configKey) {
+        Set<String> allowed = Set.of("site_info", "background", "danmaku_list", "misc", "ai_config");
+        if (!allowed.contains(configKey)) {
+            throw new RuntimeException("配置项不可公开: " + configKey);
+        }
+        SiteConfig config = siteConfigRepository.findByConfigKey(configKey)
+                .orElseThrow(() -> new RuntimeException("配置项不存在: " + configKey));
+        return sanitizeResponse(config);
+    }
+
+    public SiteConfigResponse getAdminByKey(String configKey, boolean superAdmin, boolean socialGrant) {
+        SiteConfig config = siteConfigRepository.findByConfigKey(configKey)
+                .orElseThrow(() -> new RuntimeException("配置项不存在: " + configKey));
+        return sanitizeResponse(config, superAdmin, socialGrant);
+    }
+
+    private SiteConfigResponse sanitizeResponse(SiteConfig config) {
+        return sanitizeResponse(config, false, false);
+    }
+
+    private SiteConfigResponse sanitizeResponse(SiteConfig config, boolean superAdmin) {
+        return sanitizeResponse(config, superAdmin, superAdmin);
+    }
+
+    private SiteConfigResponse sanitizeResponse(SiteConfig config, boolean superAdmin, boolean socialGrant) {
+        String key = config.getConfigKey();
+        Object value = null;
+        if ("site_info".equals(key)) {
+            value = (superAdmin || socialGrant) ? getAdminSiteInfo(true) : getPublicSiteInfo();
+        } else if ("misc".equals(key)) {
+            value = superAdmin ? getAdminMiscConfig(true) : getPublicMiscConfig();
+        } else {
+            try {
+                value = objectMapper.readValue(config.getConfigValue(), Object.class);
+            } catch (Exception ignored) {
+                value = null;
+            }
+        }
+        String configValue;
+        try {
+            configValue = objectMapper.writeValueAsString(value);
+        } catch (Exception e) {
+            configValue = config.getConfigValue();
+        }
+        return SiteConfigResponse.builder()
+                .id(config.getId())
+                .configKey(key)
+                .configValue(configValue)
+                .description(config.getDescription())
+                .updatedAt(config.getUpdatedAt())
+                .build();
     }
 
     @Transactional(readOnly = true)

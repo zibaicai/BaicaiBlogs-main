@@ -1,0 +1,43 @@
+{
+  "$comment": "白菜博客唯一环境配置：改服务器/目录/服务名只动这里，脚本不改",
+
+  "server": {
+    "host": "8.153.164.215",
+    "user": "root",
+    "sshOpts": ["-o", "BatchMode=yes", "-o", "ConnectTimeout=10"]
+  },
+
+  "repo": {
+    "url": "https://github.com/zibaicai/BaicaiBlogs-main.git",
+    "remotePath": "/opt/BaicaiBlogs-main",
+    "branch": "dev"
+  },
+
+  "web": {
+    "dir": "apps/web",
+    "service": "baicai-public",
+    "releasesDir": "/opt/baicai-public/releases",
+    "currentLink": "/opt/baicai-public/current",
+    "owner": "baicaiweb:baicaiweb",
+    "port": 3001,
+    "url": "https://www.zibaicai.cn",
+    "healthPaths": ["/", "/posts", "/api/public/posts"]
+  },
+
+  "admin": {
+    "dir": "apps/admin",
+    "wwwDir": "/var/www/admin",
+    "url": "https://admin.zibaicai.cn"
+  },
+
+  "backend": {
+    "service": "baicai-backend",
+    "remoteJar": "/opt/my-blog-backend-1.0.0.jar",
+    "localJar": "my-blog-backend/target/my-blog-backend-1.0.0.jar",
+    "port": 8080,
+    "url": "https://www.zibaicai.cn",
+    "healthPath": "/api/public/posts"
+  },
+
+  "backupDir": "/root/backup"
+}

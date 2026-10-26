@@ -23,7 +23,7 @@ import {
   Waypoints,
   Upload,
 } from "lucide-react";
-import { api, getAdminUser, getToken, setAdminUser, setToken } from "./lib/api";
+import { api, getAdminRole, getAdminUser, getToken, setAdminUser, setAdminRole, setToken } from "./lib/api";
 import { ToastProvider, useToast } from "./components/ToastProvider";
 import { OperationProvider } from "./context/OperationContext";
 import { SiteConfigProvider } from "./context/SiteConfigProvider";
@@ -78,6 +78,7 @@ function Login() {
       if (!j?.success || !j.data?.token) throw new Error(j?.message || "登录失败");
       setToken(j.data.token);
       setAdminUser(j.data.username || u.trim());
+      setAdminRole(j.data.role || "");
       nav("/");
     } catch (error) {
       setMsg("登录失败：" + (error instanceof Error ? error.message : "未知错误"));
@@ -153,6 +154,8 @@ const NAV_ITEMS = [
 function Shell({ children }: { children: React.ReactNode }) {
   const nav = useNavigate();
   const user = getAdminUser();
+  const role = getAdminRole();
+  const visibleNavItems = NAV_ITEMS.filter((item) => item.to !== "/privacy" || role === "SUPER_ADMIN");
 
   const logout = async () => {
     try {
@@ -162,6 +165,7 @@ function Shell({ children }: { children: React.ReactNode }) {
     }
     setToken("");
     setAdminUser("");
+    setAdminRole("");
     nav("/login");
   };
 
@@ -181,7 +185,7 @@ function Shell({ children }: { children: React.ReactNode }) {
         </Link>
 
         <nav className="flex flex-col gap-1.5">
-          {NAV_ITEMS.map((item) => (
+          {visibleNavItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}

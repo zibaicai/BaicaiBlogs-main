@@ -31,19 +31,11 @@ function SocialBtn({ type, url, onClick }: { type: string, url?: string, onClick
 
 export default function ClientSocials({ align = "center" }: { align?: "center" | "start" }) {
   const { siteInfo } = useSiteConfigContext();
-  const copyToClipboard = (text: string, label: string) => {
-    navigator.clipboard.writeText(text);
-    alert(`✨ ${label}已复制到剪贴板: ${text}`);
-  };
 
   return (
     <div className={`flex flex-wrap gap-1.5 ${align === "start" ? "justify-start" : "justify-center"} mt-0`}>
       <SocialBtn type="github" url={siteInfo?.social?.github} />
       <SocialBtn type="gitee" url={siteInfo?.social?.gitee} />
-      <SocialBtn type="google" url={siteInfo?.social?.google} />
-      <SocialBtn type="email" onClick={() => copyToClipboard(siteInfo?.social?.email || '', '邮箱')} />
-      <SocialBtn type="qq" onClick={() => copyToClipboard(siteInfo?.social?.qq || '', 'QQ号')} />
-      <SocialBtn type="wechat" onClick={() => copyToClipboard(siteInfo?.social?.wechat || '', '微信号')} />
     </div>
   );
 }

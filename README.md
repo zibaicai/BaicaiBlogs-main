@@ -1,383 +1,164 @@
-# 🌟 欢迎使用 XHBlogs！
+# 🥬 白菜博客 (BaicaiBlogs)
 
-这是一个采用 Next.js 构建的高颜值、毛玻璃（Glassmorphism）风格个人博客系统。本项目自带完善的前端展示与独立的本地后台控制台，支持 Markdown 沉浸式写作、草稿管理以及便捷的图床配置。
+一套自托管的个人博客系统：Next.js C 端博客 + Vite 管理后台 + Spring Boot 后端，配套一键启动与一键部署脚本。
 
-本指南将带你从零开始，轻松部署并使用 XHBlogs。
-
----
-## 语言
-
-[![English](https://img.shields.io/badge/Language-English-blue.svg)](README_en.md)
-[![中文](https://img.shields.io/badge/语言-中文-red.svg)](README.md)
-
-## 写在前面
-
-### 更新摘要 (版本0.3.1~0.3.2)
-
-#### 1. 新增个人关于动态
-
-> 关于动态类贡献度及日志显示
-
-#### 2. 修复部分富文本编辑器bug
-
-> 修补目前存在的编辑器bug，如超链接无法显示，引用无法显示等
-
-#### 3. 新增灵境与等级系统
-
-> 类创意工坊功能，等级系统可在 设置->个人名片设置 中关闭
-
-#### 4. 网易云音乐显示bug，已修复
-
-> 已更换API，修复网易云音乐显示bug。更新即可
-
-## 一、快速开始部署
-
-### 1. 环境配置
-
-在开始之前，请确保你的电脑已安装以下运行环境，否则后续程序将无法正常启动：
-
-- **Node.js** (推荐版本 v18.x 或以上)
-- **包管理器** (npm)
-- **Git** (用于拉取代码与版本控制)
-- **Python** (建议版本 3.10 及以上，本系统在 3.10 环境下测试通过)
-- *可选：云存储/图床服务（后续会有详细配置说明）*
-
-### 2. 博客源码更新
-
-为了让你能轻松跟上项目的最新功能，请使用更新器对源码进行更新！
-使用更新器，你不需要再手动对比代码、不用担心拉取更新会引发冲突，更不用害怕辛辛苦苦写的文章和配置文件被覆盖！
-
-🛠️ 更新步骤：
-
-第一步：获取无损更新器 (仅首次需要)
-
-#### 1 下载项目根目录下的 update.bat 和 update.py 文件。
-
-#### 2  将下载好的 update.bat 和 update.py 移动到你本地博客项目的最外层根目录（也就是和 my-blog-manager、XHBlogs 文件夹放在一起的地方）。
-
-如下图所示
-
-![img.png](picture/333.png)
-
-#### 3 双击update.bat文件实现更新，如果闪退 请使用cmd运行update.py文件
-
-### 3. 快速开始
-
-#### ① 启动脚本
-
-当你完成上述环境的配置后，恭喜你，最基础的准备工作已经搞定了！
-首先，进入 `my-blog-manager` 文件夹（**⚠️ 注意：请绝对不要重命名此文件夹，否则会导致环境路径解析失败！**）
-
-双击运行文件夹中的启动脚本：
-`Start.bat`
-脚本会自动检测并安装所需的依赖包。等待环境配置完成后，程序会自动唤起精美的后台控制台。
-
-#### ② 部署你的博客到 Vercel
-
-> **提示**：本教程主要演示如何将项目部署至 Vercel，因为 Vercel 对 Next.js 框架有着最顶级的原生支持。
->
-> **前提**：请确保已安装 Git，并拥有一个 GitHub 账号。**接下来的步骤请务必按顺序操作！**
-
-> **请确保你已完成以下操作**：
->
-> **第一步：本地全局配置**
-
-设置用户名
-
-`git config --global user.name "你的Github用户名"`
-
-设置邮箱（必须是你在 GitHub 绑定的邮箱）
-
-`git config --global user.email "你绑定在Github的邮箱@example.com"`
-
-> **第二步：初始化本地仓库**
->
-> 进入你的项目文件夹，执行以下CMD命令行操作：(及前端部署文件夹，这里是XHBlogs)
-
-1. 初始化 Git 仓库，生成隐藏的 .git 文件夹
-   `git init`
-2. 将所有文件添加到暂存区（注意后面有个点）
-   `git add .`
-3. 提交到本地版本库，并添加备注
-   `git commit -m "first commit"`
-
-**1. 配置本地物理路径**
-打开控制台的“设置”页面。
-在拉取的源码中，包含 `XHBlogs-mananger` 和 `XHBlogs` 两个核心文件夹。请在控制台中指定 `XHBlogs` 的本地物理路径。
-
-![选择物理路径](picture/Pasted%20image%2020260427111646.png)
-
-例如：`F:\Test2\XHBlogs`
-
-![填入本地BLOG物理路径](picture/Pasted%20image%2020260427112311.png)
-
-> **关键步骤**：填入路径后，请务必点击 **[测试路径]** 进行连通性验证！！！验证通过后，再点击下方的 **[保存双轨配置]**。
-
-**2. 在 GitHub 创建私有仓库**
-登录 GitHub，新建一个用于托管博客源码的仓库（建议设置为 **Private 私有仓库** 以保护数据隐私）。
-
-![创建仓库](picture/Pasted%20image%2020260427112905.png)
-
-仓库名称可自定义。
-
-![仓库命名](picture/Pasted%20image%2020260427113030.png)
-
-获取该仓库的 SSH 地址，并将其复制粘贴到控制台的“B线”配置中：
-
-![复制SSH](picture/Pasted%20image%2020260427113120.png)
-
-源码分支填写为 `main`。确认无误后，再次点击 **[保存双轨配置]**。
-
-**3. 获取并配置部署密钥**
-点击控制台中的 **[获取B线专属密钥]** 按钮：
-
-![专属密钥](picture/98b965b5-6193-4690-a478-fe1a9abd594e.png)
-
-进入你的 GitHub 仓库页面，导航至 `Settings` -> `Deploy keys` 界面：
-
-![Deploy Keys](picture/Pasted%20image%2020260427113705.png)
-
-将刚才复制的密钥填入 `Key` 框中，`Title` 可随意命名（例如：`XHBlogs-Deploy-Key`）。
-
-> **🚨 严重警告**：下方的 **Allow write access** 选项必须勾选！！！
-> 设置完毕后，点击 **Add key** 保存。
-
-**4. 初始化并推送源码**
-返回本地控制台，点击 **[智能初始化双轨环境]**，静待程序执行完毕。
-完成后，点击 **[仅同步源码]** 按钮：
-
-![仅同步源码](picture/Pasted%20image%2020260427121539.png)
-
-程序将开始向 GitHub 推送代码。**在此期间，请千万不要切换页面或关闭窗口**：
-
-![同步进度](picture/Pasted%20image%2020260427121702.png)
-
-进度条完成后，说明前端静态页面源码已成功托管至 GitHub。
-
-> **此处可能出现无法推送bug**：
->
-> **请尝试**
->
-> 将SSH仓库地址改成如下图所示再进行初始化及同步源码
->
-> ![img.png](picture/img.png)
-
-**5. 部署至 Vercel 平台**
-访问 Vercel 官网，注册账号并绑定你的 GitHub 授权！
-
-![绑定账号](picture/Pasted%20image%2020260427121844.png)
-
-点击 `Add New...` 添加一个新的 Project，在 Import 列表中选择你刚刚推送到 GitHub 的仓库：
-
-![导入项目](picture/Pasted%20image%2020260427121939.png)
-
-例如我选择的是 `XHBlogS2`：
-
-![选择项目](picture/Pasted%20image%2020260427122034.png)
-
-在 Framework Preset（框架预设）中选择 **Next.js**，然后点击 **Deploy** 按钮开始部署：
-
-![点击Deploy](picture/Pasted%20image%2020260427122141.png)
-
-静候 Vercel 服务器构建你的博客~~
-
-![部署中](picture/Pasted%20image%2020260427122245.png)
-
-撒花！部署成功后，点击预览图即可直接访问你的专属网站！
-
-![部署成功](picture/Pasted%20image%2020260427122338.png)
-
-在项目仪表盘（Dashboard）中，你可以随时查看部署状态与详细日志：
-
-![查看详情](picture/Pasted%20image%2020260427122453.png)
-
-Vercel 默认会为你分配一个免费的二级域名：
-
-![分配域名](picture/Pasted%20image%2020260427122553.png)
+- 博客前台：<https://www.zibaicai.cn>
+- 管理后台：<https://admin.zibaicai.cn>
 
 ---
 
-### 问题 1：我要怎么样绑定自己的专属域名？
-
-**答：** 这里以“阿里云”购买的域名为例（其他服务商如腾讯云、Cloudflare 等操作逻辑基本一致）。
-
-首先登录阿里云控制台，进入【域名管理】页面：
-
-![域名管理](picture/Pasted%20image%2020260427123636.png)
-
-点击对应域名右侧的【解析】按钮：
-
-![点击解析](picture/Pasted%20image%2020260427123737.png)
-
-接着回到 Vercel，进入你的项目仪表盘，点击 **Settings**（或者直接点击域名旁的加号）：
-
-![点击加号](picture/Pasted%20image%2020260427123156.png)
-
-![进入设置](picture/Pasted%20image%2020260427123838.png)
-
-在 Domains 选项卡中，输入你购买的域名（例如我的是 `xinghuisama.top`），点击 **Add** 保存：
-
-![输入域名](picture/afb9fe5f-bf1e-4a8a-ae6b-379938f0924d.png)
-
-添加后，Vercel 会提供 `A` 记录和 `CNAME` 记录的配置参数。请将这些参数完整添加到阿里云的 DNS 解析设置中：
-
-![添加记录](picture/Pasted%20image%2020260427124533.png)
-
-> **注意**：添加记录时，请务必仔细核去记录类型和记录值（Value）！
-
-配置完成后等待几分钟（DNS 传播需要时间），在 Vercel 页面点击 **Refresh** 刷新状态！！
-
-![Refresh](picture/Pasted%20image%2020260427124625.png)
-
-当状态显示为正常后，你就可以通过自己的专属域名访问博客了！（例如：`www.xinghuisama.top`）。
-
----
-
-## 二、更新设置及上传文件
-
-为了保护数据安全，本控制台采用了**“操作暂存区”**机制。**请特别注意！！** 许多设置在修改后，必须主动执行“更新到本地”才能真正保存。需要执行此操作时，界面上方通常会有高亮提示。
-
-**操作示例：修改个人简介**
-
-![修改简介](picture/Pasted%20image%2020260427125314.png)
-
-修改内容后，点击 **[暂存到操作队列]**：
-
-![暂存队列](picture/Pasted%20image%2020260427125430.png)
-
-此时上方工具箱会提示待办操作。你可以随时撤销（清空全部），或者点击 **[更新本地]**。
-
-> ⚠️ 注意：点击“更新本地”后，数据仅仅保存在了你的本地控制台环境中。
-
-如果你希望让这些修改在前端博客页面生效，你必须继续点击 **[同步 Blog]**（前提是前端博客的物理路径已正确配置）：
-
-![同步Blog](picture/Pasted%20image%2020260427125800.png)
-
-博客文章、说说（碎碎念）、杂谈等所有内容的发布与修改，均遵循此流程。
-
-> **💡 黄金法则**：暂存队列 -> 更新本地 -> 同步Blog
-
----
-
-## 三、如何推送你的修改到线上网页？
-
-当你在本地完成了满意的创作或设置调整，想要将其发布到公网让所有人看到时：
-
-请牢记，在执行了任何实质性修改并点击 **[同步Blog]** 后，请打开控制台的同步部署页面：
-
-![打开同步](picture/Pasted%20image%2020260427130216.png)
-
-确认“B线”地址正确无误，点击 **[仅同步源码]**。
-等待 GitHub Actions 或 Vercel 自动捕获更新。稍作喝杯茶的功夫，你就能在线上页面看到最新鲜的内容了！
-
----
-
-## 四、图床配置
-
-为了优化写作体验，控制台深度整合了图床上传功能。本指南推荐使用“去不图床”（[https://7bu.top](https://7bu.top)）。
-如果你习惯使用纯外链，工具台也完美支持直接插入图片 URL。如果想接入其他支持标准 API 的图床，也欢迎极客们自行尝试。
-
-**配置流程：**
-
-![图床配置](picture/Pasted%20image%2020260427124930.png)
-
-填入对应的 API Token 等信息后，你可以点击 **[发送探针测试Token]**，实时检验图床接口是否畅通。
-
----
-
-## 五、AI 猫猫助理设置
-
-博客系统内置了一只聪明的 AI 猫猫助理（默认接入 Gemini 模型）。极客玩家也可以通过修改源码接入其他大语言模型。
-
-首先，你需要申请一个 Gemini 的 API Key（申请教程网络资源丰富，在此不赘述）。拿到 API Key 后，在控制台进行如下配置：
-
-![猫猫设置](picture/Pasted%20image%2020260427134211.png)
-
-在本地设定好猫猫的专属系统提示词（性格）后，我们需要让线上环境也拥有调用 AI 的能力。请登录 Vercel：
-
-![Vercel环境](picture/Pasted%20image%2020260427134538.png)
-
-在项目设置中找到 `Environment Variables`（环境变量）：
-
-![搜索变量](picture/Pasted%20image%2020260427134633.png)
-
-进入你的博客工程详情：
-
-![项目工程](picture/Pasted%20image%2020260427134703.png)
-
-确保作用域（环境）包含线上环境，点击 **Add Environment Variables**：
-
-![添加变量](picture/Pasted%20image%2020260427135004.png)
-
-安全地注入你的密钥：
-
-- **Key** 输入：`GEMINI_API_KEY`
-- **Value** 输入：你的真实 API 密钥
-
-![输入API](picture/Pasted%20image%2020260427135044.png)
-
-点击保存。下一次重新部署时，猫猫助理就会在线上苏醒了。
-
----
-
-## 六、评论系统配置
-
-本博客的评论系统基于 GitHub Issues（Gitalk 等类似方案）。你需要在 GitHub 创建一个 **Public（公开）** 仓库来专门存储网友的留言。
-
-在控制台评论设置中，填入你的 GitHub 用户名以及这个公开仓库的名称：
-
-![评论设置](picture/a3b44842-696b-4764-9cdf-882cd8792729.png)
-
-**接下来，配置 OAuth 授权以允许访客登录留言：**
-
-1. 登录 GitHub，点击右上角个人头像，进入 **Settings**（设置）。
-2. 滑动到左侧菜单栏最底部，点击 **Developer settings**。
-3. 在左侧选择 **OAuth Apps**，点击右上角的 **New OAuth App**。
-
-**关键应用信息填写指南：**
-
-
-| 字段名称                       | 填写建议                                                                           |
-| ------------------------------ | ---------------------------------------------------------------------------------- |
-| **Application name**           | 自定义名称，例如：`My-Blog-Comments`                                               |
-| **Homepage URL**               | 你的博客**首页完整地址** (例如 `https://www.xinghuisama.top`)                      |
-| **Application description**    | 可选填                                                                             |
-| **Authorization callback URL** | **核心参数**：必须填写你的博客域名。如果经常本地调试，可填 `http://localhost:3000` |
-
-**提取核心密钥：**
-
-1. 提交注册（Register application）。
-2. 在跳转页面即可看到 **Client ID**，这是所需的第一项数据。
-3. 点击下方的 **Generate a new client secret** 生成密钥。
-4. **🚨 立刻将这串密钥复制并妥善保存！** 出于安全机制，离开此页面后该密钥将永远隐藏。
-
-将这组 `Client ID` 和 `Client Secret` 准确填入控制台的对应栏目中，保存即可激活评论功能。
-
----
-
-## 七、网易云音乐挂件设置
-
-![歌单设置](picture/Pasted%20image%2020260427141049.png)
-
-想给博客配上 BGM 吗？
-通过电脑浏览器打开 **网易云音乐网页版**。搜索并进入你喜欢的歌曲详情页，观察浏览器地址栏，URL 中的数字即为歌曲的专属 ID：
-
-![网易云ID](picture/Pasted%20image%2020260427141235.png)
-
-将这串 ID 复制并粘贴到控制台的搜索框中，即可一键将该歌曲收录进你的博客歌单库！
-
-![添加歌曲](picture/Pasted%20image%2020260427141356.png)
-
----
-
-## 写在最后
-
-XHBLogs 还有诸多隐藏的细节功能，期待极客朋友们在实际使用中慢慢探索。本项目旨在提供一套开箱即用的前端静态展示与后台管理方案。如果你是资深开发者，觉得控制台操作仍有优化空间，完全可以基于 Next.js 源码进行二次开发，甚至手搓 Markdown 进行部署！
-
-**如果你觉得这个项目对你有帮助，请务必在 GitHub 上为我点亮一颗 ⭐ Star！每一颗星都是博主持续维护更新的最大动力。谢谢大家！**
+## 架构
+
+```
+浏览器
+  │
+  ▼
+Nginx (80/443, zibaicai.cn)
+  ├── www.zibaicai.cn   → baicai-public   (Next.js, 127.0.0.1:3001)
+  ├── admin.zibaicai.cn → /var/www/admin  (Vite 静态 SPA)
+  └── /api/*            → baicai-backend  (Spring Boot, 127.0.0.1:8080)
+                              │
+                              ▼
+                          MySQL (blogs 库)
+```
+
+| 模块 | 目录 | 技术 | 说明 |
+|------|------|------|------|
+| C 端博客 | `apps/web` | Next.js（standalone 输出） | 只读展示：文章 / 说说 / 相册 / 时间线 / 友链 |
+| 管理后台 | `apps/admin` | Vite + React + React Router | 登录、写作、站点设置，构建产物为纯静态文件 |
+| 后端服务 | `my-blog-backend` | Spring Boot (Java 17) + MySQL | REST API，JWT 鉴权，端口 8080 |
+
+## 目录结构
+
+```
+BaicaiBlogs-main/
+├── apps/
+│   ├── web/               # C 端博客前端（Next.js）
+│   └── admin/             # 管理后台（Vite + React）
+├── my-blog-backend/       # Spring Boot 后端
+│   ├── sql/init.sql       # 数据库初始化脚本
+│   └── target/*.jar       # Maven 打包产物
+├── deploy/                # 生产环境配置（Nginx / systemd）与切换手册
+├── deploy.config.json     # ★ 唯一环境配置：服务器 / 目录 / 服务名 / 域名 / 端口
+├── deploy.mjs             # ★ 一键部署脚本
+└── start.mjs              # ★ 本地开发一键启动
+```
+
+## 环境要求
+
+- Node.js 18+（本机与部署服务器都需要）
+- JDK 17+、Maven（后端开发；本机没装 Maven 时可在 IDEA 里打包）
+- MySQL 8+
+- Git、SSH（部署机到服务器需配置 SSH 免密登录）
+
+## 本地开发
+
+```bash
+node start.mjs
+```
+
+脚本会自动完成：
+
+1. 环境自检（node / npm / java / MySQL 3306）
+2. 启动后端（优先 `mvn spring-boot:run`，没有 Maven 则用 `target` 里的现成 jar）
+3. 启动 C 端 `apps/web` → <http://localhost:3001>（新窗口）
+4. 启动管理端 `apps/admin` → <http://localhost:5173>（新窗口）
+
+某个端口已有服务在跑时自动跳过，首次运行会自动 `npm install`。
+
+手动启动（等效方式）：
+
+```bash
+cd my-blog-backend && mvn spring-boot:run   # 或 IDEA 直接跑 MyBlogApplication
+cd apps/web   && npm run dev                # 3001
+cd apps/admin && npm run dev                # 5173
+```
+
+首次使用需初始化数据库：创建 `blogs` 库并导入 `my-blog-backend/sql/init.sql`。初始化 SQL 保留了管理员引导账号，但默认凭据不在本文档公开；部署后请立即修改管理员密码，并另行创建唯一的超级管理员账号用于敏感配置。
+
+## 一键部署
+
+所有部署命令在项目根目录执行，目标服务器信息集中在 [deploy.config.json](deploy.config.json)。
+
+```bash
+node deploy.mjs setup            # 首次一次性：服务器克隆仓库 + 环境自检
+node deploy.mjs status           # 查看线上发布状态（只读）
+node deploy.mjs web              # 发布 C 端
+node deploy.mjs admin            # 发布管理端
+node deploy.mjs backend          # 发布后端 jar
+node deploy.mjs all              # 全量发布（web → admin → backend）
+node deploy.mjs rollback web     # 回滚 C 端到上一个 release（--to 指定版本）
+node deploy.mjs rollback admin   # 回滚管理端到最近一次备份
+```
+
+### 发布流程说明
+
+- **web / admin**：本地推送 → 服务器 `git pull` → 服务器上 `npm ci && npm run build` → 生成时间戳 release 并切换软链（web）或原子替换静态目录（admin）→ 重启服务 → 内外网探活
+- **backend**：上传 `my-blog-backend/target/*.jar`（没有 Maven 时先在 IDEA 打包）→ 旧 jar 备份到 `/root/backup/` → 重启服务 → API 探活
+- 本地有未提交改动时会拒绝发布（防止线上和仓库不一致），可用 `--allow-dirty` 强行跳过
+
+### 回滚
+
+- C 端采用 **releases 目录 + `current` 软链**方案，历史版本全部保留，回滚只切软链、秒级生效
+- 管理端每次发布前自动备份到 `/var/www/admin.bak.<时间戳>`
+- 后端 jar 备份在服务器 `/root/backup/`
+
+## 生产环境配置
+
+服务器与目录等事实集中定义在 [deploy.config.json](deploy.config.json)，换服务器 / 改目录只动这一个文件：
+
+| 配置项 | 当前值 |
+|--------|--------|
+| 服务器 | `root@8.153.164.215`（SSH 免密） |
+| 服务器仓库 | `/opt/BaicaiBlogs-main` |
+| C 端发布目录 | `/opt/baicai-public/releases/<时间戳>` + `current` 软链 |
+| 管理端静态目录 | `/var/www/admin` |
+| 后端 jar | `/opt/my-blog-backend-1.0.0.jar` |
+| systemd 服务 | `baicai-public` / `baicai-backend` |
+| Nginx 配置参考 | `deploy/nginx/`，systemd 参考见 `deploy/systemd/` |
+
+切换与回滚的完整手工流程存档在 [deploy/README.md](deploy/README.md)。
+
+### 常用运维命令（服务器上）
+
+```bash
+systemctl status baicai-public     # C 端进程
+systemctl status baicai-backend    # 后端进程
+journalctl -u baicai-backend -f    # 后端实时日志
+tail -f /var/log/nginx/*.log       # Nginx 日志
+```
+
+## 默认静态资源
+
+以下默认资源随仓库自带，均位于 `apps/web/public/`，通过 `https://www.zibaicai.cn/` 访问：
+
+| 文件 | 用途 |
+|------|------|
+| `favicon.ico` | 网站 ico（浏览器标签图标） |
+| `avatar.jpg` | 默认用户头像 / 友链申请文案中的头像 |
+| `bg-1.webp` `bg-2.webp` `bg-3.webp` `bg-5.webp` | 全站背景图（随机轮换） |
+| `bg-2.webp` | 音乐播放器默认歌曲封面 |
+| `bg-3.webp` | 文章默认封面 |
+| `bg-4.webp` | 首页照片墙封面 |
+
+想换成自己的图，两种方式任选：
+
+1. **推荐**：登录管理后台 `admin.zibaicai.cn` → 设置页，修改对应字段（可填图床外链），保存即全站生效
+2. **改代码默认值**：替换 `apps/web/public/` 下的同名文件，或修改以下文件中的默认 URL
+   - `apps/web/lib/site-config.ts`（DEFAULT_SITE_INFO / DEFAULT_BACKGROUND / DEFAULT_MISC）
+   - `apps/web/components/MusicProvider.tsx`（音乐默认封面）
+   - `apps/admin/src/hooks/useSiteConfig.ts`（DEFAULT_SITE_INFO 等三组默认值）
+
+## 更新日志
+
+见 [UpdateLog.md](UpdateLog.md)。
+
+## 致谢
+
+本项目早期基于 [XingHuiSama 的 XHBlogs](https://github.com/heiehiehi) 博客模板二次开发，此后已独立演化（前后端拆分、Java 后端、自托管部署体系）。感谢原作者的开源分享。
 
 ## 许可证
 
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
 
-> 本项目采用 [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) 许可协议。允许免费学习、分享和二次修改后发布（二次开源发布需提及原作者），但**严禁用于任何商业用途**。
+本项目沿用 [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) 协议：可自由学习、分享与二次修改（发布需注明原作者），**严禁商用**。

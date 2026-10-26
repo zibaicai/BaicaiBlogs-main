@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>主题样板 02 · 樱花主题</title>
+<style>
+  :root{
+    --text:#f6edf2;
+    --muted:#d3c2cc;
+    --dim:#a996a3;
+    --accent:#ffb7cd;
+    --glass-tint:rgba(28,16,26,.46);
+    --glass-tint2:rgba(40,24,36,.26);
+    --glass-edge:rgba(255,235,245,.30);
+    --glass-edge2:rgba(255,255,255,.10);
+    --glass-shade:rgba(0,0,0,.24);
+    --glass-blur:14px;
+  }
+  body[data-p="day"]{
+    --text:#3d2a33;
+    --muted:#7d6470;
+    --dim:#a08d98;
+    --accent:#d4547a;
+    --glass-tint:rgba(255,255,255,.52);
+    --glass-tint2:rgba(255,255,255,.30);
+    --glass-edge:rgba(255,255,255,.85);
+    --glass-edge2:rgba(255,255,255,.55);
+    --glass-shade:rgba(120,70,90,.10);
+  }
+  body[data-p="white"]{
+    --text:#eef4ff;
+    --muted:#a9bad4;
+    --dim:#7c8ba3;
+    --accent:#b9d8ff;
+    --glass-tint:rgba(200,225,255,.09);
+    --glass-tint2:rgba(255,255,255,.02);
+    --glass-edge:rgba(235,245,255,.26);
+    --glass-edge2:rgba(255,255,255,.09);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;background:#0b0610;color:var(--text);
+    font-family:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+    transition:background .6s ease,color .6s ease;
+  }
+  body[data-p="day"]{background:#fdf7f4}
+
+  #sakura{
+    position:fixed;inset:0;width:100%;height:100%;display:block;
+    z-index:2;pointer-events:none;
+  }
+  body.behind #sakura{z-index:0}
+  /* 顶部一层很淡的暗角：让导航和标题在强光晕上依然可读 */
+  body::before{
+    content:"";position:fixed;left:0;right:0;top:0;height:190px;z-index:2;
+    pointer-events:none;
+    background:linear-gradient(180deg,rgba(34,16,28,.55),rgba(34,16,28,0));
+    transition:opacity .5s ease;
+  }
+  body[data-p="day"]::before{opacity:.35}
+
+  .nav{position:relative;z-index:3}
+  .nav-inner{max-width:900px;margin:0 auto;padding:18px 22px;display:flex;align-items:center;justify-content:space-between}
+  .brand{font-weight:700;font-size:15px;letter-spacing:.5px}
+  .brand span{color:var(--accent);font-weight:400}
+  .links{display:flex;gap:22px;font-size:13.5px}
+  .links a{color:var(--muted);text-decoration:none}
+  .links a:hover{color:var(--text)}
+
+  .wrap{position:relative;z-index:3;max-width:900px;margin:0 auto;padding:40px 22px 120px}
+  .hero{padding:56px 0 30px}
+  .kicker{font-size:11px;letter-spacing:.22em;color:var(--dim);margin-bottom:14px}
+  .hero h1{margin:0 0 14px;font-size:clamp(28px,4.6vw,44px);line-height:1.15;font-weight:650;letter-spacing:-.02em}
+  body[data-p="night"] .hero h1{text-shadow:0 2px 40px rgba(255,150,190,.22)}
+  .hero p{margin:0;color:var(--muted);font-size:15px;line-height:1.75;max-width:46ch;text-shadow:0 1px 14px rgba(30,8,22,.65)}
+  .brand,.links a{text-shadow:0 1px 10px rgba(30,8,22,.5)}
+
+  .list{display:flex;flex-direction:column;gap:18px;margin-top:26px}
+  .card{
+    padding:20px 22px 22px;border-radius:18px;
+    background:linear-gradient(180deg,var(--glass-tint),var(--glass-tint2));
+    -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(140%);
+    backdrop-filter:blur(var(--glass-blur)) saturate(140%);
+    box-shadow:
+      inset 0 1px 0 var(--glass-edge),
+      inset 0 -1px 0 var(--glass-shade),
+      inset 0 0 0 1px var(--glass-edge2),
+      0 1px 2px rgba(0,0,0,.16),
+      0 18px 44px -26px rgba(0,0,0,.8);
+    transition:transform .25s cubic-bezier(.2,.8,.2,1),background .25s;
+  }
+  .card:hover{transform:translateY(-2px)}
+  .card-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .tag{font-size:11px;padding:2px 9px;border-radius:999px;background:rgba(255,170,200,.14);color:var(--accent);box-shadow:inset 0 0 0 1px rgba(255,170,200,.18)}
+  body[data-p="day"] .tag{background:rgba(212,84,122,.10);box-shadow:inset 0 0 0 1px rgba(212,84,122,.16)}
+  .card time{font-size:12px;color:var(--dim);margin-left:auto;font-variant-numeric:tabular-nums}
+  .card h2{margin:0 0 8px;font-size:18px;line-height:1.45;font-weight:600}
+  .card h2 a{color:var(--text);text-decoration:none}
+  .card h2 a:hover{color:var(--accent)}
+  .card p{margin:0;color:var(--muted);font-size:14px;line-height:1.8}
+
+  .panel{
+    position:fixed;right:16px;bottom:16px;z-index:9;width:250px;
+    padding:12px 14px 14px;border-radius:14px;
+    background:rgba(14,8,18,.78);
+    -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 0 0 1px rgba(255,255,255,.07),0 20px 50px -20px rgba(0,0,0,.9);
+    font-size:12px;color:#c3aebc;
+    transition:transform .3s cubic-bezier(.2,.8,.2,1);
+  }
+  .panel.folded{transform:translateY(calc(100% - 42px))}
+  .panel-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;color:#f3e9f0;font-weight:600;font-size:12.5px;letter-spacing:.04em}
+  .panel-hd button{background:rgba(255,255,255,.08);border:0;color:#f3e9f0;width:22px;height:22px;border-radius:6px;cursor:pointer;font-size:13px;line-height:1}
+  .row{display:flex;align-items:center;gap:8px;padding:5px 0;cursor:pointer;user-select:none}
+  .row input[type=checkbox]{
+    appearance:none;width:14px;height:14px;border-radius:4px;margin:0;flex:none;
+    background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);
+    cursor:pointer;position:relative;
+  }
+  .row input[type=checkbox]:checked{background:var(--accent);box-shadow:none}
+  .row input[type=checkbox]:checked::after{content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid #180a12;border-width:0 2px 2px 0;transform:rotate(42deg)}
+  .row input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.14);outline:none;margin:0}
+  .row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;border-radius:50%;background:var(--accent);cursor:pointer;box-shadow:0 0 0 3px rgba(255,170,200,.18)}
+  .row span.lab{width:56px;flex:none;color:#8d7a88}
+  .seg{display:flex;gap:6px;margin:2px 0 8px}
+  .seg button{
+    flex:1;padding:5px 0;border:0;border-radius:7px;cursor:pointer;font-size:11.5px;
+    background:rgba(255,255,255,.06);color:#c3aebc;transition:.2s;
+  }
+  .seg button.on{background:var(--accent);color:#180a12}
+  .fps{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.07);color:#8d7a88;font-variant-numeric:tabular-nums;font-size:11.5px}
+  @media (max-width:640px){
+    .panel{width:calc(100% - 24px);right:12px;bottom:12px}
+    .links{display:none}.wrap{padding-bottom:210px}
+  }
+</style>
+</head>
+<body data-p="night">
+
+<canvas id="sakura"></canvas>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="brand">白菜 <span>Blogs</span></div>
+    <nav class="links"><a href="#">文章</a><a href="#">项目</a><a href="#">时间线</a><a href="#">关于</a></nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="kicker">THEME 02 / SAKURA</div>
+    <h1>春夜，花落</h1>
+    <p>点击任意位置，会有一簇花瓣从指尖散开。注意切换"花瓣层"——它压在卡片上，还是藏在卡片后面。</p>
+  </section>
+
+  <section class="list">
+    <article class="card">
+      <div class="card-top"><span class="tag">着色器</span><time>2026-10-25</time></div>
+      <h2><a href="#">用一个点精灵画一朵樱花</a></h2>
+      <p>没有贴图：每片花瓣都是一个椭圆 SDF，在片元着色器里被旋转矩阵掰成五瓣，再用两个椭圆的差做出缺口。</p>
+    </article>
+    <article class="card">
+      <div class="card-top"><span class="tag">工程</span><time>2026-10-21</time></div>
+      <h2><a href="#">把一段炫技 demo 改造成主题，要动哪些地方</a></h2>
+      <p>尺寸、时间、生命周期、参数化。四件事补完，它才从"一段代码"变成"一件能复用、能关掉、能换色的东西"。</p>
+    </article>
+    <article class="card">
+      <div class="card-top"><span class="tag">设计</span><time>2026-10-14</time></div>
+      <h2><a href="#">前景动效和背景材质的区别</a></h2>
+      <p>落叶和花瓣飘在镜头前，它不需要内容配合；水面是背景材质，它需要内容让路。这是两套完全不同的接入成本。</p>
+    </article>
+  </section>
+
+  <p style="margin-top:30px;font-size:13px;line-height:1.9;color:var(--dim);max-width:60ch">
+    花瓣层在内容之上时（默认），文字会被少量花瓣掠过；切到"卡片后面"可以看到层层叠叠的遮挡关系。
+  </p>
+</main>
+
+<aside class="panel" id="panel">
+  <div class="panel-hd"><span>效果控制</span><button id="fold">–</button></div>
+  <div class="seg">
+    <button data-p="night" class="on">夜樱</button>
+    <button data-p="day">日樱</button>
+    <button data-p="white">白樱</button>
+  </div>
+  <label class="row"><input type="checkbox" id="cBehind"><span>花瓣藏在卡片后</span></label>
+  <label class="row"><input type="checkbox" id="cBurst" checked><span>点击迸发花瓣</span></label>
+  <label class="row"><input type="checkbox" id="cBloom" checked><span>泛光 (bloom)</span></label>
+  <label class="row"><span class="lab">密度</span><input type="range" id="rCount" min="300" max="3000" step="50" value="2000"></label>
+  <label class="row"><span class="lab">泛光</span><input type="range" id="rBloom" min="0" max="2" step="0.05" value="1.35"></label>
+  <label class="row"><span class="lab">模糊</span><input type="range" id="rBlur" min="0" max="30" step="1" value="14"></label>
+  <div class="fps"><span id="fps">--</span> fps · <span id="pc">0</span> petals</div>
+</aside>
+
+<!-- ============ shaders ============ -->
+<script id="petal_vs" type="x-shader/x-vertex">
+attribute vec3 aPos;
+attribute vec3 aEuler;
+attribute vec2 aMisc;
+
+uniform mat4  uProj;
+uniform mat4  uView;
+uniform vec3  uRes;
+uniform vec3  uOffset;
+uniform vec3  uDof;
+uniform vec3  uFade;
+uniform float uMaxPoint;
+
+varying float vAlpha;
+varying float vRstop;
+varying vec3  vNX;
+varying vec3  vNY;
+varying vec3  vNZ;
+varying float vDiff;
+varying float vSpec;
+varying float vFog;
+
+void main(){
+  vec4 vp = uView * vec4(aPos + uOffset, 1.0);
+  gl_Position = uProj * vp;
+
+  float ps = aMisc.x * uProj[1][1] / (-vp.z) * uRes.y * 0.5;
+  gl_PointSize = clamp(ps, 1.0, uMaxPoint);
+
+  float pdist = length(vp.xyz);
+  vAlpha = smoothstep(0.0, 1.0, (pdist - 0.1) / uFade.z) * aMisc.y;
+
+  vec3 es = sin(aEuler);
+  vec3 ec = cos(aEuler);
+  mat3 rx = mat3(1.0,0.0,0.0, 0.0,ec.x,es.x, 0.0,-es.x,ec.x);
+  mat3 ry = mat3(ec.y,0.0,-es.y, 0.0,1.0,0.0, es.y,0.0,ec.y);
+  mat3 rz = mat3(ec.z,es.z,0.0, -es.z,ec.z,0.0, 0.0,0.0,1.0);
+  mat3 rot = rx * ry * rz;
+
+  vec3 nrm = rot[2];
+  mat3 tr = mat3(rot[0][0], rot[1][0], rot[2][0],
+                 rot[0][1], rot[1][1], rot[2][1],
+                 rot[0][2], rot[1][2], rot[2][2]);
+  vNX = tr[0]; vNY = tr[1]; vNZ = tr[2];
+
+  const vec3 lit = vec3(0.6917144638660746, 0.6917144638660746, -0.20751433915982237);
+  float dd = dot(lit, nrm);
+  if (dd < 0.0) { nrm = -nrm; dd = dot(lit, nrm); }
+  vDiff = 0.4 + dd;
+
+  vec3 eye = normalize(-vp.xyz);
+  vSpec = (dot(eye, nrm) > 0.0) ? pow(max(dot(normalize(eye + lit), nrm), 0.0), 20.0) : 0.0;
+
+  float rs = clamp((abs(pdist - uDof.x) - uDof.y) / uDof.z, 0.0, 1.0);
+  vRstop = pow(rs, 0.5);
+
+  vFog = min(1.0, exp((uFade.x - pdist) * 0.69315 / uFade.y));
+}
+</script>
+
+<script id="petal_fs" type="x-shader/x-fragment">
+precision highp float;
+
+varying float vAlpha;
+varying float vRstop;
+varying vec3  vNX;
+varying vec3  vNY;
+varying vec3  vNZ;
+varying float vDiff;
+varying float vSpec;
+varying float vFog;
+
+uniform vec3 uPetalA;
+uniform vec3 uPetalB;
+uniform vec3 uFogColor;
+
+float ellipse(vec2 p, vec2 o, vec2 r){
+  vec2 lp = (p - o) / r;
+  return length(lp) - 1.0;
+}
+
+void main(){
+  vec3 p = vec3(gl_PointCoord - vec2(0.5, 0.5), 0.0) * 2.0;
+
+  float nd = vNZ.z;
+  if (abs(nd) < 0.0001) discard;
+
+  float np = dot(vNZ, p);
+  vec3 tp = p + vec3(0.0, 0.0, -1.0) * np / nd;
+  vec2 coord = vec2(dot(vNX, tp), dot(vNY, tp));
+
+  const float sn = 0.258819045102521;
+  const float cs = 0.965925826289068;
+  mat2 m = mat2(cs, -sn, sn, cs);
+  vec2 fp = vec2(abs(coord.x), coord.y) * m;
+
+  float r = (fp.x < 0.0)
+    ? ellipse(fp, vec2(0.0325, 0.012), vec2(0.18, 0.48))
+    : ellipse(fp, vec2(0.0325, 0.012), vec2(0.29, 0.48));
+
+  if (r > vRstop) discard;
+
+  vec3 col = mix(uPetalA, uPetalB, clamp(r * 0.9 + 0.1, 0.0, 1.0));
+
+  float grady = mix(0.0, 1.0, pow(clamp(coord.y * 0.5 + 0.5, 0.0, 1.0), 0.35));
+  col *= vec3(1.0, grady, grady);
+  col *= mix(0.82, 1.0, pow(abs(coord.x), 0.3));
+
+  col = col * vDiff + vec3(vSpec);
+  col = mix(uFogColor, col, vFog);
+
+  float alpha = (vRstop > 0.001) ? (0.5 - r / (vRstop * 2.0)) : 1.0;
+  alpha = smoothstep(0.0, 1.0, alpha) * vAlpha;
+
+  // 景深裁剪的硬边做软化，避免出现"被刀切过"的花瓣
+  alpha *= 1.0 - smoothstep(0.86, 1.0, clamp(r / max(vRstop, 0.001), 0.0, 1.0));
+
+  // 花瓣轮廓的抗锯齿
+  alpha *= 1.0 - smoothstep(-0.06, 0.0, r);
+
+  gl_FragColor = vec4(col * 0.5, alpha);
+}
+</script>
+
+<script id="fx_vs" type="x-shader/x-vertex">
+attribute vec2 aPos;
+varying vec2 vUv;
+void main(){
+  vUv = aPos * 0.5 + 0.5;
+  gl_Position = vec4(aPos, 0.0, 1.0);
+}
+</script>
+
+<script id="bg_fs" type="x-shader/x-fragment">
+precision highp float;
+varying vec2 vUv;
+uniform vec3 uBgDark;
+uniform vec3 uBgGlow;
+void main(){
+  // 与原始 demo 完全一致：右上角一团高斯光晕，整体先压到一半，
+  // 交给合成阶段的 *2.0 还原——这是它那种"嫩"的亮度的来源
+  vec2 tv = vUv * vec2(0.8, 1.0) - vec2(0.95, 1.0);
+  float c = exp(-pow(length(tv) * 1.8, 2.0));
+  vec3 col = mix(uBgDark, uBgGlow, c);
+  gl_FragColor = vec4(col * 0.5, 1.0);
+}
+</script>
+
+<script id="bright_fs" type="x-shader/x-fragment">
+precision highp float;
+varying vec2 vUv;
+uniform sampler2D uTex;
+void main(){
+  vec4 col = texture2D(uTex, vUv);
+  gl_FragColor = vec4(max(col.rgb * 2.0 - vec3(0.5), 0.0), 1.0);
+}
+</script>
+
+<script id="blur_fs" type="x-shader/x-fragment">
+precision highp float;
+varying vec2 vUv;
+uniform sampler2D uTex;
+uniform vec2 uDir;
+void main(){
+  vec4 col = texture2D(uTex, vUv);
+  col += texture2D(uTex, vUv + uDir * 1.0);
+  col += texture2D(uTex, vUv - uDir * 1.0);
+  col += texture2D(uTex, vUv + uDir * 2.0);
+  col += texture2D(uTex, vUv - uDir * 2.0);
+  gl_FragColor = col / 5.0;
+}
+</script>
+
+<script id="comp_fs" type="x-shader/x-fragment">
+precision highp float;
+varying vec2 vUv;
+uniform sampler2D uScene;
+uniform sampler2D uBloom;
+uniform float uBloomK;
+
+void main(){
+  vec4 srccol = texture2D(uScene, vUv) * 2.0;
+  vec4 bloomcol = texture2D(uBloom, vUv);
+  vec4 col;
+  col = srccol + bloomcol * (vec4(1.0) + srccol) * uBloomK;
+  col *= smoothstep(1.0, 0.0, pow(length((vUv - vec2(0.5)) * 2.0), 1.2) * 0.5);
+  col = vec4(pow(col.rgb, vec3(0.45454545454545)), col.a);
+
+  float g = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
+  col.rgb += (g - 0.5) * 0.008;
+
+  gl_FragColor = vec4(col.rgb, 1.0);
+}
+</script>
+
+<script>
+(function () {
+  'use strict';
+
+  var canvas = document.getElementById('sakura');
+  var gl = canvas.getContext('webgl2', { antialias: false, alpha: true, premultipliedAlpha: true })
+        || canvas.getContext('webgl',  { antialias: false, alpha: true, premultipliedAlpha: true })
+        || canvas.getContext('experimental-webgl', { antialias: false, alpha: true, premultipliedAlpha: true });
+
+  if (!gl) {
+    document.body.insertAdjacentHTML('beforeend',
+      '<div style="position:fixed;inset:0;z-index:99;display:grid;place-items:center;background:#0b0610;color:#c3aebc;font-size:14px">当前浏览器不支持 WebGL，无法预览樱花效果</div>');
+    return;
+  }
+
+  // ---------------- 着色器工具 ----------------
+  function compile(type, src) {
+    var s = gl.createShader(type);
+    gl.shaderSource(s, src); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+      console.error(gl.getShaderInfoLog(s), src);
+      throw new Error('shader error');
+    }
+    return s;
+  }
+  function program(vs, fs) {
+    var p = gl.createProgram();
+    gl.attachShader(p, compile(gl.VERTEX_SHADER, vs));
+    gl.attachShader(p, compile(gl.FRAGMENT_SHADER, fs));
+    gl.linkProgram(p);
+    if (!gl.getProgramParameter(p, gl.LINK_STATUS)) {
+      console.error(gl.getProgramInfoLog(p));
+      throw new Error('link error');
+    }
+    return p;
+  }
+  function text(id) { return document.getElementById(id).textContent; }
+
+  var QUAD = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
+
+  function makeFx(fsId, uniforms) {
+    var p = program(text('fx_vs'), text(fsId));
+    var b = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, b);
+    gl.bufferData(gl.ARRAY_BUFFER, QUAD, gl.STATIC_DRAW);
+    var loc = gl.getAttribLocation(p, 'aPos');
+    var u = {};
+    uniforms.forEach(function (n) { u[n] = gl.getUniformLocation(p, n); });
+    return { p: p, b: b, loc: loc, u: u };
+  }
+
+  var petalProg = program(text('petal_vs'), text('petal_fs'));
+  var bgFx     = makeFx('bg_fs',     ['uBgDark', 'uBgGlow']);
+  var brightFx = makeFx('bright_fs', ['uTex']);
+  var blurFx   = makeFx('blur_fs',   ['uTex', 'uDir']);
+  var compFx   = makeFx('comp_fs',   ['uScene', 'uBloom', 'uBloomK']);
+
+  var PU = {};
+  ['uProj', 'uView', 'uRes', 'uOffset', 'uDof', 'uFade', 'uMaxPoint',
+   'uPetalA', 'uPetalB', 'uFogColor'].forEach(function (n) {
+    PU[n] = gl.getUniformLocation(petalProg, n);
+  });
+  var petalAttr = {
+    pos: gl.getAttribLocation(petalProg, 'aPos'),
+    euler: gl.getAttribLocation(petalProg, 'aEuler'),
+    misc: gl.getAttribLocation(petalProg, 'aMisc')
+  };
+
+  var maxPoint = Math.min(gl.getParameter(gl.ALIASED_POINT_SIZE_RANGE)[1] || 64, 200);
+
+  // ---------------- 粒子数据 ----------------
+  var MAXP = 3200;
+  var count = 2000;
+
+  var area = { x: 14, y: 14, z: 14 };
+  var camZ = area.z + 0.1;
+
+  var P = {
+    px: new Float32Array(MAXP), py: new Float32Array(MAXP), pz: new Float32Array(MAXP),
+    vx: new Float32Array(MAXP), vy: new Float32Array(MAXP), vz: new Float32Array(MAXP),
+    ex: new Float32Array(MAXP), ey: new Float32Array(MAXP), ez: new Float32Array(MAXP),
+    rx: new Float32Array(MAXP), ry: new Float32Array(MAXP), rz: new Float32Array(MAXP),
+    size: new Float32Array(MAXP),
+    phase: new Float32Array(MAXP),
+    swayF: new Float32Array(MAXP),
+    alpha: new Float32Array(MAXP)
+  };
+
+  var vbo = gl.createBuffer();
+  var vdata = new Float32Array(MAXP * 8);
+  var idx = new Int32Array(MAXP);
+
+  var TWO_PI = Math.PI * 2;
+  function sr() { return Math.random() * 2 - 1; }
+
+  function seedParticle(i, anywhere) {
+    // 每片花瓣有自己的风向和速度，不要整体像一堵墙一样一起平移
+    var dx = sr() * 0.35 + 0.75, dy = sr() * 0.25 - 1.0, dz = sr() * 0.35 + 0.45;
+    var len = Math.hypot(dx, dy, dz) || 1;
+    var sp = 1.7 + Math.random() * 1.4;
+    P.vx[i] = dx / len * sp; P.vy[i] = dy / len * sp; P.vz[i] = dz / len * sp;
+
+    // 三轴自由翻滚——这是"落叶感"的来源，不能锁成朝向镜头
+    P.rx[i] = sr() * 2.4;
+    P.ry[i] = sr() * 2.4;
+    P.rz[i] = sr() * 2.0;
+
+    P.px[i] = sr() * area.x;
+    P.py[i] = anywhere ? sr() * area.y : area.y * (0.8 + Math.random() * 0.3);
+    P.pz[i] = sr() * area.z;
+
+    P.ex[i] = Math.random() * TWO_PI;
+    P.ey[i] = Math.random() * TWO_PI;
+    P.ez[i] = Math.random() * TWO_PI;
+
+    P.size[i] = 0.26 + Math.random() * 0.24;   // 小一点、多一些
+    P.phase[i] = Math.random() * TWO_PI;
+    P.swayF[i] = 0.8 + Math.random() * 1.7;    // 每片摆动的频率不同，才不会同步
+    P.alpha[i] = 1;
+  }
+
+  for (var i = 0; i < MAXP; i++) seedParticle(i, true);
+
+  // ---------------- 渲染目标 ----------------
+  var scene = null, bloomA = null, bloomB = null;
+
+  function makeTarget(w, h) {
+    var tex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    var fb = gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    return { tex: tex, fb: fb, w: w, h: h };
+  }
+  function freeTarget(t) { if (t) { gl.deleteTexture(t.tex); gl.deleteFramebuffer(t.fb); } }
+
+  var W = 1, H = 1, HW = 1, HH = 1;
+
+  function resize() {
+    var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    W = Math.max(1, Math.round(window.innerWidth * dpr));
+    H = Math.max(1, Math.round(window.innerHeight * dpr));
+    if (canvas.width !== W || canvas.height !== H) { canvas.width = W; canvas.height = H; }
+    HW = Math.max(1, Math.round(W * 0.5));
+    HH = Math.max(1, Math.round(H * 0.5));
+
+    freeTarget(scene); freeTarget(bloomA); freeTarget(bloomB);
+    scene = makeTarget(W, H);
+    bloomA = makeTarget(HW, HH);
+    bloomB = makeTarget(HW, HH);
+
+    area.x = area.y * (W / H);
+    gl.viewport(0, 0, W, H);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  // ---------------- 相机 ----------------
+  var proj = new Float32Array(16);
+  var view = new Float32Array(16);
+
+  function perspective(out, fovy, aspect, near, far) {
+    var f = 1 / Math.tan(fovy / 2), nf = 1 / (near - far);
+    out[0] = f / aspect; out[1] = 0; out[2] = 0; out[3] = 0;
+    out[4] = 0; out[5] = f; out[6] = 0; out[7] = 0;
+    out[8] = 0; out[9] = 0; out[10] = (far + near) * nf; out[11] = -1;
+    out[12] = 0; out[13] = 0; out[14] = 2 * far * near * nf; out[15] = 0;
+  }
+
+  function updateCamera() {
+    var fovy = 2 * Math.atan2(area.y, camZ + area.z);
+    perspective(proj, fovy, W / H, 0.1, 200);
+    view.set([1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,-camZ,1]);
+  }
+  updateCamera();
+
+  // ---------------- 调色板 ----------------
+  var PALETTES = {
+    night: {
+      bgDark: [0.020, 0.000, 0.030], bgGlow: [1.44, 1.47, 1.50],
+      petalA: [1.00, 0.80, 0.75], petalB: [1.00, 0.90, 0.87],
+      fog: [0.08, 0.03, 0.06], bloomK: 1.00
+    },
+    day: {
+      bgDark: [0.86, 0.84, 0.84], bgGlow: [1.55, 1.48, 1.42],
+      petalA: [0.95, 0.55, 0.62], petalB: [1.00, 0.88, 0.90],
+      fog: [0.95, 0.90, 0.90], bloomK: 0.55
+    },
+    white: {
+      bgDark: [0.050, 0.060, 0.090], bgGlow: [1.00, 1.10, 1.35],
+      petalA: [0.88, 0.93, 1.00], petalB: [1.00, 1.00, 1.00],
+      fog: [0.10, 0.12, 0.18], bloomK: 1.00
+    }
+  };
+  var palette = 'night';
+  var bloomOn = true;
+  var bloomScale = 1.70;
+  var burst = true;
+
+  function applyPalette(name) {
+    palette = name;
+    document.body.setAttribute('data-p', name);
+    document.querySelectorAll('.seg button').forEach(function (b) {
+      b.classList.toggle('on', b.getAttribute('data-p') === name);
+    });
+    var p = PALETTES[name];
+    gl.useProgram(petalProg);
+    gl.uniform3fv(PU.uPetalA, p.petalA);
+    gl.uniform3fv(PU.uPetalB, p.petalB);
+    gl.uniform3fv(PU.uFogColor, p.fog);
+    gl.useProgram(compFx.p);
+    gl.uniform1f(compFx.u.uBloomK, bloomOn ? bloomScale : 0.0);
+  }
+
+  // ---------------- 爆花（点击） ----------------
+  var burstPtr = 0;
+  function burstAt(clientX, clientY) {
+    if (!burst) return;
+    var u = clientX / window.innerWidth;
+    var v = 1 - clientY / window.innerHeight;
+    var wx = (u - 0.5) * area.y * (W / H) * 1.0;
+    var wy = (v - 0.5) * area.y * 1.0;
+
+    var n = 18;
+    for (var k = 0; k < n; k++) {
+      var i = (burstPtr++) % MAXP;
+      P.px[i] = wx + sr() * 0.8;
+      P.py[i] = wy + sr() * 0.8;
+      P.pz[i] = sr() * 2.0;
+      var a = Math.random() * TWO_PI;
+      var sp = 3.0 + Math.random() * 4.5;
+      P.vx[i] = Math.cos(a) * sp;
+      P.vy[i] = Math.sin(a) * sp + 1.2;
+      P.vz[i] = sr() * 2.0;
+      P.rx[i] = sr() * 6; P.ry[i] = sr() * 6; P.rz[i] = sr() * 6;
+      P.size[i] = 0.8 + Math.random() * 0.5;
+      P.alpha[i] = 1;
+    }
+  }
+  window.addEventListener('pointerdown', function (e) {
+    if (e.target && e.target.closest && e.target.closest('.panel')) return;
+    burstAt(e.clientX, e.clientY);
+  }, { passive: true });
+
+  // ---------------- 更新 ----------------
+  function updateParticles(dt, t) {
+    var ax = area.x, ay = area.y, az = area.z;
+    for (var i = 0; i < count; i++) {
+      P.px[i] += P.vx[i] * dt;
+      P.py[i] += P.vy[i] * dt;
+      P.pz[i] += P.vz[i] * dt;
+
+      P.ex[i] += P.rx[i] * dt;
+      P.ey[i] += P.ry[i] * dt;
+      P.ez[i] += P.rz[i] * dt;
+      if (P.ex[i] > TWO_PI) P.ex[i] -= TWO_PI; else if (P.ex[i] < 0) P.ex[i] += TWO_PI;
+      if (P.ey[i] > TWO_PI) P.ey[i] -= TWO_PI; else if (P.ey[i] < 0) P.ey[i] += TWO_PI;
+      if (P.ez[i] > TWO_PI) P.ez[i] -= TWO_PI; else if (P.ez[i] < 0) P.ez[i] += TWO_PI;
+
+      if (P.px[i] > ax) P.px[i] -= ax * 2; else if (P.px[i] < -ax) P.px[i] += ax * 2;
+      if (P.py[i] < -ay) P.py[i] += ay * 2; else if (P.py[i] > ay) P.py[i] -= ay * 2;
+      if (P.pz[i] > az) P.pz[i] -= az * 2; else if (P.pz[i] < -az) P.pz[i] += az * 2;
+
+      idx[i] = i;
+    }
+    // 远 → 近（视图空间 z 越小越远）
+    var _pz = P.pz;
+    idx.subarray(0, count).sort(function (a, b) { return _pz[a] - _pz[b]; });
+
+    var o = 0;
+    for (var k = 0; k < count; k++) {
+      var j = idx[k];
+      // 下落时的横向飘摆：每片频率、相位都不同，像真的被风托着走
+      var ph = P.phase[j], fq = P.swayF[j];
+      var swayX = Math.sin(t * fq + ph) * 0.55;
+      var swayZ = Math.cos(t * fq * 0.73 + ph * 1.4) * 0.30;
+      vdata[o++] = P.px[j] + swayX;
+      vdata[o++] = P.py[j];
+      vdata[o++] = P.pz[j] + swayZ;
+      vdata[o++] = P.ex[j];
+      vdata[o++] = P.ey[j];
+      vdata[o++] = P.ez[j];
+      vdata[o++] = P.size[j];
+      vdata[o++] = P.alpha[j];
+    }
+  }
+
+  // ---------------- 渲染 ----------------
+  function bindTarget(t) {
+    gl.bindFramebuffer(gl.FRAMEBUFFER, t.fb);
+    gl.viewport(0, 0, t.w, t.h);
+  }
+  function drawFullscreen(fx) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, fx.b);
+    gl.vertexAttribPointer(fx.loc, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(fx.loc);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }
+
+  var offsets = [
+    [-1, -1], [-1, 1], [1, -1], [1, 1]
+  ];
+
+  function render(t) {
+    // 1. 背景 + 花瓣 → scene
+    bindTarget(scene);
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.disable(gl.DEPTH_TEST);
+
+    // 背景必须先铺进同一个 RT，泛光才会把光晕一起晕开
+    gl.disable(gl.BLEND);
+    gl.useProgram(bgFx.p);
+    gl.uniform3fv(bgFx.u.uBgDark, PALETTES[palette].bgDark);
+    gl.uniform3fv(bgFx.u.uBgGlow, PALETTES[palette].bgGlow);
+    drawFullscreen(bgFx);
+
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+    gl.useProgram(petalProg);
+    gl.uniformMatrix4fv(PU.uProj, false, proj);
+    gl.uniformMatrix4fv(PU.uView, false, view);
+    gl.uniform3f(PU.uRes, W, H, W / H);
+    gl.uniform3f(PU.uDof, 7.0, 2.8, 5.6);
+    gl.uniform3f(PU.uFade, 8.0, area.z, 0.1);
+    gl.uniform1f(PU.uMaxPoint, maxPoint);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+    gl.bufferData(gl.ARRAY_BUFFER, vdata.subarray(0, count * 8), gl.DYNAMIC_DRAW);
+
+    var stride = 8 * 4;
+    gl.enableVertexAttribArray(petalAttr.pos);
+    gl.vertexAttribPointer(petalAttr.pos, 3, gl.FLOAT, false, stride, 0);
+    gl.enableVertexAttribArray(petalAttr.euler);
+    gl.vertexAttribPointer(petalAttr.euler, 3, gl.FLOAT, false, stride, 12);
+    gl.enableVertexAttribArray(petalAttr.misc);
+    gl.vertexAttribPointer(petalAttr.misc, 2, gl.FLOAT, false, stride, 24);
+
+    // 主层
+    gl.uniform3f(PU.uOffset, 0, 0, 0);
+    gl.drawArrays(gl.POINTS, 0, count);
+
+    // 外围平铺层：远场那一圈靠它填满，否则屏幕边缘会明显发空
+    for (var ti = 0; ti < offsets.length; ti++) {
+      gl.uniform3f(PU.uOffset, offsets[ti][0] * area.x, offsets[ti][1] * area.y, -2 * area.z);
+      gl.drawArrays(gl.POINTS, 0, count);
+    }
+
+    gl.disable(gl.BLEND);
+
+    // 2. 亮部提取
+    gl.useProgram(brightFx.p);
+    bindTarget(bloomA);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, scene.tex);
+    gl.uniform1i(brightFx.u.uTex, 0);
+    drawFullscreen(brightFx);
+
+    // 3. 双向模糊 ×2 轮（与原始 demo 的两轮迭代一致）
+    if (bloomOn) {
+      gl.useProgram(blurFx.p);
+      gl.uniform1i(blurFx.u.uTex, 0);
+      for (var bi = 0; bi < 2; bi++) {
+        var bs = 1.5 + bi;
+        bindTarget(bloomB);
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, bloomA.tex);
+        gl.uniform2f(blurFx.u.uDir, bs / HW, 0);
+        drawFullscreen(blurFx);
+
+        bindTarget(bloomA);
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, bloomB.tex);
+        gl.uniform2f(blurFx.u.uDir, 0, bs / HH);
+        drawFullscreen(blurFx);
+      }
+    }
+
+    // 4. 合成到屏幕
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.viewport(0, 0, W, H);
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    gl.useProgram(compFx.p);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, scene.tex);
+    gl.uniform1i(compFx.u.uScene, 0);
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D, bloomA.tex);
+    gl.uniform1i(compFx.u.uBloom, 1);
+    gl.uniform1f(compFx.u.uBloomK, bloomOn ? bloomScale : 0.0);
+    drawFullscreen(compFx);
+
+    gl.activeTexture(gl.TEXTURE0);
+  }
+
+  // ---------------- 控制 ----------------
+  function $(id) { return document.getElementById(id); }
+
+  document.querySelectorAll('.seg button').forEach(function (b) {
+    b.addEventListener('click', function () { applyPalette(b.getAttribute('data-p')); });
+  });
+  $('cBehind').addEventListener('change', function () {
+    document.body.classList.toggle('behind', this.checked);
+  });
+  $('cBurst').addEventListener('change', function () { burst = this.checked; });
+  $('cBloom').addEventListener('change', function () { bloomOn = this.checked; });
+  $('rCount').addEventListener('input', function () {
+    count = parseInt(this.value, 10);
+    $('pc').textContent = count;
+  });
+  $('rBloom').addEventListener('input', function () { bloomScale = parseFloat(this.value); });
+  $('rBlur').addEventListener('input', function () {
+    document.documentElement.style.setProperty('--glass-blur', this.value + 'px');
+  });
+  $('fold').addEventListener('click', function () {
+    var p = $('panel');
+    p.classList.toggle('folded');
+    this.textContent = p.classList.contains('folded') ? '+' : '–';
+  });
+
+  // ---------------- 主循环 ----------------
+  applyPalette('night');
+  $('pc').textContent = count;
+
+  var prev = performance.now();
+  var t = 0;
+  var fpsAcc = 0, fpsN = 0;
+  var fpsEl = $('fps');
+
+  function frame(now) {
+    var dt = (now - prev) / 1000;
+    prev = now;
+    if (dt > 0.05) dt = 0.05;     // 切标签页回来不要炸
+    t += dt;
+
+    updateParticles(dt, t);
+    render(t);
+
+    fpsAcc += dt; fpsN++;
+    if (fpsAcc > 0.5) {
+      fpsEl.textContent = Math.round(fpsN / fpsAcc);
+      fpsAcc = 0; fpsN = 0;
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  document.addEventListener('visibilitychange', function () { prev = performance.now(); });
+})();
+</script>
+</body>
+</html>
+
+

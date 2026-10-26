@@ -1,0 +1,671 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>主题样板 01 · 水波纹主题</title>
+<style>
+  :root{
+    --text:#e6f1ff;
+    --muted:#9ab4cf;
+    --dim:#6d88a3;
+    --accent:#7fc4ff;
+    --glass-tint:rgba(150,200,255,.085);
+    --glass-tint2:rgba(255,255,255,.02);
+    --glass-edge:rgba(255,255,255,.26);
+    --glass-edge2:rgba(255,255,255,.10);
+    --glass-shade:rgba(0,0,0,.22);
+    --glass-blur:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;background:#04080f;color:var(--text);
+    font-family:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  #water,#rain{position:fixed;inset:0;width:100%;height:100%;display:block}
+  #water{z-index:0}
+  #rain{z-index:1;pointer-events:none}
+  .veil{
+    position:fixed;inset:0;z-index:2;pointer-events:none;
+    background:linear-gradient(180deg,rgba(3,8,14,.06) 0%,rgba(3,8,14,.40) 42%,rgba(3,8,14,.74) 100%);
+    transition:opacity .35s ease;
+  }
+  body.no-veil .veil{opacity:0}
+
+  .nav{position:relative;z-index:3}
+  .nav-inner{
+    max-width:900px;margin:0 auto;padding:18px 22px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .brand{font-weight:700;letter-spacing:.5px;font-size:15px}
+  .brand span{color:var(--accent);font-weight:400}
+  .links{display:flex;gap:22px;font-size:13.5px}
+  .links a{color:var(--muted);text-decoration:none;transition:color .2s}
+  .links a:hover{color:var(--text)}
+
+  .wrap{position:relative;z-index:3;max-width:900px;margin:0 auto;padding:40px 22px 120px}
+  .hero{padding:56px 0 34px}
+  .kicker{font-size:11px;letter-spacing:.22em;color:var(--dim);margin-bottom:14px}
+  .hero h1{
+    margin:0 0 14px;font-size:clamp(28px,4.6vw,44px);line-height:1.15;font-weight:650;
+    letter-spacing:-.02em;text-shadow:0 2px 40px rgba(120,190,255,.28);
+  }
+  .hero p{margin:0;color:var(--muted);font-size:15px;line-height:1.75;max-width:44ch}
+
+  .list{display:flex;flex-direction:column;gap:18px;margin-top:26px}
+  .card{
+    position:relative;padding:20px 22px 22px;border-radius:18px;
+    background:linear-gradient(180deg,var(--glass-tint),var(--glass-tint2));
+    -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(140%);
+    backdrop-filter:blur(var(--glass-blur)) saturate(140%);
+    box-shadow:
+      inset 0 1px 0 var(--glass-edge),
+      inset 0 -1px 0 var(--glass-shade),
+      inset 0 0 0 1px var(--glass-edge2),
+      0 1px 2px rgba(0,0,0,.20),
+      0 18px 44px -24px rgba(0,0,0,.85);
+    transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s ease,background .25s ease;
+  }
+  .card:hover{
+    transform:translateY(-2px);
+    background:linear-gradient(180deg,rgba(170,215,255,.13),rgba(255,255,255,.035));
+  }
+  body.no-glass .card{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(6,16,28,.82)}
+  .card-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .tag{
+    font-size:11px;padding:2px 9px;border-radius:999px;
+    background:rgba(140,200,255,.13);color:#a9d4ff;
+    box-shadow:inset 0 0 0 1px rgba(160,210,255,.16);
+  }
+  .card time{font-size:12px;color:var(--dim);margin-left:auto;font-variant-numeric:tabular-nums}
+  .card h2{margin:0 0 8px;font-size:18px;line-height:1.45;font-weight:600}
+  .card h2 a{color:var(--text);text-decoration:none}
+  .card h2 a:hover{color:var(--accent)}
+  .card p{margin:0;color:var(--muted);font-size:14px;line-height:1.8}
+  .note{margin-top:34px;font-size:13px;line-height:1.9;color:var(--dim);max-width:60ch}
+  .note b{color:var(--muted);font-weight:600}
+
+  .panel{
+    position:fixed;right:16px;bottom:16px;z-index:9;width:250px;
+    padding:12px 14px 14px;border-radius:14px;
+    background:rgba(6,14,24,.78);
+    -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 0 0 1px rgba(255,255,255,.07),
+               0 20px 50px -20px rgba(0,0,0,.9);
+    font-size:12px;color:var(--muted);
+    transition:transform .3s cubic-bezier(.2,.8,.2,1),opacity .3s;
+  }
+  .panel.folded{transform:translateY(calc(100% - 42px))}
+  .panel-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;color:var(--text);font-weight:600;font-size:12.5px;letter-spacing:.04em}
+  .panel-hd button{
+    background:rgba(255,255,255,.08);border:0;color:var(--text);width:22px;height:22px;
+    border-radius:6px;cursor:pointer;font-size:13px;line-height:1;
+  }
+  .row{display:flex;align-items:center;gap:8px;padding:5px 0;cursor:pointer;user-select:none}
+  .row input[type=checkbox]{
+    appearance:none;width:14px;height:14px;border-radius:4px;margin:0;
+    background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);
+    cursor:pointer;position:relative;flex:none;
+  }
+  .row input[type=checkbox]:checked{background:var(--accent);box-shadow:none}
+  .row input[type=checkbox]:checked::after{
+    content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;
+    border:solid #04101c;border-width:0 2px 2px 0;transform:rotate(42deg);
+  }
+  .row input[type=range]{
+    -webkit-appearance:none;appearance:none;flex:1;height:3px;border-radius:2px;
+    background:rgba(255,255,255,.14);outline:none;margin:0;
+  }
+  .row input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:11px;height:11px;border-radius:50%;
+    background:var(--accent);cursor:pointer;box-shadow:0 0 0 3px rgba(127,196,255,.18);
+  }
+  .row span.lab{width:52px;flex:none;color:var(--dim)}
+  .fps{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.07);color:var(--dim);font-variant-numeric:tabular-nums;font-size:11.5px}
+  @media (max-width:640px){
+    .panel{width:calc(100% - 24px);right:12px;bottom:12px}
+    .links{display:none}
+    .wrap{padding-bottom:200px}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="water"></canvas>
+<canvas id="rain"></canvas>
+<div class="veil"></div>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="brand">白菜 <span>Blogs</span></div>
+    <nav class="links">
+      <a href="#">文章</a><a href="#">项目</a><a href="#">时间线</a><a href="#">关于</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="kicker">THEME 01 / WATER</div>
+    <h1>深夜的水面</h1>
+    <p>点击任意位置，荡开一圈水波。雨还在落，水面在缓慢呼吸——注意看，卡片背后的水是被模糊过的。</p>
+  </section>
+
+  <section class="list">
+    <article class="card">
+      <div class="card-top"><span class="tag">着色器</span><time>2026-10-25</time></div>
+      <h2><a href="#">用一条片元着色器写一片会呼吸的水面</a></h2>
+      <p>从高度场开始：把每个点击变成一圈扩散的波前，用解析梯度求法线，再让背景在波峰处轻微折射。色散用三次采样近似。</p>
+    </article>
+
+    <article class="card">
+      <div class="card-top"><span class="tag">工程</span><time>2026-10-20</time></div>
+      <h2><a href="#">毛玻璃卡片与实时动画背景的性能陷阱</a></h2>
+      <p>backdrop-filter 每一帧都要重新采样它的背景，而背景又在动。这条流水线上任何一环没控好，滚动就会掉帧。</p>
+    </article>
+
+    <article class="card">
+      <div class="card-top"><span class="tag">设计</span><time>2026-10-12</time></div>
+      <h2><a href="#">高透卡片怎么才能不糊成一团</a></h2>
+      <p>边框只是封边，真正让边界稳定的是内部那一层极淡的亮度台阶，以及顶边的高光。四层阴影是这套结构的最小实现。</p>
+    </article>
+
+    <article class="card">
+      <div class="card-top"><span class="tag">笔记</span><time>2026-10-03</time></div>
+      <h2><a href="#">被内容挡住的背景，是不存在的背景</a></h2>
+      <p>全屏水面最尴尬的地方在于：它大部分的像素其实都在卡片底下。要么让卡片透出来，要么就不要做全屏水。</p>
+    </article>
+  </section>
+
+  <p class="note">
+    <b>层级：</b>水面 canvas（z0）→ 雨丝 canvas（z1）→ 遮罩层（z2）→ 内容（z3）。
+    卡片用了 backdrop-filter，所以它采样到的是"被模糊后的水"，而不是清晰的水——这正是毛玻璃该有的样子。
+  </p>
+</main>
+
+<aside class="panel" id="panel">
+  <div class="panel-hd"><span>效果控制</span><button id="fold">–</button></div>
+  <label class="row"><input type="checkbox" id="cRain" checked><span>雨丝</span></label>
+  <label class="row"><input type="checkbox" id="cAuto" checked><span>自动落水涟漪</span></label>
+  <label class="row"><input type="checkbox" id="cVeil" checked><span>内容遮罩</span></label>
+  <label class="row"><input type="checkbox" id="cHero" checked><span>水面只占首屏</span></label>
+  <label class="row"><input type="checkbox" id="cGlass" checked><span>毛玻璃卡片</span></label>
+  <label class="row"><span class="lab">折射</span><input type="range" id="rRefract" min="0" max="0.12" step="0.002" value="0.036"></label>
+  <label class="row"><span class="lab">大小</span><input type="range" id="rSwell" min="0.5" max="1.8" step="0.05" value="1"></label>
+  <label class="row"><span class="lab">高光</span><input type="range" id="rSpec" min="0" max="3" step="0.05" value="0.18"></label>
+  <label class="row"><span class="lab">模糊</span><input type="range" id="rBlur" min="0" max="30" step="1" value="14"></label>
+  <label class="row"><span class="lab">分辨率</span><input type="range" id="rQual" min="0.5" max="1.6" step="0.05" value="1"></label>
+  <div class="fps"><span id="fps">--</span> fps · <span id="srcs">0</span> wave sources</div>
+</aside>
+
+<script id="vs" type="x-shader/x-vertex">
+attribute vec2 aPos;
+varying vec2 vUv;
+void main(){
+  vUv = aPos * 0.5 + 0.5;
+  gl_Position = vec4(aPos, 0.0, 1.0);
+}
+</script>
+
+<script id="fs" type="x-shader/x-fragment">
+precision highp float;
+
+varying vec2 vUv;
+
+uniform float uTime;
+uniform float uAspect;
+uniform vec4  uSrc[16];
+uniform float uRefract;
+uniform float uNormal;
+uniform float uSpec;
+uniform float uSwell;
+uniform float uPx;      // 1 / 画布 CSS 高度：让尺寸可以用像素表达
+uniform float uDecay[16];
+
+float hash21(vec2 p){
+  p = fract(p * vec2(123.34, 456.21));
+  p += dot(p, p + 45.32);
+  return fract(p.x * p.y);
+}
+
+// 背景：程序化生成的夜色水面（不依赖任何贴图）
+vec3 sceneBg(vec2 q){
+  float ar = uAspect;
+
+  // 底色：水面反射天空——上亮下暗，涟漪才有地方"显形"
+  vec3 col = mix(vec3(0.0010, 0.0026, 0.0050),
+                 vec3(0.0105, 0.0245, 0.0455),
+                 smoothstep(0.0, 1.0, q.y));
+
+  vec2 mp = vec2(0.72 * ar, 0.80);
+
+  // 月光倒影带（moonglade）：从月亮垂下来的一条光柱，越往下越宽越淡
+  float gx = q.x - mp.x;
+  float fall = clamp((mp.y - q.y) * 1.15, 0.0, 1.0);
+  float wdt = 0.030 + fall * 0.155;
+  float glade = exp(-(gx * gx) / (wdt * wdt)) * (1.0 - fall) * (1.0 - fall);
+  col += vec3(0.62, 0.76, 0.96) * glade * 0.22;
+
+  // 月亮本体
+  float dm = length(q - mp);
+  col += vec3(0.95, 0.97, 1.00) * 0.45 * smoothstep(0.050, 0.041, dm);
+  col += vec3(0.45, 0.62, 0.90) * 0.10 * exp(-dm * dm * 46.0);
+
+  // 远处几点灯火：折射时被拉扯，是"水感"最直接的证据
+  for (int i = 0; i < 4; i++){
+    float fi = float(i);
+    vec2 bp = vec2((0.06 + 0.11 * fi) * ar + 0.05 * sin(fi * 2.3),
+                   0.42 + 0.10 * cos(fi * 1.7));
+    float bd = length(q - bp);
+    col += vec3(0.55, 0.72, 1.0) * 0.020 / (1.0 + bd * bd * 9000.0);
+  }
+
+  return col;
+}
+
+void main(){
+  vec2 p = vec2(vUv.x * uAspect, vUv.y);
+
+  vec2 grad = vec2(0.0);
+  float h = 0.0;
+
+  // 环境起伏：让整片水面永远在"呼吸"，不是死水
+  grad += vec2(0.018 * cos(p.x * 11.0 + uTime * 0.80), 0.0);
+  grad += vec2(0.0, 0.015 * cos(p.y * 9.0 - uTime * 1.00));
+  grad += vec2(0.010 * cos((p.x + p.y) * 17.0 + uTime * 1.70)) * 0.9;
+
+  // 涟漪源：解析环形波包，梯度直接解析求导（不用有限差分）
+  for (int i = 0; i < 16; i++){
+    vec4 s = uSrc[i];
+    float age = uTime - s.z;
+    if (age > 0.0 && age < 3.0 && s.w > 0.0){
+      vec2 dv = p - s.xy;
+      float r  = max(length(dv), 1e-4);
+      float big = step(0.003, s.w);            // 1 = 点击，0 = 雨滴
+      // 尺寸一律用 CSS 像素表达，这样换屏幕不会变大变小
+      float pp  = uPx * uSwell;
+      float Rm  = mix(16.0, 30.0, big) * pp;   // 雨滴一小圈，点击只比它大一点
+      float R   = Rm * (1.0 - exp(-age * 1.6));
+      float dr  = r - R;
+      float kk  = 6.2831853 / (13.0 * pp);     // 每圈 13px → 更细更密
+      float tight = 2.1 / (27.0 * pp);         // 波包半宽 ~27px，总范围 ≈145px 直径
+      float w  = exp(-dr * dr * tight * tight);
+      if (w > 0.0012){
+        float ph  = dr * kk;
+        float sp  = sin(ph);
+        float cp  = cos(ph);
+        // 点击：慢衰减；雨滴：快衰减。
+        // extra 是"被新波纹催老"的附加衰减率，让旧波纹加速淡出而不是被顶掉
+        float dec = mix(3.0, 0.85, big) + uDecay[i];
+        float spd = mix(2.2, 1.30, big);
+        float env = s.w * exp(-age * dec) * exp(-r * spd);
+        // 寿命末尾强制收敛到 0：不管中间衰减多快，最后一刻都是渐隐而不是"断掉"
+        env *= 1.0 - smoothstep(0.62, 1.0, clamp(age / 3.0, 0.0, 1.0));
+        float amp = env * w;
+        // d(h)/d(r)：窗口项 + 相位项，最后减去空间衰减项
+        float dhdr = env * (-2.0 * dr * tight * tight * w * sp + kk * w * cp) - spd * amp * sp;
+        grad += dhdr * (dv / r);
+        h += amp * sp;
+      }
+    }
+  }
+
+  // 折射（含轻微色散）
+  vec2 off = -grad * uRefract;
+  vec3 col;
+  col.r = sceneBg(p + off * 0.92).r;
+  col.g = sceneBg(p + off * 1.00).g;
+  col.b = sceneBg(p + off * 1.08).b;
+
+  // 镜面高光：光源按月亮位置逐像素计算，高光才会沿着月光柱出现
+  vec2 mp = vec2(0.72 * uAspect, 0.80);
+  vec3 n = normalize(vec3(-grad * uNormal, 1.0));
+  vec3 L = normalize(vec3((mp - p) * 1.2, 0.62));
+  vec3 H = normalize(L + vec3(0.0, 0.0, 1.0));
+  float spec = pow(max(dot(n, H), 0.0), 40.0);
+  col += vec3(0.72, 0.88, 1.0) * spec * uSpec;
+
+  // 波峰朝光，波谷背光
+  float crest = clamp(h * 140.0, 0.0, 1.0);
+  col += vec3(0.45, 0.66, 0.92) * pow(crest, 2.0) * 0.018;
+
+  // 假的环境反射：暗背景上没有东西可折射，靠明暗让水波仍然看得见。
+  // 注意这里用线性映射而不是归一化法线——归一化会把任何微小起伏都"拉满"，
+  // 结果是雨滴和点击看起来一样强，涟漪就不再分大小了。
+  float refl = clamp(grad.x * 2.2 + grad.y * 3.2, -1.0, 1.0);
+  col += vec3(0.021, 0.030, 0.042) * max(refl, 0.0);
+  col *= 1.0 - 0.11 * max(-refl, 0.0);
+
+  // 颗粒
+  col += (hash21(floor(gl_FragCoord.xy)) - 0.5) * 0.0045;
+
+  // 暗角
+  vec2 vv = vUv - 0.5;
+  col *= 1.0 - 0.55 * pow(length(vv) * 1.45, 2.0);
+
+  col = max(col, 0.0);
+
+  // 色调映射 + gamma
+  col *= 1.12;
+  col = col / (col + vec3(1.0));
+  col = pow(col, vec3(1.0 / 2.2));
+
+  gl_FragColor = vec4(col, 1.0);
+}
+</script>
+
+<script>
+(function () {
+  'use strict';
+
+  var MAXSRC = 16;
+  var canvas = document.getElementById('water');
+  var gl = canvas.getContext('webgl2', { antialias: false, alpha: false, powerPreference: 'high-performance' })
+        || canvas.getContext('webgl',  { antialias: false, alpha: false })
+        || canvas.getContext('experimental-webgl', { antialias: false, alpha: false });
+
+  if (!gl) {
+    document.body.insertAdjacentHTML('beforeend',
+      '<div style="position:fixed;inset:0;z-index:99;display:grid;place-items:center;background:#04080f;color:#9ab4cf;font-size:14px">当前浏览器不支持 WebGL，无法预览水面效果</div>');
+    return;
+  }
+
+  // ---------- GL 基础设施 ----------
+  function compile(type, src) {
+    var s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+      console.error(gl.getShaderInfoLog(s), src);
+      throw new Error('shader compile failed');
+    }
+    return s;
+  }
+  function program(vsSrc, fsSrc) {
+    var p = gl.createProgram();
+    gl.attachShader(p, compile(gl.VERTEX_SHADER, vsSrc));
+    gl.attachShader(p, compile(gl.FRAGMENT_SHADER, fsSrc));
+    gl.linkProgram(p);
+    if (!gl.getProgramParameter(p, gl.LINK_STATUS)) {
+      console.error(gl.getProgramInfoLog(p));
+      throw new Error('program link failed');
+    }
+    return p;
+  }
+
+  var prog = program(
+    document.getElementById('vs').textContent,
+    document.getElementById('fs').textContent
+  );
+  gl.useProgram(prog);
+
+  var quad = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, quad);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+  var aPos = gl.getAttribLocation(prog, 'aPos');
+  gl.enableVertexAttribArray(aPos);
+  gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+  var U = {
+    time:    gl.getUniformLocation(prog, 'uTime'),
+    aspect:  gl.getUniformLocation(prog, 'uAspect'),
+    src:     gl.getUniformLocation(prog, 'uSrc'),
+    refract: gl.getUniformLocation(prog, 'uRefract'),
+    normal:  gl.getUniformLocation(prog, 'uNormal'),
+    spec:    gl.getUniformLocation(prog, 'uSpec'),
+    swell:   gl.getUniformLocation(prog, 'uSwell'),
+    px:      gl.getUniformLocation(prog, 'uPx'),
+    decay:   gl.getUniformLocation(prog, 'uDecay')
+  };
+
+  // ---------- 状态 ----------
+  var src = new Float32Array(MAXSRC * 4);   // x, y, t0, amp
+  var ptr = 0;
+  var time = 0;
+
+  var quality = 1.0;
+  var refract = 0.036;
+  var specAmt = 0.18;
+  var swell = 1.0;
+  var rainOn = true;
+  var autoOn = true;
+  var nextAuto = 0.6;
+  var heroFade = 1;      // 水面只属于第一屏：滚过之后淡出
+  var heroMode = true;
+
+  // ---------- 尺寸 ----------
+  // 用画布自己的 CSS 盒子来定尺寸：innerWidth 含滚动条宽度，
+  // 直接拿它会让缓冲区比可见区域宽十几个像素，画面被横向压扁，
+  // 点击坐标也会跟着偏。
+  function resize() {
+    var rect = canvas.getBoundingClientRect();
+    var dpr = Math.min(window.devicePixelRatio || 1, 1.6) * quality;
+    var w = Math.max(1, Math.round(rect.width * dpr));
+    var h = Math.max(1, Math.round(rect.height * dpr));
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width = w; canvas.height = h;
+    }
+    gl.viewport(0, 0, w, h);
+  }
+  window.addEventListener('resize', resize);
+  if (window.ResizeObserver) new ResizeObserver(resize).observe(canvas);
+  resize();
+
+  // ---------- 涟漪 ----------
+  // 槽位分两段：0~7 留给点击，8~15 给雨滴/自动。
+  // 否则雨滴每秒生成几十个，会把点击的波源在 0.3 秒内挤掉——
+  // 表现就是"点一下闪一下就没了"。
+  var clickPtr = 0, ambPtr = 0;
+  var lastRainRip = -1;
+  var decayArr = new Float32Array(16);
+
+  function spawnRipple(cx, cy, amp) {
+    var rect = canvas.getBoundingClientRect();
+    var ar = canvas.width / canvas.height;
+    var u = (cx - rect.left) / rect.width;
+    var v = 1 - (cy - rect.top) / rect.height;
+    if (u < -0.1 || u > 1.1 || v < -0.1 || v > 1.1) return;
+    var isClick = amp > 0.003;
+    var i;
+    if (isClick) {
+      i = clickPtr++ % 5;                       // 点击占 0~4
+      // 新的一圈出现，就让已有的点击涟漪"加速变老"，
+      // 这样它们是渐渐淡出，而不是在第 6 下时被凭空顶掉
+      for (var k = 0; k < 5; k++) {
+        if (k === i) continue;
+        if (src[k * 4 + 3] > 0.003) {
+          decayArr[k] = Math.min(9, decayArr[k] + 1.1);
+        }
+      }
+    } else {
+      i = 5 + (ambPtr++ % 11);                  // 雨滴/自动占 5~15
+    }
+    decayArr[i] = 0;
+    src[i * 4 + 0] = u * ar;
+    src[i * 4 + 1] = v;
+    src[i * 4 + 2] = time;
+    src[i * 4 + 3] = amp;
+  }
+
+  // 一次点击只生成一圈：两圈叠加会让"连点几下"很快变成一团乱纹
+  window.addEventListener('pointerdown', function (e) {
+    if (e.target && e.target.closest && e.target.closest('.panel')) return;
+    if (heroFade <= 0.05) return;
+    spawnRipple(e.clientX, e.clientY, 0.0015);
+  }, { passive: true });
+
+  // ---------- 雨 ----------
+  var rainCanvas = document.getElementById('rain');
+  var rctx = rainCanvas.getContext('2d');
+  var drops = [];
+  var DROP_N = window.innerWidth < 700 ? 90 : 190;
+
+  function newDrop(anywhere) {
+    return {
+      x: Math.random() * window.innerWidth,
+      y: anywhere ? Math.random() * window.innerHeight : -30 - Math.random() * 60,
+      len: 12 + Math.random() * 30,
+      sp: 620 + Math.random() * 720,
+      a: 0.05 + Math.random() * 0.20,
+      w: 0.6 + Math.random() * 0.9
+    };
+  }
+  function resetRain() {
+    drops.length = 0;
+    DROP_N = window.innerWidth < 700 ? 90 : 190;
+    for (var i = 0; i < DROP_N; i++) drops.push(newDrop(true));
+  }
+  function resizeRain() {
+    var rect = rainCanvas.getBoundingClientRect();
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    rainCanvas.width = Math.round(rect.width * dpr);
+    rainCanvas.height = Math.round(rect.height * dpr);
+    rctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  resizeRain();
+  resetRain();
+
+  function stepRain(dt) {
+    var rect = rainCanvas.getBoundingClientRect();
+    var RW = rect.width, RH = rect.height;
+    rctx.clearRect(0, 0, RW, RH);
+    if (!rainOn) return;
+    rctx.lineCap = 'round';
+    for (var i = 0; i < drops.length; i++) {
+      var d = drops[i];
+      d.y += d.sp * dt;
+      d.x += d.sp * 0.065 * dt;
+      if (d.y - d.len > RH) {
+        // 每滴雨都生成涟漪会瞬间堆满波源（一秒上百个），改成限流
+        if (time - lastRainRip > 0.24 && Math.random() < 0.5) {
+          spawnRipple(d.x, RH - 1, 0.0009);
+          lastRainRip = time;
+        }
+        drops[i] = newDrop(false);
+        continue;
+      }
+      if (d.x > RW + 40) d.x = -40;
+      rctx.strokeStyle = 'rgba(184,216,255,' + d.a + ')';
+      rctx.lineWidth = d.w;
+      rctx.beginPath();
+      rctx.moveTo(d.x, d.y);
+      rctx.lineTo(d.x - d.len * 0.065, d.y - d.len);
+      rctx.stroke();
+    }
+  }
+
+  window.addEventListener('resize', function () { resizeRain(); resetRain(); });
+
+  // ---------- 控制面板 ----------
+  function $(id) { return document.getElementById(id); }
+
+  $('cHero').addEventListener('change', function () { heroMode = this.checked; });
+  $('cRain').addEventListener('change', function () { rainOn = this.checked; });
+  $('cAuto').addEventListener('change', function () { autoOn = this.checked; });
+  $('cVeil').addEventListener('change', function () {
+    document.body.classList.toggle('no-veil', !this.checked);
+  });
+  $('cGlass').addEventListener('change', function () {
+    document.body.classList.toggle('no-glass', !this.checked);
+  });
+  $('rRefract').addEventListener('input', function () { refract = parseFloat(this.value); });
+  $('rSpec').addEventListener('input', function () { specAmt = parseFloat(this.value); });
+  $('rSwell').addEventListener('input', function () { swell = parseFloat(this.value); });
+  $('rBlur').addEventListener('input', function () {
+    document.documentElement.style.setProperty('--glass-blur', this.value + 'px');
+  });
+  $('rQual').addEventListener('input', function () {
+    quality = parseFloat(this.value);
+    resize();
+  });
+  $('fold').addEventListener('click', function () {
+    var p = $('panel');
+    p.classList.toggle('folded');
+    this.textContent = p.classList.contains('folded') ? '+' : '–';
+  });
+
+  // ---------- 主循环 ----------
+  var prev = performance.now();
+  var fpsAcc = 0, fpsN = 0;
+  var fpsEl = $('fps'), srcEl = $('srcs');
+
+  function frame(now) {
+    var dt = (now - prev) / 1000;
+    prev = now;
+    if (dt > 0.05) dt = 0.05;       // 切标签页回来不要炸
+    time += dt;
+
+    // 水面按视口高度存在：滚出首屏后淡出，不会一路铺到页面尽头
+    var vh = canvas.getBoundingClientRect().height || window.innerHeight;
+    var f = heroMode ? 1 - (window.scrollY || window.pageYOffset || 0) / (vh * 0.85) : 1;
+    f = f < 0 ? 0 : (f > 1 ? 1 : f);
+    if (Math.abs(f - heroFade) > 0.002) {
+      heroFade = f;
+      canvas.style.opacity = f;
+      rainCanvas.style.opacity = f;
+    }
+
+    if (autoOn) {
+      nextAuto -= dt;
+      if (nextAuto <= 0) {
+        spawnRipple(Math.random() * window.innerWidth,
+                    window.innerHeight * (0.25 + Math.random() * 0.7),
+                    0.0009 + Math.random() * 0.0012);
+        nextAuto = 1.7 + Math.random() * 2.0;
+      }
+    }
+
+    stepRain(dt);
+
+    gl.useProgram(prog);
+    gl.uniform1f(U.time, time);
+    gl.uniform1f(U.aspect, canvas.width / canvas.height);
+    gl.uniform4fv(U.src, src);
+    gl.uniform1f(U.refract, refract);
+    gl.uniform1f(U.normal, 5.0);
+    gl.uniform1f(U.spec, specAmt);
+    gl.uniform1f(U.swell, swell);
+    gl.uniform1f(U.px, 1 / (canvas.getBoundingClientRect().height || 1));
+    gl.uniform1fv(U.decay, decayArr);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+    fpsAcc += dt; fpsN++;
+    if (fpsAcc > 0.5) {
+      fpsEl.textContent = Math.round(fpsN / fpsAcc);
+      var live = 0;
+      for (var i = 0; i < MAXSRC; i++) {
+        var a = time - src[i * 4 + 2];
+        if (a >= 0 && a < 3 && src[i * 4 + 3] > 0) live++;
+      }
+      srcEl.textContent = live;
+      fpsAcc = 0; fpsN = 0;
+    }
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  document.addEventListener('visibilitychange', function () {
+    prev = performance.now();
+  });
+})();
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

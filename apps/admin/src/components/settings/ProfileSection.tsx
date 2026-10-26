@@ -32,6 +32,17 @@ export default function ProfileSection({ formData, handleUpdate, pushToQueue }: 
     }
   };
 
+  const requestSensitiveAccess = async () => {
+    const reason = window.prompt('请输入申请原因（至少 10 个字）');
+    if (!reason || reason.trim().length < 10) return;
+    try {
+      await api.requestSensitiveAccess('site_social', reason.trim());
+      window.alert('申请已提交，等待超级管理员审批（1 小时有效）');
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : '申请失败');
+    }
+  };
+
   // 🌟 控制图床工具的状态
   const [isImageToolOpen, setIsImageToolOpen] = useState(false);
   const [targetImageField, setTargetImageField] = useState<'avatarUrl' | 'faviconUrl' | null>(null);
@@ -165,21 +176,31 @@ export default function ProfileSection({ formData, handleUpdate, pushToQueue }: 
 
               {/* 社交媒体区域 */}
               <div className="col-span-1 md:col-span-2 pt-4 border-t border-slate-200 dark:border-slate-700/50 grid grid-cols-1 md:grid-cols-2 gap-6">
+                {safeData.__restricted?.length > 0 && (
+                  <div className="col-span-1 md:col-span-2 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-400/20 bg-amber-400/10 px-4 py-3">
+                    <span className="text-xs font-bold text-amber-600 dark:text-amber-300">
+                      邮箱、QQ、微信、Google 属于敏感信息，仅超级管理员可查看。
+                    </span>
+                    <button type="button" onClick={() => void requestSensitiveAccess()} className="rounded-xl bg-amber-500/15 px-3 py-2 text-[10px] font-black text-amber-600 hover:bg-amber-500/25 dark:text-amber-300">
+                      申请查看
+                    </button>
+                  </div>
+                )}
                 <div>
                   <label className="text-[10px] font-black text-slate-400 uppercase ml-1">邮箱 Email</label>
-                  <input type="text" value={safeSocial.email || ''} onChange={e => handleSocialUpdate('email', e.target.value)} className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm mt-1 outline-none" />
+                  <input type="text" value={safeSocial.email || ''} onChange={e => handleSocialUpdate('email', e.target.value)} disabled={Boolean(safeData.__restricted?.length)} className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm mt-1 outline-none disabled:opacity-50" />
                 </div>
                 <div>
                   <label className="text-[10px] font-black text-slate-400 uppercase ml-1">Google 邮箱/链接</label>
-                  <input type="text" value={safeSocial.google || ''} onChange={e => handleSocialUpdate('google', e.target.value)} className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm mt-1 outline-none" />
+                  <input type="text" value={safeSocial.google || ''} onChange={e => handleSocialUpdate('google', e.target.value)} disabled={Boolean(safeData.__restricted?.length)} className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm mt-1 outline-none disabled:opacity-50" />
                 </div>
                 <div>
                   <label className="text-[10px] font-black text-slate-400 uppercase ml-1">微信 ID</label>
-                  <input type="text" value={safeSocial.wechat || ''} onChange={e => handleSocialUpdate('wechat', e.target.value)} className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm mt-1 outline-none" />
+                  <input type="text" value={safeSocial.wechat || ''} onChange={e => handleSocialUpdate('wechat', e.target.value)} disabled={Boolean(safeData.__restricted?.length)} className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm mt-1 outline-none disabled:opacity-50" />
                 </div>
                 <div>
                   <label className="text-[10px] font-black text-slate-400 uppercase ml-1">QQ 号码</label>
-                  <input type="text" value={safeSocial.qq || ''} onChange={e => handleSocialUpdate('qq', e.target.value)} className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm mt-1 outline-none" />
+                  <input type="text" value={safeSocial.qq || ''} onChange={e => handleSocialUpdate('qq', e.target.value)} disabled={Boolean(safeData.__restricted?.length)} className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm mt-1 outline-none disabled:opacity-50" />
                 </div>
                 <div>
                   <label className="text-[10px] font-black text-slate-400 uppercase ml-1">GitHub 地址</label>

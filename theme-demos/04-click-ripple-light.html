@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>主题样板 04 · 点击涟漪（轻量浮层）</title>
+<style>
+  :root{
+    --bg:#f8fafc;
+    --card:#ffffff;
+    --text:#1f2937;
+    --muted:#6b7280;
+    --dim:#9ca3af;
+    --line:#e5e7eb;
+    --accent:#2563eb;
+  }
+  body.dark{
+    --bg:#080d15;
+    --card:rgba(150,200,255,.07);
+    --text:#e6f1ff;
+    --muted:#9ab4cf;
+    --dim:#6d88a3;
+    --line:rgba(255,255,255,.10);
+    --accent:#7fc4ff;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--bg);color:var(--text);
+    font-family:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;
+    transition:background .4s ease,color .4s ease;
+  }
+  #fx{position:fixed;inset:0;z-index:5;pointer-events:none}
+
+  .nav{border-bottom:1px solid var(--line)}
+  .nav-inner{max-width:860px;margin:0 auto;padding:16px 22px;display:flex;align-items:center;gap:22px}
+  .brand{font-weight:700;font-size:15px}
+  .links{display:flex;gap:20px;font-size:13.5px;margin-left:auto}
+  .links a{color:var(--muted);text-decoration:none}
+  .links a:hover{color:var(--text)}
+
+  .wrap{max-width:860px;margin:0 auto;padding:40px 22px 110px}
+  h1{margin:26px 0 12px;font-size:clamp(24px,4vw,38px);line-height:1.2;letter-spacing:-.02em}
+  .lead{margin:0 0 26px;color:var(--muted);font-size:15px;line-height:1.8;max-width:48ch}
+
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:20px 22px;margin:16px 0;
+    transition:border-color .3s,background .4s;
+  }
+  .card:hover{border-color:var(--accent)}
+  .card h2{margin:0 0 7px;font-size:17px;font-weight:600;line-height:1.45}
+  .card h2 a{color:var(--text);text-decoration:none}
+  .card h2 a:hover{color:var(--accent)}
+  .card .meta{font-size:12.5px;color:var(--dim);margin-bottom:8px}
+  .card p{margin:0;color:var(--muted);font-size:14px;line-height:1.8}
+  .tag{display:inline-block;font-size:11px;background:rgba(37,99,235,.08);color:var(--accent);
+       border-radius:999px;padding:2px 9px;margin-right:6px}
+  body.dark .tag{background:rgba(127,196,255,.12)}
+
+  .panel{
+    position:fixed;right:16px;bottom:16px;z-index:9;width:246px;
+    padding:12px 14px 14px;border-radius:14px;
+    background:rgba(20,28,40,.86);color:#c9d6e6;
+    -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 20px 50px -22px rgba(0,0,0,.7);
+    font-size:12px;transition:transform .3s cubic-bezier(.2,.8,.2,1);
+  }
+  .panel.folded{transform:translateY(calc(100% - 42px))}
+  .panel-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;color:#eef4ff;font-weight:600;font-size:12.5px}
+  .panel-hd button{background:rgba(255,255,255,.08);border:0;color:#eef4ff;width:22px;height:22px;border-radius:6px;cursor:pointer;font-size:13px}
+  .row{display:flex;align-items:center;gap:8px;padding:5px 0;cursor:pointer;user-select:none}
+  .row input[type=checkbox]{
+    appearance:none;width:14px;height:14px;border-radius:4px;margin:0;flex:none;position:relative;
+    background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.2);cursor:pointer;
+  }
+  .row input[type=checkbox]:checked{background:#7fc4ff;box-shadow:none}
+  .row input[type=checkbox]:checked::after{
+    content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;
+    border:solid #0b1420;border-width:0 2px 2px 0;transform:rotate(42deg);
+  }
+  .row span.lab{width:56px;flex:none;color:#8fa3ba}
+  .row input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.16);outline:none;margin:0}
+  .row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;border-radius:50%;background:#7fc4ff;cursor:pointer}
+  select{
+    flex:1;background:rgba(255,255,255,.07);color:#eef4ff;border:0;border-radius:7px;
+    padding:4px 6px;font-size:11.5px;outline:none;cursor:pointer;
+  }
+  .hint{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.08);color:#8fa3ba;font-size:11px;line-height:1.7}
+  @media(max-width:640px){.panel{width:calc(100% - 24px);right:12px;bottom:12px}}
+</style>
+</head>
+<body>
+
+<canvas id="fx"></canvas>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="brand">白菜 Blogs</div>
+    <nav class="links"><a href="#">文章</a><a href="#">项目</a><a href="#">时间线</a></nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <h1>点击涟漪（轻量浮层）</h1>
+  <p class="lead">
+    这一版没有 WebGL，也没有水面——只有一层 Canvas2D 浮在最上面，点击时荡开几圈光。
+    它不需要卡片变透明，也不需要改动任何内容样式，是成本最低的"点击水波纹"。
+  </p>
+
+  <article class="card">
+    <div class="meta"><span class="tag">极简</span>2026-10-25</div>
+    <h2><a href="#">如果只要"点一下有反应"</a></h2>
+    <p>环形扩散 + 透明度衰减 + 线宽变细，三条曲线就够。整个文件不到 5KB，没有依赖，随便挂哪个页面都能用。</p>
+  </article>
+
+  <article class="card">
+    <div class="meta"><span class="tag">对比</span>2026-10-22</div>
+    <h2><a href="#">光和水是两回事</a></h2>
+    <p>水需要可被折射的介质，所以它必须待在内容层下面；光不需要介质，它可以浮在内容上面。这条区分决定了 90% 的架构选择。</p>
+  </article>
+
+  <article class="card">
+    <div class="meta"><span class="tag">实践</span>2026-10-18</div>
+    <h2><a href="#">混合模式选错，效果直接消失</a></h2>
+    <p>在浅色页面上用 add（lighter）画白环等于什么都没画；换到深色页面又必须用 add 才通透。面板里可以逐个试。</p>
+  </article>
+
+  <article class="card">
+    <div class="meta"><span class="tag">性能</span>2026-10-11</div>
+    <h2><a href="#">只在有涟漪的时候才跑循环</a></h2>
+    <p>没有活动粒子时直接停掉 rAF，页面静默时 CPU 占用归零。这一点比任何渲染优化都有效。</p>
+  </article>
+</main>
+
+<aside class="panel" id="panel">
+  <div class="panel-hd"><span>效果控制</span><button id="fold">–</button></div>
+  <label class="row"><input type="checkbox" id="cAuto" checked><span>自动演示</span></label>
+  <label class="row"><input type="checkbox" id="cDark"><span>深色页面（切换混合）</span></label>
+  <label class="row"><span class="lab">混合</span>
+    <select id="sBlend">
+      <option value="source-over">source-over</option>
+      <option value="multiply" selected>multiply</option>
+      <option value="lighter">lighter</option>
+      <option value="overlay">overlay</option>
+    </select>
+  </label>
+  <label class="row"><span class="lab">强度</span><input type="range" id="rStr" min="0.1" max="1.6" step="0.05" value="0.85"></label>
+  <label class="row"><span class="lab">扩散</span><input type="range" id="rSize" min="60" max="420" step="10" value="220"></label>
+  <label class="row"><span class="lab">圈数</span><input type="range" id="rRings" min="1" max="4" step="1" value="3"></label>
+  <div class="hint">在页面上点击任意位置试试。深色页面下记得把混合切成 lighter。</div>
+</aside>
+
+<script>
+(function () {
+  'use strict';
+
+  var canvas = document.getElementById('fx');
+  var ctx = canvas.getContext('2d');
+  var TAU = Math.PI * 2;
+
+  var rings = [];
+  var blend = 'multiply';
+  var strength = 0.85;
+  var maxSize = 220;
+  var ringCount = 3;
+  var auto = true;
+  var dark = false;
+  var nextAuto = 0.8;
+
+  var dpr = 1;
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(window.innerWidth * dpr);
+    canvas.height = Math.round(window.innerHeight * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  // 一轮点击 = 若干圈，彼此有延迟、有速度差，看起来才像水
+  function spawn(x, y) {
+    var n = ringCount;
+    for (var i = 0; i < n; i++) {
+      rings.push({
+        x: x + (Math.random() - 0.5) * 3,
+        y: y + (Math.random() - 0.5) * 3,
+        t0: performance.now() + i * 110,
+        life: 1.15 + i * 0.30,
+        r0: 6 + i * 3,
+        rMax: maxSize * (0.85 + i * 0.22),
+        w: 2.4 - i * 0.35
+      });
+    }
+    if (!running) { running = true; last = performance.now(); requestAnimationFrame(loop); }
+  }
+
+  window.addEventListener('pointerdown', function (e) {
+    if (e.target && e.target.closest && e.target.closest('.panel')) return;
+    spawn(e.clientX, e.clientY);
+  }, { passive: true });
+
+  var running = false;
+  var last = 0;
+
+  function drawRing(now, r) {
+    var age = (now - r.t0) / 1000;
+    if (age < 0) return true;
+    var p = age / r.life;
+    if (p >= 1) return false;
+
+    // 半径：先快后慢
+    var rad = r.r0 + (r.rMax - r.r0) * (1 - Math.pow(1 - p, 3));
+    // 透明度：二次衰减
+    var a = Math.pow(1 - p, 2) * strength;
+    // 线宽：随扩散变细
+    var lw = Math.max(0.4, r.w * (1 - p * 0.75));
+
+    ctx.globalAlpha = a;
+
+    if (dark) {
+      // 深色页面：外圈亮、内圈更亮，加法混合
+      ctx.strokeStyle = 'rgba(150,205,255,1)';
+      ctx.lineWidth = lw;
+      ctx.beginPath(); ctx.arc(r.x, r.y, rad, 0, TAU); ctx.stroke();
+
+      ctx.strokeStyle = 'rgba(255,255,255,1)';
+      ctx.lineWidth = lw * 0.45;
+      ctx.beginPath(); ctx.arc(r.x, r.y, rad * 0.965, 0, TAU); ctx.stroke();
+    } else {
+      // 浅色页面：深一点的蓝，multiply 才会显色
+      ctx.strokeStyle = 'rgba(38,102,170,1)';
+      ctx.lineWidth = lw * 1.5;
+      ctx.beginPath(); ctx.arc(r.x, r.y, rad, 0, TAU); ctx.stroke();
+
+      ctx.strokeStyle = 'rgba(120,175,225,1)';
+      ctx.lineWidth = Math.max(0.5, lw * 0.7);
+      ctx.beginPath(); ctx.arc(r.x, r.y, rad - lw * 1.1, 0, TAU); ctx.stroke();
+    }
+    return true;
+  }
+
+  function loop(now) {
+    var dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+
+    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    ctx.globalCompositeOperation = blend;
+    ctx.lineCap = 'round';
+
+    var alive = [];
+    for (var i = 0; i < rings.length; i++) {
+      if (drawRing(now, rings[i])) alive.push(rings[i]);
+    }
+    rings = alive;
+    ctx.globalAlpha = 1;
+
+    if (auto) {
+      nextAuto -= dt;
+      if (nextAuto <= 0) {
+        spawn(window.innerWidth * (0.2 + Math.random() * 0.6),
+              window.innerHeight * (0.25 + Math.random() * 0.55));
+        nextAuto = 1.6 + Math.random() * 1.8;
+      }
+    }
+
+    if (rings.length || auto) {
+      requestAnimationFrame(loop);
+    } else {
+      running = false;
+      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    }
+  }
+
+  requestAnimationFrame(function (t) { last = t; loop(t); });
+
+  // ---------------- 控制 ----------------
+  function $(id) { return document.getElementById(id); }
+
+  $('cAuto').addEventListener('change', function () { auto = this.checked; });
+  $('cDark').addEventListener('change', function () {
+    dark = this.checked;
+    document.body.classList.toggle('dark', dark);
+    var sel = $('sBlend');
+    sel.value = dark ? 'lighter' : 'multiply';
+    blend = sel.value;
+  });
+  $('sBlend').addEventListener('change', function () { blend = this.value; });
+  $('rStr').addEventListener('input', function () { strength = parseFloat(this.value); });
+  $('rSize').addEventListener('input', function () { maxSize = parseInt(this.value, 10); });
+  $('rRings').addEventListener('input', function () { ringCount = parseInt(this.value, 10); });
+  $('fold').addEventListener('click', function () {
+    var p = $('panel');
+    p.classList.toggle('folded');
+    this.textContent = p.classList.contains('folded') ? '+' : '–';
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>樱花背景层 · 真 alpha（第一步：无泛光）</title>
+<style>
+  :root{
+    --veil: 0;
+    --sakura-op: 1;
+    --text:#f4f7ff;
+    --muted:#c9d6ea;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;background:#0b1018;color:var(--text);
+    font-family:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+
+  /* z0 背景图（这里直接用你的页面截图当底） */
+  .bg{
+    position:fixed;inset:0;z-index:0;
+    background:url("_bg-day.png") center / cover no-repeat;
+    transform:scale(1.02);
+  }
+  body[data-mode="night"] .bg{background-image:url("_bg-night.png")}
+
+  /* z1 蒙版：模拟页面那层遮罩 */
+  .mask{
+    position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:#fff;opacity:var(--veil);
+  }
+  body[data-mode="night"] .mask{background:#1a1030}
+
+  /* z2 樱花层：真透明，只有花瓣有像素 */
+  #sakura{
+    position:fixed;inset:0;width:100%;height:100%;display:block;
+    z-index:2;pointer-events:none;
+    opacity:0;transition:opacity 1.1s ease;
+  }
+  #sakura.on{opacity:var(--sakura-op)}
+
+  /* z3 内容 */
+  .wrap{position:relative;z-index:3;max-width:900px;margin:0 auto;padding:70px 24px 120px}
+  .card{
+    padding:20px 22px;border-radius:18px;margin-bottom:16px;
+    background:linear-gradient(180deg,rgba(140,190,255,.16),rgba(255,255,255,.05));
+    -webkit-backdrop-filter:blur(16px) saturate(150%);
+    backdrop-filter:blur(16px) saturate(150%);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.34),
+      inset 0 -1px 0 rgba(0,0,0,.16),
+      inset 0 0 0 1px rgba(255,255,255,.14),
+      0 18px 44px -26px rgba(0,0,0,.7);
+  }
+  .card h2{margin:0 0 6px;font-size:17px;font-weight:600}
+  .card p{margin:0;font-size:13.5px;line-height:1.8;color:var(--muted)}
+
+  .panel{
+    position:fixed;right:16px;bottom:16px;z-index:9;width:250px;
+    padding:12px 14px 14px;border-radius:14px;
+    background:rgba(10,16,26,.82);
+    -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 0 0 1px rgba(255,255,255,.08),
+               0 20px 50px -20px rgba(0,0,0,.9);
+    font-size:12px;color:var(--muted);
+    transition:transform .3s cubic-bezier(.2,.8,.2,1);
+  }
+  .panel.folded{transform:translateY(calc(100% - 42px))}
+  .panel-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;color:#fff;font-weight:600;font-size:12.5px}
+  .panel-hd button{background:rgba(255,255,255,.08);border:0;color:#fff;width:22px;height:22px;border-radius:6px;cursor:pointer;font-size:13px;line-height:1}
+  .row{display:flex;align-items:center;gap:8px;padding:5px 0;cursor:pointer;user-select:none}
+  .row span.lab{width:56px;flex:none;color:#8fa3ba}
+  .row input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.16);outline:none;margin:0}
+  .row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;border-radius:50%;background:#7fc4ff;cursor:pointer}
+  .row input[type=checkbox]{appearance:none;width:14px;height:14px;border-radius:4px;margin:0;flex:none;position:relative;
+    background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.2);cursor:pointer}
+  .row input[type=checkbox]:checked{background:#7fc4ff;box-shadow:none}
+  .row input[type=checkbox]:checked::after{content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid #0b1420;border-width:0 2px 2px 0;transform:rotate(42deg)}
+  .seg{display:flex;gap:6px;margin:2px 0 8px}
+  .seg button{flex:1;padding:5px 0;border:0;border-radius:7px;cursor:pointer;font-size:11.5px;background:rgba(255,255,255,.06);color:#c9d6ea}
+  .seg button.on{background:#7fc4ff;color:#0b1420}
+  .stat{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.08);font-size:11px;line-height:1.7;color:#8fa3ba}
+  .stat b{color:#cfe4ff;font-weight:600}
+</style>
+</head>
+<body data-mode="day">
+
+<div class="bg"></div>
+<div class="mask"></div>
+<canvas id="sakura"></canvas>
+
+<main class="wrap">
+  <div class="card">
+    <h2>樱花背景层 · 真 alpha（第一步）</h2>
+    <p>这一版只把花瓣画出来，<b>不做泛光</b>。目的是先确认：叠在真实页面上时，花瓣形状完整、边缘没有黑边、颜色和原版一致。</p>
+  </div>
+  <div class="card">
+    <h2>毛玻璃采样测试</h2>
+    <p>这几张卡片用了 backdrop-filter，会采样到下面那层樱花——花瓣在卡片里应该是被模糊过的，而不是消失。</p>
+  </div>
+  <div class="card">
+    <h2>加载时机</h2>
+    <p>效果不在首屏加载。等 window.load 之后进入空闲期才开始创建 WebGL、编译着色器，首帧渲染完成后淡入。</p>
+  </div>
+</main>
+
+<aside class="panel" id="panel">
+  <div class="panel-hd"><span>对照控制</span><button id="fold">–</button></div>
+  <div class="seg">
+    <button data-m="day" class="on">日间背景</button>
+    <button data-m="night">夜间背景</button>
+  </div>
+  <label class="row"><input type="checkbox" id="cShow" checked><span>显示樱花层</span></label>
+  <label class="row"><span class="lab">蒙版</span><input type="range" id="rVeil" min="0" max="0.55" step="0.01" value="0"></label>
+  <label class="row"><span class="lab">花瓣透明</span><input type="range" id="rOp" min="0.2" max="1" step="0.02" value="1"></label>
+  <label class="row"><span class="lab">密度</span><input type="range" id="rCount" min="300" max="1600" step="50" value="900"></label>
+  <label class="row"><input type="checkbox" id="cFog"><span>远景变暗（原版行为）</span></label>
+  <div class="stat">
+    <div>状态：<b id="sState">等待 load…</b></div>
+    <div>粒子：<b id="sCount">900</b> · 绘制：<b>5</b> 次 · <b id="sFps">–</b> fps</div>
+  </div>
+</aside>
+
+<!-- ============ 花瓣着色器（与原 demo 一致，仅最后一行输出改为预乘 alpha） ============ -->
+<script id="sakura_point_vsh" type="x-shader/x_vertex">
+uniform mat4 uProjection;
+uniform mat4 uModelview;
+uniform vec3 uResolution;
+uniform vec3 uOffset;
+uniform vec3 uDOF;  //x:focus distance, y:focus radius, z:max radius
+uniform vec3 uFade; //x:start distance, y:half distance, z:near fade start
+
+attribute vec3 aPosition;
+attribute vec3 aEuler;
+attribute vec2 aMisc; //x:size, y:fade
+
+varying vec3 pposition;
+varying float psize;
+varying float palpha;
+varying float pdist;
+
+varying vec3 normX;
+varying vec3 normY;
+varying vec3 normZ;
+varying vec3 normal;
+
+varying float diffuse;
+varying float specular;
+varying float rstop;
+varying float distancefade;
+
+void main(void) {
+    vec4 pos = uModelview * vec4(aPosition + uOffset, 1.0);
+    gl_Position = uProjection * pos;
+    gl_PointSize = aMisc.x * uProjection[1][1] / -pos.z * uResolution.y * 0.5;
+
+    pposition = pos.xyz;
+    psize = aMisc.x;
+    pdist = length(pos.xyz);
+    palpha = smoothstep(0.0, 1.0, (pdist - 0.1) / uFade.z);
+
+    vec3 elrsn = sin(aEuler);
+    vec3 elrcs = cos(aEuler);
+    mat3 rotx = mat3(
+        1.0, 0.0, 0.0,
+        0.0, elrcs.x, elrsn.x,
+        0.0, -elrsn.x, elrcs.x
+    );
+    mat3 roty = mat3(
+        elrcs.y, 0.0, -elrsn.y,
+        0.0, 1.0, 0.0,
+        elrsn.y, 0.0, elrcs.y
+    );
+    mat3 rotz = mat3(
+        elrcs.z, elrsn.z, 0.0,
+        -elrsn.z, elrcs.z, 0.0,
+        0.0, 0.0, 1.0
+    );
+    mat3 rotmat = rotx * roty * rotz;
+    normal = rotmat[2];
+
+    mat3 trrotm = mat3(
+        rotmat[0][0], rotmat[1][0], rotmat[2][0],
+        rotmat[0][1], rotmat[1][1], rotmat[2][1],
+        rotmat[0][2], rotmat[1][2], rotmat[2][2]
+    );
+    normX = trrotm[0];
+    normY = trrotm[1];
+    normZ = trrotm[2];
+
+    const vec3 lit = vec3(0.6917144638660746, 0.6917144638660746, -0.20751433915982237);
+
+    float tmpdfs = dot(lit, normal);
+    if(tmpdfs < 0.0) {
+        normal = -normal;
+        tmpdfs = dot(lit, normal);
+    }
+    diffuse = 0.4 + tmpdfs;
+
+    vec3 eyev = normalize(-pos.xyz);
+    if(dot(eyev, normal) > 0.0) {
+        vec3 hv = normalize(eyev + lit);
+        specular = pow(max(dot(hv, normal), 0.0), 20.0);
+    }
+    else {
+        specular = 0.0;
+    }
+
+    rstop = clamp((abs(pdist - uDOF.x) - uDOF.y) / uDOF.z, 0.0, 1.0);
+    rstop = pow(rstop, 0.5);
+    //-0.69315 = ln(0.5)
+    distancefade = min(1.0, exp((uFade.x - pdist) * 0.69315 / uFade.y));
+}
+</script>
+
+<script id="sakura_point_fsh" type="x-shader/x_fragment">
+precision highp float;
+
+uniform vec3 uDOF;  //x:focus distance, y:focus radius, z:max radius
+uniform vec3 uFade; //x:start distance, y:half distance, z:near fade start
+
+uniform float uFogMode; // 1 = 混向深色（原版）  0 = 直接淡出 alpha
+
+const vec3 fadeCol = vec3(0.08, 0.03, 0.06);
+
+varying vec3 pposition;
+varying float psize;
+varying float palpha;
+varying float pdist;
+
+varying vec3 normX;
+varying vec3 normY;
+varying vec3 normZ;
+varying vec3 normal;
+
+varying float diffuse;
+varying float specular;
+varying float rstop;
+varying float distancefade;
+
+float ellipse(vec2 p, vec2 o, vec2 r) {
+    vec2 lp = (p - o) / r;
+    return length(lp) - 1.0;
+}
+
+void main(void) {
+    vec3 p = vec3(gl_PointCoord - vec2(0.5, 0.5), 0.0) * 2.0;
+    vec3 d = vec3(0.0, 0.0, -1.0);
+    float nd = normZ.z; //dot(-normZ, d);
+    if(abs(nd) < 0.0001) discard;
+
+    float np = dot(normZ, p);
+    vec3 tp = p + d * np / nd;
+    vec2 coord = vec2(dot(normX, tp), dot(normY, tp));
+
+    //angle = 15 degree
+    const float flwrsn = 0.258819045102521;
+    const float flwrcs = 0.965925826289068;
+    mat2 flwrm = mat2(flwrcs, -flwrsn, flwrsn, flwrcs);
+    vec2 flwrp = vec2(abs(coord.x), coord.y) * flwrm;
+
+    float r;
+    if(flwrp.x < 0.0) {
+        r = ellipse(flwrp, vec2(0.065, 0.024) * 0.5, vec2(0.36, 0.96) * 0.5);
+    }
+    else {
+        r = ellipse(flwrp, vec2(0.065, 0.024) * 0.5, vec2(0.58, 0.96) * 0.5);
+    }
+
+    if(r > rstop) discard;
+
+    vec3 col = mix(vec3(1.0, 0.8, 0.75), vec3(1.0, 0.9, 0.87), r);
+    float grady = mix(0.0, 1.0, pow(coord.y * 0.5 + 0.5, 0.35));
+    col *= vec3(1.0, grady, grady);
+    col *= mix(0.8, 1.0, pow(abs(coord.x), 0.3));
+    col = col * diffuse + specular;
+
+    col = mix(fadeCol, col, distancefade);
+
+    float alpha = (rstop > 0.001)? (0.5 - r / (rstop * 2.0)) : 1.0;
+    alpha = smoothstep(0.0, 1.0, alpha) * palpha;
+
+    // === 与原 demo 的差异 ===
+    // 原版：gl_FragColor = vec4(mix(fadeCol, col, distancefade) * 0.5, alpha)
+    //       —— 远景花瓣"变暗成深紫"，那是为深色背景设计的
+    // 这里：可选"淡出 alpha"，远景花瓣直接消失，不留下深色脏点
+    vec3 c = col;
+    if (uFogMode > 0.5) {
+        c = mix(fadeCol, col, distancefade);
+    } else {
+        alpha *= distancefade;
+    }
+
+    vec3 outc = pow(clamp(c, 0.0, 1.0), vec3(0.45454545454545));
+    gl_FragColor = vec4(outc * alpha, alpha);
+}
+</script>
+
+<script>
+(function () {
+  'use strict';
+
+  // ---------------- 与原 demo 一致的数学工具 ----------------
+  var Vector3 = {};
+  var Matrix44 = {};
+
+  Vector3.create = function (x, y, z) { return { x: x, y: y, z: z }; };
+  Vector3.dot = function (v0, v1) { return v0.x * v1.x + v0.y * v1.y + v0.z * v1.z; };
+  Vector3.cross = function (v, v0, v1) {
+    v.x = v0.y * v1.z - v0.z * v1.y;
+    v.y = v0.z * v1.x - v0.x * v1.z;
+    v.z = v0.x * v1.y - v0.y * v1.x;
+  };
+  Vector3.normalize = function (v) {
+    var l = v.x * v.x + v.y * v.y + v.z * v.z;
+    if (l > 0.00001) {
+      l = 1.0 / Math.sqrt(l);
+      v.x *= l; v.y *= l; v.z *= l;
+    }
+  };
+  Vector3.arrayForm = function (v) {
+    if (v.array) { v.array[0] = v.x; v.array[1] = v.y; v.array[2] = v.z; }
+    else { v.array = new Float32Array([v.x, v.y, v.z]); }
+    return v.array;
+  };
+
+  Matrix44.createIdentity = function () {
+    return new Float32Array([1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]);
+  };
+  Matrix44.loadProjection = function (m, aspect, vdeg, near, far) {
+    var h = near * Math.tan(vdeg * Math.PI / 180.0 * 0.5) * 2.0;
+    var w = h * aspect;
+    m[0] = 2.0 * near / w; m[1] = 0; m[2] = 0; m[3] = 0;
+    m[4] = 0; m[5] = 2.0 * near / h; m[6] = 0; m[7] = 0;
+    m[8] = 0; m[9] = 0; m[10] = -(far + near) / (far - near); m[11] = -1;
+    m[12] = 0; m[13] = 0; m[14] = -2.0 * far * near / (far - near); m[15] = 0;
+  };
+  Matrix44.loadLookAt = function (m, vpos, vlook, vup) {
+    var frontv = Vector3.create(vpos.x - vlook.x, vpos.y - vlook.y, vpos.z - vlook.z);
+    Vector3.normalize(frontv);
+    var sidev = Vector3.create(1.0, 0.0, 0.0);
+    Vector3.cross(sidev, vup, frontv);
+    Vector3.normalize(sidev);
+    var topv = Vector3.create(1.0, 0.0, 0.0);
+    Vector3.cross(topv, frontv, sidev);
+    Vector3.normalize(topv);
+
+    m[0] = sidev.x; m[1] = topv.x; m[2] = frontv.x; m[3] = 0;
+    m[4] = sidev.y; m[5] = topv.y; m[6] = frontv.y; m[7] = 0;
+    m[8] = sidev.z; m[9] = topv.z; m[10] = frontv.z; m[11] = 0;
+    m[12] = -(vpos.x * m[0] + vpos.y * m[4] + vpos.z * m[8]);
+    m[13] = -(vpos.x * m[1] + vpos.y * m[5] + vpos.z * m[9]);
+    m[14] = -(vpos.x * m[2] + vpos.y * m[6] + vpos.z * m[10]);
+    m[15] = 1;
+  };
+
+  var timeInfo = { start: 0, prev: 0, delta: 0, elapsed: 0 };
+
+  var gl = null;
+  var canvas = null;
+  var started = false;
+  var activeCount = 900;   // 实际绘制的花瓣数（从 1600 里抽样）
+  var fogMode = 0;         // 0 = 远景淡出（浅底推荐）  1 = 原版混向深色
+
+  var renderSpec = { width: 0, height: 0, aspect: 1, array: new Float32Array(3) };
+  renderSpec.setSize = function (w, h) {
+    renderSpec.width = w; renderSpec.height = h;
+    renderSpec.aspect = w / h;
+    renderSpec.array[0] = w; renderSpec.array[1] = h; renderSpec.array[2] = w / h;
+  };
+
+  function compileShader(shtype, shsrc) {
+    var retsh = gl.createShader(shtype);
+    gl.shaderSource(retsh, shsrc);
+    gl.compileShader(retsh);
+    if (!gl.getShaderParameter(retsh, gl.COMPILE_STATUS)) {
+      var errlog = gl.getShaderInfoLog(retsh);
+      gl.deleteShader(retsh);
+      console.error(errlog);
+      return null;
+    }
+    return retsh;
+  }
+
+  function createShader(vtxsrc, frgsrc, uniformlist, attrlist) {
+    var vsh = compileShader(gl.VERTEX_SHADER, vtxsrc);
+    var fsh = compileShader(gl.FRAGMENT_SHADER, frgsrc);
+    if (vsh == null || fsh == null) return null;
+
+    var prog = gl.createProgram();
+    gl.attachShader(prog, vsh);
+    gl.attachShader(prog, fsh);
+    gl.deleteShader(vsh);
+    gl.deleteShader(fsh);
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+      console.error(gl.getProgramInfoLog(prog));
+      return null;
+    }
+    if (uniformlist) {
+      prog.uniforms = {};
+      for (var i = 0; i < uniformlist.length; i++) {
+        prog.uniforms[uniformlist[i]] = gl.getUniformLocation(prog, uniformlist[i]);
+      }
+    }
+    if (attrlist) {
+      prog.attributes = {};
+      for (var j = 0; j < attrlist.length; j++) {
+        var attr = attrlist[j];
+        prog.attributes[attr] = gl.getAttribLocation(prog, attr);
+      }
+    }
+    return prog;
+  }
+
+  function useShader(prog) {
+    gl.useProgram(prog);
+    for (var attr in prog.attributes) gl.enableVertexAttribArray(prog.attributes[attr]);
+  }
+  function unuseShader(prog) {
+    for (var attr in prog.attributes) gl.disableVertexAttribArray(prog.attributes[attr]);
+    gl.useProgram(null);
+  }
+
+  // ---------------- 相机 / 投影（与原 demo 完全相同） ----------------
+  var projection = { angle: 60, nearfar: new Float32Array([0.1, 100.0]), matrix: Matrix44.createIdentity() };
+  var camera = {
+    position: Vector3.create(0, 0, 100),
+    lookat: Vector3.create(0, 0, 0),
+    up: Vector3.create(0, 1, 0),
+    dof: Vector3.create(10.0, 4.0, 8.0),
+    matrix: Matrix44.createIdentity()
+  };
+
+  var pointFlower = {};
+  var sceneStandBy = false;
+
+  var BlossomParticle = function () {
+    this.velocity = [0, 0, 0];
+    this.rotation = [0, 0, 0];
+    this.position = [0, 0, 0];
+    this.euler = [0, 0, 0];
+    this.size = 1.0;
+    this.alpha = 1.0;
+    this.zkey = 0.0;
+  };
+  BlossomParticle.prototype.setVelocity = function (x, y, z) { this.velocity[0]=x; this.velocity[1]=y; this.velocity[2]=z; };
+  BlossomParticle.prototype.setRotation = function (x, y, z) { this.rotation[0]=x; this.rotation[1]=y; this.rotation[2]=z; };
+  BlossomParticle.prototype.setPosition = function (x, y, z) { this.position[0]=x; this.position[1]=y; this.position[2]=z; };
+  BlossomParticle.prototype.setEulerAngles = function (x, y, z) { this.euler[0]=x; this.euler[1]=y; this.euler[2]=z; };
+  BlossomParticle.prototype.setSize = function (s) { this.size = s; };
+  BlossomParticle.prototype.update = function (dt) {
+    this.position[0] += this.velocity[0] * dt;
+    this.position[1] += this.velocity[1] * dt;
+    this.position[2] += this.velocity[2] * dt;
+    this.euler[0] += this.rotation[0] * dt;
+    this.euler[1] += this.rotation[1] * dt;
+    this.euler[2] += this.rotation[2] * dt;
+  };
+
+  function createPointFlowers() {
+    var prm = gl.getParameter(gl.ALIASED_POINT_SIZE_RANGE);
+    renderSpec.pointSize = { min: prm[0], max: prm[1] };
+
+    var vtxsrc = document.getElementById('sakura_point_vsh').textContent;
+    var frgsrc = document.getElementById('sakura_point_fsh').textContent;
+
+    pointFlower.program = createShader(
+      vtxsrc, frgsrc,
+      ['uProjection', 'uModelview', 'uResolution', 'uOffset', 'uDOF', 'uFade', 'uFogMode'],
+      ['aPosition', 'aEuler', 'aMisc']
+    );
+
+    useShader(pointFlower.program);
+    pointFlower.offset = new Float32Array([0, 0, 0]);
+    pointFlower.fader = Vector3.create(0.0, 10.0, 0.0);
+
+    pointFlower.numFlowers = 1600;
+    pointFlower.particles = new Array(pointFlower.numFlowers);
+    pointFlower.dataArray = new Float32Array(pointFlower.numFlowers * (3 + 3 + 2));
+    pointFlower.positionArrayOffset = 0;
+    pointFlower.eulerArrayOffset = pointFlower.numFlowers * 3;
+    pointFlower.miscArrayOffset = pointFlower.numFlowers * 6;
+
+    pointFlower.buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, pointFlower.buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, pointFlower.dataArray, gl.DYNAMIC_DRAW);
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+    unuseShader(pointFlower.program);
+
+    for (var i = 0; i < pointFlower.numFlowers; i++) {
+      pointFlower.particles[i] = new BlossomParticle();
+    }
+  }
+
+  function initPointFlowers() {
+    pointFlower.area = Vector3.create(20.0, 20.0, 20.0);
+    pointFlower.area.x = pointFlower.area.y * renderSpec.aspect;
+
+    pointFlower.fader.x = 10.0;
+    pointFlower.fader.y = pointFlower.area.z;
+    pointFlower.fader.z = 0.1;
+
+    var PI2 = Math.PI * 2.0;
+    var tmpv3 = Vector3.create(0, 0, 0);
+    var tmpv = 0;
+    var symmetryrand = function () { return (Math.random() * 2.0 - 1.0); };
+
+    for (var i = 0; i < pointFlower.numFlowers; i++) {
+      var tmpprtcl = pointFlower.particles[i];
+
+      tmpv3.x = symmetryrand() * 0.3 + 0.8;
+      tmpv3.y = symmetryrand() * 0.2 - 1.0;
+      tmpv3.z = symmetryrand() * 0.3 + 0.5;
+      Vector3.normalize(tmpv3);
+      tmpv = 2.0 + Math.random() * 1.0;
+      tmpprtcl.setVelocity(tmpv3.x * tmpv, tmpv3.y * tmpv, tmpv3.z * tmpv);
+
+      tmpprtcl.setRotation(
+        symmetryrand() * PI2 * 0.5,
+        symmetryrand() * PI2 * 0.5,
+        symmetryrand() * PI2 * 0.5
+      );
+
+      tmpprtcl.setPosition(
+        symmetryrand() * pointFlower.area.x,
+        symmetryrand() * pointFlower.area.y,
+        symmetryrand() * pointFlower.area.z
+      );
+
+      tmpprtcl.setEulerAngles(
+        Math.random() * Math.PI * 2.0,
+        Math.random() * Math.PI * 2.0,
+        Math.random() * Math.PI * 2.0
+      );
+
+      tmpprtcl.setSize(0.9 + Math.random() * 0.1);
+    }
+  }
+
+  function renderPointFlowers() {
+    var PI2 = Math.PI * 2.0;
+    var limit = [pointFlower.area.x, pointFlower.area.y, pointFlower.area.z];
+    var repeatPos = function (prt, cmp, limit) {
+      if (Math.abs(prt.position[cmp]) - prt.size * 0.5 > limit) {
+        if (prt.position[cmp] > 0) prt.position[cmp] -= limit * 2.0;
+        else prt.position[cmp] += limit * 2.0;
+      }
+    };
+    var repeatEuler = function (prt, cmp) {
+      prt.euler[cmp] = prt.euler[cmp] % PI2;
+      if (prt.euler[cmp] < 0.0) prt.euler[cmp] += PI2;
+    };
+
+    for (var i = 0; i < pointFlower.numFlowers; i++) {
+      var prtcl = pointFlower.particles[i];
+      // 原版这里传了 (dt, elapsed)；update 只用到第一个参数
+      prtcl.update(timeInfo.delta);
+      repeatPos(prtcl, 0, pointFlower.area.x);
+      repeatPos(prtcl, 1, pointFlower.area.y);
+      repeatPos(prtcl, 2, pointFlower.area.z);
+      repeatEuler(prtcl, 0);
+      repeatEuler(prtcl, 1);
+      repeatEuler(prtcl, 2);
+
+      prtcl.alpha = 1.0;
+      prtcl.zkey = (camera.matrix[2] * prtcl.position[0]
+                  + camera.matrix[6] * prtcl.position[1]
+                  + camera.matrix[10] * prtcl.position[2]
+                  + camera.matrix[14]);
+    }
+
+    pointFlower.particles.sort(function (p0, p1) { return p0.zkey - p1.zkey; });
+
+    var ipos = pointFlower.positionArrayOffset;
+    var ieuler = pointFlower.eulerArrayOffset;
+    var imisc = pointFlower.miscArrayOffset;
+    // 密度控制：从已按深度排好序的粒子中按固定步长抽样，
+    // 这样减少数量时深度顺序不变，不会出现"远处的花瓣跑到近处"
+    var stepK = pointFlower.numFlowers / activeCount;
+    for (var k = 0; k < activeCount; k++) {
+      var prtcl2 = pointFlower.particles[Math.floor(k * stepK)];
+      pointFlower.dataArray[ipos] = prtcl2.position[0];
+      pointFlower.dataArray[ipos + 1] = prtcl2.position[1];
+      pointFlower.dataArray[ipos + 2] = prtcl2.position[2];
+      ipos += 3;
+      pointFlower.dataArray[ieuler] = prtcl2.euler[0];
+      pointFlower.dataArray[ieuler + 1] = prtcl2.euler[1];
+      pointFlower.dataArray[ieuler + 2] = prtcl2.euler[2];
+      ieuler += 3;
+      pointFlower.dataArray[imisc] = prtcl2.size;
+      pointFlower.dataArray[imisc + 1] = prtcl2.alpha;
+      imisc += 2;
+    }
+
+    gl.enable(gl.BLEND);
+    // 预乘 alpha：rgb 已经乘过 alpha，所以用 ONE 而不是 SRC_ALPHA
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
+    var prog = pointFlower.program;
+    useShader(prog);
+
+    gl.uniformMatrix4fv(prog.uniforms.uProjection, false, projection.matrix);
+    gl.uniformMatrix4fv(prog.uniforms.uModelview, false, camera.matrix);
+    gl.uniform3fv(prog.uniforms.uResolution, renderSpec.array);
+    gl.uniform3fv(prog.uniforms.uDOF, Vector3.arrayForm(camera.dof));
+    gl.uniform3fv(prog.uniforms.uFade, Vector3.arrayForm(pointFlower.fader));
+    gl.uniform1f(prog.uniforms.uFogMode, fogMode);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, pointFlower.buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, pointFlower.dataArray, gl.DYNAMIC_DRAW);
+
+    gl.vertexAttribPointer(prog.attributes.aPosition, 3, gl.FLOAT, false, 0, pointFlower.positionArrayOffset * 4);
+    gl.vertexAttribPointer(prog.attributes.aEuler, 3, gl.FLOAT, false, 0, pointFlower.eulerArrayOffset * 4);
+    gl.vertexAttribPointer(prog.attributes.aMisc, 2, gl.FLOAT, false, 0, pointFlower.miscArrayOffset * 4);
+
+    // 与原版一致的 5 次绘制：4 个平铺偏移 + 主层
+    for (var d = 1; d < 2; d++) {
+      var zpos = d * -2.0;
+      pointFlower.offset[0] = pointFlower.area.x * -1.0;
+      pointFlower.offset[1] = pointFlower.area.y * -1.0;
+      pointFlower.offset[2] = pointFlower.area.z * zpos;
+      gl.uniform3fv(prog.uniforms.uOffset, pointFlower.offset);
+      gl.drawArrays(gl.POINTS, 0, activeCount);
+
+      pointFlower.offset[0] = pointFlower.area.x * -1.0;
+      pointFlower.offset[1] = pointFlower.area.y * 1.0;
+      gl.uniform3fv(prog.uniforms.uOffset, pointFlower.offset);
+      gl.drawArrays(gl.POINTS, 0, activeCount);
+
+      pointFlower.offset[0] = pointFlower.area.x * 1.0;
+      pointFlower.offset[1] = pointFlower.area.y * -1.0;
+      gl.uniform3fv(prog.uniforms.uOffset, pointFlower.offset);
+      gl.drawArrays(gl.POINTS, 0, activeCount);
+
+      pointFlower.offset[0] = pointFlower.area.x * 1.0;
+      pointFlower.offset[1] = pointFlower.area.y * 1.0;
+      gl.uniform3fv(prog.uniforms.uOffset, pointFlower.offset);
+      gl.drawArrays(gl.POINTS, 0, activeCount);
+    }
+
+    pointFlower.offset[0] = 0.0;
+    pointFlower.offset[1] = 0.0;
+    pointFlower.offset[2] = 0.0;
+    gl.uniform3fv(prog.uniforms.uOffset, pointFlower.offset);
+    gl.drawArrays(gl.POINTS, 0, activeCount);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    unuseShader(prog);
+
+    gl.disable(gl.BLEND);
+  }
+
+  // ---------------- 场景 ----------------
+  function createScene() {
+    createPointFlowers();
+    sceneStandBy = true;
+  }
+
+  function initScene() {
+    initPointFlowers();
+    camera.position.z = pointFlower.area.z + projection.nearfar[0];
+    projection.angle = Math.atan2(pointFlower.area.y, camera.position.z + pointFlower.area.z) * 180.0 / Math.PI * 2.0;
+    Matrix44.loadProjection(projection.matrix, renderSpec.aspect, projection.angle, projection.nearfar[0], projection.nearfar[1]);
+  }
+
+  function renderScene() {
+    Matrix44.loadLookAt(camera.matrix, camera.position, camera.lookat, camera.up);
+
+    gl.enable(gl.DEPTH_TEST);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.viewport(0, 0, renderSpec.width, renderSpec.height);
+    // 透明清屏：没有花瓣的地方 alpha = 0，页面背景才能透出来
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    renderPointFlowers();
+  }
+
+  // ---------------- 尺寸 ----------------
+  function setViewport() {
+    var rect = canvas.getBoundingClientRect();
+    var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    var w = Math.max(1, Math.round(rect.width * dpr));
+    var h = Math.max(1, Math.round(rect.height * dpr));
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width = w; canvas.height = h;
+    }
+    gl.viewport(0, 0, w, h);
+    renderSpec.setSize(w, h);
+  }
+
+  var resizeTimer = 0;
+  function onResize() {
+    if (!gl) return;
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () {
+      setViewport();
+      if (sceneStandBy) initScene();
+    }, 180);
+  }
+
+  // ---------------- 主循环 ----------------
+  var prev = performance.now();
+  var fpsAcc = 0, fpsN = 0;
+  var fpsEl = null;
+
+  function animate() {
+    var cur = performance.now();
+    var dt = (cur - prev) / 1000;
+    prev = cur;
+    if (dt > 0.05) dt = 0.05;      // 切标签页回来不要炸
+
+    timeInfo.elapsed = (cur - timeInfo.start) / 1000;
+    timeInfo.delta = dt;
+
+    renderScene();
+
+    fpsAcc += dt; fpsN++;
+    if (fpsAcc > 0.5 && fpsEl) {
+      fpsEl.textContent = Math.round(fpsN / fpsAcc);
+      fpsAcc = 0; fpsN = 0;
+    }
+    if (running) requestAnimationFrame(animate);
+  }
+
+  var running = false;
+  function startLoop() { if (!running) { running = true; prev = performance.now(); requestAnimationFrame(animate); } }
+  function stopLoop() { running = false; }
+
+  // ---------------- 初始化（等页面资源加载完之后） ----------------
+  var stateEl = null;
+  var loadAt = 0;
+
+  function fail(msg) {
+    if (stateEl) stateEl.textContent = msg;
+    console.error('[sakura] ' + msg);
+  }
+
+  function boot() {
+    if (started) return;
+    started = true;
+
+    canvas = document.getElementById('sakura');
+    stateEl = document.getElementById('sState');
+    fpsEl = document.getElementById('sFps');
+
+    try {
+      gl = canvas.getContext('webgl', {
+        alpha: true,
+        premultipliedAlpha: true,
+        antialias: false,
+        depth: true,
+        powerPreference: 'low-power'
+      });
+    } catch (e) { gl = null; }
+
+    if (!gl) { fail('不支持 WebGL'); return; }
+
+    canvas.addEventListener('webglcontextlost', function (e) {
+      e.preventDefault();
+      stopLoop();
+      fail('context lost');
+    });
+
+    setViewport();
+    createScene();
+    initScene();
+
+    timeInfo.start = performance.now();
+    timeInfo.prev = timeInfo.start;
+
+    renderScene();                    // 先画一帧，再淡入，避免出现空白帧
+    canvas.classList.add('on');
+    startLoop();
+
+    var ms = Math.round(performance.now() - loadAt);
+    stateEl.textContent = '已启动（load 后 ' + ms + 'ms）';
+    window.addEventListener('resize', onResize);
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) stopLoop();
+      else startLoop();
+    });
+  }
+
+  function schedule() {
+    loadAt = performance.now();
+    var go = function () {
+      // 放到下一帧，确保 load 之后的首屏已经画完
+      requestAnimationFrame(function () { boot(); });
+    };
+    if (window.requestIdleCallback) requestIdleCallback(go, { timeout: 2500 });
+    else setTimeout(go, 400);
+  }
+
+  if (document.readyState === 'complete') schedule();
+  else window.addEventListener('load', schedule);
+
+  // ---------------- 对照控制 ----------------
+  document.querySelectorAll('.seg button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.body.setAttribute('data-mode', b.getAttribute('data-m'));
+      document.querySelectorAll('.seg button').forEach(function (x) { x.classList.toggle('on', x === b); });
+    });
+  });
+  document.getElementById('cShow').addEventListener('change', function () {
+    document.getElementById('sakura').classList.toggle('on', this.checked);
+  });
+  document.getElementById('rVeil').addEventListener('input', function () {
+    document.documentElement.style.setProperty('--veil', this.value);
+  });
+  document.getElementById('rOp').addEventListener('input', function () {
+    document.documentElement.style.setProperty('--sakura-op', this.value);
+  });
+  document.getElementById('rCount').addEventListener('input', function () {
+    activeCount = parseInt(this.value, 10);
+    document.getElementById('sCount').textContent = activeCount;
+  });
+  document.getElementById('cFog').addEventListener('change', function () {
+    fogMode = this.checked ? 1 : 0;
+  });
+  document.getElementById('fold').addEventListener('click', function () {
+    var p = document.getElementById('panel');
+    p.classList.toggle('folded');
+    this.textContent = p.classList.contains('folded') ? '+' : '–';
+  });
+})();
+</script>
+</body>
+</html>
+
+

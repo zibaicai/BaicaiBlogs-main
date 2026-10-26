@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>主题样板 03 · 玻璃卡片层次对比</title>
+<style>
+  :root{
+    --text:#e8f2ff;
+    --muted:#a3b8d0;
+    --dim:#748ba3;
+    --tint:.085;
+    --blur:14px;
+    --edge:.26;
+    --edge2:.10;
+    --shade:.22;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;min-height:100%;background:#050a12;color:var(--text);
+    font-family:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* 会动的背景：用来检验卡片边界的稳定性 */
+  .bg{
+    position:fixed;inset:-25%;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(42% 42% at 22% 28%, #1d5fa8 0%, rgba(29,95,168,0) 62%),
+      radial-gradient(36% 36% at 76% 24%, #7fb6ff 0%, rgba(127,182,255,0) 60%),
+      radial-gradient(48% 48% at 62% 82%, #0e3358 0%, rgba(14,51,88,0) 66%),
+      radial-gradient(30% 30% at 12% 78%, #2a7d8a 0%, rgba(42,125,138,0) 60%),
+      linear-gradient(160deg,#04080f 0%,#091728 60%,#050c16 100%);
+    filter:blur(34px) saturate(135%);
+    animation:drift 24s ease-in-out infinite alternate;
+  }
+  @keyframes drift{
+    from{transform:translate3d(-2%,-1%,0) scale(1.02)}
+    to  {transform:translate3d(3%,2%,0) scale(1.10)}
+  }
+
+  .wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:38px 24px 90px}
+  h1{margin:0 0 10px;font-size:clamp(22px,3.2vw,32px);font-weight:650;letter-spacing:-.01em}
+  .sub{margin:0 0 26px;color:var(--muted);font-size:14px;line-height:1.8;max-width:64ch}
+
+  .panel{
+    display:flex;flex-wrap:wrap;gap:10px 26px;align-items:center;
+    padding:14px 18px;margin-bottom:28px;border-radius:14px;
+    background:rgba(6,14,24,.62);
+    -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.14),inset 0 0 0 1px rgba(255,255,255,.07);
+    font-size:12.5px;color:var(--muted);
+  }
+  .ctl{display:flex;align-items:center;gap:9px}
+  .ctl span{color:var(--dim);white-space:nowrap}
+  .ctl output{color:var(--text);font-variant-numeric:tabular-nums;min-width:38px}
+  input[type=range]{
+    -webkit-appearance:none;appearance:none;width:110px;height:3px;border-radius:2px;
+    background:rgba(255,255,255,.16);outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:11px;height:11px;border-radius:50%;
+    background:#7fc4ff;cursor:pointer;box-shadow:0 0 0 3px rgba(127,196,255,.18);
+  }
+  input[type=checkbox]{
+    appearance:none;width:14px;height:14px;border-radius:4px;margin:0;
+    background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);
+    cursor:pointer;position:relative;
+  }
+  input[type=checkbox]:checked{background:#7fc4ff;box-shadow:none}
+  input[type=checkbox]:checked::after{
+    content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;
+    border:solid #04101c;border-width:0 2px 2px 0;transform:rotate(42deg);
+  }
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+  .cell{display:flex;flex-direction:column;gap:9px}
+  .label{font-size:11.5px;letter-spacing:.06em;color:var(--dim)}
+  .label b{color:var(--muted);font-weight:600}
+
+  /* 通用卡片外观 */
+  .card{
+    border-radius:18px;padding:20px 22px;
+    background:linear-gradient(180deg,
+      rgba(150,200,255,var(--tint)),
+      rgba(255,255,255,calc(var(--tint) * 0.22)));
+    -webkit-backdrop-filter:blur(var(--blur)) saturate(140%);
+    backdrop-filter:blur(var(--blur)) saturate(140%);
+    min-height:168px;
+    transition:transform .3s cubic-bezier(.2,.8,.2,1);
+  }
+  .card:hover{transform:translateY(-3px)}
+  .card h3{margin:0 0 8px;font-size:16px;font-weight:600;line-height:1.4}
+  .card p{margin:0;font-size:13px;line-height:1.85;color:var(--muted)}
+  .card .meta{margin-top:12px;font-size:11px;color:var(--dim);display:flex;gap:8px}
+  .card .dot{width:5px;height:5px;border-radius:50%;background:var(--dim);align-self:center}
+
+  /* A：只有 border —— 水波亮部扫过时描边会"融掉" */
+  .v-border{
+    border:1px solid rgba(255,255,255,var(--edge));
+    box-shadow:none;
+  }
+  /* B：只有阴影 —— 边界完全靠投影，卡片看起来像"浮"而不是"在" */
+  .v-shadow{
+    border:none;
+    box-shadow:0 18px 50px -10px rgba(0,0,0,.85);
+  }
+  /* C：四层边缘结构 */
+  .v-four{
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,var(--edge)),
+      inset 0 -1px 0 rgba(0,0,0,var(--shade)),
+      inset 0 0 0 1px rgba(255,255,255,var(--edge2)),
+      0 1px 2px rgba(0,0,0,.20),
+      0 18px 44px -24px rgba(0,0,0,.85);
+  }
+  /* D：四层 + 文字底板（边界和可读性分离） */
+  .v-four-plate{
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,var(--edge)),
+      inset 0 -1px 0 rgba(0,0,0,var(--shade)),
+      inset 0 0 0 1px rgba(255,255,255,var(--edge2)),
+      0 1px 2px rgba(0,0,0,.20),
+      0 18px 44px -24px rgba(0,0,0,.85);
+  }
+  .v-four-plate .plate{
+    background:rgba(3,10,20,.40);
+    margin:-6px -10px;padding:6px 10px;border-radius:11px;
+  }
+  body.no-plate .v-four-plate .plate{background:transparent;margin:0;padding:0}
+
+  hr.sep{border:0;border-top:1px solid rgba(255,255,255,.08);margin:44px 0 30px}
+  h2.sec{margin:0 0 16px;font-size:15px;font-weight:600;color:var(--text)}
+  .note{margin-top:16px;font-size:12.5px;line-height:1.95;color:var(--dim);max-width:70ch}
+  .note b{color:var(--muted)}
+
+  /* 叠卡演示 */
+  .stack{position:relative;height:250px;max-width:420px}
+  .stack .card{position:absolute;left:0;width:100%}
+  .stack .c1{top:0;transform:rotate(-2.2deg)}
+  .stack .c2{top:66px;left:26px;transform:rotate(1.6deg)}
+  .stack .c3{top:132px;left:-14px;transform:rotate(-.8deg)}
+  .stack .card:hover{transform:scale(1.01)}
+  .warn{margin-top:14px;font-size:12.5px;color:#f0b4a8;line-height:1.85;max-width:60ch}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+
+<div class="wrap">
+  <h1>玻璃卡片的层次：四种做法并排看</h1>
+  <p class="sub">
+    背景在缓慢流动（这是水面的替身）。重点观察：当亮色区域扫到卡片边缘时，哪一张的"边界"会消失。
+    拖动滑块可以直接感受 tint / blur / 边缘强度的关系。
+  </p>
+
+  <div class="panel">
+    <label class="ctl"><span>tint</span><input type="range" id="rTint" min="0" max="0.30" step="0.005" value="0.085"><output id="oTint">0.085</output></label>
+    <label class="ctl"><span>blur</span><input type="range" id="rBlur" min="0" max="30" step="1" value="14"><output id="oBlur">14px</output></label>
+    <label class="ctl"><span>edge</span><input type="range" id="rEdge" min="0" max="0.7" step="0.01" value="0.26"><output id="oEdge">0.26</output></label>
+    <label class="ctl"><input type="checkbox" id="cPlate" checked><span>文字底板</span></label>
+  </div>
+
+  <div class="grid">
+    <div class="cell">
+      <div class="label"><b>A</b> · 只有 border</div>
+      <div class="card v-border">
+        <h3>用一条描边定义边界</h3>
+        <p>静态背景上够用。但描边的可见性依赖"与背景的对比度"，而背景在流动——亮部扫过来时，这条线会凭空消失。</p>
+        <div class="meta"><span>2026-10-25</span><span class="dot"></span><span>1px</span></div>
+      </div>
+    </div>
+
+    <div class="cell">
+      <div class="label"><b>B</b> · 只有 box-shadow</div>
+      <div class="card v-shadow">
+        <h3>用投影定义存在</h3>
+        <p>投影表达的是"离背景的距离"，不是"边界"。一块半透玻璃挂一条重阴影，看起来像悬浮的黑色板子压在画面上。</p>
+        <div class="meta"><span>2026-10-25</span><span class="dot"></span><span>0 18px 50px</span></div>
+      </div>
+    </div>
+
+    <div class="cell">
+      <div class="label"><b>C</b> · 四层边缘（推荐）</div>
+      <div class="card v-four">
+        <h3>顶边亮 + 底边暗 + 内描边</h3>
+        <p>层叠的两条 inset 做出倒角：亮边负责在深色背景上可见，暗边负责在亮色水波上可见。任意背景下总有一条线成立。</p>
+        <div class="meta"><span>2026-10-25</span><span class="dot"></span><span>4 layers</span></div>
+      </div>
+    </div>
+
+    <div class="cell">
+      <div class="label"><b>D</b> · 四层 + 文字底板</div>
+      <div class="card v-four-plate">
+        <div class="plate">
+          <h3>边界归边界，可读性归底板</h3>
+          <p>卡片边缘保持高透（负责观感），文字背后垫一块更实的窄板（负责可读性）。比整张卡片加不透明度更像真实材质。</p>
+        </div>
+        <div class="meta"><span>2026-10-25</span><span class="dot"></span><span>plate</span></div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="sep" />
+
+  <h2 class="sec">叠卡：玻璃叠玻璃是会翻车的</h2>
+  <div class="stack">
+    <div class="card v-four c1"><h3>最底层卡片</h3><p>它的文字会被上面两张透出来。</p></div>
+    <div class="card v-four c2"><h3>中间层</h3><p>到这一层时，三份文字叠在一起，已经看不清了。</p></div>
+    <div class="card v-four c3"><h3>最上层</h3><p>真实的玻璃叠玻璃就是这个下场。</p></div>
+  </div>
+  <p class="warn">
+    结论：浮层（弹窗、下拉、hover 抬起的卡片）必须换成不透明底板（alpha ≥ 0.85），
+    高透只能用在"同一平面"的卡片上。
+  </p>
+
+  <p class="note">
+    <b>可调参数建议做成令牌：</b>
+    <code style="color:#a9d4ff">--glass-tint</code> /
+    <code style="color:#a9d4ff">--glass-blur</code> /
+    <code style="color:#a9d4ff">--glass-edge</code> /
+    <code style="color:#a9d4ff">--glass-shade</code>。
+    水主题和樱花主题只要改这四个值，组件层一行都不用动。
+  </p>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement.style;
+  function bindRange(id, outId, cssVar, suffix) {
+    var el = document.getElementById(id);
+    var out = document.getElementById(outId);
+    el.addEventListener('input', function () {
+      var v = parseFloat(el.value);
+      root.setProperty(cssVar, suffix ? v + suffix : v);
+      out.textContent = suffix ? v + suffix : v.toFixed(3);
+    });
+  }
+  bindRange('rTint', 'oTint', '--tint', '');
+  bindRange('rBlur', 'oBlur', '--blur', 'px');
+  bindRange('rEdge', 'oEdge', '--edge', '');
+
+  document.getElementById('cPlate').addEventListener('change', function () {
+    document.body.classList.toggle('no-plate', !this.checked);
+  });
+})();
+</script>
+</body>
+</html>

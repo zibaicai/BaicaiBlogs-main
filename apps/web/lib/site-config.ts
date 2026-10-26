@@ -84,22 +84,22 @@ export interface SiteConfigState {
 
 export const DEFAULT_SITE_INFO: SiteInfo = {
   title: "YeLuo / 云端小屋",
-  faviconUrl: "https://github.com/zibaicai/BaicaiBlogs-main/blob/master/picture/00.png?raw=true",
+  faviconUrl: "/favicon.ico",
   authorName: "YeLuo",
   bio: "写代码，也拍照片。把项目、音乐和日常里值得留下的片段，收进同一片海。",
   navTitle: "YeLuo",
   navSuffix: "/",
   navAfter: "云端小屋",
-  avatarUrl: "https://github.com/zibaicai/BaicaiBlogs-main/blob/master/picture/00.png?raw=true",
+  avatarUrl: "/avatar.jpg",
   buildDate: "2026-03-23T00:00:00",
   enableLevelSystem: true,
   social: {
     github: "https://github.com/zibaicai",
     gitee: "https://github.com/zibaicai",
-    google: "mailto:<redacted>",
-    email: "<redacted>",
-    qq: "1165441364",
-    wechat: "<redacted>",
+    google: "",
+    email: "",
+    qq: "",
+    wechat: "",
   },
   icpConfig: {
     name: "豫ICP备 2024102131号",
@@ -111,11 +111,12 @@ export const DEFAULT_BACKGROUND: BackgroundConfig = {
   useGradient: false,
   themeColors: ["#a18cd1", "#fbc2eb", "#a1c4fd", "#c2e9fb"],
   bgImages: [
-    "https://bu.dusays.com/2026/03/24/69c1e38b4c370.jpg",
-    "https://bu.dusays.com/2026/03/24/69c26fe4acdb5.jpg",
-    "https://bu.dusays.com/2026/03/24/69c26fe4d9486.jpg",
+    "/bg-1.webp",
+    "/bg-2.webp",
+    "/bg-3.webp",
+    "/bg-5.webp",
   ],
-  defaultPostCover: "https://bu.dusays.com/2026/03/24/69c1e38b346cb.jpg",
+  defaultPostCover: "/bg-3.webp",
 };
 
 export const DEFAULT_DANMAKU: string[] = [
@@ -141,8 +142,8 @@ export const DEFAULT_MISC: MiscConfig = {
   picBedToken: "",
   cloudMusicIds: ["1809646618", "3361076230", "1859390262"],
   friendLinkApplyFormat:
-    "名称：YeLuo / 云端小屋\n简介：写代码，也拍照片。把项目、音乐和日常里值得留下的片段，收进同一片海。\n链接：https://www.zibaicai.cn\n头像：https://github.com/zibaicai/BaicaiBlogs-main/blob/master/picture/00.png?raw=true",
-  photoWallImage: "https://bu.dusays.com/2026/03/24/69c1e38b4c370.jpg",
+    "名称：YeLuo / 云端小屋\n简介：写代码，也拍照片。把项目、音乐和日常里值得留下的片段，收进同一片海。\n链接：https://www.zibaicai.cn\n头像：/avatar.jpg",
+  photoWallImage: "/bg-4.webp",
   counts: { photos: 128 },
   footerBadges: [
     { name: "Next.js 16", color: "text-sky-500", svg: "<path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z\"/>" },

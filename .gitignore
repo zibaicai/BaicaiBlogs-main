@@ -43,10 +43,6 @@ next-env.d.ts
 # IDE
 .idea/
 
-# 忽略不需要提交的子项目
-XHBlogs/
-my-blog-manager/
-
 # Java/Maven build artifacts
 my-blog-backend/target/
 my-blog-backend/.mvn/
@@ -58,22 +54,14 @@ my-blog-backend/.idea/
 my-blog-backend/.vscode/
 my-blog-backend/*.iml
 
-# Python backend (已被 Java 替代)
-my-blog-admin/cms_core/
-my-blog-admin/run_me.py
-my-blog-admin/launcher.py
 # 取消追踪 application.yml 文件
 application.yml
 # monorepo apps
 apps/*/node_modules/
 apps/*/dist/
 apps/web/.next/
-my-blog-public/node_modules/
-my-blog-public/.next/
 
-# 本地部署副本与 IDE 配置
-/my-blog-public/
-/my-blog-admin-spa/
+# 本地 IDE 配置
 /.vscode/
 
 # 本地部署/测试产物

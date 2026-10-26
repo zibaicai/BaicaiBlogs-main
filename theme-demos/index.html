@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>主题样板 · 索引</title>
+<style>
+  :root{
+    --text:#e8f2ff;--muted:#9ab4cf;--dim:#6d88a3;
+    --line:rgba(255,255,255,.09);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;min-height:100vh;background:#060b12;color:var(--text);
+    font-family:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .bg{
+    position:fixed;inset:-25%;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(45% 45% at 18% 24%, #1c4f86 0%, rgba(28,79,134,0) 62%),
+      radial-gradient(38% 38% at 78% 20%, #6f8fc8 0%, rgba(111,143,200,0) 60%),
+      radial-gradient(50% 50% at 60% 84%, #5a2740 0%, rgba(90,39,64,0) 62%),
+      linear-gradient(160deg,#04080f,#0a1424 65%,#080d16);
+    filter:blur(40px) saturate(130%);
+    animation:drift 26s ease-in-out infinite alternate;
+  }
+  @keyframes drift{from{transform:translate3d(-2%,-1%,0) scale(1.02)}to{transform:translate3d(3%,2%,0) scale(1.1)}}
+  .wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:64px 24px 90px}
+  h1{margin:0 0 12px;font-size:clamp(26px,4.4vw,40px);letter-spacing:-.02em;font-weight:650}
+  .sub{margin:0 0 40px;color:var(--muted);font-size:14.5px;line-height:1.85;max-width:60ch}
+  a.item{
+    display:block;text-decoration:none;color:inherit;
+    padding:20px 22px;margin-bottom:14px;border-radius:16px;
+    background:linear-gradient(180deg,rgba(150,200,255,.09),rgba(255,255,255,.022));
+    -webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.26),
+      inset 0 -1px 0 rgba(0,0,0,.22),
+      inset 0 0 0 1px rgba(255,255,255,.10),
+      0 18px 44px -26px rgba(0,0,0,.9);
+    transition:transform .25s cubic-bezier(.2,.8,.2,1),background .25s;
+  }
+  a.item:hover{transform:translateY(-2px);background:linear-gradient(180deg,rgba(170,215,255,.14),rgba(255,255,255,.04))}
+  .no{font-size:11px;letter-spacing:.2em;color:var(--dim);margin-bottom:8px}
+  .ttl{font-size:17px;font-weight:600;margin-bottom:6px}
+  .desc{font-size:13.5px;line-height:1.8;color:var(--muted)}
+  .tags{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap}
+  .tags span{font-size:11px;color:#a9d4ff;background:rgba(140,200,255,.10);border-radius:999px;padding:2px 9px;box-shadow:inset 0 0 0 1px rgba(160,210,255,.14)}
+  .note{margin-top:34px;font-size:12.5px;line-height:2;color:var(--dim);border-top:1px solid var(--line);padding-top:20px}
+  .note b{color:var(--muted)}
+  code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:#a9d4ff}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="wrap">
+  <h1>主题样板 · 索引</h1>
+  <p class="sub">
+    四个独立文件，双击即可在浏览器打开，全部零依赖、离线可用。
+    每个文件右下角都有控制面板，可以单独开关其中某一层效果，方便判断"是哪一层在起作用"。
+  </p>
+
+  <a class="item" href="01-water-theme.html">
+    <div class="no">SAMPLE 01</div>
+    <div class="ttl">水波纹主题 · 完整预览</div>
+    <div class="desc">全屏水面（解析环形波 + 折射 + 色散 + 镜面高光）+ 雨丝 + 点击涟漪 + 毛玻璃卡片。面板可分别关掉雨、涟漪、遮罩、毛玻璃，单独观察每一层。</div>
+    <div class="tags"><span>WebGL</span><span>点击涟漪</span><span>雨</span><span>backdrop-filter</span></div>
+  </a>
+
+  <a class="item" href="02-sakura-theme.html">
+    <div class="no">SAMPLE 02</div>
+    <div class="ttl">樱花主题 · 夜樱 / 日樱 / 白樱</div>
+    <div class="desc">点精灵程序化花瓣 + 欧拉角旋转 + 逐顶点光照 + 景深裁剪 + 泛光。点击迸发花瓣。三种配色共用同一套着色器（颜色全部走 uniform），可切换花瓣层在卡片前 / 后。</div>
+    <div class="tags"><span>WebGL</span><span>点精灵</span><span>bloom</span><span>可换配色</span></div>
+  </a>
+
+  <a class="item" href="03-glass-cards.html">
+    <div class="no">SAMPLE 03</div>
+    <div class="ttl">玻璃卡片层次 · 四种做法并排</div>
+    <div class="desc">只有 border / 只有 shadow / 四层边缘 / 四层 + 文字底板，背景是流动的，专门用来验证"描边会不会在亮部扫过时消失"。含叠卡翻车演示与可调令牌。</div>
+    <div class="tags"><span>纯 CSS</span><span>四层边缘</span><span>令牌</span></div>
+  </a>
+
+  <a class="item" href="04-click-ripple-light.html">
+    <div class="no">SAMPLE 04</div>
+    <div class="ttl">点击涟漪 · 轻量浮层（无 WebGL）</div>
+    <div class="desc">纯 Canvas2D 的点击涟漪，叠在浅色博客页面上，不需要卡片变透明。可以切换混合模式，直观看到"光"和"水"的差别，以及与深色页面的兼容性。</div>
+    <div class="tags"><span>Canvas2D</span><span>零依赖</span><span>混合模式</span></div>
+  </a>
+
+  <a class="item" href="05-sakura-bg.html">
+    <div class="no">SAMPLE 05</div>
+    <div class="ttl">樱花背景层 · 真 alpha（第一步：无泛光）</div>
+    <div class="desc">把原版樱花搬成透明图层，叠在你的真实页面截图上看合成效果。花瓣形状、颜色、深度排序与原版一致，只改了输出方式。可切换日/夜背景、蒙版强度、密度，以及"远景变暗"（原版行为）对照。</div>
+    <div class="tags"><span>WebGL</span><span>真 alpha</span><span>延迟加载</span></div>
+  </a>
+
+  <p class="note">
+    <b>对应任务：</b>主题任务1 = 水波纹主题（高透玻璃 + 水面折射 + 点击涟漪）；主题任务2 = 樱花主题。<br />
+    <b>观看建议：</b>01 重点看"折射是否可读"和毛玻璃卡片里的水是不是被柔化了；02 重点看花瓣压在文字上时是否可读；03 重点看 A 与 C 的边界稳定性差别；04 重点看低成本方案能到什么程度。
+  </p>
+</div>
+</body>
+</html>
