@@ -17,15 +17,18 @@ public class CommentController {
     @GetMapping("/public/comments")
     public ApiResponse<List<CommentResponse>> getComments(
             @RequestParam(required = false) Long postId,
-            @RequestParam(required = false) Long chatterId) {
+            @RequestParam(required = false) Long chatterId,
+            @RequestParam(required = false) Long momentId) {
         try {
             List<CommentResponse> comments;
             if (postId != null) {
                 comments = commentService.getCommentsByPostId(postId);
             } else if (chatterId != null) {
                 comments = commentService.getCommentsByChatterId(chatterId);
+            } else if (momentId != null) {
+                comments = commentService.getCommentsByMomentId(momentId);
             } else {
-                return ApiResponse.error("需要提供 postId 或 chatterId");
+                return ApiResponse.error("需要提供 postId、chatterId 或 momentId");
             }
             return ApiResponse.success(comments);
         } catch (Exception e) {

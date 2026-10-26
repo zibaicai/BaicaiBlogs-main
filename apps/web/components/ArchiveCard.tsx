@@ -47,10 +47,10 @@ export default function ArchiveCard({
         )}
       </div>
       <div className="archive-card-body">
-        {eyebrow && <div className="archive-card-eyebrow">{eyebrow}</div>}
         <h2 className="archive-card-title">{title}</h2>
         {description && <p className="archive-card-description">{description}</p>}
         <div className="archive-card-foot">
+          {eyebrow && <div className="archive-card-eyebrow">{eyebrow}</div>}
           <div className="flex flex-wrap items-center gap-1.5">{badges}</div>
           {meta && <span className="archive-card-meta">{meta}</span>}
           <span className="archive-card-arrow" aria-hidden="true">↗</span>

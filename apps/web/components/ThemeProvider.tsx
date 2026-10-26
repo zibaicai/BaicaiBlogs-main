@@ -89,6 +89,7 @@ function applyPalette(palette: ThemePalette | null) {
       "--ui-text-faint",
       "--ui-muted",
       "--ui-border",
+      "--ui-border-strong",
       "--ui-accent",
       "--ui-accent-hover",
       "--ui-accent-contrast",
@@ -114,7 +115,8 @@ function applyPalette(palette: ThemePalette | null) {
   root.style.setProperty("--ui-text-muted", palette.muted);
   root.style.setProperty("--ui-text-faint", `color-mix(in srgb, ${palette.muted} 72%, transparent)`);
   root.style.setProperty("--ui-muted", palette.muted);
-  root.style.setProperty("--ui-border", palette.border);
+  root.style.setProperty("--ui-border", `color-mix(in srgb, ${palette.border} 55%, transparent)`);
+  root.style.setProperty("--ui-border-strong", `color-mix(in srgb, ${palette.border} 78%, transparent)`);
   root.style.setProperty("--ui-accent", palette.accent);
   root.style.setProperty("--ui-accent-hover", palette.accent);
   root.style.setProperty("--ui-accent-contrast", palette.accentContrast);

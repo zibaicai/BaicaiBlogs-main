@@ -17,6 +17,9 @@ type Moment = {
   images?: string[];
   status?: string;
   visibility?: string;
+  authorId?: number;
+  authorName?: string;
+  authorAvatar?: string;
 };
 
 export default function MomentsPage() {
@@ -81,9 +84,9 @@ export default function MomentsPage() {
               count={`${moments.length} 条记录`}
               items={items}
               filters={filters}
-              views={["grid"]}
-              gridClassName="moment-grid"
-              pageSize={9}
+              views={["masonry"]}
+              initialMode="masonry"
+              pageSize={20}
               searchPlaceholder="搜索说说内容..."
               empty={
                 <div className="directory-card p-10 text-center">

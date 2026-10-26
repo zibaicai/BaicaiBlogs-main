@@ -53,7 +53,7 @@ export default function Navbar() {
           showNav ? "translate-y-0" : "-translate-y-full"
         } bg-white/40 dark:bg-slate-900/50 backdrop-blur-xl border-white/20 dark:border-white/5 shadow-sm`}
       >
-        <div className="w-[95%] max-w-7xl mx-auto h-16 flex items-center justify-between px-4 box-border">
+        <div className="w-full max-w-[1180px] mx-auto h-16 flex items-center justify-between px-4 sm:px-8 box-border">
           <Link
             href="/"
             className="text-xl font-black text-slate-800 dark:text-white tracking-tighter whitespace-nowrap"
@@ -110,7 +110,7 @@ export default function Navbar() {
               exit={{ opacity: 0, height: 0 }}
               className="lg:hidden overflow-hidden bg-transparent border-t border-white/20 dark:border-white/5"
             >
-              <div className="w-[95%] max-w-7xl mx-auto py-4 grid grid-cols-2 gap-2">
+              <div className="w-full max-w-[1180px] mx-auto px-4 sm:px-8 py-4 grid grid-cols-2 gap-2">
                 {NAV_LINKS.map((link) => (
                   <Link
                     key={link.href}

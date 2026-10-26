@@ -267,7 +267,15 @@ function Dashboard() {
   const pending = data.pending || {};
   const engagement = data.engagement || {};
   const health = data.health || {};
-  const activity: { date: string; posts: number }[] = data.activity || [];
+  const rawActivity: { date: string; posts: number }[] = data.activity || [];
+  const activityLookup = new Map(rawActivity.map((item) => [item.date, item.posts]));
+  const today = new Date();
+  const activity = Array.from({ length: 7 }, (_, index) => {
+    const day = new Date(today);
+    day.setDate(today.getDate() - (6 - index));
+    const date = `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, "0")}-${String(day.getDate()).padStart(2, "0")}`;
+    return { date, posts: activityLookup.get(date) || 0 };
+  });
   const maxActivity = Math.max(1, ...activity.map((item) => item.posts));
   const healthOk = health.status === "ok";
 
@@ -382,10 +390,13 @@ function Dashboard() {
             <TrendingUp size={17} className="text-indigo-400" />
           </div>
           <div className="flex h-28 items-end gap-2">
-            {activity.length === 0 && <div className="w-full text-center text-xs font-bold text-slate-600">暂无数据</div>}
             {activity.map((item) => (
               <div key={item.date} className="flex flex-1 flex-col items-center gap-2">
-                <div className="w-full rounded-t-md bg-indigo-400/70" style={{ height: `${Math.max(4, (item.posts / maxActivity) * 80)}px` }} title={`${item.date}: ${item.posts} 篇`} />
+                <div
+                  className={`w-4 rounded-t-md ${item.posts ? "bg-indigo-400/80" : "bg-white/10"}`}
+                  style={{ height: `${Math.max(3, (item.posts / maxActivity) * 80)}px` }}
+                  title={`${item.date}: ${item.posts} 篇`}
+                />
                 <span className="text-[8px] font-bold text-slate-600">{item.date.slice(5)}</span>
               </div>
             ))}

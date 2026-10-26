@@ -81,6 +81,10 @@ export interface Moment {
   date: string;
   images: string[];
   createdAt: string;
+  userId?: number;
+  authorId?: number;
+  authorName?: string;
+  authorAvatar?: string;
 }
 
 export interface Friend {

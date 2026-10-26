@@ -30,6 +30,13 @@ public class CommentService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<CommentResponse> getCommentsByMomentId(Long momentId) {
+        return commentRepository.findByMomentIdOrderByCreatedAtDesc(momentId).stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public CommentResponse createComment(CommentRequest request) {
         Comment comment = Comment.builder()

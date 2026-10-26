@@ -37,6 +37,9 @@ export default function TimelineClient({
         count={`总计 ${posts.length} 篇`}
         items={items}
         filters={filters}
+        compact
+        views={["grid", "timeline", "masonry"]}
+        pageSize={9}
         searchPlaceholder="搜索标题、标签或关键词..."
         initialMode="timeline"
         empty="这个频段没有接收到任何信号 📡"

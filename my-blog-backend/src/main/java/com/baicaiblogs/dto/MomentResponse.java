@@ -20,6 +20,9 @@ public class MomentResponse {
     private LocalDateTime date;
     private List<String> images;
     private Long userId;
+    private Long authorId;
+    private String authorName;
+    private String authorAvatar;
     private String status;
     private String visibility;
     private LocalDateTime createdAt;

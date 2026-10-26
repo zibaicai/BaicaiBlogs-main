@@ -24,6 +24,8 @@
     --ui-action: #4f46e5;
     --ui-action-hover: #4338ca;
     --ui-action-contrast: #ffffff;
+    --ui-border: rgba(15, 23, 42, 0.14);
+    --ui-border-strong: rgba(15, 23, 42, 0.24);
     --ui-success: #10b981;
     --ui-success-hover: #059669;
     --ui-success-contrast: #ffffff;
@@ -51,6 +53,8 @@
     --ui-action: #6366f1;
     --ui-action-hover: #818cf8;
     --ui-action-contrast: #ffffff;
+    --ui-border: rgba(255, 255, 255, 0.14);
+    --ui-border-strong: rgba(255, 255, 255, 0.24);
     --ui-success: #34d399;
     --ui-success-hover: #6ee7b7;
     --ui-success-contrast: #052e16;
@@ -3558,5 +3562,141 @@ html:not(.dark) .hv-empty {
 
   .archive-masonry .directory-card:not(.archive-card) .directory-card-media {
     min-height: 128px;
+  }
+}
+
+/* Multi-author moment bubbles. */
+.moment-author {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+}
+
+.moment-avatar {
+  display: inline-flex;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--ui-accent-soft);
+  color: var(--ui-accent-strong);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.moment-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.moment-author strong {
+  overflow: hidden;
+  color: var(--ui-text);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.moment-head time {
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+
+.moment-card {
+  position: relative;
+  border-radius: 1.25rem 1.25rem 1.25rem 0.35rem;
+}
+
+.archive-masonry-column:nth-child(2) .moment-card {
+  border-radius: 1.25rem 1.25rem 0.35rem 1.25rem;
+}
+
+.archive-masonry-column:nth-child(2) .moment-card::after {
+  right: -5px;
+  left: auto;
+  border-left-color: var(--ui-border);
+  border-right-color: transparent;
+}
+
+.moment-card::after {
+  content: "";
+  position: absolute;
+  bottom: 12px;
+  left: -5px;
+  width: 12px;
+  height: 12px;
+  border-bottom: 1px solid var(--ui-border);
+  border-left: 1px solid var(--ui-border);
+  background: var(--ui-secondary-bg);
+  transform: rotate(45deg);
+}
+
+@media (max-width: 767px) {
+  .moment-card,
+  .archive-masonry-column:nth-child(2) .moment-card {
+    border-radius: 1.15rem;
+  }
+
+  .moment-card::after,
+  .archive-masonry-column:nth-child(2) .moment-card::after {
+    display: none;
+  }
+}
+
+.directory-card-foot {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.directory-card-category {
+  color: var(--ui-accent-strong);
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.directory-card-tags {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.directory-card-tags .directory-tag {
+  font-size: 9px;
+  padding: 2px 6px;
+}
+
+.archive-card-foot .archive-card-eyebrow {
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+/* One content rail for all public pages. */
+.directory-shell {
+  width: 100%;
+  max-width: 1180px;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+@media (min-width: 640px) {
+  .directory-shell {
+    padding-inline: 2rem;
   }
 }

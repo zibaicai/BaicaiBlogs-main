@@ -2,7 +2,9 @@ package com.baicaiblogs.service;
 
 import com.baicaiblogs.dto.*;
 import com.baicaiblogs.entity.Moment;
+import com.baicaiblogs.entity.User;
 import com.baicaiblogs.repository.MomentRepository;
+import com.baicaiblogs.repository.UserRepository;
 import com.baicaiblogs.util.HtmlSanitizer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 public class MomentService {
 
     private final MomentRepository momentRepository;
+    private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
     private final MediaCleanupService mediaCleanupService;
     private final Parser markdownParser = Parser.builder().build();
@@ -141,6 +144,10 @@ public class MomentService {
     }
 
     private MomentResponse toResponse(Moment moment) {
+        User author = moment.getUserId() == null ? null : userRepository.findById(moment.getUserId()).orElse(null);
+        String authorName = author == null
+                ? "匿名用户"
+                : (author.getNickname() != null && !author.getNickname().isBlank() ? author.getNickname() : author.getUsername());
         return MomentResponse.builder()
                 .id(moment.getId())
                 .slug(moment.getSlug())
@@ -149,6 +156,9 @@ public class MomentService {
                 .date(moment.getDate())
                 .images(deserializeImages(moment.getImages()))
                 .userId(moment.getUserId())
+                .authorId(author == null ? null : author.getId())
+                .authorName(authorName)
+                .authorAvatar(author == null ? null : author.getAvatar())
                 .status(moment.getStatus())
                 .visibility(moment.getVisibility())
                 .createdAt(moment.getCreatedAt())

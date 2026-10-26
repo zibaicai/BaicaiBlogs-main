@@ -10,6 +10,9 @@ export interface MomentStory {
   date: string;
   images?: string[];
   visibility?: string;
+  authorId?: number;
+  authorName?: string;
+  authorAvatar?: string;
 }
 
 export default function MomentCard({
@@ -26,6 +29,12 @@ export default function MomentCard({
   return (
     <article className="moment-card" id={moment.slug}>
       <div className="moment-head">
+        <div className="moment-author">
+          <span className="moment-avatar">
+            {moment.authorAvatar ? <img src={moment.authorAvatar} alt="" /> : (moment.authorName || "匿").slice(0, 1)}
+          </span>
+          <strong>{moment.authorName || "匿名用户"}</strong>
+        </div>
         <time>{formatDate(moment.date)}</time>
         {moment.visibility === "PRIVATE" && (
           <span className="archive-badge archive-badge-sky"><Lock size={9} /> 仅自己可见</span>

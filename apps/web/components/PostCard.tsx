@@ -17,22 +17,24 @@ export default function PostCard({ post }: { post: Post }) {
         <span className="directory-date-badge">{formatDay(post.date)}</span>
       </div>
       <div className="directory-card-body">
-        {post.categoryPath && (
-          <div className="mb-2 text-[9px] font-black tracking-[0.12em] text-[var(--ui-accent)]">
-            {post.categoryPath.split("/").join(" / ")}
-          </div>
-        )}
         <h2 className="directory-card-title">{post.title}</h2>
         <p className="directory-card-description">{post.description || "暂无摘要"}</p>
-        {(post.tags || []).length > 0 && (
-          <div className="directory-card-tags">
-            {post.tags.map((tag) => (
-              <span key={tag} className="directory-tag">
-                #{tag}
-              </span>
-            ))}
-          </div>
-        )}
+        <div className="directory-card-foot">
+          {post.categoryPath && (
+            <span className="directory-card-category">
+              {post.categoryPath.split("/").join(" / ")}
+            </span>
+          )}
+          {(post.tags || []).length > 0 && (
+            <div className="directory-card-tags">
+              {post.tags.map((tag) => (
+                <span key={tag} className="directory-tag">
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </Link>
   );
