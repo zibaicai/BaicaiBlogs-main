@@ -1,6 +1,7 @@
 "use client";
 
 import type { ComponentType, ReactNode } from "react";
+import { useEffect, useState } from "react";
 import { Columns3, LayoutGrid, ListTree, type LucideIcon } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -69,8 +70,21 @@ export function ArchiveGrid({
 }
 
 export function ArchiveMasonry({ items }: ArchiveLayoutProps) {
-  const columns: ReactNode[][] = [[], []];
-  items.forEach((item, index) => columns[index % 2].push(item));
+  const [columnCount, setColumnCount] = useState(4);
+
+  useEffect(() => {
+    const update = () => {
+      if (window.innerWidth <= 640) setColumnCount(1);
+      else if (window.innerWidth <= 900) setColumnCount(2);
+      else setColumnCount(4);
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  const columns: ReactNode[][] = Array.from({ length: columnCount }, () => []);
+  items.forEach((item, index) => columns[index % columnCount].push(item));
 
   return (
     <div className="archive-masonry">
