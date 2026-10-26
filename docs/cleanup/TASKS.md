@@ -143,3 +143,17 @@
 - [x] C 端和管理端最终构建
 - [ ] 最新提交推送（当前网络重试中）
 - [ ] 最终部署后完整验收与回滚演练
+
+## 收尾结果（2026-10-26 18:45）
+
+- [x] C 端最终构建并发布：`/opt/baicai-public/releases/20261026-1845`
+- [x] 管理端最终构建并发布：`/var/www/admin`（`index-CqqCtZLJ.js`）
+- [x] 后端最终 jar 已部署，数据库密码通过 `/etc/baicai/backend.env` 注入
+- [x] C 端 release 回滚演练：`1845 → 1830 → 1845`，两次探活通过
+- [x] 管理端备份存在且 `index.html` 完整
+- [x] MySQL dump 已保存并校验大小
+- [x] 管理端历史备份已保留最近 8 个
+- [x] 普通管理员保存配置时后端保留私有 social 字段
+- [x] superadmin/admin 登录与角色验证通过
+- [x] 公开 API 不再返回 email/token/Typora 本地路径
+- [ ] GitHub 远端最新提交推送：本机到 github.com:443 连接被重置，待网络恢复后执行
