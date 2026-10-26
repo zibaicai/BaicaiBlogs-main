@@ -86,11 +86,12 @@ export default function MomentsPage() {
               filters={filters}
               views={["masonry"]}
               initialMode="masonry"
+              masonryColumns={2}
               pageSize={20}
               searchPlaceholder="搜索说说内容..."
               empty={
                 <div className="directory-card p-10 text-center">
-                  <div className="mb-5 text-5xl">🫧</div>
+                  <div className="mb-5 text-5xl">💤</div>
                   <h2 className="mb-3 text-xl font-bold text-slate-800 dark:text-white">这里还很安静</h2>
                   <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
                     第一条碎片出现时，这里会亮起来。

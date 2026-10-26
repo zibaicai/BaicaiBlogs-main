@@ -18,6 +18,7 @@ export interface ArchiveLayoutProps {
   featuredFirst?: boolean;
   compact?: boolean;
   gridClassName?: string;
+  masonryColumns?: number;
 }
 
 export function ArchiveTimeline({ items }: ArchiveLayoutProps) {
@@ -69,19 +70,19 @@ export function ArchiveGrid({
   );
 }
 
-export function ArchiveMasonry({ items }: ArchiveLayoutProps) {
-  const [columnCount, setColumnCount] = useState(4);
+export function ArchiveMasonry({ items, masonryColumns = 4 }: ArchiveLayoutProps) {
+  const [columnCount, setColumnCount] = useState(masonryColumns);
 
   useEffect(() => {
     const update = () => {
       if (window.innerWidth <= 640) setColumnCount(1);
-      else if (window.innerWidth <= 900) setColumnCount(2);
-      else setColumnCount(4);
+      else if (window.innerWidth <= 900) setColumnCount(Math.min(2, masonryColumns));
+      else setColumnCount(masonryColumns);
     };
     update();
     window.addEventListener("resize", update);
     return () => window.removeEventListener("resize", update);
-  }, []);
+  }, [masonryColumns]);
 
   const columns: ReactNode[][] = Array.from({ length: columnCount }, () => []);
   items.forEach((item, index) => columns[index % columnCount].push(item));
@@ -119,6 +120,7 @@ export default function DirectoryView({
   featuredFirst = false,
   compact = false,
   gridClassName = "",
+  masonryColumns = 4,
 }: ArchiveLayoutProps & { mode: ArchiveViewMode }) {
   const view = ARCHIVE_VIEWS[mode] || ARCHIVE_VIEWS.grid;
   const Layout = view.component;
@@ -128,6 +130,7 @@ export default function DirectoryView({
       featuredFirst={featuredFirst}
       compact={compact}
       gridClassName={gridClassName}
+      masonryColumns={masonryColumns}
     />
   );
 }

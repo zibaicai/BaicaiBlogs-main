@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Lock } from "lucide-react";
 import { formatDate } from "../lib/api";
+import MomentTail from "./MomentTail";
 
 export interface MomentStory {
   id?: number;
@@ -69,8 +70,10 @@ export default function MomentCard({
 
       <div className="moment-foot">
         <span>{commentCount > 0 ? `${commentCount} 条评论` : "暂无评论"}</span>
-        <Link href={`/moments#${encodeURIComponent(moment.slug)}`} className="moment-permalink">查看 ↗</Link>
+        <Link href={`/moments#${encodeURIComponent(moment.slug)}`} className="moment-permalink">查看 →</Link>
       </div>
+
+      <MomentTail />
     </article>
   );
 }

@@ -4458,3 +4458,48 @@ html:not(.dark) .hv-empty {
     font-size: 42px;
   }
 }
+
+/* Moment bubble: a real vector tail outside the clipped card surface. */
+.moment-card {
+  overflow: visible;
+  isolation: isolate;
+}
+
+.moment-card > *:not(.moment-tail) {
+  position: relative;
+  z-index: 1;
+}
+
+.moment-card::after {
+  display: none;
+}
+
+.moment-tail {
+  position: absolute;
+  bottom: 16px;
+  left: -13px;
+  z-index: 0;
+  width: 16px;
+  height: 28px;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.moment-tail path {
+  fill: var(--ui-secondary-bg);
+  stroke: var(--ui-border);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.archive-masonry-column:nth-child(even) .moment-tail {
+  right: -13px;
+  left: auto;
+  transform: scaleX(-1);
+}
+
+@media (max-width: 767px) {
+  .moment-tail {
+    display: none;
+  }
+}

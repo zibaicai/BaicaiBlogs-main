@@ -35,6 +35,7 @@ export default function DirectoryExplorer({
   pageSize = 0,
   initialPage = 1,
   empty = "暂无内容",
+  masonryColumns = 4,
 }: {
   eyebrow: string;
   title: string;
@@ -51,6 +52,7 @@ export default function DirectoryExplorer({
   pageSize?: number;
   initialPage?: number;
   empty?: ReactNode;
+  masonryColumns?: number;
 }) {
   const pathname = usePathname();
   const [activeFilter, setActiveFilter] = useState("all");
@@ -110,6 +112,7 @@ export default function DirectoryExplorer({
           featuredFirst={featuredFirst}
           compact={compact}
           gridClassName={gridClassName}
+          masonryColumns={masonryColumns}
         />
       )}
 
