@@ -6,11 +6,11 @@ import { useSiteConfigContext } from "../context/SiteConfigProvider";
 
 type Props = {
   postCount: number;
-  chatterCount: number;
+  momentCount: number;
   photoCount: number;
 };
 
-export default function HomeHero({ postCount, chatterCount, photoCount }: Props) {
+export default function HomeHero({ postCount, momentCount, photoCount }: Props) {
   const { siteInfo } = useSiteConfigContext();
 
   const socials = [
@@ -63,7 +63,7 @@ export default function HomeHero({ postCount, chatterCount, photoCount }: Props)
             <span>文章</span>
           </div>
           <div>
-            <strong>{String(chatterCount).padStart(2, "0")}</strong>
+            <strong>{String(momentCount).padStart(2, "0")}</strong>
             <span>说说</span>
           </div>
           <div>

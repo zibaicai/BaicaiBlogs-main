@@ -7,7 +7,13 @@ import { getCategories, getPosts } from "../../lib/server-api";
 export const dynamic = "force-dynamic";
 export const metadata = { title: "文字档案" };
 
-export default async function PostsPage() {
+export default async function PostsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const params = await searchParams;
+  const initialPage = Math.max(1, Number.parseInt(params.page || "1", 10) || 1);
   const [posts, categories] = await Promise.all([getPosts(), getCategories()]);
   const roots = categories.filter((category) => category.depth === 1);
   const rootByPost = (categoryPath?: string) =>
@@ -51,8 +57,11 @@ export default async function PostsPage() {
             count={`共 ${posts.length} 篇记录`}
             items={items}
             filters={filters}
+            views={["grid", "timeline", "masonry"]}
             featuredFirst
             compact
+            pageSize={9}
+            initialPage={initialPage}
             searchPlaceholder="搜索标题、摘要、分类或标签..."
             empty="还没有写下第一篇。"
           />

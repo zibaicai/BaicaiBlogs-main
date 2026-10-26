@@ -16,9 +16,9 @@ interface DashboardData {
 }
 
 const HEALTH_COPY = {
-  ok: { label: "正常", dot: "bg-emerald-400", text: "text-emerald-500 dark:text-emerald-400" },
-  degraded: { label: "注意", dot: "bg-amber-400", text: "text-amber-500 dark:text-amber-400" },
-  error: { label: "异常", dot: "bg-red-400", text: "text-red-500 dark:text-red-400" },
+  ok: { label: "正常", tone: "is-ok" },
+  degraded: { label: "注意", tone: "is-degraded" },
+  error: { label: "异常", tone: "is-error" },
 };
 
 export default function SiteDashboard() {
@@ -104,9 +104,9 @@ export default function SiteDashboard() {
       <div className="hv-metric" title={healthDetail}>
         <div className="hv-metric-icon"><HeartPulse size={15} /></div>
         <span className="hv-metric-label">STATUS</span>
-        <strong className={`hv-metric-value ${healthCopy.text}`}>
-          <span className={`hv-metric-dot ${healthCopy.dot}`} />
-          {data ? healthCopy.label : failed ? "未知" : "--"}
+        <strong className={`hv-metric-value hv-health ${healthCopy.tone}`}>
+          <span className="hv-metric-dot" />
+          {data ? healthCopy.label : failed ? "异常" : "--"}
         </strong>
         <span className="hv-metric-note">API · 数据库 · 对象存储</span>
       </div>

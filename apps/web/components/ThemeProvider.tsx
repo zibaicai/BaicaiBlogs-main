@@ -84,11 +84,17 @@ function applyPalette(palette: ThemePalette | null) {
       "--ui-surface",
       "--ui-surface-alt",
       "--ui-text",
+      "--ui-text-strong",
+      "--ui-text-muted",
+      "--ui-text-faint",
       "--ui-muted",
       "--ui-border",
       "--ui-accent",
       "--ui-accent-hover",
       "--ui-accent-contrast",
+      "--ui-action",
+      "--ui-action-hover",
+      "--ui-action-contrast",
       "--ui-success",
       "--ui-warning",
       "--ui-danger",
@@ -104,16 +110,22 @@ function applyPalette(palette: ThemePalette | null) {
   root.style.setProperty("--ui-surface", palette.surface);
   root.style.setProperty("--ui-surface-alt", palette.surfaceAlt);
   root.style.setProperty("--ui-text", palette.text);
+  root.style.setProperty("--ui-text-strong", palette.text);
+  root.style.setProperty("--ui-text-muted", palette.muted);
+  root.style.setProperty("--ui-text-faint", `color-mix(in srgb, ${palette.muted} 72%, transparent)`);
   root.style.setProperty("--ui-muted", palette.muted);
   root.style.setProperty("--ui-border", palette.border);
   root.style.setProperty("--ui-accent", palette.accent);
   root.style.setProperty("--ui-accent-hover", palette.accent);
   root.style.setProperty("--ui-accent-contrast", palette.accentContrast);
+  root.style.setProperty("--ui-action", `color-mix(in srgb, ${palette.accent} 58%, #111827)`);
+  root.style.setProperty("--ui-action-hover", `color-mix(in srgb, ${palette.accent} 46%, #111827)`);
+  root.style.setProperty("--ui-action-contrast", "#ffffff");
   root.style.setProperty("--ui-success", palette.success);
   root.style.setProperty("--ui-warning", palette.warning);
   root.style.setProperty("--ui-danger", palette.danger);
   root.style.setProperty("--ui-secondary-bg", palette.surfaceAlt);
-  root.style.setProperty("--ui-secondary-text", palette.text);
+  root.style.setProperty("--ui-secondary-text", palette.muted);
   root.style.setProperty("--ui-secondary-border", palette.border);
 }
 

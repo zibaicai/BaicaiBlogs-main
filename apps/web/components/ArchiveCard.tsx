@@ -1,32 +1,45 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-export default function ArchiveCard({
-  href,
-  image,
-  alt,
-  eyebrow,
-  title,
-  description,
-  meta,
-  badges,
-  imageClassName = "",
-}: {
+type ArchiveCardProps = {
   href: string;
   image?: string;
   alt: string;
+  media?: ReactNode;
   eyebrow?: ReactNode;
   title: string;
   description?: string;
   meta?: ReactNode;
   badges?: ReactNode;
   imageClassName?: string;
-}) {
-  return (
-    <Link href={href} className="archive-card group">
+  external?: boolean;
+};
+
+export default function ArchiveCard({
+  href,
+  image,
+  alt,
+  media,
+  eyebrow,
+  title,
+  description,
+  meta,
+  badges,
+  imageClassName = "",
+  external = false,
+}: ArchiveCardProps) {
+  const content = (
+    <>
       <div className="archive-card-media">
-        {image ? (
-          <img src={image} alt={alt} loading="lazy" className={`h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04] ${imageClassName}`} />
+        {media ? (
+          media
+        ) : image ? (
+          <img
+            src={image}
+            alt={alt}
+            loading="lazy"
+            className={`h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04] ${imageClassName}`}
+          />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-indigo-500/25 to-slate-900/40 text-[10px] font-black uppercase tracking-widest text-white/55">
             No Cover
@@ -43,6 +56,20 @@ export default function ArchiveCard({
           <span className="archive-card-arrow" aria-hidden="true">↗</span>
         </div>
       </div>
+    </>
+  );
+
+  if (external) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" className="archive-card group">
+        {content}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={href} className="archive-card group">
+      {content}
     </Link>
   );
 }

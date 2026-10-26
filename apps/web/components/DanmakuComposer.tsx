@@ -50,7 +50,7 @@ export default function DanmakuComposer() {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="flex items-center gap-2 rounded-full border border-white/40 bg-white/60 px-4 py-2.5 text-xs font-black text-slate-700 shadow-xl backdrop-blur-xl transition-all hover:-translate-y-0.5 hover:bg-white dark:border-white/10 dark:bg-slate-900/70 dark:text-slate-200"
+          className="danmaku-trigger flex items-center gap-2 rounded-full border px-4 py-2.5 text-xs font-black shadow-xl backdrop-blur-xl transition-all hover:-translate-y-0.5"
         >
           <MessageCircle size={15} className="text-indigo-500" />
           发弹幕

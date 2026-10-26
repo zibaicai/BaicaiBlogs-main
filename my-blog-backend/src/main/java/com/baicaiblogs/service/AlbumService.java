@@ -10,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,6 +21,7 @@ public class AlbumService {
 
     private final AlbumRepository albumRepository;
     private final ObjectMapper objectMapper;
+    private final MediaCleanupService mediaCleanupService;
 
     @Transactional(readOnly = true)
     public List<AlbumResponse> getAllAlbums() {
@@ -60,6 +63,7 @@ public class AlbumService {
     public AlbumResponse updateAlbum(String albumId, AlbumRequest request) {
         Album album = albumRepository.findByAlbumId(albumId)
                 .orElseThrow(() -> new RuntimeException("相册不存在: " + albumId));
+        Set<String> oldMedia = collectMedia(album);
 
         album.setTitle(request.getTitle());
         album.setDescription(request.getDescription());
@@ -81,15 +85,32 @@ public class AlbumService {
                     .collect(Collectors.toList()));
         }
 
-        return toResponse(albumRepository.save(album));
+        Album saved = albumRepository.saveAndFlush(album);
+        oldMedia.removeAll(collectMedia(saved));
+        mediaCleanupService.cleanupUnreferenced(oldMedia);
+        return toResponse(saved);
     }
 
     @Transactional
     public void deleteAlbum(String albumId) {
-        if (!albumRepository.existsByAlbumId(albumId)) {
-            throw new RuntimeException("相册不存在: " + albumId);
-        }
+        Album album = albumRepository.findByAlbumId(albumId)
+                .orElseThrow(() -> new RuntimeException("相册不存在: " + albumId));
+        Set<String> oldMedia = collectMedia(album);
         albumRepository.deleteByAlbumId(albumId);
+        albumRepository.flush();
+        mediaCleanupService.cleanupUnreferenced(oldMedia);
+    }
+
+    private Set<String> collectMedia(Album album) {
+        Set<String> media = new LinkedHashSet<>();
+        if (album.getCover() != null) media.add(album.getCover());
+        if (album.getPhotos() != null) {
+            album.getPhotos().stream()
+                    .map(Photo::getUrl)
+                    .filter(url -> url != null && !url.isBlank())
+                    .forEach(media::add);
+        }
+        return media;
     }
 
     private AlbumResponse toResponse(Album album) {

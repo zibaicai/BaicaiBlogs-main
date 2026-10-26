@@ -5,8 +5,8 @@ import { Loader2 } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import PageTransition from "../../components/PageTransition";
 import DirectoryExplorer from "../../components/DirectoryExplorer";
+import MomentCard from "../../components/MomentCard";
 import { useAuth } from "../../lib/auth";
-import { formatDate } from "../../lib/api";
 
 type Moment = {
   id: number;
@@ -47,33 +47,7 @@ export default function MomentsPage() {
     () =>
       moments.map((moment) => ({
         key: String(moment.slug || moment.id),
-        node: (
-          <article className="directory-card p-6 md:p-8">
-            <div className="mb-4 flex items-center justify-between gap-3">
-              <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                {formatDate(moment.date)}
-              </div>
-              {user && moment.visibility === "PRIVATE" && (
-                <span className="rounded-full bg-red-500/10 px-2 py-1 text-[9px] font-black text-red-400">
-                  仅自己可见
-                </span>
-              )}
-            </div>
-            <div
-              className="article-prose prose prose-slate dark:prose-invert max-w-none text-sm text-slate-800 dark:text-slate-200 md:text-base"
-              dangerouslySetInnerHTML={{ __html: moment.htmlContent || "" }}
-            />
-            {(moment.images || []).length > 0 && (
-              <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
-                {moment.images!.map((img) => (
-                  <a key={img} href={img} target="_blank" rel="noopener noreferrer" className="block aspect-square overflow-hidden rounded-2xl bg-white/40 dark:bg-slate-900/40">
-                    <img src={img} alt="" className="h-full w-full object-cover transition-transform duration-500 hover:scale-105" />
-                  </a>
-                ))}
-              </div>
-            )}
-          </article>
-        ),
+        node: <MomentCard moment={moment} />,
         searchText: [moment.date, (moment.htmlContent || "").replace(/<[^>]+>/g, " ")].join(" "),
         filterValues: [moment.visibility === "PRIVATE" ? "private" : "public"],
       })),
@@ -107,6 +81,9 @@ export default function MomentsPage() {
               count={`${moments.length} 条记录`}
               items={items}
               filters={filters}
+              views={["grid"]}
+              gridClassName="moment-grid"
+              pageSize={9}
               searchPlaceholder="搜索说说内容..."
               empty={
                 <div className="directory-card p-10 text-center">

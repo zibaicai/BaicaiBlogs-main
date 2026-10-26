@@ -1,13 +1,27 @@
 "use client";
 
-import type { ReactNode } from "react";
+import type { ComponentType, ReactNode } from "react";
+import { Columns3, LayoutGrid, ListTree, type LucideIcon } from "lucide-react";
 import { motion } from "framer-motion";
 
-export type DirectoryViewMode = "timeline" | "card";
+export type ArchiveViewMode = "grid" | "timeline" | "masonry";
 
-function TimelineView({ items }: { items: ReactNode[] }) {
+export interface ArchiveViewDefinition {
+  label: string;
+  icon: LucideIcon;
+  component: ComponentType<ArchiveLayoutProps>;
+}
+
+export interface ArchiveLayoutProps {
+  items: ReactNode[];
+  featuredFirst?: boolean;
+  compact?: boolean;
+  gridClassName?: string;
+}
+
+export function ArchiveTimeline({ items }: ArchiveLayoutProps) {
   return (
-    <div className="relative overflow-hidden p-2 md:p-10">
+    <div className="archive-timeline relative overflow-hidden p-2 md:p-10">
       <div className="absolute left-1/2 h-full -translate-x-1/2 rounded-full border-2 border-indigo-500/20" />
       <div className="relative z-10 flex flex-col gap-6">
         {items.map((item, index) => (
@@ -31,21 +45,14 @@ function TimelineView({ items }: { items: ReactNode[] }) {
   );
 }
 
-export default function DirectoryView({
+export function ArchiveGrid({
   items,
-  mode,
   featuredFirst = false,
   compact = false,
-}: {
-  items: ReactNode[];
-  mode: DirectoryViewMode;
-  featuredFirst?: boolean;
-  compact?: boolean;
-}) {
-  if (mode === "timeline") return <TimelineView items={items} />;
-
+  gridClassName = "",
+}: ArchiveLayoutProps) {
   return (
-    <div className={`directory-grid ${compact ? "directory-grid-compact" : ""}`}>
+    <div className={`directory-grid ${compact ? "directory-grid-compact" : ""} ${gridClassName}`}>
       {items.map((item, index) => (
         <motion.div
           key={index}
@@ -58,5 +65,55 @@ export default function DirectoryView({
         </motion.div>
       ))}
     </div>
+  );
+}
+
+export function ArchiveMasonry({ items }: ArchiveLayoutProps) {
+  const columns: ReactNode[][] = [[], []];
+  items.forEach((item, index) => columns[index % 2].push(item));
+
+  return (
+    <div className="archive-masonry">
+      {columns.map((column, columnIndex) => (
+        <div className="archive-masonry-column" key={columnIndex}>
+          {column.map((item, index) => (
+            <motion.div
+              key={`${columnIndex}-${index}`}
+              initial={{ opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.15 }}
+              transition={{ duration: 0.3, delay: Math.min(index, 5) * 0.04, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {item}
+            </motion.div>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export const ARCHIVE_VIEWS: Record<ArchiveViewMode, ArchiveViewDefinition> = {
+  grid: { label: "矩阵网格", icon: LayoutGrid, component: ArchiveGrid },
+  timeline: { label: "中枢链路", icon: ListTree, component: ArchiveTimeline },
+  masonry: { label: "瀑布流", icon: Columns3, component: ArchiveMasonry },
+};
+
+export default function DirectoryView({
+  items,
+  mode,
+  featuredFirst = false,
+  compact = false,
+  gridClassName = "",
+}: ArchiveLayoutProps & { mode: ArchiveViewMode }) {
+  const view = ARCHIVE_VIEWS[mode] || ARCHIVE_VIEWS.grid;
+  const Layout = view.component;
+  return (
+    <Layout
+      items={items}
+      featuredFirst={featuredFirst}
+      compact={compact}
+      gridClassName={gridClassName}
+    />
   );
 }

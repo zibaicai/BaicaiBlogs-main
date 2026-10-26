@@ -51,6 +51,7 @@ public class PostService {
     private final ObjectMapper objectMapper;
     /** 阿里云 OSS 文件存储服务，用于 MD 原文件的上传/删除（用户原始文件归档） */
     private final OssService ossService;
+    private final MediaCleanupService mediaCleanupService;
 
     // ==================== 公开接口（无需登录） ====================
 
@@ -545,6 +546,7 @@ public class PostService {
 
         // 保存旧 OSS 文件 URL，新文件上传且 DB 成功后删除旧文件
         String oldFileUrl = post.getFileUrl();
+        String oldCover = post.getCover();
 
         post.setTitle(request.getTitle());
         post.setDescription(request.getDescription());
@@ -574,10 +576,11 @@ public class PostService {
         String newFileUrl = ossService.uploadText(ossFileKey, markdownFull);
         post.setFileUrl(newFileUrl);
 
-        Post saved = postRepository.save(post);
+        Post saved = postRepository.saveAndFlush(post);
 
         // DB 保存成功后再删除旧文件（失败不抛异常，不阻断主流程）
         ossService.deleteFile(oldFileUrl);
+        mediaCleanupService.cleanupReplaced(oldCover, saved.getCover());
 
         return toResponse(saved);
     }
@@ -594,9 +597,12 @@ public class PostService {
         Post post = postRepository.findBySlugAndUserId(slug, userId)
                 .orElseThrow(() -> new RuntimeException("文章不存在或无权操作: " + slug));
         String oldFileUrl = post.getFileUrl();
+        String oldCover = post.getCover();
         // 先删 DB 记录，再删 OSS 文件（OSS 删除失败不阻断）
         postRepository.delete(post);
+        postRepository.flush();
         ossService.deleteFile(oldFileUrl);
+        mediaCleanupService.cleanupReplaced(oldCover, null);
     }
 
     /**

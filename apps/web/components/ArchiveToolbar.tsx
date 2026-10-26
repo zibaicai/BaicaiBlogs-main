@@ -1,8 +1,7 @@
 "use client";
 
-import { LayoutGrid, ListTree } from "lucide-react";
 import type { DirectoryFilter } from "./DirectoryExplorer";
-import type { DirectoryViewMode } from "./DirectoryView";
+import { ARCHIVE_VIEWS, type ArchiveViewMode } from "./DirectoryView";
 
 export default function ArchiveToolbar({
   filters,
@@ -10,14 +9,14 @@ export default function ArchiveToolbar({
   onFilter,
   mode,
   onMode,
-  showTimeline,
+  views,
 }: {
   filters: DirectoryFilter[];
   activeFilter: string;
   onFilter: (value: string) => void;
-  mode: DirectoryViewMode;
-  onMode: (mode: DirectoryViewMode) => void;
-  showTimeline: boolean;
+  mode: ArchiveViewMode;
+  onMode: (mode: ArchiveViewMode) => void;
+  views: ArchiveViewMode[];
 }) {
   return (
     <div className="directory-toolbar">
@@ -35,26 +34,25 @@ export default function ArchiveToolbar({
         ))}
       </div>
 
-      {showTimeline && (
+      {views.length > 1 && (
         <div className="directory-view-toggle" role="group" aria-label="视图模式">
-          <button
-            type="button"
-            onClick={() => onMode("timeline")}
-            aria-pressed={mode === "timeline"}
-            className={`directory-view-toggle-button ${mode === "timeline" ? "directory-view-toggle-active" : ""}`}
-          >
-            <ListTree size={15} />
-            <span className="hidden sm:inline">中枢链路</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => onMode("card")}
-            aria-pressed={mode === "card"}
-            className={`directory-view-toggle-button ${mode === "card" ? "directory-view-toggle-active" : ""}`}
-          >
-            <LayoutGrid size={15} />
-            <span className="hidden sm:inline">矩阵网格</span>
-          </button>
+          {views.map((key) => {
+            const view = ARCHIVE_VIEWS[key];
+            if (!view) return null;
+            const Icon = view.icon;
+            return (
+              <button
+                key={key}
+                type="button"
+                onClick={() => onMode(key)}
+                aria-pressed={mode === key}
+                className={`directory-view-toggle-button ${mode === key ? "directory-view-toggle-active" : ""}`}
+              >
+                <Icon size={15} />
+                <span className="hidden sm:inline">{view.label}</span>
+              </button>
+            );
+          })}
         </div>
       )}
     </div>

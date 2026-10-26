@@ -23,6 +23,7 @@ public class MomentService {
 
     private final MomentRepository momentRepository;
     private final ObjectMapper objectMapper;
+    private final MediaCleanupService mediaCleanupService;
     private final Parser markdownParser = Parser.builder().build();
     private final HtmlRenderer htmlRenderer = HtmlRenderer.builder().build();
 
@@ -81,6 +82,7 @@ public class MomentService {
         if (moment.getUserId() != null && !moment.getUserId().equals(userId)) {
             throw new RuntimeException("无权操作该动态");
         }
+        String oldImages = moment.getImages();
         moment.setContent(request.getContent());
         moment.setHtmlContent(renderMarkdown(request.getContent()));
         moment.setImages(serializeImages(request.getImages()));
@@ -88,7 +90,9 @@ public class MomentService {
         moment.setVisibility(normalizeVisibility(request.getVisibility()));
         if (request.getDate() != null) moment.setDate(request.getDate());
         if (moment.getUserId() == null) moment.setUserId(userId);
-        return toResponse(momentRepository.save(moment));
+        Moment saved = momentRepository.saveAndFlush(moment);
+        mediaCleanupService.cleanupRemoved(oldImages, saved.getImages());
+        return toResponse(saved);
     }
 
     @Transactional
@@ -98,7 +102,10 @@ public class MomentService {
         if (moment.getUserId() != null && !moment.getUserId().equals(userId)) {
             throw new RuntimeException("无权操作该动态");
         }
+        String oldImages = moment.getImages();
         momentRepository.delete(moment);
+        momentRepository.flush();
+        mediaCleanupService.cleanupRemoved(oldImages, null);
     }
 
     private String normalizeStatus(String value) {

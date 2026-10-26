@@ -7,22 +7,37 @@ import HomeHero from "../components/HomeHero";
 import HomeThemeToggle from "../components/HomeThemeToggle";
 import SiteDashboard from "../components/SiteDashboard";
 import { formatDate } from "../lib/api";
-import { getAlbums, getChatters, getPosts } from "../lib/server-api";
+import { getAlbums, getMoments, getPosts } from "../lib/server-api";
 
 export const dynamic = "force-dynamic";
 
+function plainText(value: string) {
+  return value
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCodePoint(Number.parseInt(code, 16)))
+    .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number.parseInt(code, 10)))
+    .replace(/&nbsp;/g, " ")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 export default async function Home() {
-  const [posts, chatters, albums] = await Promise.all([getPosts(), getChatters(), getAlbums()]);
+  const [posts, moments, albums] = await Promise.all([getPosts(), getMoments(), getAlbums()]);
 
   const recentPosts = posts.slice(0, 4).map((p) => ({
     ...p,
     formattedDate: formatDate(p.date),
   }));
 
-  const recentChatters = chatters.slice(0, 3).map((c) => ({
-    ...c,
-    description: c.description || c.content?.slice(0, 60) || "",
-    formattedDate: formatDate(c.date),
+  const recentMoments = moments.slice(0, 3).map((moment) => ({
+    ...moment,
+    description: plainText(moment.htmlContent || moment.content || "").slice(0, 80),
+    formattedDate: formatDate(moment.date),
   }));
 
   const photoCount = albums.reduce((total, album) => total + (album.photos?.length || 0), 0);
@@ -35,7 +50,7 @@ export default async function Home() {
           <section className="hv-hero">
             <HomeHero
               postCount={posts.length}
-              chatterCount={chatters.length}
+              momentCount={moments.length}
               photoCount={photoCount}
             />
             <AlbumAccordion albums={albums} />
@@ -95,16 +110,16 @@ export default async function Home() {
                 </div>
 
                 <div className="hv-moment-list">
-                  {recentChatters.map((chatter, index) => (
-                    <Link key={chatter.id || index} href="/moments" className="hv-moment-row">
+                  {recentMoments.map((moment, index) => (
+                    <Link key={moment.id || moment.slug || index} href="/moments" className="hv-moment-row">
                       <span className="hv-moment-mark">{String(index + 1).padStart(2, "0")}</span>
                       <span className="hv-moment-main">
-                        <strong>{chatter.description || "一条新的碎碎念。"}</strong>
-                        <span>{chatter.formattedDate}</span>
+                        <strong>{moment.description || "一条新的碎碎念。"}</strong>
+                        <span>{moment.formattedDate}</span>
                       </span>
                     </Link>
                   ))}
-                  {recentChatters.length === 0 && <p className="hv-empty">暂时没有新的碎碎念。</p>}
+                  {recentMoments.length === 0 && <p className="hv-empty">暂时没有新的碎碎念。</p>}
                 </div>
               </section>
 

@@ -111,7 +111,7 @@ public class SiteConfigService {
         config.setConfigValue(request.getConfigValue());
         config.setDescription(request.getDescription());
 
-        SiteConfig saved = siteConfigRepository.save(config);
+        SiteConfig saved = siteConfigRepository.saveAndFlush(config);
         mediaCleanupService.cleanupRemoved(oldValue, request.getConfigValue());
         return toResponse(saved);
     }

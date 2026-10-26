@@ -1,15 +1,36 @@
 "use client";
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 // 🌟 引入你的图床工具组件 (请根据你实际的文件夹层级调整相对路径)
 import FloatingImageTool from '../editor/FloatingImageTool';
-import MediaField from '../ui/MediaField';
+import { api } from '../../lib/api';
 
 export default function ProfileSection({ formData, handleUpdate, pushToQueue }: any) {
   // 🌟 终极防崩溃兜底
   const safeData = formData || {};
   const safeSocial = safeData.social || {};
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [avatarError, setAvatarError] = useState('');
+
+  const uploadAvatar = async (file?: File | null) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setAvatarError('请选择图片文件');
+      return;
+    }
+    setAvatarUploading(true);
+    setAvatarError('');
+    try {
+      const res = await api.uploadImage(file);
+      handleUpdate('avatarUrl', res.data);
+    } catch (error) {
+      setAvatarError(error instanceof Error ? error.message : '头像上传失败');
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
 
   // 🌟 控制图床工具的状态
   const [isImageToolOpen, setIsImageToolOpen] = useState(false);
@@ -48,11 +69,44 @@ export default function ProfileSection({ formData, handleUpdate, pushToQueue }: 
       <motion.section initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="bg-white/40 dark:bg-slate-900/40 backdrop-blur-2xl border border-white/50 dark:border-slate-800/50 rounded-[40px] p-8 shadow-2xl relative">
         <div className="flex flex-col md:flex-row gap-12 items-start">
 
-          {/* 左侧：头像预览区域 */}
-          <div className="relative group shrink-0 self-center md:self-start flex flex-col items-center gap-4">
-            <motion.div whileHover={{ rotate: 0, scale: 1.05 }} className="w-40 h-40 rounded-[32px] p-1.5 bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 shadow-2xl rotate-6 transition-all duration-500">
+          {/* 左侧：头像预览与唯一上传入口 */}
+          <div className="relative group shrink-0 self-center md:self-start flex flex-col items-center gap-3">
+            <motion.div
+              whileHover={{ rotate: 0, scale: 1.03 }}
+              className="relative w-40 h-40 rounded-[32px] p-1.5 bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 shadow-2xl rotate-6 transition-all duration-500 cursor-pointer"
+              role="button"
+              tabIndex={0}
+              aria-label="更换头像"
+              onClick={() => avatarInputRef.current?.click()}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  avatarInputRef.current?.click();
+                }
+              }}
+              onDragOver={(event) => event.preventDefault()}
+              onDrop={(event) => {
+                event.preventDefault();
+                void uploadAvatar(event.dataTransfer.files?.[0]);
+              }}
+            >
               <img src={safeData.avatarUrl || ''} alt="Avatar" className="w-full h-full rounded-[26px] object-cover bg-white dark:bg-slate-900 border-2 border-white dark:border-slate-800" />
+              <span className="absolute inset-1.5 flex items-center justify-center rounded-[26px] bg-slate-950/55 text-[11px] font-black text-white opacity-0 transition-opacity group-hover:opacity-100">
+                {avatarUploading ? '上传中…' : '更换头像'}
+              </span>
             </motion.div>
+            <input
+              ref={avatarInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(event) => {
+                void uploadAvatar(event.target.files?.[0]);
+                event.target.value = '';
+              }}
+            />
+            <p className="text-[10px] font-bold text-slate-400">点击或拖拽更换头像</p>
+            {avatarError && <p className="text-[10px] font-bold text-red-400">{avatarError}</p>}
           </div>
 
           {/* 右侧：表单配置区域 */}
@@ -98,19 +152,6 @@ export default function ProfileSection({ formData, handleUpdate, pushToQueue }: 
                     ☁️ 图床
                   </button>
                 </div>
-              </div>
-
-              {/* 头像上传 */}
-              <div className="col-span-1 md:col-span-2">
-                <MediaField
-                  label="头像"
-                  hint="建议使用正方形图片"
-                  value={safeData.avatarUrl ? [safeData.avatarUrl] : []}
-                  onChange={(images) => handleUpdate('avatarUrl', images[0] || '')}
-                  multiple={false}
-                  max={1}
-                  kind="image"
-                />
               </div>
 
               <div className="col-span-1 md:col-span-2">

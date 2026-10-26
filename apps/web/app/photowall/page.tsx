@@ -119,7 +119,8 @@ export default function PhotoWallPage() {
               items={items}
               filters={filters}
               compact
-              showTimeline={false}
+              views={["grid"]}
+              pageSize={12}
               searchPlaceholder="搜索相册标题或简介..."
               empty="还没有公开的影像。"
             />
