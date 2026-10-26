@@ -4544,3 +4544,43 @@ html:not(.dark) .hv-empty {
     border-image-width: 24px;
   }
 }
+
+/* /moments is a conversation thread, not a two-column masonry grid. */
+.moment-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.moment-row {
+  display: flex;
+  width: 100%;
+}
+
+.moment-row[data-side="left"] {
+  justify-content: flex-start;
+}
+
+.moment-row[data-side="right"] {
+  justify-content: flex-end;
+}
+
+.moment-row .moment-card {
+  width: fit-content;
+  min-width: min(280px, 100%);
+  max-width: min(620px, 72%);
+}
+
+.moment-row[data-side="right"] .moment-card {
+  border-image-source: url("/moments/bubble-right-light.svg");
+}
+
+.dark .moment-row[data-side="right"] .moment-card {
+  border-image-source: url("/moments/bubble-right-dark.svg");
+}
+
+@media (max-width: 767px) {
+  .moment-row .moment-card {
+    max-width: 88%;
+  }
+}

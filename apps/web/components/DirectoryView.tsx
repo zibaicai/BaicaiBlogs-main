@@ -2,10 +2,10 @@
 
 import type { ComponentType, ReactNode } from "react";
 import { useEffect, useState } from "react";
-import { Columns3, LayoutGrid, ListTree, type LucideIcon } from "lucide-react";
+import { Columns3, LayoutGrid, ListTree, MessageCircle, type LucideIcon } from "lucide-react";
 import { motion } from "framer-motion";
 
-export type ArchiveViewMode = "grid" | "timeline" | "masonry";
+export type ArchiveViewMode = "grid" | "timeline" | "masonry" | "thread";
 
 export interface ArchiveViewDefinition {
   label: string;
@@ -70,8 +70,7 @@ export function ArchiveGrid({
   );
 }
 
-export function ArchiveMasonry({ items, masonryColumns = 4 }: ArchiveLayoutProps) {
-  const [columnCount, setColumnCount] = useState(masonryColumns);
+export function ArchiveMasonry({ items, masonryColumns = 4 }: ArchiveLayoutProps) {  const [columnCount, setColumnCount] = useState(masonryColumns);
 
   useEffect(() => {
     const update = () => {
@@ -108,10 +107,30 @@ export function ArchiveMasonry({ items, masonryColumns = 4 }: ArchiveLayoutProps
   );
 }
 
+export function ArchiveThread({ items }: ArchiveLayoutProps) {
+  return (
+    <div className="moment-thread">
+      {items.map((item, index) => (
+        <motion.div
+          key={index}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: Math.min(index, 8) * 0.03, ease: [0.22, 1, 0.36, 1] }}
+          className="moment-row"
+          data-side={index % 2 === 0 ? "left" : "right"}
+        >
+          {item}
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
 export const ARCHIVE_VIEWS: Record<ArchiveViewMode, ArchiveViewDefinition> = {
   grid: { label: "矩阵网格", icon: LayoutGrid, component: ArchiveGrid },
   timeline: { label: "中枢链路", icon: ListTree, component: ArchiveTimeline },
   masonry: { label: "瀑布流", icon: Columns3, component: ArchiveMasonry },
+  thread: { label: "交错对话", icon: MessageCircle, component: ArchiveThread },
 };
 
 export default function DirectoryView({

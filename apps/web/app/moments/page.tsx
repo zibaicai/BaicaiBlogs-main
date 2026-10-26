@@ -84,9 +84,8 @@ export default function MomentsPage() {
               count={`${moments.length} 条记录`}
               items={items}
               filters={filters}
-              views={["masonry"]}
-              initialMode="masonry"
-              masonryColumns={2}
+              views={["thread"]}
+              initialMode="thread"
               pageSize={20}
               searchPlaceholder="搜索说说内容..."
               empty={
