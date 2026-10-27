@@ -188,6 +188,15 @@ export const api = {
   logout: () => request<void>("/auth/logout", { method: "POST", credentials: "include" }),
   myPosts: () => request<Post[]>("/admin/posts/mine"),
   myProjects: () => request<Project[]>("/admin/projects/mine"),
+  createProject: (project: Partial<Project>) =>
+    request<Project>("/admin/projects", { method: "POST", body: JSON.stringify(project) }),
+  updateProject: (projectId: string, project: Partial<Project>) =>
+    request<Project>(`/admin/projects/${encodeURIComponent(projectId)}`, {
+      method: "PUT",
+      body: JSON.stringify(project),
+    }),
+  deleteProject: (projectId: string) =>
+    request<void>(`/admin/projects/${encodeURIComponent(projectId)}`, { method: "DELETE" }),
   getOverview: () => request<any>("/admin/overview"),
   publicPosts: () => request<Post[]>("/public/posts"),
 

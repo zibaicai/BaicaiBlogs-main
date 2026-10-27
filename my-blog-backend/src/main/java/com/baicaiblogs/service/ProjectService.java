@@ -120,6 +120,7 @@ public class ProjectService {
                 .githubUrl(project.getGithubUrl())
                 .tags(deserializeTags(project.getTags()))
                 .sortOrder(project.getSortOrder())
+                .visibility(project.getVisibility())
                 .build();
     }
 }

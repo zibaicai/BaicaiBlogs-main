@@ -20,4 +20,5 @@ public class ProjectResponse {
     private String githubUrl;
     private List<String> tags;
     private Integer sortOrder;
+    private String visibility;
 }

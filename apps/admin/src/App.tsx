@@ -19,6 +19,10 @@ import {
   Loader2,
   LogOut,
   PenLine,
+  Pencil,
+  Plus,
+  Trash2,
+  X,
   Settings,
   Sparkles,
   TrendingUp,
@@ -588,6 +592,18 @@ function Posts() {
 function Projects() {
   const { data, loading, error, reload } = useLoad<any>(() => api.myProjects());
   const list = data?.data || [];
+  const [formOpen, setFormOpen] = useState(false);
+  const [editing, setEditing] = useState<Any>(null);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({
+    projectId: "",
+    name: "",
+    description: "",
+    icon: "🚀",
+    githubUrl: "",
+    tags: "",
+    sortOrder: "0",
+  });
 
   const toggle = async (projectId: string, value?: string) => {
     try {
@@ -598,11 +614,81 @@ function Projects() {
     }
   };
 
+  const openCreate = () => {
+    setEditing(null);
+    setForm({
+      projectId: `proj_${Date.now()}`,
+      name: "",
+      description: "",
+      icon: "🚀",
+      githubUrl: "",
+      tags: "",
+      sortOrder: "0",
+    });
+    setFormOpen(true);
+  };
+
+  const openEdit = (project: Any) => {
+    setEditing(project);
+    setForm({
+      projectId: project.projectId,
+      name: project.name || "",
+      description: project.description || "",
+      icon: project.icon || "🚀",
+      githubUrl: project.githubUrl || "",
+      tags: (project.tags || []).join(", "),
+      sortOrder: String(project.sortOrder ?? 0),
+    });
+    setFormOpen(true);
+  };
+
+  const save = async () => {
+    if (!form.name.trim()) {
+      alert("请填写项目名称");
+      return;
+    }
+    setSaving(true);
+    const payload = {
+      projectId: form.projectId.trim(),
+      name: form.name.trim(),
+      description: form.description.trim(),
+      icon: form.icon.trim() || "🚀",
+      githubUrl: form.githubUrl.trim(),
+      tags: form.tags.split(/[,，]/).map((tag) => tag.trim()).filter(Boolean),
+      sortOrder: Number(form.sortOrder) || 0,
+    };
+    try {
+      if (editing) await api.updateProject(editing.projectId, payload);
+      else await api.createProject(payload);
+      setFormOpen(false);
+      reload();
+    } catch (e) {
+      alert("保存失败：" + (e instanceof Error ? e.message : "未知错误"));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const remove = async (project: Any) => {
+    if (!window.confirm(`确定删除项目「${project.name}」吗？此操作不可恢复。`)) return;
+    try {
+      await api.deleteProject(project.projectId);
+      reload();
+    } catch (e) {
+      alert("删除失败：" + (e instanceof Error ? e.message : "未知错误"));
+    }
+  };
+
   return (
     <div className="flex flex-col gap-5">
-      <div>
-        <h1 className="text-3xl font-black text-white">项目</h1>
-        <p className="text-sm text-slate-400 mt-1 font-bold">公开项目会出现在 C 端 Projects Matrix</p>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-black text-white">项目</h1>
+          <p className="text-sm text-slate-400 mt-1 font-bold">公开项目会出现在 C 端 Projects Matrix</p>
+        </div>
+        <button onClick={openCreate} className="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-2.5 text-xs font-black text-white">
+          <Plus size={15} /> 新建项目
+        </button>
       </div>
 
       {loading && <div className="text-slate-400 flex items-center gap-2"><Loader2 className="animate-spin" size={16} />加载中…</div>}
@@ -622,18 +708,72 @@ function Projects() {
               <VisibilityBadge value={project.visibility} />
             </div>
             <div className="text-xs text-slate-400 mt-3 line-clamp-2">{project.description}</div>
-            <div className="flex justify-end mt-4">
+            {project.tags?.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {project.tags.map((tag: string) => <span key={tag} className="rounded-full bg-white/5 px-2 py-1 text-[9px] font-bold text-slate-400">#{tag}</span>)}
+              </div>
+            )}
+            <div className="flex flex-wrap items-center justify-end gap-2 mt-4">
               <button
                 onClick={() => toggle(project.projectId, project.visibility)}
                 className="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-[10px] font-black uppercase tracking-widest transition-colors"
               >
                 切换可见性
               </button>
+              <button onClick={() => openEdit(project)} className="inline-flex items-center gap-1 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-[10px] font-black">
+                <Pencil size={12} /> 编辑
+              </button>
+              <button onClick={() => void remove(project)} className="inline-flex items-center gap-1 px-3 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-300 text-[10px] font-black">
+                <Trash2 size={12} /> 删除
+              </button>
             </div>
           </div>
         ))}
       </div>
       {!loading && list.length === 0 && <div className="text-center py-16 text-slate-500 font-bold">暂无项目</div>}
+
+      {formOpen && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm" onClick={() => setFormOpen(false)}>
+          <div className="w-full max-w-lg rounded-3xl border border-white/10 bg-slate-900 p-6 shadow-2xl" onClick={(event) => event.stopPropagation()}>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-black text-white">{editing ? "编辑项目" : "新建项目"}</h2>
+                <p className="mt-1 text-xs text-slate-400">项目会显示在 C 端 Projects Matrix。</p>
+              </div>
+              <button onClick={() => setFormOpen(false)} className="rounded-full p-2 text-slate-400 hover:bg-white/10"><X size={16} /></button>
+            </div>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 sm:col-span-2">项目名称
+                <input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} className="admin-input mt-2 w-full" placeholder="例如：个人博客" />
+              </label>
+              <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400">图标
+                <input value={form.icon} onChange={(event) => setForm({ ...form, icon: event.target.value })} className="admin-input mt-2 w-full" placeholder="🚀" maxLength={10} />
+              </label>
+              <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400">排序
+                <input type="number" value={form.sortOrder} onChange={(event) => setForm({ ...form, sortOrder: event.target.value })} className="admin-input mt-2 w-full" />
+              </label>
+              <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 sm:col-span-2">项目 ID
+                <input value={form.projectId} onChange={(event) => setForm({ ...form, projectId: event.target.value })} disabled={!!editing} className="admin-input mt-2 w-full font-mono disabled:opacity-50" />
+              </label>
+              <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 sm:col-span-2">描述
+                <textarea value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} rows={3} className="admin-input mt-2 w-full resize-y" placeholder="项目简介" />
+              </label>
+              <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 sm:col-span-2">GitHub 地址
+                <input value={form.githubUrl} onChange={(event) => setForm({ ...form, githubUrl: event.target.value })} className="admin-input mt-2 w-full" placeholder="https://github.com/..." />
+              </label>
+              <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 sm:col-span-2">标签
+                <input value={form.tags} onChange={(event) => setForm({ ...form, tags: event.target.value })} className="admin-input mt-2 w-full" placeholder="用逗号分隔，例如：Next.js, Spring Boot" />
+              </label>
+            </div>
+            <div className="mt-6 flex justify-end gap-2">
+              <button onClick={() => setFormOpen(false)} className="rounded-xl bg-white/10 px-4 py-2.5 text-xs font-black text-slate-300">取消</button>
+              <button onClick={() => void save()} disabled={saving} className="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-2.5 text-xs font-black text-white disabled:opacity-50">
+                {saving ? <Loader2 size={14} className="animate-spin" /> : null} 保存项目
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
