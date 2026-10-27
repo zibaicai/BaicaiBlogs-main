@@ -127,8 +127,8 @@ export function ArchiveThread({ items }: ArchiveLayoutProps) {
 }
 
 export const ARCHIVE_VIEWS: Record<ArchiveViewMode, ArchiveViewDefinition> = {
-  grid: { label: "矩阵网格", icon: LayoutGrid, component: ArchiveGrid },
-  timeline: { label: "中枢链路", icon: ListTree, component: ArchiveTimeline },
+  grid: { label: "网格", icon: LayoutGrid, component: ArchiveGrid },
+  timeline: { label: "时间线", icon: ListTree, component: ArchiveTimeline },
   masonry: { label: "瀑布流", icon: Columns3, component: ArchiveMasonry },
   thread: { label: "交错对话", icon: MessageCircle, component: ArchiveThread },
 };
