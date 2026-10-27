@@ -5245,3 +5245,19 @@ html:not(.dark) .hv-empty {
   .articles-shell { margin-top: 5rem; }
   .wechat-article { font-size: 15px; line-height: 1.85; }
 }
+
+.directory-card-corner-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 5;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(2, 6, 23, 0.58);
+  padding: 4px 9px;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  backdrop-filter: blur(8px);
+}

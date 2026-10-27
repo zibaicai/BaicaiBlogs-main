@@ -15,6 +15,7 @@ export interface ArchiveItemCardProps {
   category?: string;
   tags?: string[];
   meta?: ReactNode;
+  cornerBadge?: ReactNode;
   media?: ArchiveMedia;
 }
 
@@ -27,6 +28,7 @@ export default function ArchiveItemCard({
   category,
   tags = [],
   meta,
+  cornerBadge,
   media,
 }: ArchiveItemCardProps) {
   const content = (
@@ -56,6 +58,7 @@ export default function ArchiveItemCard({
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         {label && <span className="directory-date-badge">{label}</span>}
+        {cornerBadge && <span className="directory-card-corner-badge">{cornerBadge}</span>}
       </div>
 
       <div className="directory-card-body">

@@ -28,7 +28,7 @@ export default function ProjectsBoard({ projects }: { projects: Project[] }) {
           description={project.description}
           category="PROJECT"
           tags={project.tags || []}
-          meta={project.githubUrl ? "GitHub" : undefined}
+          cornerBadge={project.githubUrl ? "GitHub" : undefined}
           media={{ kind: "icon", content: project.icon || "🚀" }}
         />
       ),
