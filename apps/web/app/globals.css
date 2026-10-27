@@ -5003,3 +5003,151 @@ html:not(.dark) .hv-empty {
   .music-player-inner { padding: 7px 12px; }
   .music-layout-switch { display: none; }
 }
+
+/* Keep the music workspace inside the viewport; each pane owns its scroll. */
+.music-app-page {
+  height: 100dvh;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding-top: 4rem;
+  padding-bottom: 76px;
+}
+.music-app-page > div { height: 100%; min-height: 0; }
+.music-main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+.music-main .music-topbar { flex: 0 0 auto; margin-bottom: 12px; }
+.music-main .music-workspace {
+  flex: 1;
+  min-height: 0;
+  align-items: stretch;
+}
+.music-main .music-sidebar,
+.music-main .music-center,
+.music-main .music-comments-side {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+}
+.music-main .music-sidebar { padding: 10px; }
+.music-main .music-sidebar-tabs { flex: 0 0 auto; }
+.music-main .music-sidebar-list {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  overflow-y: auto;
+}
+.music-main .music-now { flex: 0 0 auto; }
+.music-main .music-pane-tabs { flex: 0 0 auto; }
+.music-main .music-pane-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+.music-main .music-pane-body .comment-section {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  backdrop-filter: none;
+}
+.music-main .music-comments-side {
+  padding: 12px;
+  overflow-y: auto;
+}
+.music-main .music-comments-side .comment-section {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  backdrop-filter: none;
+}
+.music-main .music-lyrics { max-height: none; }
+.music-player-bar { height: 68px; }
+.music-app-page .music-player-inner { height: 100%; box-sizing: border-box; }
+
+@media (max-width: 1023px) {
+  .music-app-page {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+    padding-bottom: 88px;
+  }
+  .music-app-page > div,
+  .music-main {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+  .music-main .music-workspace { display: grid; }
+  .music-main .music-sidebar,
+  .music-main .music-center,
+  .music-main .music-comments-side {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+  .music-main .music-sidebar-list { max-height: 250px; overflow-y: auto; }
+  .music-main .music-pane-body { overflow: visible; }
+}
+
+/* Keep the generic comment empty state unchanged; music has its own wrapper. */
+.comment-section .comment-empty {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 88px;
+  text-align: initial;
+}
+.music-comment-section .comment-empty {
+  flex-direction: column;
+  gap: 5px;
+  text-align: center;
+}
+.music-comment-section .comment-empty strong {
+  color: var(--ui-text);
+  font-size: 13px;
+}
+.music-comment-section .comment-empty span { font-size: 11px; }
+.music-comment-section .comment-empty-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 5px;
+}
+.music-comment-section .comment-empty-actions button,
+.music-comment-section .comment-empty-actions a {
+  border-radius: var(--radius-pill);
+  background: var(--ui-accent-soft);
+  padding: 6px 11px;
+  color: var(--ui-accent-strong);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+/* Animation wrapper, not the player bar, owns the full content height. */
+.music-app-page > div:first-of-type {
+  height: 100%;
+  min-height: 0;
+}
+.music-main {
+  margin-top: 0 !important;
+}
+.music-app-page > .music-player-bar {
+  height: 68px;
+}
+
+@media (min-width: 1024px) {
+  body.music-route { overflow: hidden; }
+  body.music-route footer { display: none; }
+}

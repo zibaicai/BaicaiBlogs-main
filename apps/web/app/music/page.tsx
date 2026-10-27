@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Disc3, Flame, Heart, ListMusic, Loader2, Music2, Pause, Play, SkipBack, SkipForward, ThumbsDown, UserRound } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import PageTransition from "../../components/PageTransition";
-import CommentSection from "../../components/comments/CommentSection";
+import MusicCommentSection from "../../components/comments/MusicCommentSection";
 import { musicApi, type MusicPlaylist, type MusicTrack } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
 import { useMusic } from "../../components/MusicProvider";
@@ -79,6 +79,11 @@ export default function MusicPage() {
     return () => query.removeEventListener("change", update);
   }, []);
 
+  useEffect(() => {
+    document.body.classList.add("music-route");
+    return () => document.body.classList.remove("music-route");
+  }, []);
+
   const selectPlaylist = async (item: MusicPlaylist) => {
     try {
       const detail = item.tracks ? item : await musicApi.publicPlaylist(item.slug);
@@ -141,16 +146,7 @@ export default function MusicPage() {
   const externalHref = currentSong?.externalUrl || currentTrack?.externalUrl;
 
   const commentsPanel = commentsTargetId ? (
-    <CommentSection
-      targetType="TRACK"
-      targetId={commentsTargetId}
-      title="歌曲评论"
-      emptyTitle="还没有评论"
-      emptyDescription="成为第一个讨论这首歌的人"
-      emptyActionLabel="写评论"
-      externalHref={externalHref}
-      externalLabel="去网易云查看热评"
-    />
+    <MusicCommentSection targetId={commentsTargetId} externalHref={externalHref} />
   ) : (
     <div className="music-pane-empty">选择一首推荐歌曲后查看评论。</div>
   );
@@ -172,10 +168,10 @@ export default function MusicPage() {
   );
 
   return (
-    <div className="min-h-screen relative pb-28">
+    <div className="music-app-page">
       <Navbar />
       <PageTransition>
-        <main className="directory-shell py-20">
+        <main className="directory-shell music-main">
           <header className="music-topbar">
             <div>
               <div className="music-kicker">BAICAI / MUSIC</div>

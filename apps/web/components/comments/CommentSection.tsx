@@ -187,24 +187,28 @@ export default function CommentSection({
       {loading ? (
         <div className="comment-loading"><Loader2 className="animate-spin" size={16} /> 正在加载评论…</div>
       ) : comments.length === 0 ? (
-        <div className="comment-empty">
-          {emptyTitle && <strong>{emptyTitle}</strong>}
-          {emptyDescription && <span>{emptyDescription}</span>}
-          <div className="comment-empty-actions">
-            <button
-              type="button"
-              onClick={() => {
-                if (canComment) textareaRef.current?.focus();
-                else window.location.href = "/login";
-              }}
-            >
-              {emptyActionLabel}
-            </button>
-            {externalHref && externalLabel && (
-              <a href={externalHref} target="_blank" rel="noopener noreferrer">{externalLabel}</a>
-            )}
+        emptyTitle || emptyDescription ? (
+          <div className="comment-empty">
+            {emptyTitle && <strong>{emptyTitle}</strong>}
+            {emptyDescription && <span>{emptyDescription}</span>}
+            <div className="comment-empty-actions">
+              <button
+                type="button"
+                onClick={() => {
+                  if (canComment) textareaRef.current?.focus();
+                  else window.location.href = "/login";
+                }}
+              >
+                {emptyActionLabel}
+              </button>
+              {externalHref && externalLabel && (
+                <a href={externalHref} target="_blank" rel="noopener noreferrer">{externalLabel}</a>
+              )}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="comment-empty">还没有评论，来写第一条吧。</div>
+        )
       ) : (
         <div className="comment-list">
           {comments.map((comment) => (
