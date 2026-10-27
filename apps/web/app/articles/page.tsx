@@ -51,6 +51,10 @@ export default function ArticlesPage() {
       node: <ArticleCard key={article.slug} article={article} />,
       searchText: [article.title, article.summary, article.categoryPath, ...(article.tags || [])].join(" "),
       filterValues: root ? [`category-${root.id}`] : [],
+      title: article.title,
+      tags: article.tags,
+      date: article.publishedAt,
+      updatedAt: article.updatedAt,
     };
   });
 
@@ -74,6 +78,7 @@ export default function ArticlesPage() {
               compact
               gridClassName="cover-grid"
               pageSize={12}
+              defaultSort="newest"
               searchPlaceholder="搜索标题、摘要、分类或标签..."
               empty="还没有发布文章。"
             />

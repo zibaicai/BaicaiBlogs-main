@@ -42,6 +42,10 @@ export default async function PostsPage({
       node: <PostCard key={post.slug} post={post} />,
       searchText: [post.title, post.description, post.categoryPath, ...(post.tags || [])].join(" "),
       filterValues: root ? [`category-${root.id}`] : [],
+      title: post.title,
+      tags: post.tags,
+      date: post.date,
+      updatedAt: post.updatedAt,
     };
   });
 
@@ -63,6 +67,7 @@ export default async function PostsPage({
             gridClassName="cover-grid"
             pageSize={12}
             initialPage={initialPage}
+            defaultSort="newest"
             searchPlaceholder="搜索标题、摘要、分类或标签..."
             empty="还没有写下第一篇。"
           />

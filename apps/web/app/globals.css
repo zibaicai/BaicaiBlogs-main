@@ -5272,3 +5272,301 @@ html:not(.dark) .hv-empty {
 .cover-grid .directory-card-footnote {
   color: rgba(255, 255, 255, 0.58);
 }
+
+/* Shared archive filters: keep the default toolbar quiet and reveal secondary filters on demand. */
+.directory-tab-scroll {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.directory-toolbar-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.directory-sort-select {
+  width: 132px !important;
+  height: 36px !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+  background: rgba(255, 255, 255, 0.24) !important;
+  padding-inline: 0.7rem !important;
+  font-size: 11px !important;
+}
+
+.dark .directory-sort-select {
+  border-color: rgba(255, 255, 255, 0.09) !important;
+  background: rgba(15, 23, 42, 0.34) !important;
+}
+
+.directory-filter-trigger {
+  display: inline-flex;
+  height: 36px;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 0.7rem;
+  background: rgba(255, 255, 255, 0.24);
+  padding: 0 0.7rem;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 800;
+  transition: all 180ms ease;
+}
+
+.dark .directory-filter-trigger {
+  border-color: rgba(255, 255, 255, 0.09);
+  background: rgba(15, 23, 42, 0.34);
+  color: #94a3b8;
+}
+
+.directory-filter-trigger:hover,
+.directory-filter-trigger.is-active {
+  border-color: rgba(129, 140, 248, 0.45);
+  background: rgba(99, 102, 241, 0.14);
+  color: #6366f1;
+}
+
+.directory-filter-count {
+  display: inline-flex;
+  min-width: 17px;
+  height: 17px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #6366f1;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.archive-active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin: -0.65rem 0 1rem;
+}
+
+.archive-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid rgba(99, 102, 241, 0.22);
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.1);
+  padding: 0.3rem 0.65rem;
+  color: #6366f1;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.archive-filter-clear {
+  margin-left: 0.2rem;
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.archive-filter-clear:hover { color: #6366f1; }
+
+.archive-filter-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 130;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(2, 6, 23, 0.45);
+  padding: 1rem;
+  backdrop-filter: blur(5px);
+}
+
+.archive-filter-panel {
+  width: min(100%, 440px);
+  max-height: min(82vh, 620px);
+  overflow-y: auto;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 1.6rem;
+  background: rgba(248, 250, 252, 0.96);
+  padding: 1.25rem;
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.28);
+  color: #334155;
+}
+
+.dark .archive-filter-panel {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.97);
+  color: #e2e8f0;
+}
+
+.archive-filter-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.archive-filter-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #818cf8;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+}
+
+.archive-filter-head h2 {
+  margin-top: 0.3rem;
+  color: #0f172a;
+  font-size: 1.2rem;
+  font-weight: 900;
+}
+
+.dark .archive-filter-head h2 { color: #fff; }
+
+.archive-filter-close {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.06);
+  color: #64748b;
+}
+
+.dark .archive-filter-close { background: rgba(255, 255, 255, 0.08); color: #cbd5e1; }
+
+.archive-filter-section {
+  margin-top: 1.15rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.archive-filter-section h3 {
+  margin-bottom: 0.6rem;
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+.dark .archive-filter-section h3 { color: #94a3b8; }
+
+.archive-filter-time-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.archive-filter-option,
+.archive-filter-tag {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.55);
+  padding: 0.55rem 0.7rem;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: left;
+}
+
+.dark .archive-filter-option,
+.dark .archive-filter-tag {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: #94a3b8;
+}
+
+.archive-filter-option:hover,
+.archive-filter-tag:hover {
+  border-color: rgba(99, 102, 241, 0.35);
+  color: #6366f1;
+}
+
+.archive-filter-option.is-selected,
+.archive-filter-tag.is-selected {
+  border-color: rgba(99, 102, 241, 0.45);
+  background: rgba(99, 102, 241, 0.13);
+  color: #4f46e5;
+}
+
+.dark .archive-filter-option.is-selected,
+.dark .archive-filter-tag.is-selected { color: #a5b4fc; }
+
+.archive-filter-tag-list {
+  display: flex;
+  max-height: 220px;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  overflow-y: auto;
+}
+
+.archive-filter-tag-count {
+  opacity: 0.45;
+  font-size: 9px;
+}
+
+.archive-filter-note {
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.archive-filter-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.archive-filter-reset {
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.archive-filter-apply {
+  border-radius: 0.75rem;
+  background: #6366f1;
+  padding: 0.55rem 1rem;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+@media (max-width: 767px) {
+  .directory-toolbar {
+    gap: 0.45rem;
+  }
+
+  .directory-toolbar-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .directory-sort-select {
+    width: 112px !important;
+  }
+
+  .archive-filter-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .archive-filter-panel {
+    width: 100%;
+    max-height: 86vh;
+    border-radius: 1.6rem 1.6rem 0 0;
+    padding: 1.1rem 1.1rem 1.4rem;
+  }
+}

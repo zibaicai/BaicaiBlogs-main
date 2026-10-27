@@ -36,6 +36,9 @@ export default function ProjectsBoard({ projects }: { projects: Project[] }) {
       ),
       searchText: [project.name, project.description, ...(project.tags || [])].join(" "),
       filterValues: primaryTag ? [primaryTag] : [],
+      title: project.name,
+      tags: project.tags,
+      date: project.createdAt,
     };
   });
 

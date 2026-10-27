@@ -23,6 +23,7 @@ export interface GalleryAlbum {
   isOwner?: boolean;
   hidePhotoCount?: boolean;
   ownerLabel?: string;
+  date?: string;
 }
 
 export default function PhotoWallPage() {
@@ -96,6 +97,8 @@ export default function PhotoWallPage() {
       ),
       searchText: [album.title, album.description, album.ownerLabel].filter(Boolean).join(" "),
       filterValues: [album.visibility.toLowerCase()],
+      title: album.title,
+      date: album.date,
     };
   });
 
@@ -121,6 +124,7 @@ export default function PhotoWallPage() {
               compact
               views={["grid"]}
               pageSize={12}
+              defaultSort="newest"
               searchPlaceholder="搜索相册标题或简介..."
               empty="还没有公开的影像。"
             />

@@ -53,6 +53,8 @@ export default function MomentsPage() {
         node: <MomentCard moment={moment} />,
         searchText: [moment.date, (moment.htmlContent || "").replace(/<[^>]+>/g, " ")].join(" "),
         filterValues: [moment.visibility === "PRIVATE" ? "private" : "public"],
+        title: (moment.content || "").replace(/<[^>]+>/g, " ").trim().slice(0, 60),
+        date: moment.date,
       })),
     [moments, user]
   );
@@ -87,6 +89,7 @@ export default function MomentsPage() {
               views={["thread"]}
               initialMode="thread"
               pageSize={20}
+              defaultSort="newest"
               searchPlaceholder="搜索说说内容..."
               empty={
                 <div className="directory-card p-10 text-center">
