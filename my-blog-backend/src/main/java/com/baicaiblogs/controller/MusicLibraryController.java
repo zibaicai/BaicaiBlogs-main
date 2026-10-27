@@ -116,6 +116,17 @@ public class MusicLibraryController {
         }
     }
 
+    @PostMapping("/admin/music/playlists/import")
+    public ApiResponse<MusicDtos.PlaylistDto> importPlaylist(@RequestParam String externalPlaylistId,
+                                                             Authentication authentication) {
+        try {
+            return ApiResponse.success(musicLibraryService.importCurated(
+                    currentUser(authentication), externalPlaylistId));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
     @PostMapping("/admin/music/tracks")
     public ApiResponse<MusicDtos.TrackDto> upsertTrack(@RequestBody MusicDtos.TrackRequest request,
                                                        Authentication authentication) {

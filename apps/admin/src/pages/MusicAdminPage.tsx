@@ -13,6 +13,7 @@ export default function MusicAdminPage() {
   const [cover, setCover] = useState("");
   const [description, setDescription] = useState("");
   const [trackIds, setTrackIds] = useState("");
+  const [importPlaylistId, setImportPlaylistId] = useState("");
   const [track, setTrack] = useState({
     externalTrackId: "",
     title: "",
@@ -71,8 +72,22 @@ export default function MusicAdminPage() {
     }
   };
 
-  const review = async (id: number, approve: boolean) => {
+  const importPlaylist = async () => {
+    if (!importPlaylistId.trim()) return;
+    setSaving(true);
     try {
+      const response = await api.importMusicPlaylist(importPlaylistId.trim());
+      setImportPlaylistId("");
+      showToast(`已导入：${response.data?.title || "歌单"} · ${response.data?.trackCount || 0} 首`, "success");
+      await load();
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "导入失败", "error");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const review = async (id: number, approve: boolean) => {    try {
       await api.reviewMusicApplication(id, approve, approve ? "审核通过" : "暂不推荐");
       showToast(approve ? "已通过" : "已拒绝", "success");
       await load();
@@ -99,6 +114,17 @@ export default function MusicAdminPage() {
           先录入歌曲，再用歌曲 ID 创建推荐歌单。私人导入不在此处展示。
         </p>
       </header>
+
+      <section className="rounded-3xl border border-indigo-400/20 bg-indigo-500/10 p-5">
+        <h2 className="mb-3 flex items-center gap-2 text-lg font-black text-white"><Music2 size={16} /> 导入公开歌单</h2>
+        <p className="mb-3 text-xs font-bold text-slate-400">支持网易云公开歌单 ID 或分享链接；只保存歌单 ID，不保存 uct2。</p>
+        <div className="flex flex-col gap-2 md:flex-row">
+          <input value={importPlaylistId} onChange={(e) => setImportPlaylistId(e.target.value)} placeholder="例如 2823950709 或 https://music.163.com/playlist?id=2823950709" className="admin-input" />
+          <button onClick={() => void importPlaylist()} disabled={saving} className="shrink-0 rounded-xl bg-indigo-500 px-4 py-2 text-xs font-black text-white disabled:opacity-50">
+            {saving ? "导入中..." : "导入歌单"}
+          </button>
+        </div>
+      </section>
 
       <section className="rounded-3xl border border-white/10 bg-white/5 p-5">
         <h2 className="mb-3 flex items-center gap-2 text-lg font-black text-white"><Plus size={16} /> 录入歌曲</h2>

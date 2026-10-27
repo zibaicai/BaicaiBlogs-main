@@ -365,6 +365,8 @@ export const api = {
   adminMusicApplications: () => request<any[]>("/admin/music/applications"),
   createMusicPlaylist: (payload: any) =>
     request<any>("/admin/music/playlists", { method: "POST", body: JSON.stringify(payload) }),
+  importMusicPlaylist: (externalPlaylistId: string) =>
+    request<any>(`/admin/music/playlists/import?externalPlaylistId=${encodeURIComponent(externalPlaylistId)}`, { method: "POST" }),
   upsertMusicTrack: (payload: any) =>
     request<any>("/admin/music/tracks", { method: "POST", body: JSON.stringify(payload) }),
   reviewMusicApplication: (id: number, approve: boolean, note = "") =>

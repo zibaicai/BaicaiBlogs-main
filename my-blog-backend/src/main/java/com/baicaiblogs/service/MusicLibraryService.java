@@ -23,12 +23,15 @@ public class MusicLibraryService {
     private final MusicPlaylistFavoriteRepository favoriteRepository;
     private final MusicPlaylistApplicationRepository applicationRepository;
     private final UserRepository userRepository;
+    private final MusicPlaylistImportService importService;
 
     @Transactional(readOnly = true)
     public List<MusicDtos.PlaylistDto> getPublicPlaylists(User viewer) {
         return playlistRepository
                 .findByTypeAndStatusAndVisibilityOrderByHeatScoreDescCreatedAtDesc("CURATED", "ACTIVE", "PUBLIC")
-                .stream().map(p -> toPlaylistDto(p, viewer, false)).collect(Collectors.toList());
+                .stream()
+                .filter(p -> p.getTrackCount() != null && p.getTrackCount() > 0)
+                .map(p -> toPlaylistDto(p, viewer, false)).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -36,7 +39,8 @@ public class MusicLibraryService {
         MusicPlaylist playlist = playlistRepository.findBySlug(slug)
                 .filter(p -> "CURATED".equals(p.getType())
                         && "ACTIVE".equals(p.getStatus())
-                        && "PUBLIC".equals(p.getVisibility()))
+                        && "PUBLIC".equals(p.getVisibility())
+                        && p.getTrackCount() != null && p.getTrackCount() > 0)
                 .orElseThrow(() -> new RuntimeException("歌单不存在"));
         return toPlaylistDto(playlist, viewer, true);
     }
@@ -94,6 +98,13 @@ public class MusicLibraryService {
         playlist = playlistRepository.save(playlist);
         replaceTracks(playlist, request.getTrackIds());
         return toPlaylistDto(playlist, admin, true);
+    }
+
+    @Transactional
+    public MusicDtos.PlaylistDto importCurated(User admin, String externalPlaylistId) {
+        assertAdmin(admin);
+        MusicPlaylist playlist = importService.importPublicPlaylist(externalPlaylistId, admin);
+        return toPlaylistDto(playlistRepository.findById(playlist.getId()).orElse(playlist), admin, true);
     }
 
     @Transactional
@@ -194,21 +205,7 @@ public class MusicLibraryService {
         application.setReviewNote(note);
         applicationRepository.save(application);
         if (approve) {
-            MusicPlaylist playlist = MusicPlaylist.builder()
-                    .slug(uniqueSlug(application.getTitle()))
-                    .platform(application.getPlatform())
-                    .externalPlaylistId(application.getExternalPlaylistId())
-                    .type("CURATED")
-                    .visibility("PUBLIC")
-                    .title(application.getTitle() == null ? "推荐歌单" : application.getTitle())
-                    .cover(application.getCover())
-                    .description(application.getDescription())
-                    .status("ACTIVE")
-                    .recommenderName(userRepository.findById(application.getApplicantId())
-                            .map(u -> u.getNickname() == null ? u.getUsername() : u.getNickname())
-                            .orElse(null))
-                    .build();
-            playlistRepository.save(playlist);
+            importService.importPublicPlaylist(application.getExternalPlaylistId(), admin);
         }
         return application;
     }
