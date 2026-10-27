@@ -10,6 +10,7 @@ import com.baicaiblogs.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
@@ -33,6 +34,19 @@ public class SuggestionService {
     private final UserRepository userRepository;
     private final ImageSecurityService imageSecurityService;
     private final OssService ossService;
+
+    @Scheduled(cron = "0 20 4 * * *")
+    @Transactional
+    public void cleanupOrphanImages() {
+        for (SuggestionImage image : imageRepository
+                .findByStatusAndSuggestionIdIsNullAndCreatedAtBefore("TEMP", LocalDateTime.now().minusHours(24))) {
+            try {
+                ossService.deleteObject(image.getObjectKey());
+            } catch (Exception ignored) {
+            }
+            imageRepository.delete(image);
+        }
+    }
 
     @Transactional
     public SuggestionDtos.ImageDto uploadImage(User user, MultipartFile file) {

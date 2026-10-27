@@ -11,4 +11,5 @@ public interface SuggestionImageRepository extends JpaRepository<SuggestionImage
     List<SuggestionImage> findBySuggestionIdOrderBySortOrderAscIdAsc(Long suggestionId);
     List<SuggestionImage> findByIdInAndUserId(List<Long> ids, Long userId);
     long countByUserIdAndSuggestionIdIsNull(Long userId);
+    List<SuggestionImage> findByStatusAndSuggestionIdIsNullAndCreatedAtBefore(String status, java.time.LocalDateTime before);
 }
