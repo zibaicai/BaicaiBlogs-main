@@ -2,8 +2,10 @@ package com.baicaiblogs.service;
 
 import com.baicaiblogs.dto.ArticleDtos;
 import com.baicaiblogs.entity.Article;
+import com.baicaiblogs.entity.Category;
 import com.baicaiblogs.entity.User;
 import com.baicaiblogs.repository.ArticleRepository;
+import com.baicaiblogs.repository.CategoryRepository;
 import com.baicaiblogs.repository.UserRepository;
 import com.baicaiblogs.util.ArticleHtmlSanitizer;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -27,6 +29,7 @@ import java.util.UUID;
 public class ArticleService {
 
     private final ArticleRepository articleRepository;
+    private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final ImageSecurityService imageSecurityService;
     private final OssService ossService;
@@ -70,6 +73,7 @@ public class ArticleService {
         }
         String text = plainText(html);
         String status = normalizeStatus(request.getStatus());
+        Category category = resolveCategory(request.getCategoryId());
         Article article = Article.builder()
                 .userId(admin.getId())
                 .slug(uniqueSlug(title))
@@ -79,7 +83,8 @@ public class ArticleService {
                 .summary(defaultSummary(request.getSummary(), text))
                 .contentHtml(html)
                 .contentText(text)
-                .category(trim(request.getCategory()))
+                .category(category != null ? category.getName() : trim(request.getCategory()))
+                .categoryId(category != null ? category.getId() : null)
                 .tags(writeTags(request.getTags()))
                 .status(status)
                 .visibility(normalizeVisibility(request.getVisibility()))
@@ -102,13 +107,15 @@ public class ArticleService {
         }
         String text = plainText(html);
         String status = normalizeStatus(request.getStatus());
+        Category category = resolveCategory(request.getCategoryId());
         article.setTitle(title);
         article.setSubtitle(trim(request.getSubtitle()));
         article.setCover(trim(request.getCover()));
         article.setSummary(defaultSummary(request.getSummary(), text));
         article.setContentHtml(html);
         article.setContentText(text);
-        article.setCategory(trim(request.getCategory()));
+        article.setCategory(category != null ? category.getName() : trim(request.getCategory()));
+        article.setCategoryId(category != null ? category.getId() : null);
         article.setTags(writeTags(request.getTags()));
         article.setStatus(status);
         article.setVisibility(normalizeVisibility(request.getVisibility()));
@@ -163,6 +170,8 @@ public class ArticleService {
         String author = userRepository.findById(article.getUserId())
                 .map(u -> u.getNickname() == null ? u.getUsername() : u.getNickname())
                 .orElse("管理员");
+        Category category = article.getCategoryId() == null ? null
+                : categoryRepository.findById(article.getCategoryId()).orElse(null);
         return ArticleDtos.ArticleResponse.builder()
                 .id(article.getId())
                 .userId(article.getUserId())
@@ -174,7 +183,9 @@ public class ArticleService {
                 .summary(article.getSummary())
                 .contentHtml(article.getContentHtml())
                 .contentText(article.getContentText())
-                .category(article.getCategory())
+                .category(category != null ? category.getName() : article.getCategory())
+                .categoryId(category != null ? category.getId() : article.getCategoryId())
+                .categoryPath(category != null ? category.getPath() : article.getCategory())
                 .tags(readTags(article.getTags()))
                 .status(article.getStatus())
                 .visibility(article.getVisibility())
@@ -183,6 +194,10 @@ public class ArticleService {
                 .createdAt(article.getCreatedAt())
                 .updatedAt(article.getUpdatedAt())
                 .build();
+    }
+
+    private Category resolveCategory(Long categoryId) {
+        return categoryId == null ? null : categoryRepository.findById(categoryId).orElse(null);
     }
 
     private String uniqueSlug(String title) {

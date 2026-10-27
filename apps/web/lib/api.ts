@@ -286,6 +286,8 @@ export interface Article {
   contentHtml: string;
   contentText?: string;
   category?: string;
+  categoryId?: number;
+  categoryPath?: string;
   tags?: string[];
   status: string;
   visibility: string;
@@ -305,6 +307,7 @@ async function articleRequest<T>(path: string): Promise<T> {
 export const articleApi = {
   list: () => articleRequest<Article[]>("/public/articles"),
   get: (slug: string) => articleRequest<Article>(`/public/articles/${encodeURIComponent(slug)}`),
+  categories: () => articleRequest<Category[]>("/public/categories"),
 };
 
 async function publicRequest<T>(path: string): Promise<ApiResponse<T>> {

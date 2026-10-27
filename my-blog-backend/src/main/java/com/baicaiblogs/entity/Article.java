@@ -51,6 +51,9 @@ public class Article {
     @Column(length = 60)
     private String category;
 
+    @Column(name = "category_id")
+    private Long categoryId;
+
     @Column(length = 1000)
     private String tags;
 

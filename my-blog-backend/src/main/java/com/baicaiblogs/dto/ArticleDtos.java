@@ -21,6 +21,7 @@ public class ArticleDtos {
         private String summary;
         private String contentHtml;
         private String category;
+        private Long categoryId;
         private List<String> tags;
         private String status;
         private String visibility;
@@ -42,6 +43,8 @@ public class ArticleDtos {
         private String contentHtml;
         private String contentText;
         private String category;
+        private Long categoryId;
+        private String categoryPath;
         private List<String> tags;
         private String status;
         private String visibility;

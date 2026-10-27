@@ -7,6 +7,8 @@ import { Select } from "../components/ui/Select";
 import { api } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
 
+type Category = { id: number; name: string; path: string };
+
 type Article = {
   id: number;
   title: string;
@@ -16,6 +18,8 @@ type Article = {
   contentHtml: string;
   category?: string;
   tags?: string[];
+  categoryId?: number;
+  categoryPath?: string;
   status: string;
   visibility: string;
   slug: string;
@@ -29,12 +33,14 @@ export default function ArticlesAdminPage() {
   const imageInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
   const [items, setItems] = useState<Article[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [current, setCurrent] = useState<Article | null>(null);
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState("");
   const [subtitle, setSubtitle] = useState("");
   const [cover, setCover] = useState("");
   const [category, setCategory] = useState("文章");
+  const [categoryId, setCategoryId] = useState("");
   const [tags, setTags] = useState("");
   const [status, setStatus] = useState("DRAFT");
   const [loading, setLoading] = useState(true);
@@ -45,8 +51,12 @@ export default function ArticlesAdminPage() {
   const load = async () => {
     setLoading(true);
     try {
-      const response = await api.adminArticles();
+      const [response, categoryResponse] = await Promise.all([
+        api.adminArticles(),
+        api.getCategories(),
+      ]);
       setItems(response.data || []);
+      setCategories(categoryResponse.data || []);
     } catch (error) {
       showToast(error instanceof Error ? error.message : "加载失败", "error");
     } finally {
@@ -65,6 +75,7 @@ export default function ArticlesAdminPage() {
     setSubtitle("");
     setCover("");
     setCategory("文章");
+    setCategoryId("");
     setTags("");
     setStatus("DRAFT");
     setTimeout(() => editorRef.current?.getContent(), 0);
@@ -77,6 +88,7 @@ export default function ArticlesAdminPage() {
     setSubtitle(article.subtitle || "");
     setCover(article.cover || "");
     setCategory(article.category || "文章");
+    setCategoryId(article.categoryId ? String(article.categoryId) : "");
     setTags((article.tags || []).join(", "));
     setStatus(article.status || "DRAFT");
   };
@@ -120,6 +132,7 @@ export default function ArticlesAdminPage() {
       summary,
       contentHtml,
       category,
+      categoryId: categoryId ? Number(categoryId) : null,
       tags: tags.split(/[,，]/).map((tag) => tag.trim()).filter(Boolean),
       status,
       visibility: "PUBLIC",
@@ -180,9 +193,23 @@ export default function ArticlesAdminPage() {
             <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400">副标题
               <input value={subtitle} onChange={(event) => setSubtitle(event.target.value)} className="admin-input mt-2" placeholder="可选" />
             </label>
-            <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400">分类
-              <input value={category} onChange={(event) => setCategory(event.target.value)} className="admin-input mt-2" />
-            </label>
+            <div className="block text-[10px] font-black uppercase tracking-widest text-slate-400">分类
+              <div className="mt-2">
+                <Select
+                  value={categoryId}
+                  onChange={(value) => {
+                    setCategoryId(value);
+                    setCategory(categories.find((item) => String(item.id) === value)?.name || "");
+                  }}
+                  ariaLabel="文章分类"
+                  placeholder="未分类"
+                  options={[
+                    { value: "", label: "未分类" },
+                    ...categories.map((item) => ({ value: String(item.id), label: item.path })),
+                  ]}
+                />
+              </div>
+            </div>
             <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400">标签
               <input value={tags} onChange={(event) => setTags(event.target.value)} className="admin-input mt-2" placeholder="用逗号分隔" />
             </label>

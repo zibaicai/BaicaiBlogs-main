@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 export type ArchiveMedia =
-  | { kind: "cover"; src: string; alt?: string }
+  | { kind: "cover"; src: string; alt?: string; fit?: "cover" | "contain" }
   | { kind: "avatar"; src: string; alt?: string }
   | { kind: "icon"; content: ReactNode };
 
@@ -36,7 +36,8 @@ export default function ArchiveItemCard({
           <div className="archive-item-icon">{media.content}</div>
         ) : media ? (
           <img
-            className="directory-card-media-image"
+            className={`directory-card-media-image ${media.kind === "cover" && media.fit === "contain" ? "object-contain" : ""}`}
+            style={media.kind === "cover" && media.fit === "contain" ? { objectFit: "contain" } : undefined}
             src={media.src}
             alt={media.alt || title}
             loading="lazy"

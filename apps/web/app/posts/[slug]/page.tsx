@@ -3,6 +3,7 @@ import { Download } from "lucide-react";
 import Navbar from "../../../components/Navbar";
 import PageTransition from "../../../components/PageTransition";
 import AuthorCard from "../../../components/AuthorCard";
+import RecommendedCard from "../../../components/RecommendedCard";
 import BackButton from "../../../components/BackButton";
 import ArticleToc from "../../../components/ArticleToc";
 import MarkdownReader from "../../../components/MarkdownReader";
@@ -54,26 +55,13 @@ export default async function PostDetail({ params }: { params: Promise<{ slug: s
               <AuthorCard />
             </div>
             <div className="article-card-slot article-card-recommended">
-              <div className="flex h-full flex-col rounded-3xl border border-white/40 bg-white/60 p-5 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/50">
-                <h3 className="mb-2 border-l-4 border-indigo-500 pl-2 text-sm font-black text-slate-900 dark:text-white">
-                  RECOMMENDED
-                </h3>
-                <div className="flex flex-1 flex-col justify-evenly">
-                  {recentPosts.map((p) => (
-                    <Link key={p.slug} href={`/posts/${encodeURIComponent(p.slug)}`} className="group block">
-                      <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1">
-                        {p.title}
-                      </h4>
-                      <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 font-bold uppercase">
-                        {formatDay(p.date)}
-                      </p>
-                    </Link>
-                  ))}
-                  {recentPosts.length === 0 && (
-                    <p className="text-xs text-slate-400">暂无推荐文章</p>
-                  )}
-                </div>
-              </div>
+              <RecommendedCard
+                items={recentPosts.map((item) => ({
+                  title: item.title,
+                  href: `/posts/${encodeURIComponent(item.slug)}`,
+                  date: formatDay(item.date),
+                }))}
+              />
             </div>
           </div>
 
