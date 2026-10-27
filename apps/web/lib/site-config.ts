@@ -108,8 +108,8 @@ export const DEFAULT_SITE_INFO: SiteInfo = {
 };
 
 export const DEFAULT_BACKGROUND: BackgroundConfig = {
-  useGradient: false,
-  themeColors: ["#a18cd1", "#fbc2eb", "#a1c4fd", "#c2e9fb"],
+  useGradient: true,
+  themeColors: ["#1e3a6e", "#3157b7", "#5b8bd0", "#dcebff"],
   bgImages: [
     "/bg-1.webp",
     "/bg-2.webp",

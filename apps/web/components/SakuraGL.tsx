@@ -41,8 +41,8 @@ export const SAKURA_DEFAULTS: SakuraConfig = {
 
   /** 花瓣基础色：内圈 → 外圈 */
   color: {
-    inner: [1.0, 0.62, 0.68],
-    outer: [1.0, 0.78, 0.82],
+    inner: [0.45, 0.65, 0.92],
+    outer: [0.82, 0.91, 1.0],
   },
 
   /** 环境光基底（原版 0.4，浅色页面需要更高） */

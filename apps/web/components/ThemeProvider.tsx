@@ -21,31 +21,31 @@ export interface ThemePalette {
 const STORAGE_KEY = "visitor-custom-themes";
 
 const LIGHT_DEFAULT: ThemePalette = {
-  bg: "#f8fafc",
+  bg: "#f4f8fd",
   surface: "#ffffff",
-  surfaceAlt: "#f1f5f9",
-  text: "#0f172a",
-  muted: "#64748b",
-  border: "#e2e8f0",
-  accent: "#6366f1",
+  surfaceAlt: "#eaf2fc",
+  text: "#14284b",
+  muted: "#5b718f",
+  border: "#d7e3f1",
+  accent: "#3157b7",
   accentContrast: "#ffffff",
-  success: "#10b981",
-  warning: "#f59e0b",
-  danger: "#ef4444",
+  success: "#2f8f83",
+  warning: "#d9a441",
+  danger: "#d45b67",
 };
 
 const DARK_DEFAULT: ThemePalette = {
-  bg: "#020617",
-  surface: "#0f172a",
-  surfaceAlt: "#1e293b",
-  text: "#f1f5f9",
-  muted: "#94a3b8",
-  border: "#334155",
-  accent: "#818cf8",
-  accentContrast: "#0f172a",
-  success: "#34d399",
-  warning: "#fbbf24",
-  danger: "#f87171",
+  bg: "#061326",
+  surface: "#0c1f39",
+  surfaceAlt: "#12294a",
+  text: "#e8f1ff",
+  muted: "#91a6c4",
+  border: "#213b5c",
+  accent: "#7aa8ff",
+  accentContrast: "#071426",
+  success: "#57c7b4",
+  warning: "#f2c45a",
+  danger: "#ff8494",
 };
 
 export const DEFAULT_THEME_PALETTES: Record<ThemeMode, ThemePalette> = {
