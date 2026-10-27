@@ -40,7 +40,7 @@ export default function MusicPage() {
   const {
     playlist, currentSong, currentIndex, isPlaying, progress, currentTime, duration,
     currentLyric, lyrics, isLoading, togglePlay, nextSong, prevSong, handleSeek,
-    playSong, playCollection,
+    playSong, playCollection, loadCollection,
   } = useMusic();
 
   const [recommendations, setRecommendations] = useState<MusicPlaylist[]>([]);
@@ -63,7 +63,7 @@ export default function MusicPage() {
         setRecommendations(publicItems || []);
         setMine(personal || []);
         if ((publicItems || []).length > 0 && !selected) {
-          void selectPlaylist(publicItems[0]);
+          void selectPlaylist(publicItems[0], false);
         }
       })
       .catch(() => {
@@ -100,7 +100,7 @@ export default function MusicPage() {
     return () => document.body.classList.remove("music-route");
   }, []);
 
-  const selectPlaylist = async (item: MusicPlaylist) => {
+  const selectPlaylist = async (item: MusicPlaylist, shouldPlay = true) => {
     try {
       const detail = item.tracks ? item : await musicApi.publicPlaylist(item.slug);
       setSelected(detail);
@@ -114,7 +114,10 @@ export default function MusicPage() {
         externalUrl: track.externalUrl,
         lyrics: parseLrc(track.lrcText),
       }));
-      if (songs.length) playCollection(songs, 0);
+      if (songs.length) {
+        if (shouldPlay) playCollection(songs, 0);
+        else loadCollection(songs, 0);
+      }
     } catch {
       setApplyMessage("歌单加载失败");
     }

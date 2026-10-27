@@ -58,6 +58,7 @@ interface MusicContextType {
   handleSeek: (e: React.ChangeEvent<HTMLInputElement>) => void;
   playSong: (index: number) => void;
   playCollection: (songs: any[], startIndex?: number) => void;
+  loadCollection: (songs: any[], startIndex?: number) => void;
   setVolume: (value: number) => void;
   toggleMute: () => void;
   togglePlayMode: () => void;
@@ -196,6 +197,15 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     if (!isPlaying) setIsPlaying(true); // 保证切歌后自动播放
   };
 
+  const loadCollection = (songs: any[], startIndex = 0) => {
+    if (!songs.length) return;
+    manualSelectionRef.current = true;
+    setPlaylist(songs);
+    setCurrentIndex(Math.max(0, Math.min(startIndex, songs.length - 1)));
+    setPlayVersion((value) => value + 1);
+    setIsPlaying(false);
+  };
+
   const playCollection = (songs: any[], startIndex = 0) => {
     if (!songs.length) return;
     manualSelectionRef.current = true;
@@ -261,7 +271,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
         playlist, currentIndex, currentSong, isPlaying, progress, currentTime, duration, currentLyric, lyrics, isLoading,
         volume, isMuted, playMode, // 暴露新状态
         togglePlay, nextSong, prevSong, handleSeek,
-        playSong, playCollection, setVolume, toggleMute, togglePlayMode // 暴露新方法
+        playSong, playCollection, loadCollection, setVolume, toggleMute, togglePlayMode // 暴露新方法
     }}>
       {children}
       {currentSong && (
