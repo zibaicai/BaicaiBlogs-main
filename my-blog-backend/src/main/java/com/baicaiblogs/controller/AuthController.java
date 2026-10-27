@@ -31,7 +31,7 @@ public class AuthController {
                                             HttpServletRequest httpRequest,
                                             HttpServletResponse httpResponse) {
         try {
-            LoginResponse response = authService.login(request);
+            LoginResponse response = authService.login(request, clientIp(httpRequest));
             if (cookie) {
                 boolean secure = "https".equalsIgnoreCase(httpRequest.getHeader("X-Forwarded-Proto"))
                         || httpRequest.isSecure();
@@ -77,6 +77,15 @@ public class AuthController {
         data.put("status", user.getStatus());
         data.put("createdAt", user.getCreatedAt());
         return ApiResponse.success(data);
+    }
+
+    private String clientIp(HttpServletRequest request) {
+        String forwarded = request.getHeader("X-Forwarded-For");
+        if (forwarded != null && !forwarded.isBlank()) {
+            return forwarded.split(",")[0].trim();
+        }
+        String real = request.getHeader("X-Real-IP");
+        return real == null || real.isBlank() ? request.getRemoteAddr() : real.trim();
     }
 
     @PostMapping("/logout")

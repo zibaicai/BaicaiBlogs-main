@@ -16,20 +16,28 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final LoginAttemptService loginAttemptService;
 
     @Value("${jwt.expiration}")
     private long jwtExpiration;
 
-    public LoginResponse login(LoginRequest request) {
-        User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new RuntimeException("用户名或密码错误"));
-
+    public LoginResponse login(LoginRequest request, String ip) {
+        String username = request.getUsername() == null ? "" : request.getUsername().trim();
+        loginAttemptService.assertAllowed(ip, username);
+        User user = userRepository.findByUsername(username).orElse(null);
+        if (user == null) {
+            loginAttemptService.failure(ip, username);
+            throw new RuntimeException("用户名或密码错误");
+        }
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            loginAttemptService.failure(ip, username);
             throw new RuntimeException("用户名或密码错误");
         }
         if ("BANNED".equalsIgnoreCase(user.getStatus())) {
+            loginAttemptService.failure(ip, username);
             throw new RuntimeException("账号已被封禁");
         }
+        loginAttemptService.success(ip, username);
 
         String token = jwtTokenProvider.generateToken(user.getUsername());
 
