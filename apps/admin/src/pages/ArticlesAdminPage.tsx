@@ -215,6 +215,7 @@ export default function ArticlesAdminPage() {
               setTitle={setTitle}
               initialContent={current?.contentHtml || ""}
               contentType="html"
+              plainImages
               summary={summary}
               setSummary={setSummary}
               onOpenImageTool={() => setImagePanelOpen(true)}

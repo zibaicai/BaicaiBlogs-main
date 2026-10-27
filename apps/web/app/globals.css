@@ -5227,10 +5227,13 @@ html:not(.dark) .hv-empty {
 .wechat-article li { margin: .35em 0; }
 .wechat-article img {
   display: block;
+  width: auto;
   max-width: 100% !important;
   height: auto !important;
-  margin: 1.5em auto;
-  border-radius: 12px;
+  margin: 1.6em auto;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  cursor: zoom-in;
 }
 .wechat-article a { color: var(--ui-accent); text-decoration: underline; }
 .wechat-article hr { margin: 2em auto; border: 0; border-top: 1px solid var(--ui-border); }

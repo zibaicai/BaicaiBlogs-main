@@ -120,6 +120,7 @@ interface EditorProps {
   setTitle: (val: string) => void;
   initialContent?: string;
   contentType?: 'markdown' | 'html';
+  plainImages?: boolean;
   onOpenImageTool: () => void;
   isTitleLocked?: boolean;
   summary?: string;
@@ -127,7 +128,7 @@ interface EditorProps {
   onChange?: () => void;
 }
 
-const RichTextEditor = forwardRef<RichTextEditorHandle, EditorProps>(({ title, setTitle, initialContent, contentType = 'markdown', onOpenImageTool, isTitleLocked, summary, setSummary, onChange }, ref) => {
+const RichTextEditor = forwardRef<RichTextEditorHandle, EditorProps>(({ title, setTitle, initialContent, contentType = 'markdown', plainImages = false, onOpenImageTool, isTitleLocked, summary, setSummary, onChange }, ref) => {
   const [textColors, setTextColors] = useState<string[]>(['#6366F1', '#000000']);
   const [highlightColors, setHighlightColors] = useState<string[]>(['#FEF08A', '#BBF7D0']);
   const [showTextPicker, setShowTextPicker] = useState(false);
@@ -149,7 +150,8 @@ const RichTextEditor = forwardRef<RichTextEditorHandle, EditorProps>(({ title, s
           class: 'bg-[#282c34] text-[#abb2bf] p-6 rounded-[1.5rem] font-mono my-6 overflow-x-auto shadow-inner'
         },
       }),
-      Underline, Subscript, Superscript, TextStyle, Color, FontSize, CustomImage,
+      Underline, Subscript, Superscript, TextStyle, Color, FontSize,
+      plainImages ? Image : CustomImage,
       Link.configure({ openOnClick: false, HTMLAttributes: { class: 'text-indigo-500 underline cursor-pointer font-bold' } }),
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
       Highlight.configure({ multicolor: true }),
