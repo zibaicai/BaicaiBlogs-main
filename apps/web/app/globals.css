@@ -5227,7 +5227,7 @@ html:not(.dark) .hv-empty {
 .wechat-article li { margin: .35em 0; }
 .wechat-article img {
   display: block;
-  width: auto;
+  width: auto !important;
   max-width: 100% !important;
   height: auto !important;
   margin: 1.6em auto;
