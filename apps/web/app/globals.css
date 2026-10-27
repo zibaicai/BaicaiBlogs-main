@@ -5752,3 +5752,78 @@ html:not(.dark) .hv-empty {
   box-shadow: none;
   backdrop-filter: none;
 }
+
+/* Pure visual mode: keep the site readable without decorative backgrounds. */
+html[data-visual-mode="plain"] body {
+  background: #f8fafc !important;
+}
+
+html.dark[data-visual-mode="plain"] body {
+  background: #020617 !important;
+}
+
+html[data-visual-mode="plain"] .site-backdrop,
+html[data-visual-mode="plain"] .global-snow,
+html[data-visual-mode="plain"] .bg-effects-wrapper,
+html[data-visual-mode="plain"] .home-v2::before,
+html[data-visual-mode="plain"] .home-v2::after {
+  display: none !important;
+}
+
+html[data-visual-mode="plain"] .site-navbar {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.06) !important;
+  backdrop-filter: none !important;
+}
+
+html.dark[data-visual-mode="plain"] .site-navbar {
+  background: #0f172a !important;
+  border-color: #1e293b !important;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3) !important;
+}
+
+html[data-visual-mode="plain"] .hv-panel,
+html[data-visual-mode="plain"] .directory-card,
+html[data-visual-mode="plain"] .archive-card,
+html[data-visual-mode="plain"] .moment-card,
+html[data-visual-mode="plain"] .article-content,
+html[data-visual-mode="plain"] .article-card,
+html[data-visual-mode="plain"] .tool-directory,
+html[data-visual-mode="plain"] .article-header,
+html[data-visual-mode="plain"] .article-cover {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05) !important;
+  backdrop-filter: none !important;
+}
+
+html.dark[data-visual-mode="plain"] .hv-panel,
+html.dark[data-visual-mode="plain"] .directory-card,
+html.dark[data-visual-mode="plain"] .archive-card,
+html.dark[data-visual-mode="plain"] .moment-card,
+html.dark[data-visual-mode="plain"] .article-content,
+html.dark[data-visual-mode="plain"] .article-card,
+html.dark[data-visual-mode="plain"] .tool-directory,
+html.dark[data-visual-mode="plain"] .article-header,
+html.dark[data-visual-mode="plain"] .article-cover {
+  background: #0f172a !important;
+  border-color: #1e293b !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24) !important;
+  backdrop-filter: none !important;
+}
+
+html[data-visual-mode="plain"] .hv-theme,
+html[data-visual-mode="plain"] .directory-toolbar,
+html[data-visual-mode="plain"] .archive-filter-panel,
+html[data-visual-mode="plain"] .archive-filter-backdrop {
+  backdrop-filter: none !important;
+}
+
+html[data-visual-mode="plain"] [class*="backdrop-blur"] {
+  backdrop-filter: none !important;
+}
+
+html[data-visual-mode="plain"] .danmaku-layer {
+  display: none !important;
+}

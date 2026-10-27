@@ -52,7 +52,7 @@ export default function Navbar() {
   return (
     <>
       <header
-        className={`w-full fixed top-0 left-0 right-0 z-[100] transition-all duration-500 border-b ${
+        className={`site-navbar w-full fixed top-0 left-0 right-0 z-[100] transition-all duration-500 border-b ${
           showNav ? "translate-y-0" : "-translate-y-full"
         } bg-white/40 dark:bg-slate-900/50 backdrop-blur-xl border-white/20 dark:border-white/5 shadow-sm`}
       >

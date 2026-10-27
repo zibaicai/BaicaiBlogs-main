@@ -46,7 +46,7 @@ export default function GlobalSnow() {
   if (!mounted || !isWinter) return null;
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-[190] overflow-hidden">
+    <div className="global-snow fixed inset-0 pointer-events-none z-[190] overflow-hidden">
       {/* 1. 全局冷色调滤镜 */}
       <div className="absolute inset-0 bg-blue-500/5 dark:bg-blue-900/10 mix-blend-overlay transition-opacity duration-1000" />
 

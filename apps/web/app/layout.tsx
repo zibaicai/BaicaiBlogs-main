@@ -50,6 +50,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               if (localStorage.getItem('blog-theme') === 'dark') {
                 document.documentElement.classList.add('dark');
               }
+              var effects = localStorage.getItem('visual-effects');
+              if (effects === 'off' || (effects === null && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+                document.documentElement.setAttribute('data-visual-mode', 'plain');
+              }
             } catch (e) {}
           `}
         </Script>
@@ -86,7 +90,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <SplashScreen />
               <MusicProvider>
                 <div id="app-mount-root" className="flex-1 flex flex-col transition-opacity duration-1000">
-                  <div className="fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
+                  <div className="site-backdrop fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
                     {!config.background.useGradient && <BackgroundSlider />}
                     <div className="absolute inset-0 z-[-9] bg-white/30 dark:bg-slate-900/40 backdrop-blur-md transition-colors duration-1000" />
                     <div

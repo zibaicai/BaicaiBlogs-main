@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Eye, EyeOff, Music2, Palette, Pause, Play, Settings2, X } from "lucide-react";
+import { Eye, EyeOff, Music2, Palette, Pause, Play, Settings2, Sparkles, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useMusic } from "./MusicProvider";
 import ThemeStudio from "./ThemeStudio";
@@ -33,9 +33,15 @@ function applyPrefs(prefs: Record<ToolId, boolean>) {
   document.body.classList.toggle("tool-pet-off", !prefs.pet);
 }
 
+function applyVisualEffects(enabled: boolean) {
+  if (enabled) document.documentElement.removeAttribute("data-visual-mode");
+  else document.documentElement.setAttribute("data-visual-mode", "plain");
+}
+
 export default function GlobalToolbox() {
   const [isOpen, setIsOpen] = useState(false);
   const [prefs, setPrefs] = useState<Record<ToolId, boolean>>(DEFAULT_PREFS);
+  const [visualEffects, setVisualEffects] = useState(true);
   const [musicVisible, setMusicVisible] = useState(false);
   const [themeOpen, setThemeOpen] = useState(false);
   const pathname = usePathname();
@@ -54,6 +60,12 @@ export default function GlobalToolbox() {
       }
       const storedVisibility = localStorage.getItem("musicMiniPlayerVisible");
       setMusicVisible(storedVisibility === null ? pathname === "/" : storedVisibility === "true");
+      const storedEffects = localStorage.getItem("visual-effects");
+      const effectsEnabled = storedEffects === null
+        ? !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        : storedEffects !== "off";
+      setVisualEffects(effectsEnabled);
+      applyVisualEffects(effectsEnabled);
     } catch {
       applyPrefs(DEFAULT_PREFS);
     }
@@ -65,6 +77,19 @@ export default function GlobalToolbox() {
       applyPrefs(next);
       try {
         localStorage.setItem("toolbox-prefs", JSON.stringify(next));
+      } catch {
+        // ignore storage errors
+      }
+      return next;
+    });
+  };
+
+  const toggleVisualEffects = () => {
+    setVisualEffects((current) => {
+      const next = !current;
+      applyVisualEffects(next);
+      try {
+        localStorage.setItem("visual-effects", next ? "on" : "off");
       } catch {
         // ignore storage errors
       }
@@ -112,6 +137,33 @@ export default function GlobalToolbox() {
             </div>
 
             <div className="p-2">
+              <div className="flex items-center justify-between gap-4 rounded-2xl px-3 py-3 transition-colors hover:bg-slate-100/70 dark:hover:bg-white/5">
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
+                    <Sparkles size={15} />
+                  </span>
+                  <div className="min-w-0">
+                    <div className="text-sm font-bold text-slate-800 dark:text-slate-100">背景特效</div>
+                    <div className="mt-0.5 truncate text-[10px] text-slate-400">关闭背景图、渐变与粒子动画</div>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={visualEffects}
+                  aria-label={`背景特效${visualEffects ? "已开启" : "已关闭"}`}
+                  onClick={toggleVisualEffects}
+                  className={`tool-switch relative h-6 w-11 shrink-0 rounded-full transition-colors ${
+                    visualEffects ? "bg-[var(--ui-accent)]" : "bg-slate-300 dark:bg-slate-700"
+                  }`}
+                >
+                  <span
+                    className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-all ${
+                      visualEffects ? "left-6" : "left-1"
+                    }`}
+                  />
+                </button>
+              </div>
               {TOOLS.map((tool) => {
                 const enabled = prefs[tool.id];
                 return (
