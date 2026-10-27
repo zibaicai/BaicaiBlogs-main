@@ -6,6 +6,7 @@ import com.baicaiblogs.dto.LoginResponse;
 import com.baicaiblogs.entity.User;
 import com.baicaiblogs.security.JwtAuthenticationFilter;
 import com.baicaiblogs.service.AuthService;
+import com.baicaiblogs.service.TurnstileService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
+    private final TurnstileService turnstileService;
 
     @PostMapping("/login")
     public ApiResponse<LoginResponse> login(@RequestBody LoginRequest request,
@@ -51,13 +53,21 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ApiResponse<Void> register(@RequestBody LoginRequest request) {
+    public ApiResponse<Void> register(@RequestBody LoginRequest request, HttpServletRequest httpRequest) {
         try {
-            authService.register(request);
+            authService.register(request, clientIp(httpRequest));
             return ApiResponse.success("注册成功", null);
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
         }
+    }
+
+    @GetMapping("/config")
+    public ApiResponse<Map<String, Object>> registrationConfig() {
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("turnstileEnabled", turnstileService.isConfigured());
+        data.put("turnstileSiteKey", turnstileService.getSiteKey());
+        return ApiResponse.success(data);
     }
 
     @GetMapping("/me")
