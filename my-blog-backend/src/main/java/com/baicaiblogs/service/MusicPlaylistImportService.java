@@ -1,9 +1,11 @@
 package com.baicaiblogs.service;
 
 import com.baicaiblogs.entity.MusicPlaylist;
+import com.baicaiblogs.entity.MusicPlaylistIssue;
 import com.baicaiblogs.entity.MusicPlaylistTrack;
 import com.baicaiblogs.entity.MusicTrack;
 import com.baicaiblogs.entity.User;
+import com.baicaiblogs.repository.MusicPlaylistIssueRepository;
 import com.baicaiblogs.repository.MusicPlaylistRepository;
 import com.baicaiblogs.repository.MusicPlaylistTrackRepository;
 import com.baicaiblogs.repository.MusicTrackRepository;
@@ -44,11 +46,13 @@ public class MusicPlaylistImportService {
     private static final Pattern NUMERIC_ID = Pattern.compile("\\d+");
     private static final HttpClient HTTP = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(10))
+            .followRedirects(HttpClient.Redirect.NORMAL)
             .build();
 
     private final MusicTrackRepository trackRepository;
     private final MusicPlaylistRepository playlistRepository;
     private final MusicPlaylistTrackRepository playlistTrackRepository;
+    private final MusicPlaylistIssueRepository issueRepository;
     private final ObjectMapper objectMapper;
 
     @Transactional
@@ -88,6 +92,7 @@ public class MusicPlaylistImportService {
             playlist.setSlug(uniqueSlug(title, playlistId));
         }
         playlist = playlistRepository.save(playlist);
+        final Long playlistIdValue = playlist.getId();
 
         playlistTrackRepository.deleteByPlaylistId(playlist.getId());
         playlistTrackRepository.flush();
@@ -101,6 +106,28 @@ public class MusicPlaylistImportService {
                     .trackId(track.getId())
                     .position(position++)
                     .build());
+            if ("FREE".equals(track.getAccessStatus())) {
+                issueRepository.findByPlaylistIdAndTrackIdAndResolvedAtIsNull(playlistIdValue, track.getId())
+                        .ifPresent(issue -> {
+                            issue.setResolvedAt(LocalDateTime.now());
+                            issueRepository.save(issue);
+                        });
+            } else {
+                MusicPlaylistIssue issue = issueRepository
+                        .findByPlaylistIdAndTrackIdAndResolvedAtIsNull(playlistIdValue, track.getId())
+                        .orElseGet(() -> MusicPlaylistIssue.builder()
+                                .playlistId(playlistIdValue)
+                                .trackId(track.getId())
+                                .titleSnapshot(track.getTitle())
+                                .artistSnapshot(track.getArtist())
+                                .firstSeenAt(LocalDateTime.now())
+                                .build());
+                issue.setTitleSnapshot(track.getTitle());
+                issue.setArtistSnapshot(track.getArtist());
+                issue.setIssueType(track.getAccessStatus());
+                issue.setLastCheckedAt(LocalDateTime.now());
+                issueRepository.save(issue);
+            }
         }
         if (position == 0) {
             throw new RuntimeException("该歌单没有可导入的歌曲");
@@ -128,7 +155,19 @@ public class MusicPlaylistImportService {
             }
             if (ordered.size() < ids.size()) {
                 List<JsonNode> fallback = fetchMetingTracks(playlistNode.path("id").asText());
-                if (fallback.size() > ordered.size()) return fallback;
+                if (fallback.size() > ordered.size()) {
+                    Map<String, Integer> fees = new LinkedHashMap<>();
+                    if (inlineTracks.isArray()) {
+                        for (JsonNode inline : inlineTracks) {
+                            fees.put(inline.path("id").asText(), inline.path("fee").asInt(0));
+                        }
+                    }
+                    for (JsonNode item : fallback) {
+                        Integer fee = fees.get(item.path("id").asText());
+                        if (fee != null) ((com.fasterxml.jackson.databind.node.ObjectNode) item).put("fee", fee);
+                    }
+                    return fallback;
+                }
             }
             if (!ordered.isEmpty()) return ordered;
         }
@@ -234,11 +273,46 @@ public class MusicPlaylistImportService {
         }
     }
 
+    private boolean probeAudio(String url) {
+        try {
+            HttpRequest request = HttpRequest.newBuilder(URI.create(url))
+                    .timeout(Duration.ofSeconds(10))
+                    .header("User-Agent", "Mozilla/5.0 (compatible; BaicaiMusic/1.0)")
+                    .header("Range", "bytes=0-1024")
+                    .GET()
+                    .build();
+            HttpResponse<String> response = HTTP.send(request, HttpResponse.BodyHandlers.ofString());
+            String contentType = response.headers().firstValue("Content-Type").orElse("");
+            return (response.statusCode() == 200 || response.statusCode() == 206)
+                    && contentType.toLowerCase(Locale.ROOT).contains("audio");
+        } catch (Exception ignored) {
+            return false;
+        }
+    }
+
+    private String fetchLyrics(String externalId) {
+        try {
+            HttpRequest request = HttpRequest.newBuilder(
+                            URI.create("https://api.injahow.cn/meting/?server=netease&type=lrc&id=" + externalId))
+                    .timeout(Duration.ofSeconds(10))
+                    .header("User-Agent", "Mozilla/5.0 (compatible; BaicaiMusic/1.0)")
+                    .GET()
+                    .build();
+            HttpResponse<String> response = HTTP.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200) return null;
+            String body = response.body();
+            if (body == null || body.isBlank() || body.length() > 30000 || !body.contains("[")) return null;
+            return body;
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
     private MusicTrack upsertTrack(JsonNode node) {
         if (node == null || node.path("id").asText("").isBlank()) return null;
         String externalId = node.path("id").asText();
         String name = text(node, "name", "未知歌曲");
-        String artist = firstNames(node.path("ar"), "artists");
+        String artist = firstNames(node);
         String cover = text(node.path("al"), "picUrl", text(node.path("album"), "picUrl", null));
         int durationMs = node.path("dt").asInt(node.path("duration").asInt(0));
         Integer duration = durationMs > 0 ? (int) Math.round(durationMs / 1000.0) : null;
@@ -254,6 +328,23 @@ public class MusicPlaylistImportService {
         track.setCover(limit(cover, 500));
         track.setDuration(duration);
         track.setExternalUrl("https://music.163.com/#/song?id=" + externalId);
+        String metingAudio = "https://api.injahow.cn/meting/?server=netease&type=url&id=" + externalId;
+        boolean playable = probeAudio(metingAudio);
+        boolean vip = node.path("fee").asInt(0) == 1;
+        String accessStatus = vip ? "VIP_ONLY" : (playable ? "FREE" : "REMOVED");
+        track.setAudioUrl(metingAudio);
+        track.setAccessStatus(accessStatus);
+        track.setLastCheckedAt(LocalDateTime.now());
+        if (playable) {
+            track.setLrcText(fetchLyrics(externalId));
+            track.setUnavailableSince(null);
+            track.setCommentPurgeAt(null);
+        } else {
+            if (track.getUnavailableSince() == null) {
+                track.setUnavailableSince(LocalDateTime.now());
+                track.setCommentPurgeAt(LocalDateTime.now().plusDays(90));
+            }
+        }
         track.setStatus("ACTIVE");
         track.setOrphanedAt(null);
         track.setPurgeAfter(null);
@@ -272,9 +363,10 @@ public class MusicPlaylistImportService {
         throw new RuntimeException("无法识别歌单 ID");
     }
 
-    private String firstNames(JsonNode array, String fallbackKey) {
+    private String firstNames(JsonNode node) {
         List<String> names = new ArrayList<>();
-        JsonNode source = array != null && array.isArray() ? array : array.path(fallbackKey);
+        JsonNode source = node.path("ar");
+        if (!source.isArray()) source = node.path("artists");
         if (source.isArray()) {
             for (JsonNode item : source) {
                 String name = item.path("name").asText("");

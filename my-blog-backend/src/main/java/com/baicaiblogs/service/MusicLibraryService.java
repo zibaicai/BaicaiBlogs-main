@@ -22,6 +22,7 @@ public class MusicLibraryService {
     private final MusicPlaylistReactionRepository reactionRepository;
     private final MusicPlaylistFavoriteRepository favoriteRepository;
     private final MusicPlaylistApplicationRepository applicationRepository;
+    private final MusicPlaylistIssueRepository issueRepository;
     private final UserRepository userRepository;
     private final MusicPlaylistImportService importService;
 
@@ -232,7 +233,7 @@ public class MusicLibraryService {
     @Transactional(readOnly = true)
     public MusicDtos.TrackDto getPublicTrack(Long id, User viewer) {
         MusicTrack track = trackRepository.findById(id).orElseThrow(() -> new RuntimeException("歌曲不存在"));
-        if (!"ACTIVE".equals(track.getStatus()) || !isPublicTrack(id)) {
+        if (!isPublicTrack(id)) {
             throw new RuntimeException("歌曲不存在");
         }
         return toTrackDto(track);
@@ -246,6 +247,13 @@ public class MusicLibraryService {
                     && "ACTIVE".equals(p.getStatus())
                     && "PUBLIC".equals(p.getVisibility());
         });
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isPlayableTrack(Long trackId) {
+        return trackRepository.findById(trackId)
+                .map(track -> "FREE".equals(track.getAccessStatus()))
+                .orElse(false) && isPublicTrack(trackId);
     }
 
     @Transactional
@@ -286,9 +294,29 @@ public class MusicLibraryService {
                 ? playlistTrackRepository.findByPlaylistIdOrderByPositionAsc(playlist.getId()).stream()
                     .map(ref -> trackRepository.findById(ref.getTrackId()).orElse(null))
                     .filter(Objects::nonNull)
+                    .filter(track -> "FREE".equals(track.getAccessStatus()) || track.getAccessStatus() == null)
                     .map(this::toTrackDto)
                     .collect(Collectors.toList())
                 : null;
+        List<MusicDtos.IssueDto> issues = new ArrayList<>();
+        LocalDateTime now = LocalDateTime.now();
+        for (MusicPlaylistIssue issue : issueRepository.findByPlaylistIdAndResolvedAtIsNullOrderByFirstSeenAtDesc(playlist.getId())) {
+            boolean detailVisible = issue.getFirstSeenAt() != null && issue.getFirstSeenAt().plusDays(15).isAfter(now);
+            issues.add(MusicDtos.IssueDto.builder()
+                    .id(issue.getId())
+                    .trackId(issue.getTrackId())
+                    .title(issue.getTitleSnapshot())
+                    .artist(issue.getArtistSnapshot())
+                    .issueType(issue.getIssueType())
+                    .firstSeenAt(issue.getFirstSeenAt())
+                    .lastCheckedAt(issue.getLastCheckedAt())
+                    .detailVisible(detailVisible)
+                    .build());
+        }
+        long removedCount = issues.stream().filter(i -> "REMOVED".equals(i.getIssueType())).count();
+        long vipCount = issues.stream().filter(i -> "VIP_ONLY".equals(i.getIssueType())).count();
+        long regionCount = issues.stream().filter(i -> "REGION_BLOCKED".equals(i.getIssueType())).count();
+        int playableCount = tracks == null ? 0 : tracks.size();
         String myReaction = viewer == null ? null : reactionRepository
                 .findByPlaylistIdAndUserId(playlist.getId(), viewer.getId())
                 .map(MusicPlaylistReaction::getType).orElse(null);
@@ -312,6 +340,11 @@ public class MusicLibraryService {
                 .myReaction(myReaction)
                 .favorited(favorited)
                 .tracks(tracks)
+                .issues(issues)
+                .playableCount(playableCount)
+                .removedCount(removedCount)
+                .vipOnlyCount(vipCount)
+                .regionBlockedCount(regionCount)
                 .createdAt(playlist.getCreatedAt())
                 .build();
     }
@@ -327,6 +360,12 @@ public class MusicLibraryService {
                 .duration(track.getDuration())
                 .externalUrl(track.getExternalUrl())
                 .status(track.getStatus())
+                .accessStatus(track.getAccessStatus() == null ? "FREE" : track.getAccessStatus())
+                .audioUrl(track.getAudioUrl())
+                .lrcText(track.getLrcText())
+                .playable("FREE".equals(track.getAccessStatus()) || track.getAccessStatus() == null)
+                .unavailableReason(track.getAccessStatus())
+                .unavailableSince(track.getUnavailableSince())
                 .build();
     }
 

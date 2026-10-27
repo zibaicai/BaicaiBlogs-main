@@ -53,6 +53,7 @@ public class CommentService {
         if (content.isEmpty()) throw new RuntimeException("评论不能为空");
         if (content.length() > 1000) throw new RuntimeException("评论不能超过 1000 字");
         assertPublicTarget(type, request.getTargetId());
+        assertInteractionTarget(type, request.getTargetId());
 
         Comment comment = Comment.builder()
                 .targetType(type)
@@ -90,6 +91,7 @@ public class CommentService {
         if (!"VISIBLE".equals(comment.getStatus())) throw new RuntimeException("评论不可互动");
         if (current.getId().equals(comment.getUserId())) throw new RuntimeException("不能给自己的评论点赞或踩");
         assertPublicTarget(comment.getTargetType(), comment.getTargetId());
+        assertInteractionTarget(comment.getTargetType(), comment.getTargetId());
         var existing = reactionRepository.findByCommentIdAndUserId(commentId, current.getId());
         if ("TOGGLE_OFF".equalsIgnoreCase(rawType)) {
             existing.ifPresent(reactionRepository::delete);
@@ -121,6 +123,7 @@ public class CommentService {
         if (!"VISIBLE".equals(comment.getStatus())) throw new RuntimeException("评论不可举报");
         if (current.getId().equals(comment.getUserId())) throw new RuntimeException("不能举报自己的评论");
         assertPublicTarget(comment.getTargetType(), comment.getTargetId());
+        assertInteractionTarget(comment.getTargetType(), comment.getTargetId());
         if (reportRepository.existsByReporterIdAndTargetTypeAndTargetId(current.getId(), "comment", commentId)) {
             throw new RuntimeException("你已举报过这条评论");
         }
@@ -163,6 +166,17 @@ public class CommentService {
     }
 
     @Transactional
+    public void ensureTrackCommentsExpireAt(Long trackId, LocalDateTime expiresAt) {
+        List<Comment> comments = commentRepository.findByTargetTypeAndTargetIdOrderByCreatedAtDesc("TRACK", trackId);
+        for (Comment comment : comments) {
+            if (comment.getExpiresAt() == null) {
+                comment.setExpiresAt(expiresAt);
+                commentRepository.save(comment);
+            }
+        }
+    }
+
+    @Transactional
     public void restoreTrackComments(Long trackId) {
         List<Comment> comments = commentRepository.findByTargetTypeAndTargetIdOrderByCreatedAtDesc("TRACK", trackId);
         for (Comment comment : comments) {
@@ -190,8 +204,13 @@ public class CommentService {
         return commentRepository.findById(id).orElseThrow(() -> new RuntimeException("评论不存在"));
     }
 
-    private void assertPublicTarget(String type, Long targetId) {
-        if (targetId == null) throw new RuntimeException("缺少评论目标");
+    private void assertInteractionTarget(String type, Long targetId) {
+        if ("TRACK".equals(type) && !musicLibraryService.isPlayableTrack(targetId)) {
+            throw new RuntimeException("该歌曲当前不可互动");
+        }
+    }
+
+    private void assertPublicTarget(String type, Long targetId) {        if (targetId == null) throw new RuntimeException("缺少评论目标");
         switch (type) {
             case "POST" -> {
                 Post post = postRepository.findById(targetId).orElseThrow(() -> new RuntimeException("文章不存在"));

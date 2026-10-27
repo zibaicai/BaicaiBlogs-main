@@ -57,6 +57,26 @@ public class MusicTrack {
     @Column(name = "last_seen_at")
     private LocalDateTime lastSeenAt;
 
+    /** FREE / VIP_ONLY / REMOVED / REGION_BLOCKED / TEMP_FAIL */
+    @Column(name = "access_status", length = 30)
+    @Builder.Default
+    private String accessStatus = "FREE";
+
+    @Column(name = "audio_url", length = 1000)
+    private String audioUrl;
+
+    @Column(name = "lrc_text", columnDefinition = "TEXT")
+    private String lrcText;
+
+    @Column(name = "unavailable_since")
+    private LocalDateTime unavailableSince;
+
+    @Column(name = "last_checked_at")
+    private LocalDateTime lastCheckedAt;
+
+    @Column(name = "comment_purge_at")
+    private LocalDateTime commentPurgeAt;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

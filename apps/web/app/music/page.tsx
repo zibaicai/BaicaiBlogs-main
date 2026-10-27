@@ -19,6 +19,21 @@ const formatTime = (value: number) => {
   return `${String(Math.floor(value / 60)).padStart(2, "0")}:${String(Math.floor(value % 60)).padStart(2, "0")}`;
 };
 
+function parseLrc(text?: string) {
+  if (!text) return [];
+  const result: { time: number; text: string }[] = [];
+  for (const line of text.split(/\r?\n/)) {
+    const matches = [...line.matchAll(/\[(\d{2,}):(\d{2})(?:\.(\d{2,3}))?\]/g)];
+    const value = line.replace(/\[\d{2,}:\d{2}(?:\.\d{2,3})?\]/g, "").trim();
+    if (!value) continue;
+    for (const match of matches) {
+      const ms = match[3] ? Number(match[3]) / (match[3].length === 3 ? 1000 : 100) : 0;
+      result.push({ time: Number(match[1]) * 60 + Number(match[2]) + ms, text: value });
+    }
+  }
+  return result.sort((a, b) => a.time - b.time);
+}
+
 export default function MusicPage() {
   const { user } = useAuth();
   const {
@@ -94,9 +109,9 @@ export default function MusicPage() {
         title: track.title,
         artist: track.artist || "未知歌手",
         cover: track.cover || detail.cover || "/bg-2.webp",
-        src: track.externalUrl || "",
+        src: track.audioUrl || "",
         externalUrl: track.externalUrl,
-        lyrics: [],
+        lyrics: parseLrc(track.lrcText),
       }));
       if (songs.length) playCollection(songs, 0);
     } catch {

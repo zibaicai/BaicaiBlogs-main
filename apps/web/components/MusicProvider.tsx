@@ -84,6 +84,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
   const [playMode, setPlayMode] = useState<PlayMode>('loop');
 
   const audioRef = useRef<HTMLAudioElement>(null);
+  const manualSelectionRef = useRef(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -104,6 +105,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
           }));
 
         if (isMounted) {
+          if (manualSelectionRef.current) return;
           if (mergedPlaylist.length > 0) setPlaylist(mergedPlaylist);
           else setCurrentLyric("海面信号暂时走远了");
           setIsLoading(false);
@@ -196,6 +198,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
 
   const playCollection = (songs: any[], startIndex = 0) => {
     if (!songs.length) return;
+    manualSelectionRef.current = true;
     setPlaylist(songs);
     setCurrentIndex(Math.max(0, Math.min(startIndex, songs.length - 1)));
     setPlayVersion((value) => value + 1);

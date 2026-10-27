@@ -24,6 +24,27 @@ public class MusicDtos {
         private Integer duration;
         private String externalUrl;
         private String status;
+        private String accessStatus;
+        private String audioUrl;
+        private String lrcText;
+        private boolean playable;
+        private String unavailableReason;
+        private LocalDateTime unavailableSince;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class IssueDto {
+        private Long id;
+        private Long trackId;
+        private String title;
+        private String artist;
+        private String issueType;
+        private LocalDateTime firstSeenAt;
+        private LocalDateTime lastCheckedAt;
+        private boolean detailVisible;
     }
 
     @Data
@@ -48,6 +69,11 @@ public class MusicDtos {
         private String myReaction;
         private boolean favorited;
         private List<TrackDto> tracks;
+        private List<IssueDto> issues;
+        private int playableCount;
+        private long removedCount;
+        private long vipOnlyCount;
+        private long regionBlockedCount;
         private LocalDateTime createdAt;
     }
 

@@ -25,6 +25,20 @@ public class MusicLifecycleService {
     private final MusicPlaylistReactionRepository reactionRepository;
     private final CommentService commentService;
     private final CommentRepository commentRepository;
+    private final MusicPlaylistImportService importService;
+
+    @Scheduled(cron = "0 0 4 * * *")
+    public void refreshCuratedAvailability() {
+        for (MusicPlaylist playlist : playlistRepository
+                .findByTypeAndStatusAndVisibilityOrderByHeatScoreDescCreatedAtDesc("CURATED", "ACTIVE", "PUBLIC")) {
+            if (playlist.getExternalPlaylistId() == null || playlist.getExternalPlaylistId().isBlank()) continue;
+            try {
+                importService.importPublicPlaylist(playlist.getExternalPlaylistId(), null);
+            } catch (Exception e) {
+                log.warn("Refresh music playlist {} failed: {}", playlist.getId(), e.getMessage());
+            }
+        }
+    }
 
     @Scheduled(cron = "0 30 3 * * *")
     @Transactional
@@ -32,6 +46,13 @@ public class MusicLifecycleService {
         List<MusicTrack> tracks = trackRepository.findAll();
         for (MusicTrack track : tracks) {
             boolean publicRef = isReferencedByPublicPlaylist(track.getId());
+            if (!"FREE".equals(track.getAccessStatus())) {
+                LocalDateTime purgeAt = track.getCommentPurgeAt() == null
+                        ? LocalDateTime.now().plusDays(90) : track.getCommentPurgeAt();
+                commentService.ensureTrackCommentsExpireAt(track.getId(), purgeAt);
+            } else {
+                commentService.restoreTrackComments(track.getId());
+            }
             if (publicRef && "UNLISTED".equals(track.getStatus())) {
                 track.setStatus("ACTIVE");
                 track.setOrphanedAt(null);

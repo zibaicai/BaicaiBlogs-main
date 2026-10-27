@@ -57,10 +57,15 @@ export default function MusicTrackPage({ params }: { params: Promise<{ id: strin
                       <ExternalLink size={13} /> 在音乐平台打开
                     </a>
                   )}
+                  {track.playable === false && (
+                    <div className="mt-4 rounded-2xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-xs font-bold text-amber-600 dark:text-amber-300">
+                      该歌曲当前不可播放{track.unavailableReason === "VIP_ONLY" ? "：已升为 VIP" : "：可能已下架或音源失效"}
+                    </div>
+                  )}
                 </div>
               </header>
 
-              <CommentSection targetType="TRACK" targetId={track.id} title="歌曲评论" />
+              <CommentSection targetType="TRACK" targetId={track.id} title="歌曲评论" readOnly={track.playable === false} />
             </>
           )}
         </main>

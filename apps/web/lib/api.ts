@@ -144,6 +144,23 @@ export interface MusicTrack {
   duration?: number;
   externalUrl?: string;
   status: string;
+  accessStatus?: string;
+  audioUrl?: string;
+  lrcText?: string;
+  playable?: boolean;
+  unavailableReason?: string;
+  unavailableSince?: string;
+}
+
+export interface MusicIssue {
+  id: number;
+  trackId?: number;
+  title: string;
+  artist?: string;
+  issueType: string;
+  firstSeenAt: string;
+  lastCheckedAt?: string;
+  detailVisible: boolean;
 }
 
 export interface MusicPlaylist {
@@ -164,6 +181,11 @@ export interface MusicPlaylist {
   myReaction?: "LIKE" | "DISLIKE" | null;
   favorited: boolean;
   tracks?: MusicTrack[];
+  issues?: MusicIssue[];
+  playableCount?: number;
+  removedCount?: number;
+  vipOnlyCount?: number;
+  regionBlockedCount?: number;
   createdAt: string;
 }
 

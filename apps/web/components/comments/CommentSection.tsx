@@ -42,6 +42,7 @@ export default function CommentSection({
   emptyActionLabel = "写评论",
   externalHref,
   externalLabel,
+  readOnly = false,
 }: {
   targetType: "POST" | "ALBUM" | "MOMENT" | "TRACK";
   targetId: number;
@@ -51,6 +52,7 @@ export default function CommentSection({
   emptyActionLabel?: string;
   externalHref?: string;
   externalLabel?: string;
+  readOnly?: boolean;
 }) {
   const { user, loading: authLoading } = useAuth();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -103,7 +105,7 @@ export default function CommentSection({
   }, [load]);
 
   const count = comments.length;
-  const canComment = useMemo(() => Boolean(user) && !authLoading, [user, authLoading]);
+  const canComment = useMemo(() => Boolean(user) && !authLoading && !readOnly, [user, authLoading, readOnly]);
 
   const submit = async () => {
     if (!canComment || sending) return;
@@ -176,7 +178,9 @@ export default function CommentSection({
         <MessageCircle size={18} />
       </div>
 
-      {canComment ? (
+      {readOnly ? (
+        <div className="comment-login-hint">该歌曲当前不可播放，评论暂时只读</div>
+      ) : canComment ? (
         <div
           ref={composerRef}
           className={`comment-composer ${expanded ? "is-expanded" : ""}`}
@@ -260,7 +264,7 @@ export default function CommentSection({
                   <time>{formatDate(comment.createdAt)}</time>
                 </div>
                 <p className="comment-content">{comment.content}</p>
-                <div className="comment-actions">
+                <div className="comment-actions" style={readOnly ? { pointerEvents: "none", opacity: 0.45 } : undefined}>
                   <button
                     type="button"
                     onClick={() => void react(comment, "LIKE")}

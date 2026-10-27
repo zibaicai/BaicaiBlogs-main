@@ -101,6 +101,12 @@ export default function MusicPlaylistPage({ params }: { params: Promise<{ slug: 
                     {playlist.description || "暂无简介"}
                   </p>
                   <div className="mt-6 flex flex-wrap items-center gap-3">
+                    <span className="rounded-full bg-emerald-500/10 px-3 py-1.5 text-[10px] font-black text-emerald-500">可播放 {playlist.playableCount ?? playlist.tracks?.length ?? 0}</span>
+                    {(playlist.removedCount ?? 0) > 0 && <span className="rounded-full bg-rose-500/10 px-3 py-1.5 text-[10px] font-black text-rose-500">下架 {playlist.removedCount}</span>}
+                    {(playlist.vipOnlyCount ?? 0) > 0 && <span className="rounded-full bg-amber-500/10 px-3 py-1.5 text-[10px] font-black text-amber-500">升 VIP {playlist.vipOnlyCount}</span>}
+                    {(playlist.regionBlockedCount ?? 0) > 0 && <span className="rounded-full bg-slate-500/10 px-3 py-1.5 text-[10px] font-black text-slate-400">地区限制 {playlist.regionBlockedCount}</span>}
+                  </div>
+                  <div className="mt-6 flex flex-wrap items-center gap-3">
                     <button onClick={() => void act("LIKE")} className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-black ${playlist.myReaction === "LIKE" ? "bg-indigo-500 text-white" : "bg-white/15 text-slate-600 dark:text-slate-300"}`}>
                       <Heart size={14} /> {playlist.likeCount}
                     </button>
@@ -142,6 +148,31 @@ export default function MusicPlaylistPage({ params }: { params: Promise<{ slug: 
                   )}
                 </div>
               </section>
+
+              {(playlist.issues?.length ?? 0) > 0 && (
+                <section className="mt-8">
+                  <h2 className="mb-4 text-lg font-black text-slate-900 dark:text-white">歌单异常</h2>
+                  {(["REMOVED", "VIP_ONLY", "REGION_BLOCKED"] as const).map((type) => {
+                    const items = (playlist.issues || []).filter((issue) => issue.issueType === type);
+                    if (items.length === 0) return null;
+                    const label = type === "REMOVED" ? "下架" : type === "VIP_ONLY" ? "升 VIP" : "地区限制";
+                    return (
+                      <div key={type} className="mb-3 overflow-hidden rounded-2xl border border-white/20 bg-white/30 backdrop-blur-xl dark:bg-slate-800/30">
+                        <div className="border-b border-white/10 px-4 py-3 text-xs font-black text-slate-600 dark:text-slate-300">{label}（{items.length}）</div>
+                        {items.map((issue) => (
+                          <div key={issue.id} className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3 last:border-0">
+                            <div className="min-w-0">
+                              <div className="truncate text-sm font-bold text-slate-700 dark:text-slate-200">{issue.title}</div>
+                              <div className="truncate text-[10px] text-slate-400">{issue.artist || "未知歌手"}</div>
+                            </div>
+                            <time className="shrink-0 text-[10px] text-slate-400">{new Date(issue.firstSeenAt).toLocaleDateString("zh-CN")}</time>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })}
+                </section>
+              )}
             </>
           )}
         </main>
