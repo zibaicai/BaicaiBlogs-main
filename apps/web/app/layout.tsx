@@ -94,7 +94,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     {!config.background.useGradient && <BackgroundSlider />}
                     <div className="absolute inset-0 z-[-9] bg-white/30 dark:bg-slate-900/40 backdrop-blur-md transition-colors duration-1000" />
                     <div
-                      className="absolute inset-0 z-[-8] opacity-60 dark:opacity-20 mix-blend-color transition-opacity duration-1000 transform-gpu"
+                      className="absolute inset-0 z-[-8] opacity-40 dark:opacity-20 mix-blend-multiply dark:mix-blend-screen transition-opacity duration-1000 transform-gpu"
                       style={{
                         background: `linear-gradient(-45deg, ${gradient})`,
                         backgroundSize: "400% 400%",

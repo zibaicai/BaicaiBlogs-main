@@ -108,15 +108,14 @@ export const DEFAULT_SITE_INFO: SiteInfo = {
 };
 
 export const DEFAULT_BACKGROUND: BackgroundConfig = {
-  useGradient: true,
+  useGradient: false,
   themeColors: ["#1e3a6e", "#3157b7", "#5b8bd0", "#dcebff"],
   bgImages: [
     "/bg-1.webp",
     "/bg-2.webp",
-    "/bg-3.webp",
     "/bg-5.webp",
   ],
-  defaultPostCover: "/bg-3.webp",
+  defaultPostCover: "/bg-5.webp",
 };
 
 export const DEFAULT_DANMAKU: string[] = [
