@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 export type ThemeMode = "light" | "dark";
+export type ThemePreset = "ocean" | "violet";
 
 export interface ThemePalette {
   bg: string;
@@ -53,10 +54,45 @@ export const DEFAULT_THEME_PALETTES: Record<ThemeMode, ThemePalette> = {
   dark: DARK_DEFAULT,
 };
 
+const VIOLET_PALETTES: Record<ThemeMode, ThemePalette> = {
+  light: {
+    bg: "#f8fafc",
+    surface: "#ffffff",
+    surfaceAlt: "#f1f5f9",
+    text: "#0f172a",
+    muted: "#64748b",
+    border: "#e2e8f0",
+    accent: "#6366f1",
+    accentContrast: "#ffffff",
+    success: "#10b981",
+    warning: "#f59e0b",
+    danger: "#ef4444",
+  },
+  dark: {
+    bg: "#020617",
+    surface: "#0f172a",
+    surfaceAlt: "#1e293b",
+    text: "#f1f5f9",
+    muted: "#94a3b8",
+    border: "#334155",
+    accent: "#818cf8",
+    accentContrast: "#0f172a",
+    success: "#34d399",
+    warning: "#fbbf24",
+    danger: "#f87171",
+  },
+};
+
+export function getDefaultPalettes(preset: ThemePreset): Record<ThemeMode, ThemePalette> {
+  return preset === "violet" ? VIOLET_PALETTES : DEFAULT_THEME_PALETTES;
+}
+
 interface ThemeContextValue {
   isDark: boolean;
   toggleTheme: () => void;
   mode: ThemeMode;
+  preset: ThemePreset;
+  setPreset: (preset: ThemePreset) => void;
   customThemes: Record<ThemeMode, ThemePalette | null>;
   setCustomTheme: (mode: ThemeMode, palette: ThemePalette) => void;
   copyToOtherMode: (mode: ThemeMode) => void;
@@ -68,6 +104,8 @@ const ThemeContext = createContext<ThemeContextValue>({
   isDark: true,
   toggleTheme: () => {},
   mode: "dark",
+  preset: "ocean",
+  setPreset: () => {},
   customThemes: { light: null, dark: null },
   setCustomTheme: () => {},
   copyToOtherMode: () => {},
@@ -148,6 +186,7 @@ function loadThemes(): Record<ThemeMode, ThemePalette | null> {
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [isDark, setIsDark] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [preset, setPresetState] = useState<ThemePreset>("ocean");
   const [customThemes, setCustomThemes] = useState<Record<ThemeMode, ThemePalette | null>>({
     light: null,
     dark: null,
@@ -162,6 +201,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const isDarkMode = savedTheme === "dark";
     setIsDark(isDarkMode);
     setCustomThemes(loadThemes());
+    const savedPreset = localStorage.getItem("theme-preset") === "violet" ? "violet" : "ocean";
+    setPresetState(savedPreset);
+    document.documentElement.dataset.themePreset = savedPreset;
 
     const root = document.documentElement;
     root.classList.toggle("dark", isDarkMode);
@@ -171,8 +213,23 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     if (!mounted) return;
     const root = document.documentElement;
     root.classList.toggle("dark", isDark);
+    root.dataset.themePreset = preset;
     applyPalette(customThemes[mode]);
-  }, [isDark, mode, customThemes, mounted]);
+  }, [isDark, mode, preset, customThemes, mounted]);
+
+  const setPreset = useCallback((next: ThemePreset) => {
+    setPresetState(next);
+    document.documentElement.dataset.themePreset = next;
+    // A preset is a complete visual contract; clear per-mode color overrides so it applies immediately.
+    const cleared = { light: null, dark: null };
+    setCustomThemes(cleared);
+    try {
+      localStorage.setItem("theme-preset", next);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cleared));
+    } catch {
+      // ignore storage errors
+    }
+  }, []);
 
   const persist = useCallback((themes: Record<ThemeMode, ThemePalette | null>) => {
     try {
@@ -235,13 +292,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       isDark,
       toggleTheme,
       mode,
+      preset,
+      setPreset,
       customThemes,
       setCustomTheme,
       copyToOtherMode,
       resetCurrentTheme,
       resetAllThemes,
     }),
-    [isDark, mode, customThemes, setCustomTheme, copyToOtherMode, resetCurrentTheme, resetAllThemes]
+    [isDark, mode, preset, setPreset, customThemes, setCustomTheme, copyToOtherMode, resetCurrentTheme, resetAllThemes]
   );
 
   if (!mounted) {

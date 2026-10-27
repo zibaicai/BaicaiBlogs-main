@@ -18,7 +18,7 @@ export default function BackgroundSlider() {
   }, [images.length]);
 
   return (
-    <div className="absolute inset-0 z-[-10] overflow-hidden">
+    <div className="background-slider absolute inset-0 z-[-10] overflow-hidden">
       {images.map((img, i) => (
         <div
           key={img}

@@ -50,6 +50,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               if (localStorage.getItem('blog-theme') === 'dark') {
                 document.documentElement.classList.add('dark');
               }
+              if (localStorage.getItem('theme-preset') === 'violet') {
+                document.documentElement.setAttribute('data-theme-preset', 'violet');
+              } else {
+                document.documentElement.setAttribute('data-theme-preset', 'ocean');
+              }
               var effects = localStorage.getItem('visual-effects');
               if (effects === 'off' || (effects === null && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
                 document.documentElement.setAttribute('data-visual-mode', 'plain');
@@ -94,7 +99,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     {!config.background.useGradient && <BackgroundSlider />}
                     <div className="absolute inset-0 z-[-9] bg-white/30 dark:bg-slate-900/40 backdrop-blur-md transition-colors duration-1000" />
                     <div
-                      className="absolute inset-0 z-[-8] opacity-40 dark:opacity-20 mix-blend-multiply dark:mix-blend-screen transition-opacity duration-1000 transform-gpu"
+                      className="site-gradient absolute inset-0 z-[-8] opacity-40 dark:opacity-20 mix-blend-multiply dark:mix-blend-screen transition-opacity duration-1000 transform-gpu"
                       style={{
                         background: `linear-gradient(-45deg, ${gradient})`,
                         backgroundSize: "400% 400%",

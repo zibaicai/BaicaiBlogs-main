@@ -5,9 +5,11 @@ import { Copy, Moon, Palette, RotateCcw, Sparkles, Sun, X } from "lucide-react";
 import { useSiteConfigContext } from "../context/SiteConfigProvider";
 import {
   DEFAULT_THEME_PALETTES,
+  getDefaultPalettes,
   useTheme,
   type ThemeMode,
   type ThemePalette,
+  type ThemePreset,
 } from "./ThemeProvider";
 
 interface ThemeStudioProps {
@@ -116,13 +118,13 @@ async function extractColors(url: string): Promise<string[]> {
 }
 
 export default function ThemeStudio({ open, onClose }: ThemeStudioProps) {
-  const { mode, customThemes, setCustomTheme, copyToOtherMode, resetCurrentTheme, resetAllThemes } = useTheme();
+  const { mode, preset, setPreset, customThemes, setCustomTheme, copyToOtherMode, resetCurrentTheme, resetAllThemes } = useTheme();
   const { background } = useSiteConfigContext();
   const [tab, setTab] = useState<ThemeMode>(mode);
   const [recommended, setRecommended] = useState<string[]>([]);
   const [recommending, setRecommending] = useState(false);
 
-  const palette = customThemes[tab] || DEFAULT_THEME_PALETTES[tab];
+  const palette = customThemes[tab] || getDefaultPalettes(preset)[tab];
 
   useEffect(() => {
     if (open) setTab(mode);
@@ -172,6 +174,27 @@ export default function ThemeStudio({ open, onClose }: ThemeStudioProps) {
           <button onClick={onClose} className="rounded-full border border-slate-200 p-2 text-slate-500 hover:bg-slate-100 dark:border-white/10 dark:hover:bg-white/10" aria-label="关闭配色工作台">
             <X size={18} />
           </button>
+        </div>
+
+        <div className="mt-4 grid grid-cols-2 gap-2">
+          {([
+            { id: "ocean" as ThemePreset, name: "深海鲸歌", hint: "蓝调 / 海雾" },
+            { id: "violet" as ThemePreset, name: "旧日紫夜", hint: "紫调 / 樱花" },
+          ]).map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => setPreset(item.id)}
+              className={`rounded-2xl border p-3 text-left transition ${
+                preset === item.id
+                  ? "border-indigo-400 bg-indigo-50 text-indigo-700 dark:border-indigo-400/40 dark:bg-indigo-500/10 dark:text-indigo-200"
+                  : "border-slate-200 bg-white text-slate-600 hover:border-indigo-300 dark:border-white/10 dark:bg-slate-950/30 dark:text-slate-300"
+              }`}
+            >
+              <span className="block text-xs font-black">{item.name}</span>
+              <span className="mt-1 block text-[10px] font-medium opacity-60">{item.hint}</span>
+            </button>
+          ))}
         </div>
 
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-2 dark:border-white/10 dark:bg-slate-950/40">

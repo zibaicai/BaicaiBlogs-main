@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Eye, EyeOff, Music2, Palette, Pause, Play, Settings2, Sparkles, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useMusic } from "./MusicProvider";
+import { useTheme } from "./ThemeProvider";
 import ThemeStudio from "./ThemeStudio";
 
 type ToolId = "danmaku" | "click" | "pet";
@@ -46,6 +47,7 @@ export default function GlobalToolbox() {
   const [themeOpen, setThemeOpen] = useState(false);
   const pathname = usePathname();
   const { currentSong, isPlaying, togglePlay } = useMusic();
+  const { preset, setPreset } = useTheme();
 
   useEffect(() => {
     try {
@@ -228,6 +230,36 @@ export default function GlobalToolbox() {
                       {musicVisible ? <EyeOff size={13} /> : <Eye size={13} />}
                     </button>
                   </div>
+                </div>
+              </div>
+
+              <div className="mt-1 border-t border-slate-200/70 px-3 py-3 dark:border-white/10">
+                <div className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">主题风格</div>
+                <div className="mt-2 grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setPreset("ocean")}
+                    className={`rounded-xl border px-3 py-2 text-left transition ${
+                      preset === "ocean"
+                        ? "border-[var(--ui-accent)] bg-[var(--ui-accent-soft)] text-[var(--ui-accent)]"
+                        : "border-slate-200 text-slate-500 hover:border-[var(--ui-accent)]/40 dark:border-white/10 dark:text-slate-400"
+                    }`}
+                  >
+                    <span className="block text-[11px] font-black">深海鲸歌</span>
+                    <span className="mt-0.5 block text-[9px] opacity-60">蓝调 / 海雾</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPreset("violet")}
+                    className={`rounded-xl border px-3 py-2 text-left transition ${
+                      preset === "violet"
+                        ? "border-[var(--ui-accent)] bg-[var(--ui-accent-soft)] text-[var(--ui-accent)]"
+                        : "border-slate-200 text-slate-500 hover:border-[var(--ui-accent)]/40 dark:border-white/10 dark:text-slate-400"
+                    }`}
+                  >
+                    <span className="block text-[11px] font-black">旧日紫夜</span>
+                    <span className="mt-0.5 block text-[9px] opacity-60">紫调 / 樱花</span>
+                  </button>
                 </div>
               </div>
 
