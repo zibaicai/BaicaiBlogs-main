@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Navbar from "../../../components/Navbar";
+import Input from "../../../components/ui/Input";
+import Textarea from "../../../components/ui/Textarea";
 import { useAuth } from "../../../lib/auth";
 
 export default function TagRequestPage() {
@@ -54,18 +56,18 @@ export default function TagRequestPage() {
             </div>
           ) : (
             <form onSubmit={submit} className="mt-6 flex flex-col gap-3">
-              <input
+              <Input
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 placeholder="标签名称，例如：性能优化"
-                className="rounded-2xl border border-white/40 bg-white/50 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[var(--ui-accent)] dark:border-white/10 dark:bg-slate-900/50"
+                className="!rounded-2xl !py-3"
               />
-              <textarea
+              <Textarea
                 value={reason}
                 onChange={(event) => setReason(event.target.value)}
                 rows={3}
                 placeholder="申请理由 / 使用场景（可选）"
-                className="resize-none rounded-2xl border border-white/40 bg-white/50 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[var(--ui-accent)] dark:border-white/10 dark:bg-slate-900/50"
+                className="!rounded-2xl !py-3"
               />
               <button type="submit" disabled={busy} className="btn btn-primary rounded-2xl px-5 py-3 text-sm font-black disabled:opacity-50">
                 {busy ? "提交中…" : "提交申请"}

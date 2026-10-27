@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Disc3, Flame, Heart, ListMusic, Loader2, Music2, Pause, Play, SkipBack, SkipForward, ThumbsDown, UserRound } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import PageTransition from "../../components/PageTransition";
+import Input from "../../components/ui/Input";
 import MusicCommentSection from "../../components/comments/MusicCommentSection";
 import { musicApi, type MusicPlaylist, type MusicTrack } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
@@ -203,9 +204,9 @@ export default function MusicPage() {
 
           {applyOpen && (
             <section className="music-apply-panel">
-              <input value={applyForm.externalPlaylistId} onChange={(e) => setApplyForm({ ...applyForm, externalPlaylistId: e.target.value })} placeholder="网易云公开歌单 ID" />
-              <input value={applyForm.title} onChange={(e) => setApplyForm({ ...applyForm, title: e.target.value })} placeholder="歌单标题（可选）" />
-              <input value={applyForm.note} onChange={(e) => setApplyForm({ ...applyForm, note: e.target.value })} placeholder="推荐理由" />
+              <Input value={applyForm.externalPlaylistId} onChange={(e) => setApplyForm({ ...applyForm, externalPlaylistId: e.target.value })} placeholder="网易云公开歌单 ID" />
+              <Input value={applyForm.title} onChange={(e) => setApplyForm({ ...applyForm, title: e.target.value })} placeholder="歌单标题（可选）" />
+              <Input value={applyForm.note} onChange={(e) => setApplyForm({ ...applyForm, note: e.target.value })} placeholder="推荐理由" />
               <button onClick={() => void submitApplication()}>提交申请</button>
               {applyMessage && <span>{applyMessage}</span>}
             </section>

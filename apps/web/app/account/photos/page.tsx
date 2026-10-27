@@ -8,6 +8,7 @@ import Navbar from "../../../components/Navbar";
 import PageTransition from "../../../components/PageTransition";
 import { useAuth } from "../../../lib/auth";
 import Select from "../../../components/ui/Select";
+import Input from "../../../components/ui/Input";
 import {
   galleryRequest,
   imageSize,
@@ -191,11 +192,10 @@ export default function MyPhotosPage() {
           <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-5 items-start">
             <aside className="rounded-3xl bg-white/60 dark:bg-slate-800/50 backdrop-blur-xl border border-white/40 dark:border-white/10 p-4">
               <div className="space-y-2 mb-4">
-                <input
+                <Input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="新相册名称"
-                  className="w-full rounded-xl bg-white/60 dark:bg-slate-900/50 border border-white/40 dark:border-slate-700 px-4 py-2.5 text-sm outline-none"
                 />
                 <div className="flex gap-2">
                   <Select
@@ -215,12 +215,11 @@ export default function MyPhotosPage() {
                 </div>
                 {visibility === "PASSWORD" && (
                   <div className="space-y-2">
-                    <input
+                    <Input
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       type="password"
                       placeholder="相册密码"
-                      className="w-full rounded-xl bg-white/60 dark:bg-slate-900/50 border border-white/40 dark:border-slate-700 px-4 py-2.5 text-sm outline-none"
                     />
                     <label className="flex items-center gap-2 text-[11px] text-slate-500 font-bold">
                       <input type="checkbox" checked={hideCount} onChange={(e) => setHideCount(e.target.checked)} className="accent-indigo-500" />

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Loader2, LogIn, UserPlus } from "lucide-react";
 import Navbar from "../../components/Navbar";
+import Input from "../../components/ui/Input";
 import { useAuth } from "../../lib/auth";
 
 interface TurnstileRenderOptions {
@@ -137,21 +138,21 @@ export default function LoginPage() {
           </p>
 
           <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">用户名</label>
-          <input
+          <Input
             value={username}
             onChange={(event) => setUsername(event.target.value)}
             autoComplete="username"
-            className="w-full mt-2 mb-4 rounded-2xl bg-white/60 dark:bg-slate-900/50 border border-white/40 dark:border-white/10 px-5 py-3.5 text-sm text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-indigo-500"
+            className="mt-2 mb-4 !rounded-2xl !py-3.5"
             placeholder="至少 3 个字符"
           />
 
           <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">密码</label>
-          <input
+          <Input
             type="password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             autoComplete={mode === "login" ? "current-password" : "new-password"}
-            className="w-full mt-2 rounded-2xl bg-white/60 dark:bg-slate-900/50 border border-white/40 dark:border-white/10 px-5 py-3.5 text-sm text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-indigo-500"
+            className="mt-2 !rounded-2xl !py-3.5"
             placeholder="至少 6 个字符"
           />
 

@@ -6,6 +6,7 @@ import { Download, Image as ImageIcon, Loader2, Lock, X } from "lucide-react";
 import Navbar from "../../../components/Navbar";
 import PageTransition from "../../../components/PageTransition";
 import BackButton from "../../../components/BackButton";
+import Input from "../../../components/ui/Input";
 import CommentSection from "../../../components/comments/CommentSection";
 import { useAuth } from "../../../lib/auth";
 
@@ -194,12 +195,12 @@ export default function AlbumPage() {
               <div className="text-sm font-bold text-red-400 mb-4">{error}</div>
               {error.includes("密码") && (
                 <div className="flex gap-2">
-                  <input
+                  <Input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="输入相册密码"
-                    className="flex-1 rounded-xl bg-white/60 dark:bg-slate-900/60 border border-white/40 dark:border-slate-700 px-4 py-2.5 text-sm outline-none"
+                    className="flex-1"
                   />
                   <button
                     onClick={unlock}
@@ -240,13 +241,13 @@ export default function AlbumPage() {
                 </button>
               ) : (
                 <div className="flex gap-2">
-                  <input
+                  <Input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && void unlock()}
                     placeholder="输入相册密码"
-                    className="flex-1 rounded-xl bg-white/60 dark:bg-slate-900/60 border border-white/40 dark:border-slate-700 px-4 py-2.5 text-sm outline-none"
+                    className="flex-1"
                   />
                   <button
                     onClick={unlock}

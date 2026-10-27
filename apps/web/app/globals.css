@@ -4884,16 +4884,6 @@ html:not(.dark) .hv-empty {
   border-radius: var(--radius-panel);
   background: color-mix(in srgb, var(--ui-secondary-bg) 82%, transparent);
 }
-.music-apply-panel input {
-  min-height: 34px;
-  border: 1px solid var(--ui-border);
-  border-radius: var(--radius-control);
-  background: color-mix(in srgb, var(--ui-bg) 50%, transparent);
-  padding: 0 10px;
-  color: var(--ui-text);
-  font-size: 11px;
-  outline: none;
-}
 .music-apply-panel > button {
   justify-self: start;
   border-radius: var(--radius-pill);
