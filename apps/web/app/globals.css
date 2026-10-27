@@ -5573,7 +5573,7 @@ html:not(.dark) .hv-empty {
 
 /* Homepage density pass: vertical rhythm only, widths stay on the existing 1180px grid. */
 .home-v2 .hv-hero {
-  padding: 0 0 8px;
+  padding: 0 0 20px;
 }
 
 .home-v2 .hv-hero-copy {
@@ -5585,7 +5585,7 @@ html:not(.dark) .hv-empty {
 }
 
 .home-v2 .hv-layout {
-  row-gap: 8px;
+  row-gap: 12px;
 }
 
 .home-v2 .hv-panel {
@@ -5697,7 +5697,7 @@ html:not(.dark) .hv-empty {
 }
 
 .home-v2 .hv-dashboard {
-  margin-top: 8px;
+  margin-top: 12px;
 }
 
 @media (max-width: 1023px) {

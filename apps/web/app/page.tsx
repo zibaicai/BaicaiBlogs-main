@@ -46,7 +46,7 @@ export default async function Home() {
     <div className="home-v2 min-h-screen relative pb-16">
       <Navbar />
       <PageTransition>
-        <div className="home-v2-inner w-full max-w-[1180px] mx-auto px-4 sm:px-8 lg:pr-[200px] pt-20">
+        <div className="home-v2-inner w-full max-w-[1180px] mx-auto px-4 sm:px-8 lg:pr-[200px] pt-24">
           <section className="hv-hero">
             <HomeHero
               postCount={posts.length}
