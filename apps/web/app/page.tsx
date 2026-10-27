@@ -29,12 +29,12 @@ function plainText(value: string) {
 export default async function Home() {
   const [posts, moments, albums] = await Promise.all([getPosts(), getMoments(), getAlbums()]);
 
-  const recentPosts = posts.slice(0, 4).map((p) => ({
+  const recentPosts = posts.slice(0, 6).map((p) => ({
     ...p,
     formattedDate: formatDate(p.date),
   }));
 
-  const recentMoments = moments.slice(0, 3).map((moment) => ({
+  const recentMoments = moments.slice(0, 4).map((moment) => ({
     ...moment,
     description: plainText(moment.htmlContent || moment.content || "").slice(0, 80),
     formattedDate: formatDate(moment.date),
@@ -46,7 +46,7 @@ export default async function Home() {
     <div className="home-v2 min-h-screen relative pb-16">
       <Navbar />
       <PageTransition>
-        <div className="home-v2-inner w-full max-w-[1180px] mx-auto px-4 sm:px-8 lg:pr-[200px] pt-28">
+        <div className="home-v2-inner w-full max-w-[1180px] mx-auto px-4 sm:px-8 lg:pr-[200px] pt-24">
           <section className="hv-hero">
             <HomeHero
               postCount={posts.length}
@@ -56,21 +56,10 @@ export default async function Home() {
             <AlbumAccordion albums={albums} />
           </section>
 
-          <div className="hv-toolbar hv-toolbar-meta-only">
-            <div className="hv-toolbar-meta">
-              <span>TIDE ARCHIVE</span>
-              <span className="hv-toolbar-dot" />
-              <span>UPDATED {recentPosts[0]?.formattedDate || "TODAY"}</span>
-            </div>
-          </div>
-
-          <main className="hv-layout">
+          <div className="hv-layout">
             <section className="hv-panel hv-posts">
               <div className="hv-panel-head">
-                <div>
-                  <span className="hv-profile-label">LATEST WRITING</span>
-                  <h2>最近写下的</h2>
-                </div>
+                <h2>最近写下</h2>
                 <Link href="/posts" className="hv-text-link">
                   全部笔记 <span>↗</span>
                 </Link>
@@ -100,10 +89,7 @@ export default async function Home() {
             <aside className="hv-side">
               <section className="hv-panel hv-moments">
                 <div className="hv-panel-head">
-                  <div>
-                    <span className="hv-profile-label">SMALL FRAGMENTS</span>
-                    <h2>最近的说说</h2>
-                  </div>
+                  <h2>最近的说说</h2>
                   <Link href="/moments" className="hv-text-link">
                     全部说说 <span>↗</span>
                   </Link>
@@ -121,11 +107,11 @@ export default async function Home() {
                   ))}
                   {recentMoments.length === 0 && <p className="hv-empty">暂时没有新的碎碎念。</p>}
                 </div>
-              </section>
 
-              <HomeThemeToggle />
+                <HomeThemeToggle updatedAt={recentPosts[0]?.formattedDate} />
+              </section>
             </aside>
-          </main>
+          </div>
 
           <div className="hv-dashboard">
             <SiteDashboard />
