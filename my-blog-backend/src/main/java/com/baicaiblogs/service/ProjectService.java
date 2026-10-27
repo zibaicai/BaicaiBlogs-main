@@ -121,6 +121,7 @@ public class ProjectService {
                 .tags(deserializeTags(project.getTags()))
                 .sortOrder(project.getSortOrder())
                 .visibility(project.getVisibility())
+                .createdAt(project.getCreatedAt())
                 .build();
     }
 }

@@ -71,6 +71,7 @@ export interface Project {
   githubUrl: string;
   tags: string[];
   sortOrder?: number;
+  createdAt?: string;
 }
 
 export interface Moment {

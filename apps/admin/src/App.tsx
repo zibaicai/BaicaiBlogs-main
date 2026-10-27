@@ -758,8 +758,8 @@ function Projects() {
               <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 sm:col-span-2">描述
                 <textarea value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} rows={3} className="admin-input mt-2 w-full resize-y" placeholder="项目简介" />
               </label>
-              <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 sm:col-span-2">GitHub 地址
-                <input value={form.githubUrl} onChange={(event) => setForm({ ...form, githubUrl: event.target.value })} className="admin-input mt-2 w-full" placeholder="https://github.com/..." />
+              <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 sm:col-span-2">仓库地址
+                <input value={form.githubUrl} onChange={(event) => setForm({ ...form, githubUrl: event.target.value })} className="admin-input mt-2 w-full" placeholder="支持 GitHub / Gitee / GitLab 等仓库地址" />
               </label>
               <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 sm:col-span-2">标签
                 <input value={form.tags} onChange={(event) => setForm({ ...form, tags: event.target.value })} className="admin-input mt-2 w-full" placeholder="用逗号分隔，例如：Next.js, Spring Boot" />

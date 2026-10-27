@@ -1,6 +1,7 @@
 import ArchiveItemCard from "../components/ArchiveItemCard";
 import DirectoryExplorer from "../components/DirectoryExplorer";
-import type { Project } from "../lib/api";
+import { formatDay, type Project } from "../lib/api";
+import { repoProviderLabel } from "../lib/repo";
 
 export default function ProjectsBoard({ projects }: { projects: Project[] }) {
   const tagCounts: Record<string, number> = {};
@@ -28,7 +29,8 @@ export default function ProjectsBoard({ projects }: { projects: Project[] }) {
           description={project.description}
           category="PROJECT"
           tags={project.tags || []}
-          cornerBadge={project.githubUrl ? "GitHub" : undefined}
+          cornerBadge={repoProviderLabel(project.githubUrl)}
+          footnote={project.createdAt ? `收录于 ${formatDay(project.createdAt)}` : undefined}
           media={{ kind: "icon", content: project.icon || "🚀" }}
         />
       ),

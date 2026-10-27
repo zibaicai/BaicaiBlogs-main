@@ -16,6 +16,7 @@ export interface ArchiveItemCardProps {
   tags?: string[];
   meta?: ReactNode;
   cornerBadge?: ReactNode;
+  footnote?: ReactNode;
   media?: ArchiveMedia;
 }
 
@@ -29,6 +30,7 @@ export default function ArchiveItemCard({
   tags = [],
   meta,
   cornerBadge,
+  footnote,
   media,
 }: ArchiveItemCardProps) {
   const content = (
@@ -66,6 +68,7 @@ export default function ArchiveItemCard({
           {label && <time className="directory-card-time">{label}</time>}
           <h2 className="directory-card-title">{title}</h2>
           {description && <p className="directory-card-description">{description}</p>}
+          {footnote && <p className="directory-card-footnote">{footnote}</p>}
         </div>
 
         <div className="directory-card-foot">

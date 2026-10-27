@@ -119,6 +119,7 @@ export interface Project {
   tags: string[];
   sortOrder?: number;
   visibility?: string;
+  createdAt?: string;
 }
 
 export interface SiteConfigItem {

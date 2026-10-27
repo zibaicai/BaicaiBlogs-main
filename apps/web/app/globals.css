@@ -5261,3 +5261,14 @@ html:not(.dark) .hv-empty {
   letter-spacing: .04em;
   backdrop-filter: blur(8px);
 }
+
+.directory-card-footnote {
+  margin-top: 6px;
+  color: var(--ui-text-muted, #94a3b8);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+.cover-grid .directory-card-footnote {
+  color: rgba(255, 255, 255, 0.58);
+}
