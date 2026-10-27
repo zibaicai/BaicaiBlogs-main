@@ -16,3 +16,13 @@ Firewall only exposes:
 ```
 
 Ports 3000/3001/3002/8080 must stay private.\n\nUFW: deny incoming by default; allow 22, 80, 443 only. UFW blocked packets are logged to syslog and picked up by the ufw-scan jail. The backend also performs login failures and temporary IP bans.
+
+## Turnstile
+
+Set these environment variables for the backend service before enabling public registration:
+
+```text
+TURNSTILE_SITE_KEY=<public site key>
+TURNSTILE_SECRET=<secret key>
+```n
+When either variable is empty, registration is deliberately closed.
