@@ -4,7 +4,6 @@ import { useTheme } from "./ThemeProvider";
 import Fireflies from "./Fireflies";
 import SakuraGL from "./SakuraGL";
 import { SakuraBacklight, SakuraGlare } from "./SakuraLights";
-import WindyGrass from "./WindyGrass";
 
 /**
  * 背景特效的分发器。
@@ -38,8 +37,6 @@ export default function BackgroundEffects() {
         </div>
       )}
 
-      {/* 草地一直存在，但它内部会自动改变颜色 */}
-      <WindyGrass />
     </>
   );
 }
