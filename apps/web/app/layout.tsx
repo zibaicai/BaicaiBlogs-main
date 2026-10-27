@@ -12,8 +12,7 @@ import { SiteConfigProvider } from "../context/SiteConfigProvider";
 import { ToastProvider } from "../components/ToastProvider";
 import { MusicProvider } from "../components/MusicProvider";
 import SplashScreen from "../components/SplashScreen";
-import BackgroundEffects from "../components/BackgroundEffects";
-import BackgroundSlider from "../components/BackgroundSlider";
+import ThemeBackdrop from "../components/ThemeBackdrop";
 import DanmakuBackground from "../components/DanmakuBackground";
 import DanmakuComposer from "../components/DanmakuComposer";
 import GlobalSnow from "../components/GlobalSnow";
@@ -39,7 +38,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const config = await getPublicSiteConfig();
-  const gradient = config.background.themeColors.join(", ");
 
   return (
     <html lang="zh-CN" className="h-full antialiased" suppressHydrationWarning>
@@ -95,23 +93,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <SplashScreen />
               <MusicProvider>
                 <div id="app-mount-root" className="flex-1 flex flex-col transition-opacity duration-1000">
-                  <div className="site-backdrop fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
-                    {!config.background.useGradient && <BackgroundSlider />}
-                    <div className="absolute inset-0 z-[-9] bg-white/30 dark:bg-slate-900/40 backdrop-blur-md transition-colors duration-1000" />
-                    <div
-                      className="site-gradient absolute inset-0 z-[-8] opacity-40 dark:opacity-20 mix-blend-multiply dark:mix-blend-screen transition-opacity duration-1000 transform-gpu"
-                      style={{
-                        background: `linear-gradient(-45deg, ${gradient})`,
-                        backgroundSize: "400% 400%",
-                        animation: "gradientMove 15s ease infinite",
-                      }}
-                    />
-                    <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-white/40 dark:bg-indigo-900/20 blur-[100px] rounded-full mix-blend-overlay z-[-7]" />
-                    <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-400/30 dark:bg-purple-900/30 blur-[100px] rounded-full mix-blend-overlay z-[-7]" />
-                    <div className="bg-effects-wrapper transition-opacity duration-1000">
-                      <BackgroundEffects />
-                    </div>
-                  </div>
+                  <ThemeBackdrop />
 
                   <DanmakuBackground />
                   <DanmakuComposer />

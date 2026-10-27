@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 /**
  * 右上角的两个光源（纯 CSS，不碰着色器）
@@ -13,32 +13,42 @@
 
 // 位置都用百分比，铺满整屏，让核稳定落在右上角内侧
 const CORE_AT = "circle at 86% 9%";
+export type SakuraLightTone = "ocean" | "violet";
 
-const BACK_LIGHT = `
+const OCEAN_BACK_LIGHT = `
+  radial-gradient(${CORE_AT}, rgba(235,245,255,0.72) 0%, rgba(225,240,255,0.46) 3.2%, rgba(215,235,255,0.22) 9%, rgba(205,228,255,0.08) 20%, rgba(200,225,255,0.03) 36%, rgba(200,225,255,0) 54%),
+  radial-gradient(circle at 78% 20%, rgba(225,240,255,0.2) 0%, rgba(215,235,255,0.07) 26%, rgba(210,232,255,0) 52%)
+`;
+
+const VIOLET_BACK_LIGHT = `
   radial-gradient(${CORE_AT}, rgba(255,249,240,0.78) 0%, rgba(255,246,236,0.52) 3.2%, rgba(255,243,232,0.24) 9%, rgba(255,242,230,0.09) 20%, rgba(255,240,228,0.035) 36%, rgba(255,240,228,0) 54%),
   radial-gradient(circle at 78% 20%, rgba(255,245,236,0.22) 0%, rgba(255,242,232,0.08) 26%, rgba(255,240,230,0) 52%)
 `;
 
-const GLARE_LIGHT = `
+const OCEAN_GLARE_LIGHT = `
+  radial-gradient(${CORE_AT}, rgba(245,251,255,0.28) 0%, rgba(238,248,255,0.13) 4%, rgba(230,244,255,0.05) 12%, rgba(225,240,255,0.025) 26%, rgba(225,240,255,0) 44%)
+`;
+
+const VIOLET_GLARE_LIGHT = `
   radial-gradient(${CORE_AT}, rgba(255,253,250,0.30) 0%, rgba(255,252,248,0.14) 4%, rgba(255,251,247,0.05) 12%, rgba(255,251,247,0.025) 26%, rgba(255,250,246,0) 44%)
 `;
 
-export function SakuraBacklight() {
+export function SakuraBacklight({ tone = "ocean" }: { tone?: SakuraLightTone }) {
   return (
     <div
       aria-hidden
       className="pointer-events-none absolute inset-0"
-      style={{ background: BACK_LIGHT, mixBlendMode: "screen" }}
+      style={{ background: tone === "violet" ? VIOLET_BACK_LIGHT : OCEAN_BACK_LIGHT, mixBlendMode: "screen" }}
     />
   );
 }
 
-export function SakuraGlare() {
+export function SakuraGlare({ tone = "ocean" }: { tone?: SakuraLightTone }) {
   return (
     <div
       aria-hidden
       className="pointer-events-none absolute inset-0"
-      style={{ background: GLARE_LIGHT, mixBlendMode: "screen" }}
+      style={{ background: tone === "violet" ? VIOLET_GLARE_LIGHT : OCEAN_GLARE_LIGHT, mixBlendMode: "screen" }}
     />
   );
 }

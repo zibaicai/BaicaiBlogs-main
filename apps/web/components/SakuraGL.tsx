@@ -87,8 +87,10 @@ function mergeConfig(base: SakuraConfig, patch: unknown): SakuraConfig {
  *   ?sakura={"petals":1500,"bloom":{"strength":0.8}}
  *   localStorage["sakura-config"] 存同样的 JSON
  */
-export function resolveSakuraConfig(): SakuraConfig {
-  if (typeof window === "undefined") return SAKURA_DEFAULTS;
+export function resolveSakuraConfig(color?: { inner: number[]; outer: number[] }): SakuraConfig {
+  if (typeof window === "undefined") {
+    return color ? { ...SAKURA_DEFAULTS, color } : SAKURA_DEFAULTS;
+  }
 
   let cfg = SAKURA_DEFAULTS;
 
@@ -106,6 +108,7 @@ export function resolveSakuraConfig(): SakuraConfig {
     /* 忽略非法参数 */
   }
 
+  if (color) cfg = { ...cfg, color };
   return cfg;
 }
 
@@ -293,7 +296,7 @@ void main() {
 }
 `;
 
-export default function SakuraGL() {
+export default function SakuraGL({ color }: { color?: { inner: number[]; outer: number[] } }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -362,7 +365,7 @@ export default function SakuraGL() {
         return { program: p, u, a };
       };
 
-      const CFG = resolveSakuraConfig();
+      const CFG = resolveSakuraConfig(color);
 
       // 调试入口：控制台里可以直接改
       //   __sakura.config.bloom.strength = 0.8;   ← 立刻生效（每帧读取）
@@ -763,7 +766,7 @@ export default function SakuraGL() {
         }
       });
     };
-  }, []);
+  }, [color]);
 
   return (
     <canvas

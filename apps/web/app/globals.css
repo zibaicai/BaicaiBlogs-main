@@ -6024,10 +6024,6 @@ html.dark[data-theme-preset="violet"] {
   --ui-danger: #f87171;
 }
 
-html[data-theme-preset="violet"] .site-backdrop {
-  filter: hue-rotate(55deg) saturate(1.05) brightness(0.98);
-}
-
 html[data-theme-preset="violet"] .home-v2::before {
   background:
     radial-gradient(circle at 12% 12%, rgba(255, 255, 255, 0.78), transparent 30%),
@@ -6035,6 +6031,12 @@ html[data-theme-preset="violet"] .home-v2::before {
     linear-gradient(180deg, rgba(248, 250, 252, 0.15), rgba(250, 245, 255, 0.52));
 }
 
-html[data-theme-preset="violet"] .sakura-layer {
-  filter: saturate(1.08);
+/* The legacy violet look used color blending, not multiply. */
+html[data-theme-preset="violet"] .site-gradient {
+  mix-blend-mode: color !important;
+  opacity: 0.6 !important;
+}
+
+html.dark[data-theme-preset="violet"] .site-gradient {
+  opacity: 0.2 !important;
 }

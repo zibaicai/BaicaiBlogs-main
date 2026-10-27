@@ -5,6 +5,11 @@ import Fireflies from "./Fireflies";
 import SakuraGL from "./SakuraGL";
 import { SakuraBacklight, SakuraGlare } from "./SakuraLights";
 
+const SAKURA_COLORS: Record<"ocean" | "violet", { inner: number[]; outer: number[] }> = {
+  ocean: { inner: [0.45, 0.65, 0.92], outer: [0.82, 0.91, 1.0] },
+  violet: { inner: [1.0, 0.62, 0.68], outer: [1.0, 0.78, 0.82] },
+};
+
 /**
  * 背景特效的分发器。
  *
@@ -16,7 +21,9 @@ import { SakuraBacklight, SakuraGlare } from "./SakuraLights";
  * 切回日间重新初始化。这样两套特效互不干扰，也不会在夜间空跑 GPU。
  */
 export default function BackgroundEffects() {
-  const { isDark } = useTheme();
+  const { isDark, preset } = useTheme();
+  const tone = preset === "violet" ? "violet" : "ocean";
+  const sakuraColor = SAKURA_COLORS[tone];
 
   return (
     <>
@@ -31,9 +38,9 @@ export default function BackgroundEffects() {
         </div>
       ) : (
         <div className="sakura-layer">
-          <SakuraBacklight />
-          <SakuraGL />
-          <SakuraGlare />
+          <SakuraBacklight tone={tone} />
+          <SakuraGL color={sakuraColor} />
+          <SakuraGlare tone={tone} />
         </div>
       )}
 

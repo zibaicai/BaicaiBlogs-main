@@ -2,10 +2,10 @@
 import { useState, useEffect } from 'react';
 import { useSiteConfigContext } from '../context/SiteConfigProvider';
 
-export default function BackgroundSlider() {
+export default function BackgroundSlider({ images: imageOverride }: { images?: string[] }) {
   const [index, setIndex] = useState(0);
   const { background } = useSiteConfigContext();
-  const images = background?.bgImages || [];
+  const images = imageOverride?.length ? imageOverride : background?.bgImages || [];
 
   useEffect(() => {
     if (images.length <= 1) return;
