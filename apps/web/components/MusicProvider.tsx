@@ -46,6 +46,7 @@ interface MusicContextType {
   currentTime: number;
   duration: number;
   currentLyric: string;
+  lyrics: { time: number; text: string }[];
   isLoading: boolean;
   volume: number;
   isMuted: boolean;
@@ -56,6 +57,7 @@ interface MusicContextType {
   prevSong: () => void;
   handleSeek: (e: React.ChangeEvent<HTMLInputElement>) => void;
   playSong: (index: number) => void;
+  playCollection: (songs: any[], startIndex?: number) => void;
   setVolume: (value: number) => void;
   toggleMute: () => void;
   togglePlayMode: () => void;
@@ -74,6 +76,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
   const [lyrics, setLyrics] = useState<{ time: number; text: string }[]>([]);
   const [currentLyric, setCurrentLyric] = useState("正在接收海面信号...");
   const [isLoading, setIsLoading] = useState(true);
+  const [playVersion, setPlayVersion] = useState(0);
 
   // 🌟 2. 新增音量和播放模式状态
   const [volume, setVolumeState] = useState(1);
@@ -151,7 +154,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
       }
     }
     return () => { isMounted = false; };
-  }, [currentIndex, playlist.length]); // 移除 playlist 依赖防止无限循环，只依赖长度
+  }, [currentIndex, playlist.length, playVersion]); // 移除 playlist 依赖防止无限循环，只依赖长度
 
   // 🌟 4. 同步音量到 audio 元素
   useEffect(() => {
@@ -189,6 +192,14 @@ export function MusicProvider({ children }: { children: ReactNode }) {
   const playSong = (index: number) => {
     setCurrentIndex(index);
     if (!isPlaying) setIsPlaying(true); // 保证切歌后自动播放
+  };
+
+  const playCollection = (songs: any[], startIndex = 0) => {
+    if (!songs.length) return;
+    setPlaylist(songs);
+    setCurrentIndex(Math.max(0, Math.min(startIndex, songs.length - 1)));
+    setPlayVersion((value) => value + 1);
+    setIsPlaying(true);
   };
 
   const handleTimeUpdate = () => {
@@ -244,10 +255,10 @@ export function MusicProvider({ children }: { children: ReactNode }) {
 
   return (
     <MusicContext.Provider value={{
-        playlist, currentIndex, currentSong, isPlaying, progress, currentTime, duration, currentLyric, isLoading,
+        playlist, currentIndex, currentSong, isPlaying, progress, currentTime, duration, currentLyric, lyrics, isLoading,
         volume, isMuted, playMode, // 暴露新状态
         togglePlay, nextSong, prevSong, handleSeek,
-        playSong, setVolume, toggleMute, togglePlayMode // 暴露新方法
+        playSong, playCollection, setVolume, toggleMute, togglePlayMode // 暴露新方法
     }}>
       {children}
       {currentSong && (

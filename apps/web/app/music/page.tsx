@@ -1,37 +1,58 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Disc3, Flame, Heart, Music2, ThumbsDown, UserRound } from "lucide-react";
+import { Disc3, Flame, Heart, ListMusic, Loader2, Music2, Pause, Play, SkipBack, SkipForward, ThumbsDown, UserRound } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import PageTransition from "../../components/PageTransition";
-import CloudPlayer from "../../components/CloudPlayer";
-import { musicApi, type MusicPlaylist } from "../../lib/api";
+import CommentSection from "../../components/comments/CommentSection";
+import { musicApi, type MusicPlaylist, type MusicTrack } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
+import { useMusic } from "../../components/MusicProvider";
+
+type Layout = "focus" | "studio";
+type LeftTab = "recommend" | "mine" | "queue";
+type FocusTab = "lyrics" | "comments";
+
+const formatTime = (value: number) => {
+  if (!Number.isFinite(value)) return "00:00";
+  return `${String(Math.floor(value / 60)).padStart(2, "0")}:${String(Math.floor(value % 60)).padStart(2, "0")}`;
+};
 
 export default function MusicPage() {
   const { user } = useAuth();
-  const [playlists, setPlaylists] = useState<MusicPlaylist[]>([]);
+  const {
+    playlist, currentSong, currentIndex, isPlaying, progress, currentTime, duration,
+    currentLyric, lyrics, isLoading, togglePlay, nextSong, prevSong, handleSeek,
+    playSong, playCollection,
+  } = useMusic();
+
+  const [recommendations, setRecommendations] = useState<MusicPlaylist[]>([]);
   const [mine, setMine] = useState<MusicPlaylist[]>([]);
+  const [selected, setSelected] = useState<MusicPlaylist | null>(null);
   const [loading, setLoading] = useState(true);
+  const [leftTab, setLeftTab] = useState<LeftTab>("recommend");
+  const [focusTab, setFocusTab] = useState<FocusTab>("lyrics");
+  const [layout, setLayout] = useState<Layout>("focus");
+  const [canStudio, setCanStudio] = useState(false);
   const [applyOpen, setApplyOpen] = useState(false);
-  const [applyForm, setApplyForm] = useState({ externalPlaylistId: "", title: "", note: "" });
   const [applyMessage, setApplyMessage] = useState("");
+  const [applyForm, setApplyForm] = useState({ externalPlaylistId: "", title: "", note: "" });
 
   useEffect(() => {
     let active = true;
-    Promise.all([
-      musicApi.publicPlaylists(),
-      user ? musicApi.myPlaylists() : Promise.resolve([]),
-    ])
-      .then(([published, personal]) => {
+    Promise.all([musicApi.publicPlaylists(), user ? musicApi.myPlaylists() : Promise.resolve([])])
+      .then(([publicItems, personal]) => {
         if (!active) return;
-        setPlaylists(published || []);
+        setRecommendations(publicItems || []);
         setMine(personal || []);
+        if ((publicItems || []).length > 0 && !selected) {
+          void selectPlaylist(publicItems[0]);
+        }
       })
       .catch(() => {
         if (active) {
-          setPlaylists([]);
+          setRecommendations([]);
           setMine([]);
         }
       })
@@ -40,6 +61,53 @@ export default function MusicPage() {
       active = false;
     };
   }, [user]);
+
+  useEffect(() => {
+    const query = window.matchMedia("(min-width: 1440px)");
+    const update = () => {
+      setCanStudio(query.matches);
+      if (!query.matches) setLayout("focus");
+    };
+    update();
+    query.addEventListener("change", update);
+    try {
+      const saved = localStorage.getItem("bc_music_layout");
+      if (saved === "studio" && query.matches) setLayout("studio");
+    } catch {
+      // ignore storage failures
+    }
+    return () => query.removeEventListener("change", update);
+  }, []);
+
+  const selectPlaylist = async (item: MusicPlaylist) => {
+    try {
+      const detail = item.tracks ? item : await musicApi.publicPlaylist(item.slug);
+      setSelected(detail);
+      const songs = (detail.tracks || []).map((track) => ({
+        id: `track-${track.id}`,
+        trackId: track.id,
+        title: track.title,
+        artist: track.artist || "未知歌手",
+        cover: track.cover || detail.cover || "/bg-2.webp",
+        src: track.externalUrl || "",
+        externalUrl: track.externalUrl,
+        lyrics: [],
+      }));
+      if (songs.length) playCollection(songs, 0);
+    } catch {
+      setApplyMessage("歌单加载失败");
+    }
+  };
+
+  const chooseLayout = (next: Layout) => {
+    if (next === "studio" && !canStudio) return;
+    setLayout(next);
+    try {
+      localStorage.setItem("bc_music_layout", next);
+    } catch {
+      // ignore storage failures
+    }
+  };
 
   const submitApplication = async () => {
     if (!user) {
@@ -57,145 +125,175 @@ export default function MusicPage() {
         title: applyForm.title.trim(),
         note: applyForm.note.trim(),
       });
-      setApplyMessage("申请已提交，等待管理员审核");
+      setApplyMessage("申请已提交，等待审核");
       setApplyForm({ externalPlaylistId: "", title: "", note: "" });
     } catch (error) {
       setApplyMessage(error instanceof Error ? error.message : "提交失败");
     }
   };
 
+  const currentTrack: MusicTrack | undefined = useMemo(() => {
+    if (!currentSong?.trackId) return undefined;
+    return selected?.tracks?.find((track) => track.id === currentSong.trackId);
+  }, [currentSong, selected]);
+
+  const commentsTargetId = currentSong?.trackId || currentTrack?.id;
+  const externalHref = currentSong?.externalUrl || currentTrack?.externalUrl;
+
+  const commentsPanel = commentsTargetId ? (
+    <CommentSection
+      targetType="TRACK"
+      targetId={commentsTargetId}
+      title="歌曲评论"
+      emptyTitle="还没有评论"
+      emptyDescription="成为第一个讨论这首歌的人"
+      emptyActionLabel="写评论"
+      externalHref={externalHref}
+      externalLabel="去网易云查看热评"
+    />
+  ) : (
+    <div className="music-pane-empty">选择一首推荐歌曲后查看评论。</div>
+  );
+
+  const lyricsPanel = (
+    <div className="music-lyrics">
+      {lyrics.length > 0 ? (
+        lyrics.map((line, index) => (
+          <p key={`${line.time}-${index}`} className={line.text === currentLyric ? "is-active" : ""}>{line.text}</p>
+        ))
+      ) : (
+        <div className="music-pane-empty">
+          <Music2 size={24} />
+          <span>{currentSong ? "暂无歌词" : "选择一首歌开始"}</span>
+          {externalHref && <a href={externalHref} target="_blank" rel="noopener noreferrer">去平台查看</a>}
+        </div>
+      )}
+    </div>
+  );
+
   return (
-    <div className="min-h-screen relative pb-20">
+    <div className="min-h-screen relative pb-28">
       <Navbar />
       <PageTransition>
-        <main className="directory-shell py-24">
-          <header className="mb-10 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+        <main className="directory-shell py-20">
+          <header className="music-topbar">
             <div>
-              <div className="mb-3 font-mono text-[10px] font-black tracking-[0.22em] text-indigo-400">
-                BAICAI / MUSIC
-              </div>
-              <h1 className="font-serif text-5xl font-black text-slate-900 dark:text-white">音乐档案</h1>
-              <p className="mt-3 max-w-xl text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-                公共推荐歌单与私人音乐收藏。歌曲评论统一收录在本站。
-              </p>
+              <div className="music-kicker">BAICAI / MUSIC</div>
+              <h1 className="music-title">音乐</h1>
             </div>
-            <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400">
-              <Disc3 size={14} /> {playlists.length} 个推荐歌单
+            <div className="music-top-actions">
+              <div className="music-layout-switch" role="group" aria-label="音乐页布局">
+                <button className={layout === "focus" ? "is-active" : ""} onClick={() => chooseLayout("focus")}>Focus</button>
+                <button className={layout === "studio" ? "is-active" : ""} onClick={() => chooseLayout("studio")} disabled={!canStudio}>Studio</button>
+              </div>
+              <button className="music-apply-button" onClick={() => setApplyOpen((value) => !value)}>推荐歌单</button>
             </div>
           </header>
 
-          <CloudPlayer />
+          {applyOpen && (
+            <section className="music-apply-panel">
+              <input value={applyForm.externalPlaylistId} onChange={(e) => setApplyForm({ ...applyForm, externalPlaylistId: e.target.value })} placeholder="网易云公开歌单 ID" />
+              <input value={applyForm.title} onChange={(e) => setApplyForm({ ...applyForm, title: e.target.value })} placeholder="歌单标题（可选）" />
+              <input value={applyForm.note} onChange={(e) => setApplyForm({ ...applyForm, note: e.target.value })} placeholder="推荐理由" />
+              <button onClick={() => void submitApplication()}>提交申请</button>
+              {applyMessage && <span>{applyMessage}</span>}
+            </section>
+          )}
 
-          <section className="mt-8 rounded-3xl border border-white/20 bg-white/35 p-5 backdrop-blur-xl dark:bg-slate-800/35">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h2 className="text-sm font-black text-slate-800 dark:text-white">推荐歌单申请</h2>
-                <p className="mt-1 text-[11px] text-slate-400">提交公开歌单 ID，管理员审核通过后进入公共推荐池。</p>
+          <div className="music-workspace" data-layout={layout}>
+            <aside className="music-sidebar">
+              <div className="music-sidebar-tabs">
+                <button className={leftTab === "recommend" ? "is-active" : ""} onClick={() => setLeftTab("recommend")}><Flame size={13} />推荐</button>
+                <button className={leftTab === "mine" ? "is-active" : ""} onClick={() => setLeftTab("mine")}><UserRound size={13} />我的</button>
+                <button className={leftTab === "queue" ? "is-active" : ""} onClick={() => setLeftTab("queue")}><ListMusic size={13} />队列</button>
               </div>
-              <button onClick={() => setApplyOpen((value) => !value)} className="rounded-full bg-indigo-500 px-4 py-2 text-xs font-black text-white">
-                {applyOpen ? "收起" : "申请推荐"}
-              </button>
-            </div>
-            {applyOpen && (
-              <div className="mt-4 grid gap-3 md:grid-cols-2">
-                <input value={applyForm.externalPlaylistId} onChange={(event) => setApplyForm({ ...applyForm, externalPlaylistId: event.target.value })} placeholder="网易云公开歌单 ID" className="rounded-xl border border-white/20 bg-white/30 px-3 py-2 text-xs text-slate-700 outline-none dark:bg-slate-900/30 dark:text-slate-200" />
-                <input value={applyForm.title} onChange={(event) => setApplyForm({ ...applyForm, title: event.target.value })} placeholder="歌单标题（可选）" className="rounded-xl border border-white/20 bg-white/30 px-3 py-2 text-xs text-slate-700 outline-none dark:bg-slate-900/30 dark:text-slate-200" />
-                <textarea value={applyForm.note} onChange={(event) => setApplyForm({ ...applyForm, note: event.target.value })} placeholder="推荐理由" rows={2} className="rounded-xl border border-white/20 bg-white/30 px-3 py-2 text-xs text-slate-700 outline-none dark:bg-slate-900/30 dark:text-slate-200 md:col-span-2" />
-                <div className="flex items-center gap-3 md:col-span-2">
-                  <button onClick={() => void submitApplication()} className="rounded-full bg-white/20 px-4 py-2 text-xs font-black text-slate-700 dark:text-slate-200">提交申请</button>
-                  {applyMessage && <span className="text-[10px] font-bold text-slate-400">{applyMessage}</span>}
+              <div className="music-sidebar-list">
+                {leftTab === "recommend" && (
+                  loading ? <div className="music-side-empty">加载中…</div> :
+                  recommendations.length === 0 ? <div className="music-side-empty">暂无公共推荐歌单</div> :
+                  recommendations.map((item) => (
+                    <button key={item.id} className={`music-playlist-row ${selected?.id === item.id ? "is-active" : ""}`} onClick={() => void selectPlaylist(item)}>
+                      <span className="music-cover xs">{item.cover ? <img src={item.cover} alt="" /> : <Music2 size={14} />}</span>
+                      <span className="music-row-copy"><strong>{item.title}</strong><small>{item.heatScore} 热度 · {item.trackCount} 首</small></span>
+                    </button>
+                  ))
+                )}
+                {leftTab === "mine" && (
+                  !user ? <div className="music-side-empty">登录后查看私人歌单</div> :
+                  mine.length === 0 ? <div className="music-side-empty">暂无私人歌单</div> :
+                  mine.map((item) => (
+                    <button key={item.id} className="music-playlist-row" onClick={() => setSelected(item)}>
+                      <span className="music-cover xs">{item.cover ? <img src={item.cover} alt="" /> : <Music2 size={14} />}</span>
+                      <span className="music-row-copy"><strong>{item.title}</strong><small>{item.trackCount} 首 · 私人</small></span>
+                    </button>
+                  ))
+                )}
+                {leftTab === "queue" && (
+                  playlist.length === 0 ? <div className="music-side-empty">队列为空</div> :
+                  playlist.map((song, index) => (
+                    <button key={`${song.id}-${index}`} className={`music-queue-row ${index === currentIndex ? "is-active" : ""}`} onClick={() => playSong(index)}>
+                      <span>{String(index + 1).padStart(2, "0")}</span>
+                      <span className="music-row-copy"><strong>{song.title}</strong><small>{song.artist}</small></span>
+                    </button>
+                  ))
+                )}
+              </div>
+            </aside>
+
+            <section className="music-center">
+              <div className="music-now">
+                <div className="music-cover large">
+                  {currentSong?.cover ? <img src={currentSong.cover} alt={currentSong.title || ""} /> : <Music2 size={36} />}
+                </div>
+                <div className="music-now-copy">
+                  <span className="music-kicker">{selected?.title || "NOW PLAYING"}</span>
+                  <h2>{currentSong?.title || "选择一首歌"}</h2>
+                  <p>{currentSong?.artist || "从左侧推荐歌单开始"}</p>
+                  {selected?.description && <small>{selected.description}</small>}
                 </div>
               </div>
-            )}
-          </section>
 
-          <section className="mt-12">
-            <div className="mb-5 flex items-end justify-between gap-4">
-              <div>
-                <span className="font-mono text-[9px] font-black tracking-[0.2em] text-indigo-400">CURATED</span>
-                <h2 className="mt-1 text-2xl font-black text-slate-900 dark:text-white">推荐歌单</h2>
-              </div>
-              <span className="text-[10px] font-bold text-slate-400">按热度排序</span>
-            </div>
+              {layout === "focus" && (
+                <div className="music-pane-tabs">
+                  <button className={focusTab === "lyrics" ? "is-active" : ""} onClick={() => setFocusTab("lyrics")}>歌词</button>
+                  <button className={focusTab === "comments" ? "is-active" : ""} onClick={() => setFocusTab("comments")}>评论{commentsTargetId ? "" : ""}</button>
+                </div>
+              )}
 
-            {loading ? (
-              <div className="py-16 text-center text-sm text-slate-400">加载中…</div>
-            ) : playlists.length === 0 ? (
-              <div className="rounded-3xl border border-white/20 bg-white/40 p-10 text-center text-sm text-slate-500 dark:bg-slate-800/40 dark:text-slate-400">
-                暂无公共推荐歌单。
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                {playlists.map((playlist) => (
-                  <Link
-                    key={playlist.id}
-                    href={`/music/playlists/${encodeURIComponent(playlist.slug)}`}
-                    className="group overflow-hidden rounded-3xl border border-white/20 bg-white/45 shadow-lg backdrop-blur-xl transition hover:-translate-y-1 hover:border-indigo-400/40 dark:bg-slate-800/45"
-                  >
-                    <div className="relative aspect-square overflow-hidden bg-slate-900/30">
-                      {playlist.cover ? (
-                        <img
-                          src={playlist.cover}
-                          alt={playlist.title}
-                          className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center text-indigo-300"><Music2 size={36} /></div>
-                      )}
-                      <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-black/55 px-2.5 py-1 text-[9px] font-black text-white backdrop-blur">
-                        <Flame size={10} /> {playlist.heatScore}
-                      </span>
-                    </div>
-                    <div className="p-4">
-                      <h3 className="line-clamp-2 text-sm font-black text-slate-900 dark:text-white">{playlist.title}</h3>
-                      <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-slate-500 dark:text-slate-400">
-                        {playlist.description || "暂无简介"}
-                      </p>
-                      <div className="mt-3 flex items-center justify-between text-[9px] font-bold text-slate-400">
-                        <span className="inline-flex items-center gap-1"><Heart size={10} /> {playlist.likeCount}</span>
-                        <span className="inline-flex items-center gap-1"><ThumbsDown size={10} /> {playlist.dislikeCount}</span>
-                        <span>{playlist.trackCount} 首</span>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </section>
+              {layout === "focus" ? (
+                <div className="music-pane-body">
+                  {focusTab === "lyrics" ? lyricsPanel : commentsPanel}
+                </div>
+              ) : (
+                <div className="music-pane-body">{lyricsPanel}</div>
+              )}
+            </section>
 
-          <section className="mt-14">
-            <div className="mb-5">
-              <span className="font-mono text-[9px] font-black tracking-[0.2em] text-indigo-400">PERSONAL</span>
-              <h2 className="mt-1 text-2xl font-black text-slate-900 dark:text-white">我的导入</h2>
-            </div>
-            {!user ? (
-              <div className="rounded-3xl border border-dashed border-white/25 p-8 text-center text-sm text-slate-400">
-                登录后管理私人歌单。
-              </div>
-            ) : mine.length === 0 ? (
-              <div className="rounded-3xl border border-dashed border-white/25 p-8 text-center text-sm text-slate-400">
-                暂无私人歌单。公开歌单导入功能将在稍后开放。
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {mine.map((playlist) => (
-                  <div key={playlist.id} className="rounded-2xl border border-white/15 bg-white/35 p-4 dark:bg-slate-800/35">
-                    <div className="flex items-center gap-3">
-                      <div className="h-12 w-12 overflow-hidden rounded-xl bg-slate-800/30">
-                        {playlist.cover ? <img src={playlist.cover} alt="" className="h-full w-full object-cover" /> : <UserRound className="m-3 text-slate-400" />}
-                      </div>
-                      <div className="min-w-0">
-                        <h3 className="truncate text-sm font-black text-slate-800 dark:text-white">{playlist.title}</h3>
-                        <p className="mt-1 text-[10px] text-slate-400">{playlist.trackCount} 首 · 私人</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            {layout === "studio" && (
+              <aside className="music-comments-side">{commentsPanel}</aside>
             )}
-          </section>
+          </div>
         </main>
       </PageTransition>
+
+      <div className="music-player-bar">
+        <div className="music-player-inner">
+          <div className="music-player-meta">
+            <span className="music-cover xs">{currentSong?.cover ? <img src={currentSong.cover} alt="" /> : <Disc3 size={14} />}</span>
+            <div><strong>{currentSong?.title || "暂无播放"}</strong><small>{currentSong?.artist || "等待选择歌曲"}</small></div>
+          </div>
+          <div className="music-player-controls">
+            <button onClick={prevSong} aria-label="上一首"><SkipBack size={16} /></button>
+            <button className="music-play" onClick={togglePlay} aria-label={isPlaying ? "暂停" : "播放"}>{isPlaying ? <Pause size={16} /> : <Play size={16} />}</button>
+            <button onClick={nextSong} aria-label="下一首"><SkipForward size={16} /></button>
+          </div>
+          <div className="music-player-progress">
+            <span>{formatTime(currentTime)}</span>
+            <input type="range" min="0" max="100" value={progress} onChange={handleSeek} />
+            <span>{formatTime(duration)}</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

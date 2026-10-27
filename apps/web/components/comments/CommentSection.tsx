@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Flag, Heart, Loader2, MessageCircle, Send, ThumbsDown, Trash2 } from "lucide-react";
 import { formatDate } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
@@ -37,12 +37,23 @@ export default function CommentSection({
   targetType,
   targetId,
   title = "评论",
+  emptyTitle,
+  emptyDescription,
+  emptyActionLabel = "写评论",
+  externalHref,
+  externalLabel,
 }: {
   targetType: "POST" | "ALBUM" | "MOMENT" | "TRACK";
   targetId: number;
   title?: string;
+  emptyTitle?: string;
+  emptyDescription?: string;
+  emptyActionLabel?: string;
+  externalHref?: string;
+  externalLabel?: string;
 }) {
   const { user, loading: authLoading } = useAuth();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [comments, setComments] = useState<CommentItem[]>([]);
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(true);
@@ -145,6 +156,7 @@ export default function CommentSection({
       {canComment ? (
         <div className="comment-composer">
           <textarea
+            ref={textareaRef}
             value={content}
             onChange={(event) => setContent(event.target.value)}
             placeholder="写下你的想法..."
@@ -175,7 +187,24 @@ export default function CommentSection({
       {loading ? (
         <div className="comment-loading"><Loader2 className="animate-spin" size={16} /> 正在加载评论…</div>
       ) : comments.length === 0 ? (
-        <div className="comment-empty">还没有评论，来写第一条吧。</div>
+        <div className="comment-empty">
+          {emptyTitle && <strong>{emptyTitle}</strong>}
+          {emptyDescription && <span>{emptyDescription}</span>}
+          <div className="comment-empty-actions">
+            <button
+              type="button"
+              onClick={() => {
+                if (canComment) textareaRef.current?.focus();
+                else window.location.href = "/login";
+              }}
+            >
+              {emptyActionLabel}
+            </button>
+            {externalHref && externalLabel && (
+              <a href={externalHref} target="_blank" rel="noopener noreferrer">{externalLabel}</a>
+            )}
+          </div>
+        </div>
       ) : (
         <div className="comment-list">
           {comments.map((comment) => (
