@@ -1,13 +1,12 @@
-﻿import ArchiveItemCard from "../components/ArchiveItemCard";
+import ArchiveItemCard from "../components/ArchiveItemCard";
 import DirectoryExplorer from "../components/DirectoryExplorer";
 import type { Project } from "../lib/api";
 
 export default function ProjectsBoard({ projects }: { projects: Project[] }) {
   const tagCounts: Record<string, number> = {};
   projects.forEach((project) => {
-    (project.tags || []).forEach((tag) => {
-      tagCounts[tag] = (tagCounts[tag] || 0) + 1;
-    });
+    const primaryTag = project.tags?.[0];
+    if (primaryTag) tagCounts[primaryTag] = (tagCounts[primaryTag] || 0) + 1;
   });
 
   const filters = [
@@ -17,23 +16,27 @@ export default function ProjectsBoard({ projects }: { projects: Project[] }) {
       .sort((a, b) => b.count - a.count),
   ];
 
-  const items = projects.map((project) => ({
-    key: project.projectId,
-    node: (
-      <ArchiveItemCard
-        external
-        href={project.githubUrl || "#"}
-        title={project.name}
-        description={project.description}
-        category="PROJECT"
-        tags={project.tags || []}
-        meta={project.githubUrl ? "GitHub" : undefined}
-        media={{ kind: "icon", content: project.icon || "🚀" }}
-      />
-    ),
-    searchText: [project.name, project.description, ...(project.tags || [])].join(" "),
-    filterValues: project.tags || [],
-  }));
+  const items = projects.map((project) => {
+    const primaryTag = project.tags?.[0];
+    return {
+      key: project.projectId,
+      node: (
+        <ArchiveItemCard
+          external
+          href={project.githubUrl || "#"}
+          title={project.name}
+          description={project.description}
+          category="PROJECT"
+          tags={project.tags || []}
+          meta={project.githubUrl ? "GitHub" : undefined}
+          media={{ kind: "icon", content: project.icon || "🚀" }}
+        />
+      ),
+      searchText: [project.name, project.description, ...(project.tags || [])].join(" "),
+      filterValues: primaryTag ? [primaryTag] : [],
+    };
+  });
+
 
   return (
     <div className="directory-shell mt-0 py-0">

@@ -52,7 +52,7 @@ export async function getChatters(): Promise<Chatter[]> {
 }
 
 export async function getProjects(): Promise<Project[]> {
-  const data = await getJson<Project[]>("/api/public/projects");
+  const data = await getJson<Project[]>("/api/public/projects", 0);
   return data || [];
 }
 
