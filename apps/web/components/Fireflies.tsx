@@ -35,8 +35,8 @@ type Firefly = {
 const RISE_SECONDS = 2.2;
 const FALL_SECONDS = 2.4;
 const VALLEY = 1 / 3;
-const TOTAL_PARTICLES = 58;
-const MOTION_SCALE = 3.78;
+const TOTAL_PARTICLES = 42;
+const MOTION_SCALE = 2.646;
 const HIDDEN_MIN = 1.2;
 const HIDDEN_MAX = 3.8;
 
@@ -121,7 +121,7 @@ export default function Fireflies() {
     ]);
 
     const makeParticle = (index: number): Firefly => {
-      const depth = Math.random() < 0.18 ? randomBetween(0.72, 1) : randomBetween(0.32, 0.68);
+      const depth = Math.random() < 0.22 ? randomBetween(0.72, 1) : randomBetween(0.32, 0.68);
       const phaseIndex = randomInt(0, 4);
       return {
         id: index,
