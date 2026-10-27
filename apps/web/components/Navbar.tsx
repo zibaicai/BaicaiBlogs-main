@@ -86,7 +86,7 @@ export default function Navbar() {
               ))}
             </nav>
             {/* 占位div宽度16px */}
-            <div className="w-16"></div>
+            <div className="w-8"></div>
             <NavSearch open={searchOpen} onOpenChange={setSearchOpen} />
           </div>
 
