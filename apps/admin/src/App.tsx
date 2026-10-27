@@ -146,8 +146,8 @@ function Login() {
 
 const NAV_ITEMS = [
   { to: "/", label: "概览", icon: LayoutDashboard, end: true },
-  { to: "/posts", label: "文章", icon: BookOpen },
-  { to: "/articles", label: "图文", icon: PenLine },
+  { to: "/posts", label: "笔记", icon: BookOpen },
+  { to: "/articles", label: "文章", icon: PenLine },
   { to: "/projects", label: "项目", icon: FolderKanban },
   { to: "/gallery", label: "影像", icon: Images },
   { to: "/moments", label: "说说", icon: MessageSquareText },
@@ -328,8 +328,8 @@ function Dashboard() {
       {loading && <div className="flex items-center gap-2 text-sm text-slate-400"><Loader2 className="animate-spin" size={16} /> 正在汇总资产…</div>}
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-        <StatCard icon={<BookOpen size={17} />} label="文章" value={assets.posts || 0} tone="bg-indigo-500/20 text-indigo-400" />
-        <StatCard icon={<Sparkles size={17} />} label="公开文章" value={assets.published || 0} tone="bg-emerald-500/20 text-emerald-400" />
+        <StatCard icon={<BookOpen size={17} />} label="笔记" value={assets.posts || 0} tone="bg-indigo-500/20 text-indigo-400" />
+        <StatCard icon={<Sparkles size={17} />} label="公开笔记" value={assets.published || 0} tone="bg-emerald-500/20 text-emerald-400" />
         <StatCard icon={<FolderKanban size={17} />} label="项目" value={assets.projects || 0} tone="bg-purple-500/20 text-purple-400" />
         <StatCard icon={<MessageSquareText size={17} />} label="说说" value={assets.moments || 0} tone="bg-sky-500/20 text-sky-400" />
         <StatCard icon={<Images size={17} />} label="相册" value={assets.albums || 0} tone="bg-pink-500/20 text-pink-400" />
@@ -341,13 +341,13 @@ function Dashboard() {
           <div className="mb-4 flex items-end justify-between">
             <div>
               <h2 className="text-lg font-black text-white">内容资产构成</h2>
-              <p className="mt-1 text-[10px] font-bold text-slate-500">文章 / 项目 / 相册 / 说说 / 照片</p>
+              <p className="mt-1 text-[10px] font-bold text-slate-500">笔记 / 文章 / 项目 / 相册 / 说说 / 照片</p>
             </div>
             <Link to="/posts" className="text-[10px] font-bold text-indigo-400 hover:underline">管理内容</Link>
           </div>
           <div className="grid grid-cols-5 gap-2">
             {[
-              ["文章", assets.posts || 0, "bg-indigo-400"],
+              ["笔记", assets.posts || 0, "bg-indigo-400"],
               ["项目", assets.projects || 0, "bg-purple-400"],
               ["相册", assets.albums || 0, "bg-pink-400"],
               ["说说", assets.moments || 0, "bg-sky-400"],
@@ -401,7 +401,7 @@ function Dashboard() {
           <div className="mb-4 flex items-end justify-between">
             <div>
               <h2 className="text-lg font-black text-white">近 7 天发布</h2>
-              <p className="mt-1 text-[10px] font-bold text-slate-500">按文章发布日期统计</p>
+              <p className="mt-1 text-[10px] font-bold text-slate-500">按笔记发布日期统计</p>
             </div>
             <TrendingUp size={17} className="text-indigo-400" />
           </div>
@@ -452,7 +452,7 @@ function Dashboard() {
       <section className="rounded-3xl border border-white/10 bg-white/5 p-5">
         <h2 className="mb-3 text-lg font-black text-white">快捷操作</h2>
         <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
-          <Link to="/editor/new" className="flex items-center gap-2 rounded-2xl bg-indigo-500 px-4 py-3 text-xs font-black text-white hover:bg-indigo-600"><PenLine size={15} /> 写文章</Link>
+          <Link to="/editor/new" className="flex items-center gap-2 rounded-2xl bg-indigo-500 px-4 py-3 text-xs font-black text-white hover:bg-indigo-600"><PenLine size={15} /> 写笔记</Link>
           <Link to="/gallery" className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-black text-slate-200 hover:bg-white/10"><Images size={15} className="text-pink-400" /> 管理影像</Link>
           <Link to="/moments" className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-black text-slate-200 hover:bg-white/10"><MessageSquareText size={15} className="text-sky-400" /> 新建说说</Link>
           <Link to="/settings" className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-black text-slate-200 hover:bg-white/10"><Settings size={15} className="text-indigo-400" /> 站点设置</Link>
@@ -523,7 +523,7 @@ function Posts() {
     <div className="flex flex-col gap-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-black text-white">文章</h1>
+          <h1 className="text-3xl font-black text-white">笔记</h1>
           <p className="text-sm text-slate-400 mt-1 font-bold">可见性决定 C 端是否展示</p>
         </div>
         <div className="flex items-center gap-3">
@@ -584,7 +584,7 @@ function Posts() {
           </div>
         ))}
       </div>
-      {!loading && list.length === 0 && <div className="text-center py-16 text-slate-500 font-bold">暂无文章</div>}
+      {!loading && list.length === 0 && <div className="text-center py-16 text-slate-500 font-bold">暂无笔记</div>}
     </div>
   );
 }

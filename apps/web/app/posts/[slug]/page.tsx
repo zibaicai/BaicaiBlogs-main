@@ -31,10 +31,10 @@ export default async function PostDetail({ params }: { params: Promise<{ slug: s
         <PageTransition>
           <main className="w-full max-w-3xl mx-auto mt-32 px-6 relative z-10 text-center">
             <h1 className="text-3xl font-black text-slate-900 dark:text-white mb-4">
-              文章不存在或未公开
+              笔记不存在或未公开
             </h1>
             <Link href="/posts" className="text-indigo-500 font-bold hover:underline">
-              ← 返回文章列表
+              ← 返回笔记列表
             </Link>
           </main>
         </PageTransition>

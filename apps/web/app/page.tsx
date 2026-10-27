@@ -72,7 +72,7 @@ export default async function Home() {
                   <h2>最近写下的</h2>
                 </div>
                 <Link href="/posts" className="hv-text-link">
-                  全部文章 <span>↗</span>
+                  全部笔记 <span>↗</span>
                 </Link>
               </div>
 

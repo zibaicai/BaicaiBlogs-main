@@ -59,7 +59,7 @@ export default function HomeHero({ postCount, momentCount, photoCount }: Props) 
         <div className="hv-stats hv-stats-inline">
           <div>
             <strong>{String(postCount).padStart(2, "0")}</strong>
-            <span>文章</span>
+            <span>笔记</span>
           </div>
           <div>
             <strong>{String(momentCount).padStart(2, "0")}</strong>

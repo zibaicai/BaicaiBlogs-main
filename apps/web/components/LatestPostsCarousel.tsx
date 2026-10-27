@@ -67,7 +67,7 @@ export default function LatestPostsCarousel({ posts }: { posts: any[] }) {
                 setCurrentIndex(i);
               }}
               className={`h-1.5 rounded-full transition-all duration-500 ${i === currentIndex ? 'w-6 bg-indigo-400' : 'w-2 bg-white/40 hover:bg-white/80'}`}
-              aria-label={`切换到第 ${i + 1} 篇文章`}
+              aria-label={`切换到第 ${i + 1} 篇笔记`}
             />
           ))}
         </div>

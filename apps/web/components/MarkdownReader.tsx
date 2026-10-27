@@ -7,7 +7,7 @@ type MarkdownTheme = "classic" | "github-light" | "github-dark";
 const THEME_STORAGE_KEY = "markdown-reader-theme";
 
 const THEMES: Array<{ value: MarkdownTheme; label: string; hint: string }> = [
-  { value: "classic", label: "本站", hint: "当前文章样式" },
+  { value: "classic", label: "本站", hint: "当前笔记样式" },
   { value: "github-light", label: "GitHub 日间", hint: "GitHub 浅色 Markdown" },
   { value: "github-dark", label: "GitHub 夜间", hint: "GitHub 深色 Markdown" },
 ];

@@ -10,7 +10,7 @@ type Props = {
   onOpenChange: (open: boolean) => void;
 };
 
-type ResultKind = "文章" | "说说" | "影像" | "项目" | "友链";
+type ResultKind = "笔记" | "文章" | "说说" | "影像" | "项目" | "友链";
 
 interface GlobalResult {
   key: string;
@@ -80,7 +80,7 @@ export default function NavSearch({ open, onOpenChange }: Props) {
         if (postRes.status === "fulfilled") {
           next.push(...postRes.value.map((post) => ({
             key: `post-${post.slug}`,
-            kind: "文章" as const,
+            kind: "笔记" as const,
             title: post.title || "无题",
             description: post.description || "继续阅读这篇记录。",
             href: `/posts/${encodeURIComponent(post.slug)}`,
@@ -216,7 +216,7 @@ export default function NavSearch({ open, onOpenChange }: Props) {
           type="text"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder="搜索文章、说说、相册、项目..."
+          placeholder="搜索笔记、文章、说说、相册、项目..."
           className="nav-search-input"
           aria-label="全站搜索"
           autoComplete="off"

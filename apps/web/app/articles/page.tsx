@@ -64,9 +64,9 @@ export default function ArticlesPage() {
           ) : (
             <DirectoryExplorer
               eyebrow="BAICAI / FEATURES"
-              title="图文"
-              subtitle="图文长文、专栏与更完整的表达。"
-              count={`共 ${items.length} 篇图文`}
+              title="文章"
+              subtitle="长文、专栏与更完整的表达。"
+              count={`共 ${items.length} 篇文章`}
               items={directoryItems}
               filters={filters}
               views={["grid", "timeline", "masonry"]}
@@ -75,7 +75,7 @@ export default function ArticlesPage() {
               gridClassName="cover-grid"
               pageSize={12}
               searchPlaceholder="搜索标题、摘要、分类或标签..."
-              empty="还没有发布图文。"
+              empty="还没有发布文章。"
             />
           )}
         </main>

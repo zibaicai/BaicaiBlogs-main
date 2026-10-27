@@ -11,8 +11,8 @@ import NavSearch from "./NavSearch";
 
 const NAV_LINKS = [
   { name: "首页", href: "/" },
-  { name: "文章", href: "/posts" },
-  { name: "图文", href: "/articles" },
+  { name: "笔记", href: "/posts" },
+  { name: "文章", href: "/articles" },
   { name: "项目", href: "/projects" },
   { name: "影像", href: "/photowall" },
   { name: "说说", href: "/moments" },
