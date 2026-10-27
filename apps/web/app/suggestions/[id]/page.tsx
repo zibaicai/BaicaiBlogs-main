@@ -74,7 +74,7 @@ export default function SuggestionDetailPage({ params }: { params: Promise<{ id:
           ) : !item ? (
             <div className="py-24 text-center text-sm text-slate-400">建议不存在或无权查看。</div>
           ) : (
-            <article className="mx-auto max-w-3xl rounded-[2rem] border border-white/20 bg-white/35 p-6 backdrop-blur-xl dark:bg-slate-800/35 md:p-8">
+            <article className="suggestion-surface mx-auto max-w-3xl rounded-[2rem] border border-white/20 bg-white/35 p-6 backdrop-blur-xl dark:bg-slate-800/35 md:p-8">
               <div className="flex flex-wrap items-center gap-3">
                 <span className="rounded-full bg-indigo-500/10 px-3 py-1.5 text-[10px] font-black text-indigo-500">{STATUS_LABEL[item.status] || item.status}</span>
                 <span className="text-[10px] text-slate-400">{item.category || "其他"} · {new Date(item.createdAt).toLocaleString("zh-CN")}</span>

@@ -14,7 +14,7 @@ export default function RecommendedCard({
   title?: string;
 }) {
   return (
-    <div className="flex h-full flex-col rounded-3xl border border-white/40 bg-white/60 p-5 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/50">
+    <div className="recommended-card flex h-full flex-col rounded-3xl border border-white/40 bg-white/60 p-5 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/50">
       <h3 className="mb-2 border-l-4 border-indigo-500 pl-2 text-sm font-black text-slate-900 dark:text-white">
         {title}
       </h3>

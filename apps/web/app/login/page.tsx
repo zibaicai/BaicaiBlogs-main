@@ -128,7 +128,7 @@ export default function LoginPage() {
     <div className="min-h-screen relative pb-20">
       <Navbar />
       <main className="w-full max-w-md mx-auto mt-32 px-4 relative z-10">
-        <form onSubmit={submit} className="rounded-[40px] bg-white/60 dark:bg-slate-800/60 backdrop-blur-2xl border border-white/40 dark:border-white/10 shadow-2xl p-8 md:p-10">
+        <form onSubmit={submit} className="login-card rounded-[40px] bg-white/60 dark:bg-slate-800/60 backdrop-blur-2xl border border-white/40 dark:border-white/10 shadow-2xl p-8 md:p-10">
           <div className="w-14 h-14 rounded-3xl bg-[var(--ui-accent)] flex items-center justify-center text-2xl shadow-lg mb-6 text-white">
             {mode === "login" ? <LogIn size={24} /> : <UserPlus size={24} />}
           </div>

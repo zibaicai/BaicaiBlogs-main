@@ -5827,3 +5827,120 @@ html[data-visual-mode="plain"] [class*="backdrop-blur"] {
 html[data-visual-mode="plain"] .danmaku-layer {
   display: none !important;
 }
+
+/* Plain mode surface tokens: cards, controls, and overlays share one non-glass system. */
+html[data-visual-mode="plain"] {
+  --plain-surface: #ffffff;
+  --plain-surface-raised: #ffffff;
+  --plain-border: #e5e7eb;
+  --plain-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 8px 20px rgba(15, 23, 42, 0.06);
+  --plain-shadow-raised:
+    0 2px 4px rgba(15, 23, 42, 0.05),
+    0 18px 42px rgba(15, 23, 42, 0.1);
+}
+
+html.dark[data-visual-mode="plain"] {
+  --plain-surface: #0f172a;
+  --plain-surface-raised: #111c30;
+  --plain-border: #263244;
+  --plain-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.035),
+    0 8px 20px rgba(0, 0, 0, 0.18);
+  --plain-shadow-raised:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 18px 42px rgba(0, 0, 0, 0.28);
+}
+
+html[data-visual-mode="plain"] :is(
+  .directory-toolbar,
+  .archive-filter-panel,
+  .comment-section,
+  .author-card,
+  .recommended-card,
+  .client-toc,
+  .article-toc,
+  .markdown-theme-options,
+  .music-center,
+  .music-sidebar,
+  .music-player-bar,
+  .music-comments-side,
+  .music-apply-panel,
+  .login-card,
+  .account-surface,
+  .suggestion-surface,
+  .theme-studio
+) {
+  background: var(--plain-surface) !important;
+  border: 1px solid var(--plain-border) !important;
+  box-shadow: var(--plain-shadow) !important;
+  backdrop-filter: none !important;
+}
+
+html.dark[data-visual-mode="plain"] :is(
+  .directory-toolbar,
+  .archive-filter-panel,
+  .comment-section,
+  .author-card,
+  .recommended-card,
+  .client-toc,
+  .article-toc,
+  .markdown-theme-options,
+  .music-center,
+  .music-sidebar,
+  .music-player-bar,
+  .music-comments-side,
+  .music-apply-panel,
+  .login-card,
+  .account-surface,
+  .suggestion-surface,
+  .theme-studio
+) {
+  background: var(--plain-surface) !important;
+  border-color: var(--plain-border) !important;
+  box-shadow: var(--plain-shadow) !important;
+}
+
+html[data-visual-mode="plain"] .directory-toolbar {
+  border-radius: 14px !important;
+}
+
+html[data-visual-mode="plain"] :is(
+  .directory-sort-select,
+  .directory-view-toggle,
+  .directory-filter-trigger
+) {
+  background: var(--plain-surface) !important;
+  border: 1px solid var(--plain-border) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+html.dark[data-visual-mode="plain"] :is(
+  .directory-sort-select,
+  .directory-view-toggle,
+  .directory-filter-trigger
+) {
+  background: var(--plain-surface) !important;
+  border-color: var(--plain-border) !important;
+}
+
+html[data-visual-mode="plain"] .directory-view-toggle-button {
+  background: transparent !important;
+  color: #64748b !important;
+}
+
+html[data-visual-mode="plain"] .directory-view-toggle-active {
+  background: var(--ui-accent-soft) !important;
+  color: var(--ui-accent) !important;
+  box-shadow: none !important;
+}
+
+html[data-visual-mode="plain"] .archive-filter-panel {
+  border-radius: 16px !important;
+}
+
+html[data-visual-mode="plain"] .theme-studio {
+  box-shadow: var(--plain-shadow-raised) !important;
+}

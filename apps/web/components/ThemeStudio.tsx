@@ -158,7 +158,7 @@ export default function ThemeStudio({ open, onClose }: ThemeStudioProps) {
 
   return (
     <div className="fixed inset-0 z-[300] flex items-end justify-center bg-slate-950/60 p-3 backdrop-blur-sm sm:items-center sm:p-6">
-      <div className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-[28px] border border-white/40 bg-white/95 p-5 text-slate-900 shadow-2xl dark:border-white/10 dark:bg-slate-900/95 dark:text-slate-100 sm:p-7">
+      <div className="theme-studio max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-[28px] border border-white/40 bg-white/95 p-5 text-slate-900 shadow-2xl dark:border-white/10 dark:bg-slate-900/95 dark:text-slate-100 sm:p-7">
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500">

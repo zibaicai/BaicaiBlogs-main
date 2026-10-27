@@ -190,7 +190,7 @@ export default function MyPhotosPage() {
           {message && <div className="mb-4 text-sm font-bold text-indigo-500">{message}</div>}
 
           <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-5 items-start">
-            <aside className="rounded-3xl bg-white/60 dark:bg-slate-800/50 backdrop-blur-xl border border-white/40 dark:border-white/10 p-4">
+            <aside className="account-surface rounded-3xl bg-white/60 dark:bg-slate-800/50 backdrop-blur-xl border border-white/40 dark:border-white/10 p-4">
               <div className="space-y-2 mb-4">
                 <Input
                   value={title}
@@ -255,7 +255,7 @@ export default function MyPhotosPage() {
               </div>
             </aside>
 
-            <section className="rounded-3xl bg-white/60 dark:bg-slate-800/50 backdrop-blur-xl border border-white/40 dark:border-white/10 p-5 min-h-[50vh]">
+            <section className="account-surface rounded-3xl bg-white/60 dark:bg-slate-800/50 backdrop-blur-xl border border-white/40 dark:border-white/10 p-5 min-h-[50vh]">
               {!selected ? (
                 <div className="h-full min-h-[40vh] flex items-center justify-center text-sm text-slate-400 font-bold">
                   选择左侧相册，或新建一个

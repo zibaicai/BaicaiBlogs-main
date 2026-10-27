@@ -107,7 +107,7 @@ export default function SuggestionsPage() {
           </header>
 
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
-            <section className="rounded-[2rem] border border-white/30 bg-white/55 p-6 backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/55">
+            <section className="suggestion-surface rounded-[2rem] border border-white/30 bg-white/55 p-6 backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/55">
               <h2 className="mb-4 flex items-center gap-2 text-lg font-black text-slate-900 dark:text-white">
                 <Lightbulb size={17} /> 提交建议
               </h2>
@@ -178,7 +178,7 @@ export default function SuggestionsPage() {
               )}
             </section>
 
-            <aside className="h-fit rounded-[2rem] border border-white/30 bg-white/55 p-6 backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/55">
+            <aside className="suggestion-surface h-fit rounded-[2rem] border border-white/30 bg-white/55 p-6 backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/55">
               <h2 className="text-lg font-black text-slate-900 dark:text-white">我的建议</h2>
               <p className="mt-1 text-[11px] text-slate-400">提交后可在详情中查看管理员回复。</p>
               <div className="mt-4 space-y-3">

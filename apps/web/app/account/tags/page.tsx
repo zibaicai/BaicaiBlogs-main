@@ -44,7 +44,7 @@ export default function TagRequestPage() {
     <div className="min-h-screen relative pb-20">
       <Navbar />
       <main className="directory-shell">
-        <div className="max-w-2xl mx-auto rounded-3xl border border-white/40 bg-white/60 p-8 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/50">
+        <div className="account-surface max-w-2xl mx-auto rounded-3xl border border-white/40 bg-white/60 p-8 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/50">
           <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--ui-accent)]">BAICAI / TAGS</div>
           <h1 className="mt-2 text-3xl font-black">申请新标签</h1>
           <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
