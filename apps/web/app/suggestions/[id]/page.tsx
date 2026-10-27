@@ -65,7 +65,7 @@ export default function SuggestionDetailPage({ params }: { params: Promise<{ id:
     <div className="min-h-screen relative pb-20">
       <Navbar />
       <PageTransition>
-        <main className="directory-shell py-24">
+        <main className="directory-shell suggestions-shell">
           <BackButton fallbackHref="/suggestions" label="返回建议列表" />
           {loading || authLoading ? (
             <div className="py-24 text-center text-sm text-slate-400"><Loader2 className="mx-auto animate-spin" size={20} /></div>

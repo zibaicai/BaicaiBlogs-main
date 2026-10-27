@@ -97,7 +97,7 @@ export default function SuggestionsPage() {
     <div className="min-h-screen relative pb-20">
       <Navbar />
       <PageTransition>
-        <main className="directory-shell py-24">
+        <main className="directory-shell suggestions-shell">
           <header className="mb-8">
             <span className="font-mono text-[9px] font-black tracking-[0.2em] text-indigo-400">SUGGESTIONS</span>
             <h1 className="mt-2 text-4xl font-black text-slate-900 dark:text-white">建议与想法</h1>

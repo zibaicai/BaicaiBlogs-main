@@ -5186,3 +5186,9 @@ html:not(.dark) .hv-empty {
   body.music-route { overflow: hidden; }
   body.music-route footer { display: none; }
 }
+
+/* Suggestions pages: keep the shared shell margin but drop the extra top padding. */
+.suggestions-shell {
+  padding-top: 0;
+  padding-bottom: 5rem;
+}
