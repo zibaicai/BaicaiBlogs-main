@@ -4,7 +4,23 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import "./style.css";
 
-// 管理端整体使用深色玻璃风格；C 端主题切换不影响后台。
+// 管理端固定深色，但强调色跟随 C 端最后一次选择的主题预设。
+type AdminPreset = "ocean" | "violet";
+
+function readPresetCookie(): AdminPreset {
+  const match = document.cookie.match(/(?:^|;\s*)theme-preset=(ocean|violet)(?:;|$)/);
+  return match?.[1] === "violet" ? "violet" : "ocean";
+}
+
+function applyPreset() {
+  document.documentElement.dataset.adminPreset = readPresetCookie();
+}
+
+applyPreset();
+window.addEventListener("focus", applyPreset);
+window.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") applyPreset();
+});
 document.documentElement.classList.add("dark");
 
 createRoot(document.getElementById("root")!).render(

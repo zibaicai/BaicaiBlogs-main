@@ -20,6 +20,18 @@ export interface ThemePalette {
 }
 
 const STORAGE_KEY = "visitor-custom-themes";
+const PRESET_COOKIE = "theme-preset";
+
+function syncPresetCookie(preset: ThemePreset) {
+  try {
+    const host = window.location.hostname;
+    const domain = host === "zibaicai.cn" || host.endsWith(".zibaicai.cn") ? "; Domain=.zibaicai.cn" : "";
+    const secure = window.location.protocol === "https:" ? "; Secure" : "";
+    document.cookie = `${PRESET_COOKIE}=${preset}; Path=/; Max-Age=31536000; SameSite=Lax${domain}${secure}`;
+  } catch {
+    // ignore cookie errors
+  }
+}
 
 const LIGHT_DEFAULT: ThemePalette = {
   bg: "#f4f8fd",
@@ -204,6 +216,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const savedPreset = localStorage.getItem("theme-preset") === "violet" ? "violet" : "ocean";
     setPresetState(savedPreset);
     document.documentElement.dataset.themePreset = savedPreset;
+    syncPresetCookie(savedPreset);
 
     const root = document.documentElement;
     root.classList.toggle("dark", isDarkMode);
@@ -229,6 +242,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // ignore storage errors
     }
+    syncPresetCookie(next);
   }, []);
 
   const persist = useCallback((themes: Record<ThemeMode, ThemePalette | null>) => {
