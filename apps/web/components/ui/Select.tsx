@@ -153,7 +153,7 @@ export default function Select({
             setOpen(false);
           }
         }}
-        className={`flex h-11 w-full items-center justify-between gap-3 rounded-xl border border-white/40 bg-white/60 px-3 text-left text-xs text-slate-800 outline-none transition focus:border-indigo-400/60 focus:ring-2 focus:ring-indigo-500/20 disabled:cursor-not-allowed disabled:opacity-45 dark:border-white/10 dark:bg-slate-900/50 dark:text-slate-100 ${
+        className={`flex h-11 w-full items-center justify-between gap-3 rounded-xl border border-white/40 bg-white/60 px-4 text-left text-sm font-semibold text-slate-800 outline-none transition focus:border-indigo-400/60 focus:ring-2 focus:ring-indigo-500/15 disabled:cursor-not-allowed disabled:opacity-45 dark:border-white/10 dark:bg-slate-900/50 dark:text-slate-100 ${
           selected ? "" : "text-slate-400 dark:text-slate-500"
         } ${className}`}
       >

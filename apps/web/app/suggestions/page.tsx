@@ -5,6 +5,9 @@ import Link from "next/link";
 import { ImagePlus, Lightbulb, Loader2, Send, X } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import PageTransition from "../../components/PageTransition";
+import Select from "../../components/ui/Select";
+import Input from "../../components/ui/Input";
+import Textarea from "../../components/ui/Textarea";
 import { suggestionApi, type Suggestion, type SuggestionImage } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
 
@@ -104,7 +107,7 @@ export default function SuggestionsPage() {
           </header>
 
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
-            <section className="rounded-[2rem] border border-white/20 bg-white/35 p-6 backdrop-blur-xl dark:bg-slate-800/35">
+            <section className="rounded-[2rem] border border-white/30 bg-white/55 p-6 backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/55">
               <h2 className="mb-4 flex items-center gap-2 text-lg font-black text-slate-900 dark:text-white">
                 <Lightbulb size={17} /> 提交建议
               </h2>
@@ -116,24 +119,37 @@ export default function SuggestionsPage() {
               ) : (
                 <div className="space-y-4">
                   <div className="grid gap-3 sm:grid-cols-[1fr_180px]">
-                    <input value={title} onChange={(event) => setTitle(event.target.value)} maxLength={160} placeholder="建议标题" className="rounded-xl border border-white/20 bg-white/40 px-4 py-3 text-sm text-slate-800 outline-none dark:bg-slate-900/30 dark:text-slate-100" />
-                    <select value={category} onChange={(event) => setCategory(event.target.value)} className="rounded-xl border border-white/20 bg-white/40 px-4 py-3 text-sm text-slate-800 outline-none dark:bg-slate-900/30 dark:text-slate-100">
-                      <option>功能建议</option>
-                      <option>UI / 视觉</option>
-                      <option>交互体验</option>
-                      <option>性能与安全</option>
-                      <option>内容与运营</option>
-                      <option>其他</option>
-                    </select>
+                    <label className="block">
+                      <span className="mb-2 ml-1 block text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">标题</span>
+                      <Input value={title} onChange={(event) => setTitle(event.target.value)} maxLength={160} placeholder="用一句话概括你的建议" />
+                    </label>
+                    <label className="block">
+                      <span className="mb-2 ml-1 block text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">分类</span>
+                      <Select
+                        value={category}
+                        onChange={setCategory}
+                        ariaLabel="建议分类"
+                        options={[
+                          { value: "功能建议", label: "功能建议" },
+                          { value: "UI / 视觉", label: "UI / 视觉" },
+                          { value: "交互体验", label: "交互体验" },
+                          { value: "性能与安全", label: "性能与安全" },
+                          { value: "内容与运营", label: "内容与运营" },
+                          { value: "其他", label: "其他" },
+                        ]}
+                      />
+                    </label>
                   </div>
-                  <textarea
+                  <label className="block">
+                    <span className="mb-2 ml-1 block text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">方案描述</span>
+                  <Textarea
                     value={content}
                     onChange={(event) => setContent(event.target.value)}
                     rows={12}
                     maxLength={20000}
                     placeholder={"尽量描述清楚：\n1. 现在的问题\n2. 你希望变成什么样\n3. 可以参考的截图或草图\n\n图片会插入到正文中。"}
-                    className="w-full resize-y rounded-2xl border border-white/20 bg-white/40 px-4 py-3 text-sm leading-7 text-slate-800 outline-none dark:bg-slate-900/30 dark:text-slate-100"
                   />
+                  </label>
                   <div className="flex flex-wrap items-center gap-3">
                     <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={(event) => { const file = event.target.files?.[0]; if (file) void upload(file); }} />
                     <button type="button" onClick={() => fileRef.current?.click()} disabled={uploading || images.length >= 5} className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-xs font-black text-slate-600 disabled:opacity-40 dark:text-slate-300">
@@ -162,7 +178,7 @@ export default function SuggestionsPage() {
               )}
             </section>
 
-            <aside className="h-fit rounded-[2rem] border border-white/20 bg-white/35 p-6 backdrop-blur-xl dark:bg-slate-800/35">
+            <aside className="h-fit rounded-[2rem] border border-white/30 bg-white/55 p-6 backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/55">
               <h2 className="text-lg font-black text-slate-900 dark:text-white">我的建议</h2>
               <p className="mt-1 text-[11px] text-slate-400">提交后可在详情中查看管理员回复。</p>
               <div className="mt-4 space-y-3">
