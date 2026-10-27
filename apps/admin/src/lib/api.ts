@@ -361,8 +361,21 @@ export const api = {
   resolveReport: (id: number, action: string) =>
     request<void>(`/admin/reports/${id}/resolve?action=${encodeURIComponent(action)}`, { method: "POST" }),
 
-  adminMusicPlaylists: () => request<any[]>("/admin/music/playlists"),
-  adminMusicApplications: () => request<any[]>("/admin/music/applications"),
+  adminSuggestions: (status?: string) =>
+    request<any[]>(`/admin/suggestions${status ? `?status=${encodeURIComponent(status)}` : ""}`),
+  adminSuggestion: (id: number) => request<any>(`/admin/suggestions/${id}`),
+  reviewSuggestion: (id: number, payload: any) =>
+    request<any>(`/admin/suggestions/${id}/review`, { method: "POST", body: JSON.stringify(payload) }),
+  adminSuggestionImage: async (id: number) => {
+    const token = getToken();
+    const response = await fetch(`/api/admin/suggestions/images/${id}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return URL.createObjectURL(await response.blob());
+  },
+
+  adminMusicPlaylists: () => request<any[]>("/admin/music/playlists"),  adminMusicApplications: () => request<any[]>("/admin/music/applications"),
   createMusicPlaylist: (payload: any) =>
     request<any>("/admin/music/playlists", { method: "POST", body: JSON.stringify(payload) }),
   importMusicPlaylist: (externalPlaylistId: string) =>

@@ -220,6 +220,26 @@ public class OssService {
         }
     }
 
+    /** Write an object with private ACL; used for suggestion attachments. */
+    public void putPrivateObject(String objectKey, byte[] bytes, String contentType) {
+        assertConfigured();
+        OSS ossClient = buildClient();
+        try {
+            ObjectMetadata meta = new ObjectMetadata();
+            meta.setContentLength(bytes.length);
+            if (contentType != null) meta.setContentType(contentType);
+            ossClient.putObject(ossProperties.getBucketName(), objectKey,
+                    new java.io.ByteArrayInputStream(bytes), meta);
+            ossClient.setObjectAcl(ossProperties.getBucketName(), objectKey,
+                    com.aliyun.oss.model.CannedAccessControlList.Private);
+        } catch (Exception e) {
+            log.error("[OssService] 私密对象写入失败: key={}", objectKey, e);
+            throw new RuntimeException("OSS 私密写入失败: " + e.getMessage(), e);
+        } finally {
+            ossClient.shutdown();
+        }
+    }
+
     /** 生成原图公开 URL（不经过图片处理）。 */
     public String publicUrl(String objectKey) {
         return buildPublicUrl(objectKey);

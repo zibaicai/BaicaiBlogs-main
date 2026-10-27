@@ -12,6 +12,7 @@ import {
   Images,
   MessageSquareText,
   Music2,
+  Lightbulb,
   ShieldAlert,
   KeyRound,
   LayoutDashboard,
@@ -39,6 +40,7 @@ import CategoriesPage from "./pages/CategoriesPage";
 import PrivacyAuditPage from "./pages/PrivacyAuditPage";
 import TagsPage from "./pages/TagsPage";
 import MusicAdminPage from "./pages/MusicAdminPage";
+import SuggestionsAdminPage from "./pages/SuggestionsAdminPage";
 
 type Any = Record<string, any>;
 
@@ -144,6 +146,7 @@ const NAV_ITEMS = [
   { to: "/gallery", label: "图片墙", icon: Images },
   { to: "/moments", label: "说说", icon: MessageSquareText },
   { to: "/music", label: "音乐", icon: Music2 },
+  { to: "/suggestions", label: "建议", icon: Lightbulb },
   { to: "/categories", label: "分类", icon: FolderTree },
   { to: "/tags", label: "标签", icon: Hash },
   { to: "/privacy", label: "隐私审计", icon: Eye },
@@ -158,7 +161,7 @@ function Shell({ children }: { children: React.ReactNode }) {
   const nav = useNavigate();
   const user = getAdminUser();
   const role = getAdminRole();
-  const visibleNavItems = NAV_ITEMS.filter((item) => item.to !== "/privacy" || role === "SUPER_ADMIN");
+  const visibleNavItems = NAV_ITEMS.filter((item) => (item.to !== "/privacy" && item.to !== "/suggestions") || role === "SUPER_ADMIN");
 
   const logout = async () => {
     try {
@@ -685,6 +688,7 @@ export default function App() {
             <Route path="/reports" element={<RequireAuth><Shell><ReportsPage /></Shell></RequireAuth>} />
             <Route path="/moments" element={<RequireAuth><Shell><MomentsPage /></Shell></RequireAuth>} />
             <Route path="/music" element={<RequireAuth><Shell><MusicAdminPage /></Shell></RequireAuth>} />
+            <Route path="/suggestions" element={<RequireAuth><Shell><SuggestionsAdminPage /></Shell></RequireAuth>} />
             <Route path="/categories" element={<RequireAuth><Shell><CategoriesPage /></Shell></RequireAuth>} />
             <Route path="/tags" element={<RequireAuth><Shell><TagsPage /></Shell></RequireAuth>} />
             <Route path="/privacy" element={<RequireAuth><Shell><PrivacyAuditPage /></Shell></RequireAuth>} />

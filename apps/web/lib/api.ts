@@ -218,6 +218,62 @@ export const musicApi = {
     musicRequest<any>("/user/music/applications", { method: "POST", body: JSON.stringify(payload) }),
 };
 
+export interface SuggestionImage {
+  id: number;
+  width?: number;
+  height?: number;
+  bytes?: number;
+  contentType?: string;
+}
+
+export interface Suggestion {
+  id: number;
+  userId: number;
+  author: string;
+  title: string;
+  category?: string;
+  content: string;
+  status: string;
+  score?: number;
+  rewardAmount?: number;
+  rewardStatus?: string;
+  reviewNote?: string;
+  images?: SuggestionImage[];
+  createdAt: string;
+  updatedAt?: string;
+}
+
+async function suggestionRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const res = await fetch(`/api${path}`, {
+    credentials: "include",
+    headers: { "Content-Type": "application/json", ...(init.headers as Record<string, string>) },
+    ...init,
+  });
+  const json = await res.json().catch(() => null);
+  if (!res.ok || !json?.success) throw new Error(json?.message || `请求失败 (${res.status})`);
+  return json.data as T;
+}
+
+export const suggestionApi = {
+  mine: () => suggestionRequest<Suggestion[]>("/user/suggestions"),
+  get: (id: number) => suggestionRequest<Suggestion>(`/user/suggestions/${id}`),
+  create: (payload: { title: string; category?: string; content: string; imageIds: number[] }) =>
+    suggestionRequest<Suggestion>("/user/suggestions", { method: "POST", body: JSON.stringify(payload) }),
+  uploadImage: async (file: File) => {
+    const form = new FormData();
+    form.append("file", file);
+    const res = await fetch("/api/user/suggestions/images", {
+      method: "POST",
+      credentials: "include",
+      body: form,
+    });
+    const json = await res.json().catch(() => null);
+    if (!res.ok || !json?.success) throw new Error(json?.message || "图片上传失败");
+    return json.data as SuggestionImage;
+  },
+  imageUrl: (id: number) => `/api/user/suggestions/images/${id}`,
+};
+
 async function publicRequest<T>(path: string): Promise<ApiResponse<T>> {
   const res = await fetch(`/api${path}`, { cache: "no-store" });
   const json = (await res.json().catch(() => null)) as ApiResponse<T> | null;
