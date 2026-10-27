@@ -6,10 +6,14 @@ import com.baicaiblogs.entity.User;
 import com.baicaiblogs.repository.UserRepository;
 import com.baicaiblogs.service.ArticleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.CacheControl;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Duration;
 import java.util.List;
 
 @RestController
@@ -35,6 +39,21 @@ public class ArticleController {
             return ApiResponse.success(articleService.publicGet(slug));
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/public/articles/images")
+    public ResponseEntity<byte[]> publicImage(@RequestParam String key) {
+        try {
+            byte[] bytes = articleService.imageBytes(key);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(articleService.imageContentType(key)))
+                    .contentLength(bytes.length)
+                    .cacheControl(CacheControl.maxAge(Duration.ofDays(7)).cachePublic())
+                    .header("X-Content-Type-Options", "nosniff")
+                    .body(bytes);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
         }
     }
 

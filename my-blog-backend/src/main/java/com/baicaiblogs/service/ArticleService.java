@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -133,12 +135,28 @@ public class ArticleService {
             String key = "articles/" + LocalDateTime.now().toLocalDate() + "/"
                     + UUID.randomUUID().toString().replace("-", "") + "." + safe.extension();
             ossService.putObject(key, safe.bytes(), safe.contentType());
-            return ossService.publicUrl(key);
+            return "/api/public/articles/images?key=" + URLEncoder.encode(key, StandardCharsets.UTF_8);
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
             throw new RuntimeException("图片上传失败");
         }
+    }
+
+    @Transactional(readOnly = true)
+    public byte[] imageBytes(String key) {
+        if (key == null || !key.startsWith("articles/") || key.contains("..") || key.contains("\\")) {
+            throw new RuntimeException("图片不存在");
+        }
+        return ossService.getObjectBytes(key);
+    }
+
+    @Transactional(readOnly = true)
+    public String imageContentType(String key) {
+        String lower = key == null ? "" : key.toLowerCase(Locale.ROOT);
+        if (lower.endsWith(".png")) return "image/png";
+        if (lower.endsWith(".webp")) return "image/webp";
+        return "image/jpeg";
     }
 
     private ArticleDtos.ArticleResponse toResponse(Article article) {
