@@ -40,6 +40,7 @@ export default function ArticlesAdminPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [imagePanelOpen, setImagePanelOpen] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -86,8 +87,12 @@ export default function ArticlesAdminPage() {
     try {
       const response = await api.uploadArticleImage(file);
       const url = response.data;
-      if (target === "inline") editorRef.current?.insertImage(url);
-      else setCover(url);
+      if (target === "inline") {
+        editorRef.current?.insertImage(url);
+        setImagePanelOpen(false);
+      } else {
+        setCover(url);
+      }
     } catch (error) {
       showToast(error instanceof Error ? error.message : "图片上传失败", "error");
     } finally {
@@ -185,8 +190,10 @@ export default function ArticlesAdminPage() {
               <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400">封面</span>
               <div className="mt-2 flex items-center gap-3">
                 {cover ? <img src={cover} alt="" className="h-16 w-24 rounded-xl object-cover" /> : <div className="flex h-16 w-24 items-center justify-center rounded-xl bg-white/10 text-slate-500"><BookOpen size={18} /></div>}
-                <button onClick={() => coverInputRef.current?.click()} disabled={uploading} className="rounded-xl bg-white/10 px-3 py-2 text-[10px] font-black text-slate-300"><Upload size={12} className="mr-1 inline" /> 上传封面</button>
-                <input ref={coverInputRef} type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={(event) => void uploadImage(event.target.files?.[0], "cover")} />
+                <label className={`inline-flex cursor-pointer items-center rounded-xl bg-white/10 px-3 py-2 text-[10px] font-black text-slate-300 ${uploading ? "pointer-events-none opacity-50" : ""}`}>
+                  <Upload size={12} className="mr-1" /> 上传封面
+                  <input ref={coverInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={(event) => void uploadImage(event.target.files?.[0], "cover")} />
+                </label>
               </div>
             </div>
             <div className="block text-[10px] font-black uppercase tracking-widest text-slate-400">状态
@@ -213,10 +220,19 @@ export default function ArticlesAdminPage() {
               contentType="html"
               summary={summary}
               setSummary={setSummary}
-              onOpenImageTool={() => imageInputRef.current?.click()}
+              onOpenImageTool={() => setImagePanelOpen(true)}
               onChange={() => undefined}
             />
-            <input ref={imageInputRef} type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={(event) => void uploadImage(event.target.files?.[0], "inline")} />
+            {imagePanelOpen && (
+              <div className="flex flex-wrap items-center gap-3 border-t border-white/10 bg-indigo-500/10 px-4 py-3">
+                <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-indigo-500 px-3 py-2 text-[10px] font-black text-white">
+                  <Upload size={12} /> 选择本地图片
+                  <input ref={imageInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={(event) => void uploadImage(event.target.files?.[0], "inline")} />
+                </label>
+                <span className="text-[10px] text-slate-400">JPG / PNG / WebP，单张不超过 10MB</span>
+                <button onClick={() => setImagePanelOpen(false)} className="text-[10px] font-bold text-slate-400 hover:text-white">取消</button>
+              </div>
+            )}
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
