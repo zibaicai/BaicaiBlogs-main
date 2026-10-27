@@ -190,10 +190,7 @@ export default function ArticlesAdminPage() {
               <span className="block text-[10px] font-black uppercase tracking-widest text-slate-400">封面</span>
               <div className="mt-2 flex items-center gap-3">
                 {cover ? <img src={cover} alt="" className="h-16 w-24 rounded-xl object-cover" /> : <div className="flex h-16 w-24 items-center justify-center rounded-xl bg-white/10 text-slate-500"><BookOpen size={18} /></div>}
-                <label className={`inline-flex cursor-pointer items-center rounded-xl bg-white/10 px-3 py-2 text-[10px] font-black text-slate-300 ${uploading ? "pointer-events-none opacity-50" : ""}`}>
-                  <Upload size={12} className="mr-1" /> 上传封面
-                  <input ref={coverInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={(event) => void uploadImage(event.target.files?.[0], "cover")} />
-                </label>
+                <input ref={coverInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="block w-full max-w-[220px] cursor-pointer rounded-xl border border-white/10 bg-white/5 p-2 text-[10px] text-slate-400 file:mr-2 file:rounded-lg file:border-0 file:bg-white/10 file:px-2.5 file:py-1.5 file:text-[10px] file:font-bold file:text-slate-200" onChange={(event) => void uploadImage(event.target.files?.[0], "cover")} />
               </div>
             </div>
             <div className="block text-[10px] font-black uppercase tracking-widest text-slate-400">状态
@@ -224,13 +221,13 @@ export default function ArticlesAdminPage() {
               onChange={() => undefined}
             />
             {imagePanelOpen && (
-              <div className="flex flex-wrap items-center gap-3 border-t border-white/10 bg-indigo-500/10 px-4 py-3">
-                <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-indigo-500 px-3 py-2 text-[10px] font-black text-white">
-                  <Upload size={12} /> 选择本地图片
-                  <input ref={imageInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={(event) => void uploadImage(event.target.files?.[0], "inline")} />
-                </label>
-                <span className="text-[10px] text-slate-400">JPG / PNG / WebP，单张不超过 10MB</span>
-                <button onClick={() => setImagePanelOpen(false)} className="text-[10px] font-bold text-slate-400 hover:text-white">取消</button>
+              <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm" onClick={() => setImagePanelOpen(false)}>
+                <div className="w-full max-w-sm rounded-3xl border border-white/15 bg-slate-900 p-6 shadow-2xl" onClick={(event) => event.stopPropagation()}>
+                  <h3 className="text-lg font-black text-white">插入图片</h3>
+                  <p className="mt-1 text-xs text-slate-400">支持 JPG / PNG / WebP，单张不超过 10MB。</p>
+                  <input ref={imageInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="mt-5 block w-full cursor-pointer rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-slate-300 file:mr-3 file:rounded-lg file:border-0 file:bg-indigo-500 file:px-4 file:py-2.5 file:text-xs file:font-black file:text-white" onChange={(event) => void uploadImage(event.target.files?.[0], "inline")} />
+                  <button onClick={() => setImagePanelOpen(false)} className="mt-3 w-full rounded-xl bg-white/10 px-4 py-2.5 text-xs font-black text-slate-300">取消</button>
+                </div>
               </div>
             )}
           </div>
