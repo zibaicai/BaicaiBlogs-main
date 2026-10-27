@@ -112,7 +112,7 @@ export default function SuggestionsAdminPage() {
     };
   }, [selected]);
 
-  const contentParts = useMemo(() => selected?.content.split(/(attachment:\/\/\d+)/g) || [], [selected]);
+  const contentParts = useMemo(() => selected?.content.split(/(!\[[^\]]*\]\(attachment:\/\/\d+\)|attachment:\/\/\d+)/g) || [], [selected]);
 
   const review = async () => {
     if (!selected) return;
@@ -173,7 +173,9 @@ export default function SuggestionsAdminPage() {
 
               <div className="space-y-3 whitespace-pre-wrap text-sm leading-7 text-slate-300">
                 {contentParts.map((part, index) => {
-                  const match = part.match(/^attachment:\/\/(\d+)$/);
+                  const markdownImage = part.match(/^!\[[^\]]*\]\(attachment:\/\/(\d+)\)$/);
+                  const rawImage = part.match(/^attachment:\/\/(\d+)$/);
+                  const match = markdownImage || rawImage;
                   if (!match) return part ? <p key={index}>{part}</p> : null;
                   const imageId = Number(match[1]);
                   return imageUrls[imageId] ? <img key={index} src={imageUrls[imageId]} alt="参考图片" className="max-h-[520px] rounded-2xl border border-white/10 object-contain" /> : null;

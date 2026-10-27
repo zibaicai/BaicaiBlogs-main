@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { ArrowLeft, Lightbulb, Loader2 } from "lucide-react";
+import { Lightbulb, Loader2 } from "lucide-react";
 import Navbar from "../../../components/Navbar";
 import PageTransition from "../../../components/PageTransition";
+import BackButton from "../../../components/BackButton";
 import { suggestionApi, type Suggestion } from "../../../lib/api";
 import { useAuth } from "../../../lib/auth";
 
@@ -22,11 +22,13 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 function SuggestionContent({ item }: { item: Suggestion }) {
-  const parts = item.content.split(/(attachment:\/\/\d+)/g);
+  const parts = item.content.split(/(!\[[^\]]*\]\(attachment:\/\/\d+\)|attachment:\/\/\d+)/g);
   return (
     <div className="space-y-4 text-sm leading-7 text-slate-700 dark:text-slate-300">
       {parts.map((part, index) => {
-        const match = part.match(/^attachment:\/\/(\d+)$/);
+        const markdownImage = part.match(/^!\[[^\]]*\]\(attachment:\/\/(\d+)\)$/);
+        const rawImage = part.match(/^attachment:\/\/(\d+)$/);
+        const match = markdownImage || rawImage;
         if (!match) return part ? <p key={index} className="whitespace-pre-wrap">{part}</p> : null;
         const imageId = Number(match[1]);
         if (!(item.images || []).some((image) => image.id === imageId)) return null;
@@ -64,9 +66,7 @@ export default function SuggestionDetailPage({ params }: { params: Promise<{ id:
       <Navbar />
       <PageTransition>
         <main className="directory-shell py-24">
-          <Link href="/suggestions" className="mb-8 inline-flex items-center gap-2 text-xs font-black text-slate-400 hover:text-indigo-400">
-            <ArrowLeft size={14} /> 返回建议列表
-          </Link>
+          <BackButton fallbackHref="/suggestions" label="返回建议列表" />
           {loading || authLoading ? (
             <div className="py-24 text-center text-sm text-slate-400"><Loader2 className="mx-auto animate-spin" size={20} /></div>
           ) : !user ? (
