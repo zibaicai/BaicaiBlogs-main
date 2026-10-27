@@ -54,12 +54,34 @@ export default function CommentSection({
 }) {
   const { user, loading: authLoading } = useAuth();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const composerRef = useRef<HTMLDivElement>(null);
   const [comments, setComments] = useState<CommentItem[]>([]);
   const [content, setContent] = useState("");
+  const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+
+  // 点击输入框以外区域时收回单行（草稿保留在 textarea 里，重新点开即可继续编辑）
+  useEffect(() => {
+    if (!expanded) return;
+    const onPointerDown = (event: PointerEvent) => {
+      if (composerRef.current && !composerRef.current.contains(event.target as Node)) {
+        setExpanded(false);
+      }
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [expanded]);
+
+  // Esc 也能收回
+  const onKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === "Escape") {
+      event.currentTarget.blur();
+      setExpanded(false);
+    }
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -96,6 +118,7 @@ export default function CommentSection({
       });
       setComments((prev) => [created, ...prev]);
       setContent("");
+      setExpanded(false);
       setNotice("评论已发布");
     } catch (e) {
       setError(e instanceof Error ? e.message : "评论失败");
@@ -154,21 +177,36 @@ export default function CommentSection({
       </div>
 
       {canComment ? (
-        <div className="comment-composer">
-          <textarea
-            ref={textareaRef}
-            value={content}
-            onChange={(event) => setContent(event.target.value)}
-            placeholder="写下你的想法..."
-            maxLength={1000}
-            rows={3}
-          />
-          <div className="comment-composer-foot">
-            <span>{content.length} / 1000</span>
-            <button type="button" onClick={() => void submit()} disabled={sending || !content.trim()}>
-              {sending ? <Loader2 className="animate-spin" size={14} /> : <Send size={14} />}
-              发布
-            </button>
+        <div
+          ref={composerRef}
+          className={`comment-composer ${expanded ? "is-expanded" : ""}`}
+          // 收起状态下整条框都可以点：否则用户点边框/padding 没反应（移动端尤其明显）
+          onClick={(event) => {
+            if ((event.target as HTMLElement).closest("button")) return;
+            if (!expanded) textareaRef.current?.focus();
+          }}
+        >
+          <div className="comment-avatar">
+            {user?.avatar ? <img src={user.avatar} alt="" /> : (user?.nickname || user?.username || "我").slice(0, 1)}
+          </div>
+          <div className="comment-composer-body">
+            <textarea
+              ref={textareaRef}
+              value={content}
+              onChange={(event) => setContent(event.target.value)}
+              onFocus={() => setExpanded(true)}
+              onKeyDown={onKeyDown}
+              placeholder="写下你的想法..."
+              maxLength={1000}
+              rows={1}
+            />
+            <div className="comment-composer-foot">
+              <span>{content.length} / 1000</span>
+              <button type="button" onClick={() => void submit()} disabled={sending || !content.trim()}>
+                {sending ? <Loader2 className="animate-spin" size={14} /> : <Send size={14} />}
+                发布
+              </button>
+            </div>
           </div>
         </div>
       ) : (

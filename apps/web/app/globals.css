@@ -1,4 +1,4 @@
-﻿@import "tailwindcss";
+@import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
 @theme inline {
@@ -4629,16 +4629,28 @@ html:not(.dark) .hv-empty {
 .comment-head > svg { color: var(--ui-text-muted); }
 
 .comment-composer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin-top: 16px;
   padding: 12px;
   border: 1px solid var(--ui-border);
   border-radius: var(--radius-control);
   background: color-mix(in srgb, var(--ui-bg) 42%, transparent);
+  cursor: text;
 }
 
+.comment-composer.is-expanded { align-items: flex-start; }
+
+.comment-composer .comment-avatar { flex: 0 0 32px; }
+
+.comment-composer-body { flex: 1; min-width: 0; }
+
 .comment-composer textarea {
+  display: block;
   width: 100%;
-  resize: vertical;
+  height: 22px;
+  resize: none;
   border: 0;
   outline: 0;
   background: transparent;
@@ -4646,15 +4658,35 @@ html:not(.dark) .hv-empty {
   font: inherit;
   font-size: 13px;
   line-height: 1.7;
+  transition: height .28s cubic-bezier(.34, 1.28, .64, 1);
 }
+
+.comment-composer.is-expanded textarea { height: 66px; }
 
 .comment-composer-foot {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  margin-top: 0;
+  transform: translateY(-4px);
+  transition:
+    max-height .28s cubic-bezier(.34, 1.28, .64, 1),
+    opacity .2s ease,
+    transform .28s cubic-bezier(.34, 1.28, .64, 1),
+    margin-top .28s cubic-bezier(.34, 1.28, .64, 1);
   color: var(--ui-text-faint);
   font-size: 10px;
+}
+
+.comment-composer.is-expanded .comment-composer-foot {
+  max-height: 60px;
+  opacity: 1;
+  margin-top: 6px;
+  transform: none;
 }
 
 .comment-composer-foot button {
@@ -4670,6 +4702,19 @@ html:not(.dark) .hv-empty {
 }
 
 .comment-composer-foot button:disabled { opacity: .45; }
+
+/* 移动端：字号低于 16px 时 iOS Safari 会在聚焦输入框时自动放大页面 */
+@media (max-width: 640px) {
+  .comment-composer textarea { font-size: 16px; }
+}
+
+/* 尊重系统的"减少动态效果" */
+@media (prefers-reduced-motion: reduce) {
+  .comment-composer textarea,
+  .comment-composer-foot {
+    transition-duration: .01ms;
+  }
+}
 
 .comment-login-hint {
   display: flex;
