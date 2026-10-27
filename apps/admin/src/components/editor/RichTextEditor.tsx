@@ -119,6 +119,7 @@ interface EditorProps {
   title: string;
   setTitle: (val: string) => void;
   initialContent?: string;
+  contentType?: 'markdown' | 'html';
   onOpenImageTool: () => void;
   isTitleLocked?: boolean;
   summary?: string;
@@ -126,7 +127,7 @@ interface EditorProps {
   onChange?: () => void;
 }
 
-const RichTextEditor = forwardRef<RichTextEditorHandle, EditorProps>(({ title, setTitle, initialContent, onOpenImageTool, isTitleLocked, summary, setSummary, onChange }, ref) => {
+const RichTextEditor = forwardRef<RichTextEditorHandle, EditorProps>(({ title, setTitle, initialContent, contentType = 'markdown', onOpenImageTool, isTitleLocked, summary, setSummary, onChange }, ref) => {
   const [textColors, setTextColors] = useState<string[]>(['#6366F1', '#000000']);
   const [highlightColors, setHighlightColors] = useState<string[]>(['#FEF08A', '#BBF7D0']);
   const [showTextPicker, setShowTextPicker] = useState(false);
@@ -183,21 +184,22 @@ const RichTextEditor = forwardRef<RichTextEditorHandle, EditorProps>(({ title, s
     },
     getContent: () => {
       if (!editor) return '';
+      if (contentType === 'html') return editor.getHTML();
       // 后端 content 字段约定为 Markdown，不能回写 HTML。
       return ((editor.storage as any).markdown?.getMarkdown?.() || '').trim();
     }
-  }), [editor, onChange]);
+  }), [editor, onChange, contentType]);
 
   useEffect(() => {
     if (!editor || !initialContent) return;
     if (loadedContentRef.current !== initialContent) {
       // 显式走 markdown-it 解析，避免 Tiptap 把整篇 Markdown 当成一个 HTML 文本段。
       const parser = (editor.storage as any).markdown?.parser;
-      const parsed = parser ? parser.parse(initialContent) : initialContent;
+      const parsed = contentType === 'html' ? initialContent : (parser ? parser.parse(initialContent) : initialContent);
       editor.commands.setContent(parsed, { emitUpdate: false });
       loadedContentRef.current = initialContent;
     }
-  }, [editor, initialContent]);
+  }, [editor, initialContent, contentType]);
 
   if (!editor) return null;
 

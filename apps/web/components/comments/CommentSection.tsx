@@ -44,7 +44,7 @@ export default function CommentSection({
   externalLabel,
   readOnly = false,
 }: {
-  targetType: "POST" | "ALBUM" | "MOMENT" | "TRACK";
+  targetType: "POST" | "ALBUM" | "MOMENT" | "TRACK" | "ARTICLE";
   targetId: number;
   title?: string;
   emptyTitle?: string;

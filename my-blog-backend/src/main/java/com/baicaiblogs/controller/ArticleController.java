@@ -1,0 +1,106 @@
+package com.baicaiblogs.controller;
+
+import com.baicaiblogs.dto.ApiResponse;
+import com.baicaiblogs.dto.ArticleDtos;
+import com.baicaiblogs.entity.User;
+import com.baicaiblogs.repository.UserRepository;
+import com.baicaiblogs.service.ArticleService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api")
+@RequiredArgsConstructor
+public class ArticleController {
+
+    private final ArticleService articleService;
+    private final UserRepository userRepository;
+
+    @GetMapping("/public/articles")
+    public ApiResponse<List<ArticleDtos.ArticleResponse>> publicList() {
+        try {
+            return ApiResponse.success(articleService.publicList());
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/public/articles/{slug}")
+    public ApiResponse<ArticleDtos.ArticleResponse> publicGet(@PathVariable String slug) {
+        try {
+            return ApiResponse.success(articleService.publicGet(slug));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/admin/articles")
+    public ApiResponse<List<ArticleDtos.ArticleResponse>> adminList(Authentication authentication) {
+        try {
+            return ApiResponse.success(articleService.adminList(currentUser(authentication)));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/admin/articles/{id}")
+    public ApiResponse<ArticleDtos.ArticleResponse> adminGet(@PathVariable Long id, Authentication authentication) {
+        try {
+            return ApiResponse.success(articleService.adminGet(currentUser(authentication), id));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @PostMapping("/admin/articles")
+    public ApiResponse<ArticleDtos.ArticleResponse> create(@RequestBody ArticleDtos.ArticleRequest request,
+                                                           Authentication authentication) {
+        try {
+            return ApiResponse.success(articleService.create(currentUser(authentication), request));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @PutMapping("/admin/articles/{id}")
+    public ApiResponse<ArticleDtos.ArticleResponse> update(@PathVariable Long id,
+                                                           @RequestBody ArticleDtos.ArticleRequest request,
+                                                           Authentication authentication) {
+        try {
+            return ApiResponse.success(articleService.update(currentUser(authentication), id, request));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @PostMapping("/admin/articles/images")
+    public ApiResponse<String> uploadImage(@RequestParam("file") MultipartFile file,
+                                           Authentication authentication) {
+        try {
+            return ApiResponse.success(articleService.uploadImage(currentUser(authentication), file));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/admin/articles/{id}")
+    public ApiResponse<Void> delete(@PathVariable Long id, Authentication authentication) {
+        try {
+            articleService.delete(currentUser(authentication), id);
+            return ApiResponse.success("已删除", null);
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    private User currentUser(Authentication authentication) {
+        if (authentication == null) return null;
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof User user) return user;
+        return userRepository.findByUsername(authentication.getName()).orElse(null);
+    }
+}

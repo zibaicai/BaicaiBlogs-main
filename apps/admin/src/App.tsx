@@ -35,6 +35,7 @@ import ReportsPage from "./pages/ReportsPage";
 import DanmakuPage from "./pages/DanmakuPage";
 import AccessPage from "./pages/AccessPage";
 import EditorPage from "./pages/EditorPage";
+import ArticlesAdminPage from "./pages/ArticlesAdminPage";
 import MomentsPage from "./pages/MomentsPage";
 import CategoriesPage from "./pages/CategoriesPage";
 import PrivacyAuditPage from "./pages/PrivacyAuditPage";
@@ -142,6 +143,7 @@ function Login() {
 const NAV_ITEMS = [
   { to: "/", label: "概览", icon: LayoutDashboard, end: true },
   { to: "/posts", label: "文章", icon: BookOpen },
+  { to: "/articles", label: "图文", icon: PenLine },
   { to: "/projects", label: "项目", icon: FolderKanban },
   { to: "/gallery", label: "图片墙", icon: Images },
   { to: "/moments", label: "说说", icon: MessageSquareText },
@@ -682,6 +684,7 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<RequireAuth><Shell><Dashboard /></Shell></RequireAuth>} />
             <Route path="/posts" element={<RequireAuth><Shell><Posts /></Shell></RequireAuth>} />
+            <Route path="/articles" element={<RequireAuth><Shell><ArticlesAdminPage /></Shell></RequireAuth>} />
             <Route path="/projects" element={<RequireAuth><Shell><Projects /></Shell></RequireAuth>} />
             <Route path="/timeline" element={<RequireAuth><Shell><TimelinePreview /></Shell></RequireAuth>} />
             <Route path="/gallery" element={<RequireAuth><Shell><GalleryPage /></Shell></RequireAuth>} />

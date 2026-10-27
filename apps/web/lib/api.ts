@@ -274,6 +274,39 @@ export const suggestionApi = {
   imageUrl: (id: number) => `/api/user/suggestions/images/${id}`,
 };
 
+export interface Article {
+  id: number;
+  userId: number;
+  author: string;
+  slug: string;
+  title: string;
+  subtitle?: string;
+  cover?: string;
+  summary?: string;
+  contentHtml: string;
+  contentText?: string;
+  category?: string;
+  tags?: string[];
+  status: string;
+  visibility: string;
+  readingTime?: number;
+  publishedAt?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+async function articleRequest<T>(path: string): Promise<T> {
+  const res = await fetch(`/api${path}`, { cache: "no-store" });
+  const json = await res.json().catch(() => null);
+  if (!res.ok || !json?.success) throw new Error(json?.message || `请求失败 (${res.status})`);
+  return json.data as T;
+}
+
+export const articleApi = {
+  list: () => articleRequest<Article[]>("/public/articles"),
+  get: (slug: string) => articleRequest<Article>(`/public/articles/${encodeURIComponent(slug)}`),
+};
+
 async function publicRequest<T>(path: string): Promise<ApiResponse<T>> {
   const res = await fetch(`/api${path}`, { cache: "no-store" });
   const json = (await res.json().catch(() => null)) as ApiResponse<T> | null;

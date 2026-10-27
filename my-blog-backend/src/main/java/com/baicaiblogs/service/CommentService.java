@@ -24,6 +24,7 @@ public class CommentService {
     private final MomentRepository momentRepository;
     private final AlbumRepository albumRepository;
     private final MusicTrackRepository musicTrackRepository;
+    private final ArticleRepository articleRepository;
     private final MusicLibraryService musicLibraryService;
     private final ReportRepository reportRepository;
 
@@ -234,6 +235,12 @@ public class CommentService {
                 MusicTrack track = musicTrackRepository.findById(targetId).orElseThrow(() -> new RuntimeException("歌曲不存在"));
                 if (!"ACTIVE".equalsIgnoreCase(track.getStatus()) || !musicLibraryService.isPublicTrack(targetId)) {
                     throw new RuntimeException("歌曲不可评论");
+                }
+            }
+            case "ARTICLE" -> {
+                Article article = articleRepository.findById(targetId).orElseThrow(() -> new RuntimeException("文章不存在"));
+                if (!"PUBLISHED".equalsIgnoreCase(article.getStatus()) || !"PUBLIC".equalsIgnoreCase(article.getVisibility())) {
+                    throw new RuntimeException("文章不可评论");
                 }
             }
             default -> throw new RuntimeException("不支持的评论目标");

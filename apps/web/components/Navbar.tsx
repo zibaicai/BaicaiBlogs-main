@@ -20,6 +20,7 @@ const NAV_LINKS = [
   { name: "碎片", href: "/moments" },
   { name: "音乐", href: "/music" },
   { name: "建议", href: "/suggestions" },
+  { name: "文章", href: "/articles" },
 ];
 
 export default function Navbar() {
