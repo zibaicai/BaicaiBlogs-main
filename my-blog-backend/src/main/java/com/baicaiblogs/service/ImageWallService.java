@@ -29,6 +29,7 @@ public class ImageWallService {
     private final PasswordEncoder passwordEncoder;
     private final GrantService grantService;
     private final ImageVariantService imageVariantService;
+    private final ImageSecurityService imageSecurityService;
 
     public User currentUser() {
         Object principal = org.springframework.security.core.context.SecurityContextHolder
@@ -353,15 +354,14 @@ public class ImageWallService {
         for (ImageDtos.PresignFile file : files) {
             if (file.getSize() == null || file.getSize() <= 0) throw new RuntimeException("文件大小无效");
             if (file.getSize() > MAX_UPLOAD) throw new RuntimeException("单张图片不能超过 10MB");
-            if (file.getType() == null || !file.getType().startsWith("image/") || file.getType().contains("svg")) {
-                throw new RuntimeException("仅支持 JPG/PNG/WebP/AVIF/GIF");
-            }
+            String type = allowedImageType(file.getType());
+            if (type == null) throw new RuntimeException("仅支持 JPG/PNG/WebP/GIF");
             total += file.getSize();
-            String ext = extension(file.getName(), file.getType());
+            String ext = extensionForType(type);
             String key = "photos/" + album.getAlbumId() + "/" + LocalDate.now(ZONE) + "/"
                     + UUID.randomUUID().toString().replace("-", "") + ext;
             long exp = System.currentTimeMillis() + 10 * 60 * 1000;
-            String uploadUrl = ossService.presignPut(key, file.getType(), new Date(exp));
+            String uploadUrl = ossService.presignPut(key, type, new Date(exp));
             result.add(new ImageDtos.PresignResponse() {{
                 setKey(key);
                 setUploadUrl(uploadUrl);
@@ -392,9 +392,20 @@ public class ImageWallService {
             long size = meta.getContentLength();
             if (size <= 0 || size > MAX_UPLOAD) throw new RuntimeException("图片大小超过 10MB");
             String mime = meta.getContentType() == null ? item.getMime() : meta.getContentType();
-            if (mime == null || !mime.startsWith("image/") || mime.contains("svg")) {
+            if (allowedImageType(mime) == null) {
                 throw new RuntimeException("不支持的图片类型");
             }
+            byte[] original;
+            try {
+                original = ossService.getObjectBytes(key);
+            } catch (Exception e) {
+                throw new RuntimeException("图片读取失败");
+            }
+            ImageSecurityService.SafeImage safe = imageSecurityService.sanitize(original);
+            String sanitizedKey = key.replaceAll("\\.[A-Za-z0-9]{1,10}$", "") + "." + safe.extension();
+            ossService.putObject(sanitizedKey, safe.bytes(), safe.contentType());
+            if (!sanitizedKey.equals(key)) ossService.deleteObject(key);
+            key = sanitizedKey;
             minWeight -= 10;
             Photo photo = Photo.builder()
                     .album(album)
@@ -402,15 +413,15 @@ public class ImageWallService {
                     .url(ossService.publicUrl(key))
                     .caption(item.getCaption())
                     .weight(item.getWeight() != null ? item.getWeight() : minWeight)
-                    .width(item.getWidth())
-                    .height(item.getHeight())
-                    .bytes(size)
-                    .mime(mime)
-                    .hash(item.getHash())
+                    .width(safe.width())
+                    .height(safe.height())
+                    .bytes((long) safe.bytes().length)
+                    .mime(safe.contentType())
+                    .hash(safe.sha256())
                     .status("VISIBLE")
                     .build();
             photoRepository.save(photo);
-            added += size;
+            added += safe.bytes().length;
             result.add(toPhoto(photo, false));
         }
         album.setContentVersion((album.getContentVersion() == null ? 0 : album.getContentVersion()) + 1);
@@ -456,6 +467,27 @@ public class ImageWallService {
                 .filter(p -> "VISIBLE".equals(p.getStatus()))
                 .map(p -> toPhoto(p, false))
                 .toList();
+    }
+
+    private String allowedImageType(String raw) {
+        if (raw == null) return null;
+        String value = raw.toLowerCase(Locale.ROOT).split(";")[0].trim();
+        return switch (value) {
+            case "image/jpeg", "image/jpg" -> "image/jpeg";
+            case "image/png" -> "image/png";
+            case "image/webp" -> "image/webp";
+            case "image/gif" -> "image/gif";
+            default -> null;
+        };
+    }
+
+    private String extensionForType(String type) {
+        return switch (type) {
+            case "image/png" -> ".png";
+            case "image/webp" -> ".webp";
+            case "image/gif" -> ".gif";
+            default -> ".jpg";
+        };
     }
 
     private String extension(String name, String mime) {

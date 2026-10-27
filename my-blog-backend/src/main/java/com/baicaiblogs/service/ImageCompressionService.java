@@ -39,7 +39,7 @@ public class ImageCompressionService {
             if (!readers.hasNext()) throw new RuntimeException("图片格式无法识别，仅支持 JPEG / PNG / WebP");
             ImageReader reader = readers.next();
             try {
-                reader.setInput(input, true, true);
+                reader.setInput(input, false, true);
                 int width = reader.getWidth(0);
                 int height = reader.getHeight(0);
                 if (width <= 0 || height <= 0 || (long) width * height > MAX_PIXELS) {
@@ -81,7 +81,7 @@ public class ImageCompressionService {
             if (!readers.hasNext()) throw new RuntimeException("图片格式无法识别，仅支持 JPEG / PNG / WebP");
             ImageReader reader = readers.next();
             try {
-                reader.setInput(input, true, true);
+                reader.setInput(input, false, true);
                 int width = reader.getWidth(0);
                 int height = reader.getHeight(0);
                 if (width <= 0 || height <= 0 || (long) width * height > MAX_PIXELS) {

@@ -5,6 +5,7 @@ import com.baicaiblogs.entity.User;
 import com.baicaiblogs.service.PostService;
 import com.baicaiblogs.service.OssService;
 import com.baicaiblogs.service.ImageCompressionService;
+import com.baicaiblogs.service.ImageSecurityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.http.CacheControl;
@@ -43,6 +44,7 @@ public class PostController {
     public ApiResponse<String> uploadImage(@RequestParam("file") MultipartFile file) {
         try {
             if (file.isEmpty()) throw new RuntimeException("图片文件不能为空");
+            if (file.getSize() > ImageSecurityService.MAX_BYTES) throw new RuntimeException("图片不能超过 10MB");
             String original = file.getOriginalFilename() == null ? "cover" : file.getOriginalFilename();
             ImageCompressionService.CompressedImage compressed =
                     imageCompressionService.compressCover(file.getBytes(), original);
@@ -61,6 +63,7 @@ public class PostController {
     public ApiResponse<String> uploadBackground(@RequestParam("file") MultipartFile file) {
         try {
             if (file.isEmpty()) throw new RuntimeException("图片文件不能为空");
+            if (file.getSize() > ImageSecurityService.MAX_BYTES) throw new RuntimeException("图片不能超过 10MB");
             String original = file.getOriginalFilename() == null ? "background" : file.getOriginalFilename();
             ImageCompressionService.CompressedImage compressed =
                     imageCompressionService.compressBackground(file.getBytes(), original);
@@ -219,10 +222,14 @@ public class PostController {
             if (file.isEmpty()) {
                 return ApiResponse.error("文件不能为空");
             }
-            // 校验文件扩展名
+            // 校验文件扩展名（大小写不敏感）和大小
             String filename = file.getOriginalFilename();
-            if (filename == null || (!filename.endsWith(".md") && !filename.endsWith(".markdown"))) {
+            String lowerName = filename == null ? "" : filename.toLowerCase();
+            if (!lowerName.endsWith(".md") && !lowerName.endsWith(".markdown")) {
                 return ApiResponse.error("仅支持 .md 或 .markdown 文件");
+            }
+            if (file.getSize() > 2L * 1024 * 1024) {
+                return ApiResponse.error("Markdown 文件不能超过 2MB");
             }
             Long userId = getCurrentUserId();
             return ApiResponse.success("上传成功", postService.uploadPost(userId, file));
