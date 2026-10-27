@@ -152,7 +152,7 @@ export default function ArticlesAdminPage() {
   };
 
   const remove = async () => {
-    if (!current || !window.confirm("确定删除这篇文章吗？")) return;
+    if (!current || !window.confirm("确定删除这篇图文吗？")) return;
     try {
       await api.deleteArticle(current.id);
       newArticle();
@@ -167,10 +167,10 @@ export default function ArticlesAdminPage() {
     <div className="mx-auto max-w-7xl space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="flex items-center gap-2 text-3xl font-black text-white"><BookOpen size={25} /> 文章管理</h1>
-          <p className="mt-1 text-sm font-bold text-slate-400">独立富文本文章，不复用笔记 Markdown 结构。</p>
+          <h1 className="flex items-center gap-2 text-3xl font-black text-white"><BookOpen size={25} /> 图文管理</h1>
+          <p className="mt-1 text-sm font-bold text-slate-400">独立图文内容，不复用笔记 Markdown 结构。</p>
         </div>
-        <button onClick={newArticle} className="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-2.5 text-xs font-black text-white"><Plus size={14} /> 新建文章</button>
+        <button onClick={newArticle} className="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-2.5 text-xs font-black text-white"><Plus size={14} /> 新建图文</button>
       </header>
 
       <div className="grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)]">
@@ -262,7 +262,7 @@ export default function ArticlesAdminPage() {
 
           <div className="flex flex-wrap items-center gap-3">
             <button onClick={() => void save()} disabled={saving || uploading} className="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-2.5 text-xs font-black text-white disabled:opacity-50">
-              {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />} 保存文章
+              {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />} 保存图文
             </button>
             {current && <button onClick={() => void remove()} className="inline-flex items-center gap-2 rounded-xl bg-red-500/15 px-4 py-2.5 text-xs font-black text-red-300"><Trash2 size={14} /> 删除</button>}
           </div>

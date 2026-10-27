@@ -222,7 +222,7 @@ export default function GalleryPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-white">图片墙</h1>
+          <h1 className="text-3xl font-black text-white">影像</h1>
           <p className="text-sm text-slate-400 mt-1 font-bold">
             单次最多 10 张、单张 10MB；权重最高的图片自动成为封面
           </p>

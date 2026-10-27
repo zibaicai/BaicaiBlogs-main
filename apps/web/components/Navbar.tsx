@@ -11,16 +11,16 @@ import NavSearch from "./NavSearch";
 
 const NAV_LINKS = [
   { name: "首页", href: "/" },
-  { name: "文字", href: "/posts" },
+  { name: "文章", href: "/posts" },
+  { name: "图文", href: "/articles" },
   { name: "项目", href: "/projects" },
   { name: "影像", href: "/photowall" },
-  { name: "归档", href: "/timeline" },
-  { name: "关于", href: "/about" },
-  { name: "友链", href: "/friends" },
-  { name: "碎片", href: "/moments" },
+  { name: "说说", href: "/moments" },
   { name: "音乐", href: "/music" },
+  { name: "归档", href: "/timeline" },
   { name: "建议", href: "/suggestions" },
-  { name: "文章", href: "/articles" },
+  { name: "友链", href: "/friends" },
+  { name: "关于", href: "/about" },
 ];
 
 export default function Navbar() {

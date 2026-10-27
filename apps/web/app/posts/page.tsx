@@ -5,7 +5,7 @@ import PostCard from "../../components/PostCard";
 import { getCategories, getPosts } from "../../lib/server-api";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "文字档案" };
+export const metadata = { title: "文章档案" };
 
 export default async function PostsPage({
   searchParams,
@@ -51,8 +51,8 @@ export default async function PostsPage({
       <PageTransition>
         <main className="directory-shell">
           <DirectoryExplorer
-            eyebrow="BAICAI / NOTES"
-            title="文字档案"
+            eyebrow="BAICAI / WRITING"
+            title="文章档案"
             subtitle="写代码，也写代码之外的事。"
             count={`共 ${posts.length} 篇记录`}
             items={items}

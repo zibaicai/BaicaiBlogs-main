@@ -66,7 +66,7 @@ export default function ArticleDetailPage() {
             {loading ? (
               <div className="py-24 text-center text-slate-400"><Loader2 className="mx-auto animate-spin" /></div>
             ) : !article ? (
-              <div className="py-24 text-center text-sm text-slate-400"><BookOpen className="mx-auto mb-3" /> 文章不存在或未公开。</div>
+              <div className="py-24 text-center text-sm text-slate-400"><BookOpen className="mx-auto mb-3" /> 图文不存在或未公开。</div>
             ) : (
               <div className="xl:grid xl:grid-cols-[320px_760px] xl:items-start xl:gap-8">
                 <aside className="hidden xl:sticky xl:top-24 xl:block">
@@ -82,9 +82,9 @@ export default function ArticleDetailPage() {
                     />
                   )}
                   <div className="rounded-[2rem] border border-white/30 bg-white/60 p-6 backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/60 md:p-10">
-                    <BackButton fallbackHref="/articles" label="返回文章列表" />
+                    <BackButton fallbackHref="/articles" label="返回图文列表" />
                     <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold text-slate-400">
-                      <span>{article.category || "文章"}</span>
+                      <span>{article.category || "图文"}</span>
                       <span>·</span>
                       <span>{article.author}</span>
                       <span>·</span>
@@ -110,7 +110,7 @@ export default function ArticleDetailPage() {
                   </div>
 
                   <div className="mt-8">
-                    <CommentSection targetType="ARTICLE" targetId={article.id} title="文章评论" />
+                    <CommentSection targetType="ARTICLE" targetId={article.id} title="图文评论" />
                   </div>
                 </article>
               </div>

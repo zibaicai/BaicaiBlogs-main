@@ -14,7 +14,7 @@ export default function Footer() {
           <span>© {year} {siteInfo.authorName}</span>
           <Link href="/about" className="hover:text-indigo-500 transition-colors">关于</Link>
           <Link href="/friends" className="hover:text-indigo-500 transition-colors">友链</Link>
-          <Link href="/moments" className="hover:text-indigo-500 transition-colors">碎片</Link>
+          <Link href="/moments" className="hover:text-indigo-500 transition-colors">说说</Link>
           <a
             href="https://admin.zibaicai.cn"
             rel="nofollow noreferrer"

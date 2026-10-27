@@ -149,17 +149,17 @@ const NAV_ITEMS = [
   { to: "/posts", label: "文章", icon: BookOpen },
   { to: "/articles", label: "图文", icon: PenLine },
   { to: "/projects", label: "项目", icon: FolderKanban },
-  { to: "/gallery", label: "图片墙", icon: Images },
+  { to: "/gallery", label: "影像", icon: Images },
   { to: "/moments", label: "说说", icon: MessageSquareText },
   { to: "/music", label: "音乐", icon: Music2 },
-  { to: "/suggestions", label: "建议", icon: Lightbulb },
   { to: "/categories", label: "分类", icon: FolderTree },
   { to: "/tags", label: "标签", icon: Hash },
-  { to: "/privacy", label: "隐私审计", icon: Eye },
+  { to: "/suggestions", label: "建议", icon: Lightbulb },
   { to: "/danmaku", label: "弹幕", icon: MessageSquareText },
   { to: "/reports", label: "举报", icon: ShieldAlert },
+  { to: "/privacy", label: "隐私审计", icon: Eye },
   { to: "/access", label: "授权", icon: KeyRound },
-  { to: "/timeline", label: "归档预览", icon: Waypoints },
+  { to: "/timeline", label: "归档", icon: Waypoints },
   { to: "/settings", label: "设置", icon: Settings },
 ];
 
@@ -785,7 +785,7 @@ function TimelinePreview() {
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h1 className="text-3xl font-black text-white">归档预览</h1>
+        <h1 className="text-3xl font-black text-white">归档</h1>
         <p className="text-sm text-slate-400 mt-1 font-bold">公开数据源，与 C 端 /timeline 一致</p>
       </div>
       {loading && <div className="text-slate-400 flex items-center gap-2"><Loader2 className="animate-spin" size={16} />加载中…</div>}

@@ -10,7 +10,7 @@ type Props = {
   onOpenChange: (open: boolean) => void;
 };
 
-type ResultKind = "文字" | "碎片" | "影像" | "项目" | "友链";
+type ResultKind = "文章" | "说说" | "影像" | "项目" | "友链";
 
 interface GlobalResult {
   key: string;
@@ -80,7 +80,7 @@ export default function NavSearch({ open, onOpenChange }: Props) {
         if (postRes.status === "fulfilled") {
           next.push(...postRes.value.map((post) => ({
             key: `post-${post.slug}`,
-            kind: "文字" as const,
+            kind: "文章" as const,
             title: post.title || "无题",
             description: post.description || "继续阅读这篇记录。",
             href: `/posts/${encodeURIComponent(post.slug)}`,
@@ -94,8 +94,8 @@ export default function NavSearch({ open, onOpenChange }: Props) {
             const text = stripHtml(moment.htmlContent) || moment.content || "";
             return {
               key: `moment-${moment.slug}`,
-              kind: "碎片" as const,
-              title: "碎片",
+              kind: "说说" as const,
+              title: "说说",
               description: text.slice(0, 100) || "一条碎碎念。",
               href: "/moments",
               date: moment.date,

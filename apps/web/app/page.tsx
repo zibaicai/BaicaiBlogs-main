@@ -72,7 +72,7 @@ export default async function Home() {
                   <h2>最近写下的</h2>
                 </div>
                 <Link href="/posts" className="hv-text-link">
-                  全部文字 <span>↗</span>
+                  全部文章 <span>↗</span>
                 </Link>
               </div>
 
@@ -102,10 +102,10 @@ export default async function Home() {
                 <div className="hv-panel-head">
                   <div>
                     <span className="hv-profile-label">SMALL FRAGMENTS</span>
-                    <h2>最近的碎片</h2>
+                    <h2>最近的说说</h2>
                   </div>
                   <Link href="/moments" className="hv-text-link">
-                    全部碎片 <span>↗</span>
+                    全部说说 <span>↗</span>
                   </Link>
                 </div>
 

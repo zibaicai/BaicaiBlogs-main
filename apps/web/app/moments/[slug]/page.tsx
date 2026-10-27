@@ -50,7 +50,7 @@ export default function MomentDetailPage({ params }: { params: Promise<{ slug: s
       <Navbar />
       <PageTransition>
         <main className="w-full max-w-3xl mx-auto mt-28 px-4 relative z-10">
-          <BackButton fallbackHref="/moments" label="返回碎片频道" />
+          <BackButton fallbackHref="/moments" label="返回说说" />
           {loading ? (
             <div className="flex justify-center py-24 text-slate-400">
               <Loader2 className="animate-spin" size={24} />
