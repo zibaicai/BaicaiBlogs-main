@@ -1,201 +1,203 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Save, Calendar, Shield, Link2, Plus, Trash2, LayoutTemplate } from 'lucide-react';
-import { useToast } from '../ToastProvider';
+"use client";
 
-interface FooterSectionProps {
+import { useState } from "react";
+import { BadgeCheck, CalendarDays, Link2, Plus, Shield, Trash2 } from "lucide-react";
+import { useToast } from "../ToastProvider";
+import {
+  inputClass,
+  SettingsCard,
+  SettingsField,
+  SettingsSaveButton,
+} from "./SettingsControls";
+
+type FooterProps = {
   formData: any;
   handleUpdate: (field: string, value: any) => void;
   pushToQueue: (label: string, key?: string, value?: any) => void;
-}
+};
 
-export default function FooterSection({ formData, handleUpdate, pushToQueue }: FooterSectionProps) {
+const BADGE_COLORS = [
+  "text-slate-500",
+  "text-sky-500",
+  "text-cyan-400",
+  "text-teal-400",
+  "text-indigo-500",
+  "text-purple-500",
+  "text-pink-500",
+  "text-rose-400",
+  "text-amber-500",
+];
+
+const STAR_PATH =
+  '<path d="M12 2.5l2.85 6.05 6.65.92-4.82 4.56 1.17 6.57L12 17.5l-5.85 3.1 1.17-6.57-4.82-4.56 6.65-.92z"/>';
+
+export default function FooterSection({ formData, handleUpdate, pushToQueue }: FooterProps) {
   const { showToast } = useToast();
+  const data = formData || {};
+  const buildDate: string = data.buildDate || "2026-03-23T00:00:00";
+  const icp = data.icpConfig || { name: "", link: "" };
+  const badges: any[] = Array.isArray(data.footerBadges) ? data.footerBadges : [];
 
-  // 1. 初始化数据，如果 formData 还没加载到，提供默认回退
-  const buildDate = formData.buildDate || "2026-03-23T00:00:00";
-  const icpConfig = formData.icpConfig || { name: "", link: "" };
-  const footerBadges = formData.footerBadges || [];
+  const [badgeName, setBadgeName] = useState("");
+  const [badgeColor, setBadgeColor] = useState(BADGE_COLORS[4]);
 
-  // 用于新增徽章的临时状态
-  const [newBadgeName, setNewBadgeName] = useState("");
-  const [newBadgeColor, setNewBadgeColor] = useState("text-indigo-500");
-
-  const saveToQueue = () => {
-    pushToQueue('首页底部配置', 'footerConfig', {
+  const save = () => {
+    pushToQueue("首页底部配置", "footerConfig", {
       buildDate,
-      icpConfig,
-      footerBadges
+      icpConfig: icp,
+      footerBadges: badges,
     });
   };
 
-  const handleAddBadge = () => {
-    if (!newBadgeName.trim()) {
+  const addBadge = () => {
+    const name = badgeName.trim();
+    if (!name) {
       showToast("徽章名称不能为空", "warning");
       return;
     }
-    // 默认给一个通用的星星 SVG 图标
-    const newBadge = {
-      name: newBadgeName.trim(),
-      color: newBadgeColor,
-      svg: '<path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>'
-    };
-    handleUpdate('footerBadges', [...footerBadges, newBadge]);
-    setNewBadgeName("");
-    showToast("徽章添加成功！你可以稍后在源码中替换自定义SVG", "success");
+
+    handleUpdate("footerBadges", [
+      ...badges,
+      { name, color: badgeColor, svg: STAR_PATH },
+    ]);
+    setBadgeName("");
+    showToast("徽章已添加", "success");
   };
 
-  const handleRemoveBadge = (indexToRemove: number) => {
-    const updated = footerBadges.filter((_: any, i: number) => i !== indexToRemove);
-    handleUpdate('footerBadges', updated);
+  const removeBadge = (index: number) => {
+    handleUpdate(
+      "footerBadges",
+      badges.filter((_: any, current: number) => current !== index)
+    );
   };
-
-  // 预设一些好看的颜色给徽章用
-  const colorPresets = [
-    "text-slate-500", "text-sky-500", "text-cyan-400", "text-teal-400",
-    "text-indigo-500", "text-purple-500", "text-pink-500", "text-rose-400", "text-amber-500"
-  ];
 
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      className="flex flex-col gap-6"
+    <SettingsCard
+      title="首页底部设置"
+      description="建站时间、备案信息与页脚技术徽章"
+      icon={<BadgeCheck size={20} className="text-indigo-400" />}
+      action={<SettingsSaveButton onClick={save}>保存修改</SettingsSaveButton>}
     >
-      <div className="bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl border border-white/50 dark:border-slate-800/50 rounded-[40px] p-8 shadow-xl">
-        <div className="flex justify-between items-center mb-8 border-b border-white/30 dark:border-slate-700/50 pb-6">
-          <div>
-            <h2 className="text-2xl font-black text-slate-800 dark:text-white flex items-center gap-2">
-              <LayoutTemplate className="text-indigo-500" /> 首页底部设置
-            </h2>
-            <p className="text-slate-500 text-sm mt-1 font-bold">定义仪表盘的数据来源与网站底线保障</p>
-          </div>
-          <button
-            onClick={saveToQueue}
-            className="px-6 py-3 bg-indigo-500 text-white rounded-2xl font-black text-sm shadow-lg shadow-indigo-500/30 flex items-center gap-2 hover:bg-indigo-600 transition-colors"
-          >
-            <Save size={16} /> 保存修改
-          </button>
-        </div>
-
-        <div className="space-y-8">
-
-          {/* 1. 建站时间选择 */}
-          <div>
-            <label className="text-xs font-black uppercase text-slate-400 tracking-widest mb-2 flex items-center gap-2">
-              <Calendar size={14} className="text-indigo-400" /> 建站时间 (起始原点)
-            </label>
+      <div className="space-y-7">
+        <SettingsField label="建站时间" hint="首页运行时间以这个时间点为起点计算。">
+          <div className="relative">
+            <CalendarDays
+              size={16}
+              className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+            />
             <input
               type="datetime-local"
-              value={buildDate.slice(0, 16)} // datetime-local 需要 YYYY-MM-DDThh:mm 格式
-              onChange={(e) => handleUpdate('buildDate', `${e.target.value}:00`)}
-              className="w-full bg-white/60 dark:bg-slate-800/60 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-bold text-slate-700 dark:text-slate-200 border border-white/40 dark:border-slate-700/50"
+              value={buildDate.slice(0, 16)}
+              onChange={(event) => handleUpdate("buildDate", `${event.target.value}:00`)}
+              className={`${inputClass} pl-11`}
             />
-            <p className="text-[10px] text-slate-400 mt-2 ml-1">首页仪表盘的“运行时间”将根据此时间点自动推算。</p>
           </div>
+        </SettingsField>
 
-          <hr className="border-white/20 dark:border-slate-700/30" />
-
-          {/* 2. 备案信息 */}
-          <div>
-            <h3 className="text-sm font-black text-slate-700 dark:text-slate-300 mb-4 flex items-center gap-2">
-              <Shield size={16} className="text-emerald-500" /> ICP 备案信息
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-[10px] font-bold uppercase text-slate-400 tracking-widest mb-1.5 block">备案号 / 显示名称</label>
-                <input
-                  type="text"
-                  value={icpConfig.name}
-                  onChange={(e) => handleUpdate('icpConfig', { ...icpConfig, name: e.target.value })}
-                  className="w-full bg-white/60 dark:bg-slate-800/60 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-medium text-slate-700 dark:text-slate-200 border border-white/40 dark:border-slate-700/50"
-                  placeholder="例如: 萌ICP备 20260240号"
-                />
-              </div>
-              <div>
-                <label className="text-[10px] font-bold uppercase text-slate-400 tracking-widest mb-1.5 block flex items-center gap-1"><Link2 size={12}/> 跳转链接</label>
-                <input
-                  type="text"
-                  value={icpConfig.link}
-                  onChange={(e) => handleUpdate('icpConfig', { ...icpConfig, link: e.target.value })}
-                  className="w-full bg-white/60 dark:bg-slate-800/60 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-medium text-slate-700 dark:text-slate-200 border border-white/40 dark:border-slate-700/50"
-                  placeholder="例如: https://icp.gov.moe/..."
-                />
-              </div>
-            </div>
-          </div>
-
-          <hr className="border-white/20 dark:border-slate-700/30" />
-
-          {/* 3. 技术栈徽章管理 */}
-          <div>
-            <h3 className="text-sm font-black text-slate-700 dark:text-slate-300 mb-4 flex items-center gap-2">
-              <LayoutTemplate size={16} className="text-cyan-500" /> 技术栈徽章管理
-            </h3>
-
-            {/* 已有徽章列表 */}
-            <div className="flex flex-wrap gap-3 mb-6">
-              <AnimatePresence>
-                {footerBadges.map((badge: any, index: number) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    className="group relative px-3 py-1.5 bg-white/50 dark:bg-slate-700/50 rounded-lg shadow-sm border border-white/40 dark:border-slate-600 flex items-center gap-1.5"
-                  >
-                    <svg className={`w-3.5 h-3.5 ${badge.color}`} fill="currentColor" viewBox="0 0 24 24" dangerouslySetInnerHTML={{ __html: badge.svg }} />
-                    <span className="text-xs font-bold text-slate-600 dark:text-slate-300">{badge.name}</span>
-
-                    {/* 悬浮删除按钮 */}
-                    <button
-                      onClick={() => handleRemoveBadge(index)}
-                      className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 shadow-md"
-                    >
-                      <Trash2 size={10} />
-                    </button>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-              {footerBadges.length === 0 && <span className="text-xs text-slate-400">目前没有配置任何徽章哦</span>}
-            </div>
-
-            {/* 新增徽章面板 */}
-            <div className="bg-slate-50/50 dark:bg-slate-950/30 rounded-2xl p-4 border border-slate-200/50 dark:border-slate-800/50 flex flex-col md:flex-row items-center gap-3">
+        <div className="grid gap-4 md:grid-cols-2">
+          <SettingsField label="备案显示名称">
+            <div className="relative">
+              <Shield
+                size={16}
+                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-emerald-400"
+              />
               <input
                 type="text"
-                value={newBadgeName}
-                onChange={(e) => setNewBadgeName(e.target.value)}
-                placeholder="新徽章名称 (如: React)"
-                className="flex-1 bg-white dark:bg-slate-800 rounded-lg px-3 py-2 text-sm outline-none border border-slate-200 dark:border-slate-700"
+                value={icp.name}
+                onChange={(event) => handleUpdate("icpConfig", { ...icp, name: event.target.value })}
+                className={`${inputClass} pl-11`}
+                placeholder="例如：豫ICP备 2024102131号"
               />
-
-              <div className="flex items-center gap-2 px-2 border-l border-slate-200 dark:border-slate-700">
-                {colorPresets.map(color => (
-                  <button
-                    key={color}
-                    onClick={() => setNewBadgeColor(color)}
-                    className={`w-5 h-5 rounded-full transition-transform ${newBadgeColor === color ? 'scale-125 ring-2 ring-offset-1 ring-slate-300' : 'hover:scale-110'}`}
-                  >
-                    {/* 使用 Tailwind 类名推导个近似底色展示 */}
-                    <div className={`w-full h-full rounded-full bg-current ${color}`}></div>
-                  </button>
-                ))}
-              </div>
-
-              <button
-                onClick={handleAddBadge}
-                className="ml-2 px-4 py-2 bg-cyan-500 text-white rounded-lg text-xs font-bold flex items-center gap-1 hover:bg-cyan-600 transition-colors shadow-sm"
-              >
-                <Plus size={14} /> 添加
-              </button>
             </div>
+          </SettingsField>
 
+          <SettingsField label="备案跳转链接">
+            <div className="relative">
+              <Link2
+                size={16}
+                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+              <input
+                type="url"
+                value={icp.link}
+                onChange={(event) => handleUpdate("icpConfig", { ...icp, link: event.target.value })}
+                className={`${inputClass} pl-11`}
+                placeholder="https://..."
+              />
+            </div>
+          </SettingsField>
+        </div>
+
+        <div className="rounded-2xl border border-slate-200/70 bg-slate-50/60 p-5 dark:border-slate-700/50 dark:bg-slate-950/30">
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-sm font-black text-slate-700 dark:text-slate-200">技术徽章</h3>
+              <p className="mt-1 text-[10px] text-slate-400">用于页脚展示技术栈，可删除或新增。</p>
+            </div>
+            <span className="rounded-full bg-white/70 px-2.5 py-1 text-[10px] font-black text-slate-400 dark:bg-white/5">
+              {badges.length}
+            </span>
           </div>
 
+          <div className="mb-5 flex flex-wrap gap-2">
+            {badges.map((badge, index) => (
+              <div
+                key={`${badge.name}-${index}`}
+                className="group flex items-center gap-2 rounded-lg border border-slate-200/80 bg-white/70 px-3 py-2 shadow-sm dark:border-slate-700/60 dark:bg-slate-800/60"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  className={`h-3.5 w-3.5 ${badge.color || "text-slate-500"}`}
+                  fill="currentColor"
+                  dangerouslySetInnerHTML={{ __html: badge.svg || STAR_PATH }}
+                />
+                <span className="text-xs font-bold text-slate-600 dark:text-slate-300">{badge.name}</span>
+                <button
+                  type="button"
+                  onClick={() => removeBadge(index)}
+                  className="ml-1 rounded-full p-1 text-slate-400 opacity-60 transition hover:bg-rose-500/10 hover:text-rose-500 group-hover:opacity-100"
+                  aria-label={`删除 ${badge.name}`}
+                >
+                  <Trash2 size={12} />
+                </button>
+              </div>
+            ))}
+            {badges.length === 0 && (
+              <span className="text-xs text-slate-400">暂无页脚徽章</span>
+            )}
+          </div>
+
+          <div className="flex flex-col gap-3 rounded-xl border border-slate-200/70 bg-white/55 p-3 md:flex-row md:items-center dark:border-slate-700/50 dark:bg-slate-900/40">
+            <input
+              type="text"
+              value={badgeName}
+              onChange={(event) => setBadgeName(event.target.value)}
+              placeholder="新徽章名称，例如 React"
+              className={`${inputClass} flex-1 py-2.5`}
+            />
+            <div className="flex items-center gap-1.5 px-1">
+              {BADGE_COLORS.map((color) => (
+                <button
+                  key={color}
+                  type="button"
+                  aria-label={`选择颜色 ${color}`}
+                  onClick={() => setBadgeColor(color)}
+                  className={`h-5 w-5 rounded-full bg-current ${color} ${
+                    badgeColor === color ? "ring-2 ring-slate-400 ring-offset-1" : "opacity-70"
+                  }`}
+                />
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={addBadge}
+              className="flex items-center justify-center gap-1.5 rounded-xl bg-cyan-500 px-4 py-2.5 text-xs font-black text-white shadow-sm transition hover:bg-cyan-600"
+            >
+              <Plus size={14} /> 添加
+            </button>
+          </div>
         </div>
       </div>
-    </motion.section>
+    </SettingsCard>
   );
 }
