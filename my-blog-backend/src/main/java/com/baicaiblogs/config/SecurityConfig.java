@@ -67,6 +67,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll()
                 // 管理接口允许 ADMIN 与 SUPER_ADMIN
                 .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
+                // 内部存档入口仅管理员可用；具体授权由 ArchiveService 校验
+                .requestMatchers("/api/internal/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                 // 用户上传/相册管理接口需要登录
                 .requestMatchers("/api/user/**").authenticated()
                 .anyRequest().authenticated()

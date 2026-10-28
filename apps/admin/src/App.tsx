@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, NavLink, Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import {
   Activity,
+  Archive,
   ArrowUpRight,
   BookOpen,
   Database,
@@ -46,6 +47,7 @@ import PrivacyAuditPage from "./pages/PrivacyAuditPage";
 import TagsPage from "./pages/TagsPage";
 import MusicAdminPage from "./pages/MusicAdminPage";
 import SuggestionsAdminPage from "./pages/SuggestionsAdminPage";
+import ArchivesPage from "./pages/ArchivesPage";
 
 type Any = Record<string, any>;
 
@@ -147,6 +149,7 @@ function Login() {
 const NAV_ITEMS = [
   { to: "/", label: "概览", icon: LayoutDashboard, end: true },
   { to: "/posts", label: "笔记", icon: BookOpen },
+  { to: "/archives", label: "内部存档", icon: Archive },
   { to: "/articles", label: "文章", icon: PenLine },
   { to: "/projects", label: "项目", icon: FolderKanban },
   { to: "/gallery", label: "影像", icon: Images },
@@ -824,6 +827,7 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<RequireAuth><Shell><Dashboard /></Shell></RequireAuth>} />
             <Route path="/posts" element={<RequireAuth><Shell><Posts /></Shell></RequireAuth>} />
+            <Route path="/archives" element={<RequireAuth><Shell><ArchivesPage /></Shell></RequireAuth>} />
             <Route path="/articles" element={<RequireAuth><Shell><ArticlesAdminPage /></Shell></RequireAuth>} />
             <Route path="/projects" element={<RequireAuth><Shell><Projects /></Shell></RequireAuth>} />
             <Route path="/timeline" element={<RequireAuth><Shell><TimelinePreview /></Shell></RequireAuth>} />

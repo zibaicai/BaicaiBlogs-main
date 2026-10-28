@@ -240,3 +240,24 @@ html[data-admin-preset="violet"] {
   outline: none;
 }
 .admin-input:focus { border-color: rgba(129, 140, 248, 0.6); }
+
+
+/* Internal archive reader */
+.archive-reader { font-size: 14px; line-height: 1.85; overflow-wrap: anywhere; }
+.archive-reader h1, .archive-reader h2, .archive-reader h3, .archive-reader h4 { margin: 1.6em 0 .65em; font-weight: 900; line-height: 1.25; color: #0f172a; }
+.archive-reader h1 { font-size: 1.8em; }
+.archive-reader h2 { font-size: 1.45em; }
+.archive-reader h3 { font-size: 1.2em; }
+.archive-reader p, .archive-reader li { margin: .7em 0; }
+.archive-reader ul { list-style: disc; padding-left: 1.4em; }
+.archive-reader ol { list-style: decimal; padding-left: 1.4em; }
+.archive-reader blockquote { margin: 1.2em 0; border-left: 3px solid #6366f1; background: #eef2ff; padding: .7em 1em; color: #334155; }
+.archive-reader a { color: #4f46e5; text-decoration: underline; text-underline-offset: 2px; }
+.archive-reader img { display: block; max-width: 100%; height: auto; margin: 1.2em auto; border-radius: 10px; }
+.archive-reader pre { overflow-x: auto; margin: 1.2em 0; border-radius: 12px; background: #0f172a; padding: 1em; color: #e2e8f0; font-size: 12px; line-height: 1.7; }
+.archive-reader code { border-radius: 5px; background: #f1f5f9; padding: .15em .35em; color: #4338ca; font-size: .9em; }
+.archive-reader pre code { background: transparent; padding: 0; color: inherit; }
+.archive-reader table { width: 100%; margin: 1.2em 0; border-collapse: collapse; font-size: 12px; }
+.archive-reader th, .archive-reader td { border: 1px solid #e2e8f0; padding: .5em .7em; text-align: left; }
+.archive-reader th { background: #f8fafc; font-weight: 800; }
+.archive-reader hr { margin: 1.6em 0; border: 0; border-top: 1px solid #e2e8f0; }
