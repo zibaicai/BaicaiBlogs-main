@@ -54,12 +54,16 @@ function buildFlat(config: any) {
   const background = config.background || {};
   const misc = config.misc || {};
   const aiConfig = config.aiConfig || {};
+  const normalizedAi = {
+    provider: aiConfig.provider || "gemini",
+    ...aiConfig,
+  };
   return {
     ...siteInfo,
     ...background,
     ...misc,
     ...aiConfig,
-    geminiConfig: { ...aiConfig },
+    aiConfig: normalizedAi,
     danmakuList: config.danmakuList || [],
     social: { ...(siteInfo.social || {}) },
     icpConfig: { ...(siteInfo.icpConfig || {}) },
@@ -109,8 +113,9 @@ export default function SettingsPage() {
         const background = pick(formData, BACKGROUND_KEYS);
         const misc = pick(formData, MISC_KEYS);
         const aiConfig =
+          formData.aiConfig ||
           formData.geminiConfig ||
-          pick(formData, ["modelId", "systemPrompt", "maxOutputTokens", "temperature"] as const);
+          pick(formData, ["provider", "modelId", "systemPrompt", "maxOutputTokens", "temperature"] as const);
 
         const updates: Array<{ key: string; value: string; description: string }> = [
           { key: "site_info", value: JSON.stringify(siteInfo), description: "站点基本信息配置" },

@@ -40,6 +40,7 @@ export interface BackgroundConfig {
 }
 
 export interface AiConfig {
+  provider: "gemini" | "deepseek";
   modelId: string;
   systemPrompt: string;
   maxOutputTokens: number;
@@ -129,6 +130,7 @@ const DEFAULT_DANMAKU: string[] = [
 ];
 
 const DEFAULT_AI_CONFIG: AiConfig = {
+  provider: "gemini",
   modelId: "gemini-2.5-flash-lite",
   systemPrompt:
     "你是「云端小屋」的鲸鱼娘助手小鲸。你住在网站右下角，性格温柔、清醒、偶尔有一点俏皮的冷幽默。你的主人是一个写代码、拍照片、做项目的人。你说话的特点是：1.必须简短，每次最多一两句话。2.偶尔用海洋、潮汐、浮力相关的比喻，但不要每句都用。3.会提醒主人保存、休息、喝水，也会认真接住主人的情绪。4.回复字数最多不超过100字。5.不承认自己是AI模型，你就是一只住在网页里的鲸鱼娘。6.不要使用猫、喵、小鱼干之类的猫娘设定。",

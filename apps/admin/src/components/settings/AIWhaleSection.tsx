@@ -10,6 +10,7 @@ import {
 } from "./SettingsControls";
 
 const DEFAULT_CONFIG = {
+  provider: "gemini" as "gemini" | "deepseek",
   modelId: "gemini-2.5-flash-lite",
   systemPrompt: "",
   maxOutputTokens: 150,
@@ -17,7 +18,10 @@ const DEFAULT_CONFIG = {
 };
 
 export default function AIWhaleSection({ formData, handleUpdate, pushToQueue }: any) {
-  const config = { ...DEFAULT_CONFIG, ...(formData?.geminiConfig || {}) };
+  const config = {
+    ...DEFAULT_CONFIG,
+    ...(formData?.aiConfig || formData?.geminiConfig || {}),
+  };
   const [promptText, setPromptText] = useState("");
 
   useEffect(() => {
@@ -29,7 +33,7 @@ export default function AIWhaleSection({ formData, handleUpdate, pushToQueue }: 
   }, []);
 
   const update = (key: keyof typeof DEFAULT_CONFIG, value: string | number) => {
-    handleUpdate("geminiConfig", { ...config, [key]: value });
+    handleUpdate("aiConfig", { ...config, [key]: value });
   };
 
   const updatePrompt = (value: string) => {
@@ -49,6 +53,17 @@ export default function AIWhaleSection({ formData, handleUpdate, pushToQueue }: 
       }
     >
       <div className="space-y-6">
+        <SettingsField label="服务提供方" hint="切换提供方后，模型 ID 需要填写对应平台的模型名。">
+          <select
+            value={config.provider}
+            onChange={(event) => update("provider", event.target.value as "gemini" | "deepseek")}
+            className={inputClass}
+          >
+            <option value="gemini">Gemini</option>
+            <option value="deepseek">DeepSeek</option>
+          </select>
+        </SettingsField>
+
         <SettingsField label="模型 ID" hint="建议使用轻量模型，响应速度更快。">
           <div className="relative">
             <Cpu
