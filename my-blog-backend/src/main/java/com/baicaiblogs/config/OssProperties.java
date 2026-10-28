@@ -25,6 +25,11 @@ public class OssProperties {
     /** 存储目录前缀，例如 posts/（结尾带 /） */
     private String dir = "posts/";
 
+    /** 私有 Bucket，仅用于内部存档快照；为空时快照回退到数据库 */
+    private String archiveBucketName;
+    /** 私有存档目录前缀 */
+    private String archiveDir = "archive-snapshots/";
+
     /**
      * 检查 OSS 配置是否已填写（占位符未替换则跳过 OSS 上传）
      * 当 endpoint 或 bucket 仍为占位符时返回 false
@@ -40,5 +45,9 @@ public class OssProperties {
                 && !bucketName.contains("your-")
                 && publicUrlPrefix != null
                 && !publicUrlPrefix.contains("your-");
+    }
+
+    public boolean isArchiveConfigured() {
+        return isConfigured() && archiveBucketName != null && !archiveBucketName.isBlank();
     }
 }

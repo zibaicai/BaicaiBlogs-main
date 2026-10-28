@@ -55,6 +55,9 @@ public class ArchiveDocument {
     @Column(name = "raw_snapshot", columnDefinition = "LONGTEXT")
     private String rawSnapshot;
 
+    @Column(name = "raw_snapshot_key", length = 500)
+    private String rawSnapshotKey;
+
     @Column(name = "content_hash", nullable = false, length = 64)
     private String contentHash;
 

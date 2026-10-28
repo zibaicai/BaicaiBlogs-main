@@ -5,6 +5,7 @@ import com.baicaiblogs.entity.ArchiveDeleteRequest;
 import com.baicaiblogs.entity.ArchiveDocument;
 import com.baicaiblogs.entity.ArchiveGrant;
 import com.baicaiblogs.entity.User;
+import com.baicaiblogs.config.OssProperties;
 import com.baicaiblogs.repository.ArchiveAccessLogRepository;
 import com.baicaiblogs.repository.ArchiveDeleteRequestRepository;
 import com.baicaiblogs.repository.ArchiveDocumentRepository;
@@ -41,6 +42,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Service
@@ -76,6 +78,8 @@ public class ArchiveService {
     private final ArchiveAccessLogRepository accessLogRepository;
     private final ArchiveDeleteRequestRepository deleteRequestRepository;
     private final UserRepository userRepository;
+    private final OssService ossService;
+    private final OssProperties ossProperties;
 
     @Transactional(readOnly = true)
     public List<Map<String, Object>> list(User actor) {
@@ -163,6 +167,9 @@ public class ArchiveService {
         requireSuper(actor);
         ArchiveDocument doc = documentRepository.findById(archiveId)
                 .orElseThrow(() -> new RuntimeException("存档不存在"));
+        if (doc.getRawSnapshotKey() != null && !doc.getRawSnapshotKey().isBlank()) {
+            return new String(ossService.getArchiveSnapshot(doc.getRawSnapshotKey()), StandardCharsets.UTF_8);
+        }
         if (doc.getRawSnapshot() == null || doc.getRawSnapshot().isBlank()) {
             throw new RuntimeException("该存档没有原始快照");
         }
@@ -221,6 +228,19 @@ public class ArchiveService {
             return toMap(existing, true);
         }
 
+        String rawSnapshotKey = null;
+        String rawSnapshot = fetched.rawSnapshot();
+        if (ossProperties.isArchiveConfigured()) {
+            try {
+                rawSnapshotKey = ossService.uploadArchiveSnapshot(
+                        "snapshot-" + UUID.randomUUID() + ".html",
+                        fetched.rawSnapshot().getBytes(StandardCharsets.UTF_8));
+                rawSnapshot = null;
+            } catch (Exception ignored) {
+                // Private bucket failure must not block the archive; keep a DB fallback.
+            }
+        }
+
         ArchiveDocument doc = ArchiveDocument.builder()
                 .sourceUrl(fetched.sourceUrl())
                 .canonicalUrl(fetched.canonicalUrl())
@@ -232,7 +252,8 @@ public class ArchiveService {
                 .importedAt(LocalDateTime.now())
                 .importedBy(actor.getId())
                 .contentHtml(fetched.html())
-                .rawSnapshot(fetched.rawSnapshot())
+                .rawSnapshot(rawSnapshot)
+                .rawSnapshotKey(rawSnapshotKey)
                 .contentHash(fetched.contentHash())
                 .copyrightNote("版权归原作者所有，仅限内部存档查阅，请勿外传。")
                 .status("ACTIVE")
@@ -285,7 +306,11 @@ public class ArchiveService {
     @Transactional
     public void delete(User actor, Long archiveId) {
         requireSuper(actor);
-        documentRepository.findById(archiveId).orElseThrow(() -> new RuntimeException("存档不存在"));
+        ArchiveDocument doc = documentRepository.findById(archiveId)
+                .orElseThrow(() -> new RuntimeException("存档不存在"));
+        if (doc.getRawSnapshotKey() != null) {
+            ossService.deleteArchiveSnapshot(doc.getRawSnapshotKey());
+        }
         grantRepository.deleteByArchiveId(archiveId);
         accessLogRepository.deleteByArchiveId(archiveId);
         deleteRequestRepository.deleteByArchiveId(archiveId);

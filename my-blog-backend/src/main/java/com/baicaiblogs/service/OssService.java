@@ -356,6 +356,52 @@ public class OssService {
         }
     }
 
+    /** 上传内部存档原始快照到私有 Bucket；返回对象 key。 */
+    public String uploadArchiveSnapshot(String fileKey, byte[] bytes) {
+        assertArchiveConfigured();
+        String objectKey = (ossProperties.getArchiveDir() + fileKey).replaceAll("^/+", "");
+        OSS ossClient = buildClient();
+        try {
+            ObjectMetadata meta = new ObjectMetadata();
+            meta.setContentLength(bytes.length);
+            meta.setContentType("text/plain; charset=UTF-8");
+            ossClient.putObject(ossProperties.getArchiveBucketName(), objectKey,
+                    new ByteArrayInputStream(bytes), meta);
+            return objectKey;
+        } catch (Exception e) {
+            throw new RuntimeException("存档快照上传失败: " + e.getMessage(), e);
+        } finally {
+            ossClient.shutdown();
+        }
+    }
+
+    /** 读取私有 Bucket 中的存档快照。 */
+    public byte[] getArchiveSnapshot(String objectKey) {
+        assertArchiveConfigured();
+        OSS ossClient = buildClient();
+        try (OSSObject object = ossClient.getObject(ossProperties.getArchiveBucketName(), objectKey);
+             InputStream in = object.getObjectContent()) {
+            return in.readAllBytes();
+        } catch (Exception e) {
+            throw new RuntimeException("存档快照读取失败: " + e.getMessage(), e);
+        } finally {
+            ossClient.shutdown();
+        }
+    }
+
+    /** 删除私有 Bucket 中的存档快照。 */
+    public void deleteArchiveSnapshot(String objectKey) {
+        if (objectKey == null || objectKey.isBlank() || !ossProperties.isArchiveConfigured()) return;
+        OSS ossClient = buildClient();
+        try {
+            ossClient.deleteObject(ossProperties.getArchiveBucketName(), objectKey);
+        } catch (Exception e) {
+            log.warn("[OssService] 存档快照删除失败: {}", objectKey, e);
+        } finally {
+            ossClient.shutdown();
+        }
+    }
+
     /** 读取对象全部字节，供后端加水印。 */
     public byte[] getObjectBytes(String objectKey) {
         try (OSSObject object = getObject(objectKey);
@@ -400,6 +446,12 @@ public class OssService {
         if (!ossProperties.isConfigured()) {
             throw new IllegalStateException(
                     "阿里云 OSS 未配置，请在 application.yml 的 app.oss 节填入 endpoint/accessKey/bucket/publicUrlPrefix 等信息后重启服务");
+        }
+    }
+
+    private void assertArchiveConfigured() {
+        if (!ossProperties.isArchiveConfigured()) {
+            throw new IllegalStateException("内部存档私有 Bucket 未配置");
         }
     }
 
