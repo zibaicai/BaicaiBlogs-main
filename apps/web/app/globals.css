@@ -5074,7 +5074,7 @@ html:not(.dark) .hv-empty {
   display: grid;
   grid-template-columns: minmax(180px, 1fr) auto minmax(220px, 1.2fr);
   align-items: center;
-  gap: 16px;
+  gap: 4px;
   width: min(1180px, 100%);
   min-height: 68px;
   margin: 0 auto;
