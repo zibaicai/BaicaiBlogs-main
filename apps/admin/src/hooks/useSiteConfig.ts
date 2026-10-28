@@ -144,7 +144,7 @@ const DEFAULT_MISC: MiscConfig = {
   picBedName: "图床",
   picBedUrl: "",
   picBedToken: "",
-  cloudMusicIds: ["1809646618", "3361076230", "1859390262"],
+  cloudMusicIds: [],
   friendLinkApplyFormat:
     "名称：YeLuo / 云端小屋\n简介：写代码，也拍照片。把项目、音乐和日常里值得留下的片段，收进同一片海。\n链接：https://www.zibaicai.cn\n头像：https://www.zibaicai.cn/avatar.jpg",
   photoWallImage: "https://www.zibaicai.cn/bg-4.webp",

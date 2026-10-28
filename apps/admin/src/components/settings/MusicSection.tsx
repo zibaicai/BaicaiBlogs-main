@@ -87,7 +87,7 @@ export default function MusicSection({ formData, handleUpdate, pushToQueue }: an
           <div className="flex gap-2">
             <input
               type="text"
-              placeholder="例如 1809646618"
+              placeholder="输入歌曲 ID"
               value={newId}
               onChange={(e) => setNewId(e.target.value)}
               onKeyDown={(e) => {

@@ -63,17 +63,17 @@ public class DataInitializer {
             long projectCount = projectRepository.findByUserIdOrderBySortOrderAsc(adminId).size();
             if (projectCount == 0) {
                 Project sample = Project.builder()
-                        .projectId("proj_1775049332705")
+                        .projectId("proj_tide_archive")
                         .userId(adminId)
-                        .name("Computational Chemistry Tool")
-                        .githubUrl("https://github.com/heiehiehi/Computational_Chemistry_Tool")
-                        .description("该工具本作者使用在Win下的WSL2平台，系统为Ubuntu22，个人使用请依据自己数据进行修改（这些工具只是整合了一些流程）")
-                        .icon("🚀")
-                        .tags("[\"Gromacs\",\"RMSF\"]")
+                        .name("Tide Archive")
+                        .githubUrl("")
+                        .description("把文章、影像、音乐与项目收进同一片海的个人档案站。")
+                        .icon("🌊")
+                        .tags("[\"Next.js\",\"Spring Boot\",\"Archive\"]")
                         .sortOrder(0)
                         .build();
                 projectRepository.save(sample);
-                log.info("[DataInitializer] 已为 admin 初始化示例项目 Computational Chemistry Tool");
+                log.info("[DataInitializer] 已为 admin 初始化示例项目 Tide Archive");
             }
 
             // ===== 4. 迁移旧的 Post 数据（userId 为 null 的补全为 admin） =====
