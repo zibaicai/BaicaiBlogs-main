@@ -126,6 +126,17 @@ public class ArchiveService {
         return toMap(fetch(rawUrl), true);
     }
 
+    @Transactional(readOnly = true)
+    public String rawSnapshot(User actor, Long archiveId) {
+        requireSuper(actor);
+        ArchiveDocument doc = documentRepository.findById(archiveId)
+                .orElseThrow(() -> new RuntimeException("存档不存在"));
+        if (doc.getRawSnapshot() == null || doc.getRawSnapshot().isBlank()) {
+            throw new RuntimeException("该存档没有原始快照");
+        }
+        return doc.getRawSnapshot();
+    }
+
     public ArchiveImage fetchImage(User actor, Long archiveId, String rawUrl, boolean preview) {
         if (preview) {
             requireSuper(actor);
@@ -188,6 +199,7 @@ public class ArchiveService {
                 .importedAt(LocalDateTime.now())
                 .importedBy(actor.getId())
                 .contentHtml(fetched.html())
+                .rawSnapshot(fetched.rawSnapshot())
                 .contentHash(fetched.contentHash())
                 .copyrightNote("版权归原作者所有，仅限内部存档查阅，请勿外传。")
                 .status("ACTIVE")
@@ -350,6 +362,7 @@ public class ArchiveService {
             if (bytes.length > MAX_HTML_BYTES) throw new RuntimeException("页面超过 2MB 限制");
 
             Document document = Jsoup.parse(new String(bytes, StandardCharsets.UTF_8), current.toString());
+            String rawSnapshot = document.outerHtml();
             String title = meta(document, "meta[property=og:title]", "content");
             if (title.isBlank()) title = document.title();
             if (title.isBlank()) title = current.getHost();
@@ -377,7 +390,8 @@ public class ArchiveService {
                     published,
                     sha256(sourceUrl),
                     sha256(cleanHtml),
-                    cleanHtml
+                    cleanHtml,
+                    rawSnapshot
             );
         } catch (RuntimeException e) {
             throw e;
@@ -480,6 +494,7 @@ public class ArchiveService {
             String publishedAt,
             String sourceUrlHash,
             String contentHash,
-            String html
+            String html,
+            String rawSnapshot
     ) {}
 }

@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.StandardCharsets;
+
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +36,21 @@ public class InternalArchiveController {
             return ApiResponse.success(archiveService.get(currentUser(), id));
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}/snapshot")
+    public ResponseEntity<byte[]> snapshot(@PathVariable Long id) {
+        try {
+            String snapshot = archiveService.rawSnapshot(currentUser(), id);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.TEXT_PLAIN)
+                    .header("Content-Disposition", "attachment; filename=archive-" + id + ".html")
+                    .header("X-Content-Type-Options", "nosniff")
+                    .header("Cache-Control", "private, no-store")
+                    .body(snapshot.getBytes(StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            return ResponseEntity.status(403).build();
         }
     }
 

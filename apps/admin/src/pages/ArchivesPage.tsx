@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import DOMPurify from "dompurify";
-import { Archive, ExternalLink, Loader2, Lock, Plus, ShieldCheck, Trash2, UserRound, X } from "lucide-react";
+import { Archive, Download, ExternalLink, Loader2, Lock, Plus, ShieldCheck, Trash2, UserRound, X } from "lucide-react";
 import { getAdminRole, getToken } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
 import { Input } from "../components/ui/Input";
@@ -196,6 +196,26 @@ export default function ArchivesPage() {
     }
   };
 
+  const downloadSnapshot = async () => {
+    if (!selected) return;
+    try {
+      const token = getToken();
+      const res = await fetch(`/api/internal/archives/${selected.id}/snapshot`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (!res.ok) throw new Error("快照下载失败");
+      const blob = await res.blob();
+      const href = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = href;
+      link.download = `archive-${selected.id}.html`;
+      link.click();
+      URL.revokeObjectURL(href);
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "快照下载失败", "error");
+    }
+  };
+
   const safeContent = useMemo(
     () => cleanHtml(selected?.contentHtml, selected ? `/api/internal/archives/${selected.id}/image` : ""),
     [selected?.contentHtml, selected?.id]
@@ -300,6 +320,11 @@ export default function ArchivesPage() {
                     <a href={selected.sourceUrl} target="_blank" rel="noopener noreferrer nofollow" className="inline-flex items-center gap-1 rounded-xl border border-white/10 px-3 py-2 text-[10px] font-bold text-slate-300 hover:bg-white/5">
                       <ExternalLink size={12} /> 原文
                     </a>
+                    {superAdmin && (
+                      <button type="button" onClick={() => void downloadSnapshot()} className="inline-flex items-center gap-1 rounded-xl border border-white/10 px-3 py-2 text-[10px] font-bold text-slate-300 hover:bg-white/5">
+                        <Download size={12} /> 原始快照
+                      </button>
+                    )}
                     {superAdmin && <Button variant="danger" onClick={() => void remove()}><Trash2 size={13} /> 删除</Button>}
                   </div>
                 </div>

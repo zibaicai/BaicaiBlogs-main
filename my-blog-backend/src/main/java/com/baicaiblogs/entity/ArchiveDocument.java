@@ -52,6 +52,9 @@ public class ArchiveDocument {
     @Column(name = "content_html", columnDefinition = "LONGTEXT", nullable = false)
     private String contentHtml;
 
+    @Column(name = "raw_snapshot", columnDefinition = "LONGTEXT")
+    private String rawSnapshot;
+
     @Column(name = "content_hash", nullable = false, length = 64)
     private String contentHash;
 
