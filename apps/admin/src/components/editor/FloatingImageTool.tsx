@@ -1,218 +1,272 @@
 "use client";
 
-import { useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useToast } from '../ToastProvider';
-import { api } from '../../lib/api';
+import { useRef, useState } from "react";
+import { Check, Clipboard, ImagePlus, Link2, LoaderCircle, UploadCloud, X } from "lucide-react";
+import { api } from "../../lib/api";
+import { useToast } from "../ToastProvider";
 
-interface FloatingImageToolProps {
+type ImageToolProps = {
   isOpen: boolean;
   onClose: () => void;
   onInsert: (url: string) => void;
-  mode?: 'insert' | 'cover';
-}
+  mode?: "insert" | "cover";
+};
 
-const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const ALLOWED = ["image/jpeg", "image/png", "image/webp"];
 
-async function compressForUpload(file: File): Promise<File> {
-  const lowerName = file.name.toLowerCase();
-  if (!ALLOWED_IMAGE_TYPES.includes(file.type) || lowerName.endsWith('.svg')) {
-    throw new Error('仅支持 JPEG / PNG / WebP 图片');
+async function prepareCover(file: File) {
+  if (!ALLOWED.includes(file.type)) {
+    throw new Error("仅支持 JPEG / PNG / WebP 图片");
   }
+
   const bitmap = await createImageBitmap(file);
   try {
-    const targetWidth = 1000;
-    const targetHeight = 563;
-    const targetRatio = targetWidth / targetHeight;
-    let cropWidth = bitmap.width;
-    let cropHeight = bitmap.height;
-    if (cropWidth / cropHeight > targetRatio) {
-      cropWidth = Math.round(cropHeight * targetRatio);
-    } else {
-      cropHeight = Math.round(cropWidth / targetRatio);
-    }
-    const cropX = Math.round((bitmap.width - cropWidth) / 2);
-    const cropY = Math.round((bitmap.height - cropHeight) / 2);
-    const canvas = document.createElement('canvas');
-    canvas.width = targetWidth;
-    canvas.height = targetHeight;
-    const context = canvas.getContext('2d');
-    if (!context) throw new Error('浏览器不支持图片压缩');
-    context.fillStyle = '#ffffff';
-    context.fillRect(0, 0, targetWidth, targetHeight);
-    context.drawImage(bitmap, cropX, cropY, cropWidth, cropHeight, 0, 0, targetWidth, targetHeight);
+    const width = 1000;
+    const height = 563;
+    const ratio = width / height;
+    let cropW = bitmap.width;
+    let cropH = bitmap.height;
+
+    if (cropW / cropH > ratio) cropW = Math.round(cropH * ratio);
+    else cropH = Math.round(cropW / ratio);
+
+    const sx = Math.round((bitmap.width - cropW) / 2);
+    const sy = Math.round((bitmap.height - cropH) / 2);
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("浏览器不支持图片压缩");
+
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, width, height);
+    context.drawImage(bitmap, sx, sy, cropW, cropH, 0, 0, width, height);
+
     const blob = await new Promise<Blob>((resolve, reject) => {
-      canvas.toBlob((value) => value ? resolve(value) : reject(new Error('图片压缩失败')), 'image/jpeg', 0.82);
+      canvas.toBlob(
+        (value) => (value ? resolve(value) : reject(new Error("图片压缩失败"))),
+        "image/jpeg",
+        0.82
+      );
     });
-    return new File([blob], `${file.name.replace(/\.[^.]+$/, '') || 'cover'}.jpg`, { type: 'image/jpeg' });
+
+    return new File([blob], `${file.name.replace(/\.[^.]+$/, "") || "cover"}.jpg`, {
+      type: "image/jpeg",
+    });
   } finally {
     bitmap.close();
   }
 }
 
-export default function FloatingImageTool({ isOpen, onClose, onInsert, mode = 'insert' }: FloatingImageToolProps) {
+export default function FloatingImageTool({
+  isOpen,
+  onClose,
+  onInsert,
+  mode = "insert",
+}: ImageToolProps) {
   const { showToast } = useToast();
-  const [activeTab, setActiveTab] = useState<'upload' | 'url'>('url');
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadedUrl, setUploadedUrl] = useState('');
-  const [externalUrl, setExternalUrl] = useState('');
-  const [isDragging, setIsDragging] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [tab, setTab] = useState<"upload" | "url">("url");
+  const [uploading, setUploading] = useState(false);
+  const [preview, setPreview] = useState("");
+  const [url, setUrl] = useState("");
+  const [dragging, setDragging] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // 新后端尚未提供图床代理上传接口，这里只做明确提示，避免请求不存在的本地 Python 服务。
-  const handleFileUpload = async (file: File) => {
-    setIsUploading(true);
+  const finish = (value: string) => {
+    onInsert(value);
+    setPreview("");
+    setUrl("");
+    if (mode === "cover") {
+      onClose();
+      showToast("封面已更新，请保存或发布", "success");
+    }
+  };
+
+  const upload = async (file: File) => {
+    setUploading(true);
     try {
-      const prepared = await compressForUpload(file);
-      const res = await api.uploadImage(prepared);
-      if (!res.success || !res.data) throw new Error(res.message || "上传失败");
-      if (mode === 'cover') {
-        onInsert(res.data);
-        setUploadedUrl('');
-        onClose();
-        showToast("封面已更新，请点击保存或发布", "success");
+      const prepared = mode === "cover" ? await prepareCover(file) : file;
+      const response = await api.uploadImage(prepared);
+      if (!response.success || !response.data) {
+        throw new Error(response.message || "上传失败");
+      }
+
+      if (mode === "cover") {
+        finish(response.data);
       } else {
-        setUploadedUrl(res.data);
+        setPreview(response.data);
         showToast("图片已上传", "success");
       }
     } catch (error) {
       showToast(error instanceof Error ? error.message : "上传失败", "warning");
     } finally {
-      setIsUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
+      setUploading(false);
+      if (inputRef.current) inputRef.current.value = "";
     }
   };
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) handleFileUpload(e.dataTransfer.files[0]);
-  };
-
-  // 🌟 新增：验证并确认外链图片
-  const handleConfirmExternalUrl = () => {
-    if (!externalUrl.trim()) {
-      showToast("请输入有效的图片 URL", "warning");
+  const confirmUrl = () => {
+    const value = url.trim();
+    if (!value) {
+      showToast("请输入图片 URL", "warning");
       return;
     }
-    if (!externalUrl.match(/\.(jpeg|jpg|gif|png|webp|svg|avif)$|^data:image/i)) {
-        showToast("这似乎不是一个标准的图片链接，但仍尝试预览", "warning");
+    if (!/\.(jpe?g|gif|png|webp|svg|avif)$|^data:image/i.test(value)) {
+      showToast("这似乎不是标准图片链接，仍会尝试使用", "warning");
     }
-    if (mode === 'cover') {
-      onInsert(externalUrl);
-      setExternalUrl('');
-      onClose();
-      showToast("封面已更新，请点击保存或发布", "success");
-      return;
+    if (mode === "cover") {
+      finish(value);
+    } else {
+      setPreview(value);
+      showToast("图片预览已生成", "success");
     }
-    setUploadedUrl(externalUrl);
-    showToast("预览已生成", "success");
   };
 
-  const copyUrlToClipboard = () => {
-    if (uploadedUrl) {
-      navigator.clipboard.writeText(uploadedUrl);
-      showToast("链接已复制到剪贴板！", "success");
-    }
-  };
+  if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          drag
-          dragMomentum={false}
-          dragElastic={0}
-          initial={{ opacity: 0, scale: 0.9, y: -20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          style={{ position: 'fixed', top: '15vh', right: '5vw', zIndex: 99999 }}
-          className="w-80 bg-white/40 dark:bg-slate-900/40 backdrop-blur-2xl rounded-[32px] shadow-2xl border border-white/50 dark:border-white/10 overflow-hidden flex flex-col cursor-move"
+    <div className="fixed right-[5vw] top-[15vh] z-[99999] w-80 overflow-hidden rounded-3xl border border-white/50 bg-white/85 shadow-2xl backdrop-blur-2xl dark:border-white/10 dark:bg-slate-900/90">
+      <header className="flex items-center justify-between border-b border-white/30 bg-white/50 px-5 py-4 dark:border-slate-700/50 dark:bg-slate-800/50">
+        <h3 className="flex items-center gap-2 text-sm font-black text-slate-800 dark:text-slate-100">
+          <ImagePlus size={17} className="text-emerald-500" />
+          {mode === "cover" ? "封面工作台" : "图片工作台"}
+        </h3>
+        <button
+          type="button"
+          onClick={onClose}
+          className="rounded-full p-1.5 text-slate-400 transition hover:bg-rose-500 hover:text-white"
+          aria-label="关闭图片工作台"
         >
-          {/* 标题栏 */}
-          <div className="flex justify-between items-center p-5 border-b border-white/30 dark:border-slate-700/50 bg-white/50 dark:bg-slate-800/50">
-            <h3 className="text-sm font-black text-slate-800 dark:text-slate-100 flex items-center gap-2">
-              <span className="text-emerald-500 text-lg">☁️</span> {mode === 'cover' ? '封面工作台' : '图床工作台'}
-            </h3>
-            <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/50 dark:bg-slate-700/50 flex items-center justify-center text-slate-500 hover:bg-red-500 hover:text-white transition-all cursor-pointer shadow-sm">✕</button>
-          </div>
+          <X size={16} />
+        </button>
+      </header>
 
-          <div className="p-6 cursor-default bg-white/20 dark:bg-slate-900/20">
-            {/* 🌟 模式切换 Tab */}
-            {!uploadedUrl && (
-              <div className="flex bg-slate-200/50 dark:bg-slate-800/50 p-1 rounded-2xl mb-5">
-                <button
-                  onClick={() => setActiveTab('upload')}
-                  className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all ${activeTab === 'upload' ? 'bg-white dark:bg-slate-700 text-emerald-500 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                >
-                  云端上传
-                </button>
-                <button
-                  onClick={() => setActiveTab('url')}
-                  className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all ${activeTab === 'url' ? 'bg-white dark:bg-slate-700 text-emerald-500 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                >
-                  外链插入
-                </button>
-              </div>
-            )}
-
-            {!uploadedUrl ? (
-              activeTab === 'upload' ? (
-                // 模式 A：上传拖拽区
-                <div
-                  onDragOver={e => { e.preventDefault(); setIsDragging(true); }}
-                  onDragLeave={() => setIsDragging(false)}
-                  onDrop={handleDrop}
-                  onClick={() => fileInputRef.current?.click()}
-                  className={`w-full h-36 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all shadow-inner ${isDragging ? 'border-emerald-500 bg-emerald-50/80 dark:bg-emerald-900/40' : 'border-slate-300/80 dark:border-slate-600/80 hover:bg-white/60 dark:hover:bg-slate-800/60'}`}
-                >
-                  <input type="file" ref={fileInputRef} onChange={e => e.target.files && handleFileUpload(e.target.files[0])} accept="image/jpeg,image/png,image/webp" className="hidden" />
-                  <div className="text-4xl drop-shadow-sm">{isUploading ? '⏳' : '📥'}</div>
-                  <div className="text-center">
-                    <p className="text-sm font-bold text-slate-700 dark:text-slate-300">{isUploading ? '正在极速上传...' : '点击或拖拽图片'}</p>
-                  </div>
-                </div>
-              ) : (
-                // 🌟 模式 B：外链输入区
-                <div className="w-full space-y-4">
-                  <div className="relative">
-                    <textarea
-                      value={externalUrl}
-                      onChange={(e) => setExternalUrl(e.target.value)}
-                      placeholder="粘贴图片链接 (http://...)"
-                      className="w-full h-24 p-4 text-xs font-medium bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none transition-all resize-none text-slate-700 dark:text-slate-200"
-                    />
-                  </div>
-                  <button
-                    onClick={handleConfirmExternalUrl}
-                    className="w-full py-3 bg-slate-800 dark:bg-white dark:text-slate-900 text-white rounded-xl text-xs font-black shadow-lg hover:opacity-90 transition-all active:scale-95"
-                  >
-                    确认图片链接
-                  </button>
-                </div>
-              )
-            ) : (
-              // 预览与确认插入区
-              <div className="flex flex-col gap-4">
-                <div className="w-full h-36 rounded-2xl overflow-hidden bg-white/50 dark:bg-slate-950/50 border border-white/40 dark:border-slate-700/50 flex items-center justify-center p-2 shadow-inner group relative">
-                  <img src={uploadedUrl} alt="preview" className="max-w-full max-h-full object-contain rounded-xl drop-shadow-md" />
-                  {/* 🌟 重新选择按钮 */}
-                  <button
-                    onClick={() => { setUploadedUrl(''); setExternalUrl(''); }}
-                    className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold"
-                  >
-                    重新选择
-                  </button>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <button onClick={copyUrlToClipboard} className="py-2.5 rounded-xl bg-white/60 dark:bg-slate-800/60 text-slate-700 dark:text-slate-200 font-bold text-xs hover:bg-white dark:hover:bg-slate-700 transition-all shadow-sm">🔗 复制链接</button>
-                  <button onClick={() => { onInsert(uploadedUrl); setUploadedUrl(''); setExternalUrl(''); }} className="py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black text-xs shadow-lg shadow-emerald-500/30 hover:from-emerald-600 hover:to-teal-600 transition-all active:scale-95">✨ {mode === 'cover' ? '设为封面' : '嵌入正文'}</button>
-                </div>
-              </div>
-            )}
+      <div className="p-5">
+        {!preview && (
+          <div className="mb-4 flex rounded-xl bg-slate-200/60 p-1 dark:bg-slate-800/60">
+            <button
+              type="button"
+              onClick={() => setTab("upload")}
+              className={`flex-1 rounded-lg py-2 text-xs font-bold transition ${
+                tab === "upload"
+                  ? "bg-white text-emerald-500 shadow-sm dark:bg-slate-700"
+                  : "text-slate-500"
+              }`}
+            >
+              云端上传
+            </button>
+            <button
+              type="button"
+              onClick={() => setTab("url")}
+              className={`flex-1 rounded-lg py-2 text-xs font-bold transition ${
+                tab === "url"
+                  ? "bg-white text-emerald-500 shadow-sm dark:bg-slate-700"
+                  : "text-slate-500"
+              }`}
+            >
+              外链插入
+            </button>
           </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+        )}
+
+        {preview ? (
+          <div className="space-y-4">
+            <div className="flex h-36 items-center justify-center overflow-hidden rounded-xl border border-white/40 bg-white/60 p-2 dark:border-slate-700/50 dark:bg-slate-950/40">
+              <img src={preview} alt="图片预览" className="max-h-full max-w-full rounded-lg object-contain" />
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  void navigator.clipboard.writeText(preview);
+                  showToast("链接已复制", "success");
+                }}
+                className="flex items-center justify-center gap-1.5 rounded-xl bg-white/70 py-2.5 text-xs font-bold text-slate-600 transition hover:bg-white dark:bg-slate-800/70 dark:text-slate-200"
+              >
+                <Clipboard size={13} /> 复制链接
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onInsert(preview);
+                  setPreview("");
+                  showToast(mode === "cover" ? "封面已更新" : "图片已插入", "success");
+                }}
+                className="flex items-center justify-center gap-1.5 rounded-xl bg-emerald-500 py-2.5 text-xs font-black text-white transition hover:bg-emerald-600"
+              >
+                <Check size={13} /> {mode === "cover" ? "设为封面" : "嵌入正文"}
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setPreview("");
+                setUrl("");
+              }}
+              className="w-full text-center text-[10px] font-bold text-slate-400 hover:text-indigo-500"
+            >
+              重新选择
+            </button>
+          </div>
+        ) : tab === "upload" ? (
+          <div
+            onDragOver={(event) => {
+              event.preventDefault();
+              setDragging(true);
+            }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={(event) => {
+              event.preventDefault();
+              setDragging(false);
+              const file = event.dataTransfer.files?.[0];
+              if (file) void upload(file);
+            }}
+            onClick={() => inputRef.current?.click()}
+            className={`flex h-36 cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed text-center transition ${
+              dragging
+                ? "border-emerald-500 bg-emerald-500/10"
+                : "border-slate-300 hover:border-emerald-400 dark:border-slate-600"
+            }`}
+          >
+            <input
+              ref={inputRef}
+              type="file"
+              accept={ALLOWED.join(",")}
+              className="hidden"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                if (file) void upload(file);
+              }}
+            />
+            {uploading ? <LoaderCircle size={28} className="animate-spin text-emerald-500" /> : <UploadCloud size={28} className="text-emerald-500" />}
+            <div>
+              <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
+                {uploading ? "正在上传…" : "点击或拖拽图片到这里"}
+              </p>
+              <p className="mt-1 text-[10px] text-slate-400">JPEG / PNG / WebP</p>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <div className="relative">
+              <Link2 className="pointer-events-none absolute left-3 top-3.5 text-slate-400" size={15} />
+              <textarea
+                value={url}
+                onChange={(event) => setUrl(event.target.value)}
+                placeholder="粘贴图片链接 https://..."
+                className="h-24 w-full resize-none rounded-xl border border-slate-200 bg-white/70 p-3 pl-9 text-xs text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500 dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-200"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={confirmUrl}
+              className="w-full rounded-xl bg-slate-800 py-2.5 text-xs font-black text-white transition hover:opacity-90 dark:bg-white dark:text-slate-900"
+            >
+              确认图片链接
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
