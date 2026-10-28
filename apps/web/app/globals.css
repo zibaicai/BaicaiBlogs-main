@@ -5165,7 +5165,7 @@ html:not(.dark) .hv-empty {
   min-height: 0;
   overflow-y: auto;
 }
-.music-main .music-pane-body .comment-section {
+.music-main .music-pane-body .comment-section,.music-main .music-comments-side .comment-section  {
   margin: 0;
   padding: 0;
   border: 0 !important;
@@ -5176,13 +5176,7 @@ html:not(.dark) .hv-empty {
   padding: 12px;
   overflow-y: auto;
 }
-.music-main .music-comments-side .comment-section {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  backdrop-filter: none;
-}
+
 .music-main .music-lyrics { max-height: none; overflow-x: hidden; }
 .music-player-bar { height: 68px; }
 .music-app-page .music-player-inner { height: 100%; box-sizing: border-box; }
