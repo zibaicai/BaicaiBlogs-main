@@ -5189,7 +5189,10 @@ html:not(.dark) .hv-empty {
 /* Music comments live inside one panel. Do not add a second card inside it. */
 .music-comment-section,
 .music-comments-side .comment-section,
-.music-pane-body .comment-section {
+.music-pane-body .comment-section,
+.music-comment-section .comment-empty,
+.music-comment-section .comment-empty-actions,
+.music-comment-section .comment-login-hint {
   margin: 0 !important;
   padding: 0 !important;
   border: 0 !important;
@@ -5202,10 +5205,11 @@ html:not(.dark) .hv-empty {
 .music-comment-section .comment-composer {
   margin-top: 10px;
   padding: 8px 0 12px;
-  border: 0;
-  border-bottom: 1px solid var(--ui-border);
-  border-radius: 0;
-  background: transparent;
+  border: 0 !important;
+  border-bottom: 1px solid var(--ui-border) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 .music-comment-section .comment-composer.is-expanded {
@@ -5215,8 +5219,12 @@ html:not(.dark) .hv-empty {
 .music-comment-section .comment-empty {
   min-height: 0;
   margin-top: 18px;
-  padding: 18px 8px 12px;
-  border: 0;
+  padding: 18px 8px 12px !important;
+  border: 0 !important;
+}
+
+.music-comment-section .comment-login-hint {
+  padding: 12px 0 !important;
 }
 
 .music-comments-side {
