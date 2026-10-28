@@ -60,6 +60,7 @@ public class ArchiveService {
     private static final long MAX_ARCHIVE_IMAGE_BYTES = 50L * 1024 * 1024;
     private static final int MAX_REDIRECTS = 3;
     private static final Pattern LANGUAGE_CLASS = Pattern.compile("language-[a-zA-Z0-9+#._-]{1,30}");
+    private static final Pattern INTERNAL_ASSET = Pattern.compile("^/api/internal/archive-assets/\\d+$");
 
     private static final PolicyFactory POLICY = new HtmlPolicyBuilder()
             .allowElements("p", "br", "h1", "h2", "h3", "h4", "h5", "h6",
@@ -440,6 +441,37 @@ public class ArchiveService {
     }
 
     @Transactional
+    public Map<String, Object> edit(User actor, Long archiveId, Map<String, String> body) {
+        requireSuper(actor);
+        ArchiveDocument doc = documentRepository.findById(archiveId)
+                .orElseThrow(() -> new RuntimeException("存档不存在"));
+        if (body.get("sourceTitle") != null) {
+            String title = body.get("sourceTitle").trim();
+            if (title.isBlank()) throw new RuntimeException("标题不能为空");
+            doc.setSourceTitle(limit(title, 500));
+        }
+        if (body.get("sourceAuthor") != null) doc.setSourceAuthor(limit(body.get("sourceAuthor").trim(), 255));
+        if (body.get("sourceSite") != null) doc.setSourceSite(limit(body.get("sourceSite").trim(), 255));
+        if (body.get("sourcePublishedAt") != null) doc.setSourcePublishedAt(limit(body.get("sourcePublishedAt").trim(), 80));
+        if (body.get("copyrightNote") != null) doc.setCopyrightNote(limit(body.get("copyrightNote").trim(), 1000));
+        if (body.get("contentHtml") != null) {
+            String html = body.get("contentHtml");
+            if (html.length() > MAX_HTML_BYTES) throw new RuntimeException("正文超过 2MB 限制");
+            String sanitized = sanitize(html);
+            if (sanitized.isBlank()) throw new RuntimeException("正文不能为空");
+            doc.setContentHtml(sanitized);
+            doc.setContentHash(sha256(sanitized));
+        }
+        doc = documentRepository.save(doc);
+        log(archiveId, actor, "EDIT", null);
+        return toMap(doc, true);
+    }
+
+    private String limit(String value, int max) {
+        return value.length() <= max ? value : value.substring(0, max);
+    }
+
+    @Transactional
     public void delete(User actor, Long archiveId) {
         requireSuper(actor);
         ArchiveDocument doc = documentRepository.findById(archiveId)
@@ -674,7 +706,8 @@ public class ArchiveService {
         Document doc = Jsoup.parseBodyFragment(cleaned);
         doc.select("img").forEach(img -> {
             String src = img.attr("src").trim();
-            if (!(src.startsWith("http://") || src.startsWith("https://"))) {
+            if (!(src.startsWith("http://") || src.startsWith("https://"))
+                    && !INTERNAL_ASSET.matcher(src).matches()) {
                 img.remove();
                 return;
             }

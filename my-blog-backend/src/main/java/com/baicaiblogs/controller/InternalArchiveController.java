@@ -120,6 +120,15 @@ public class InternalArchiveController {
         }
     }
 
+    @PatchMapping("/{id}")
+    public ApiResponse<Map<String, Object>> edit(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        try {
+            return ApiResponse.success("已保存", archiveService.edit(currentUser(), id, body));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
     @GetMapping("/{id}/grants")
     public ApiResponse<List<Map<String, Object>>> grants(@PathVariable Long id) {
         try {

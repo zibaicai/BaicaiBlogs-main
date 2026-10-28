@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import DOMPurify from "dompurify";
-import { Archive, Download, ExternalLink, Loader2, Lock, Plus, RefreshCw, ShieldCheck, Trash2, UserRound, X } from "lucide-react";
+import { Archive, Download, ExternalLink, Loader2, Lock, Pencil, Plus, RefreshCw, ShieldCheck, Trash2, UserRound, X } from "lucide-react";
 import { getAdminRole, getToken } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
 import { Input } from "../components/ui/Input";
@@ -77,6 +77,11 @@ export default function ArchivesPage() {
   const [deleteRequests, setDeleteRequests] = useState<DeleteRequest[]>([]);
   const [accessLogs, setAccessLogs] = useState<AccessLog[]>([]);
   const [adminId, setAdminId] = useState("");
+  const [editing, setEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState("");
+  const [editAuthor, setEditAuthor] = useState("");
+  const [editCopyright, setEditCopyright] = useState("");
+  const [editContent, setEditContent] = useState("");
   const [showImport, setShowImport] = useState(false);
 
   const load = useCallback(async () => {
@@ -215,6 +220,39 @@ export default function ArchivesPage() {
       showToast("已重新抓取", "success");
     } catch (error) {
       showToast(error instanceof Error ? error.message : "重新抓取失败", "error");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const startEdit = () => {
+    if (!selected) return;
+    setEditTitle(selected.sourceTitle || "");
+    setEditAuthor(selected.sourceAuthor || "");
+    setEditCopyright(selected.copyrightNote || "");
+    setEditContent(selected.contentHtml || "");
+    setEditing(true);
+  };
+
+  const saveEdit = async () => {
+    if (!selected) return;
+    setBusy(true);
+    try {
+      const updated = await archiveRequest<ArchiveItem>(`/internal/archives/${selected.id}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          sourceTitle: editTitle,
+          sourceAuthor: editAuthor,
+          copyrightNote: editCopyright,
+          contentHtml: editContent,
+        }),
+      });
+      setSelected(updated);
+      setEditing(false);
+      await load();
+      showToast("已保存", "success");
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "保存失败", "error");
     } finally {
       setBusy(false);
     }
@@ -405,6 +443,11 @@ export default function ArchivesPage() {
                         <RefreshCw size={12} /> 重新抓取
                       </button>
                     )}
+                    {superAdmin && !editing && (
+                      <button type="button" onClick={startEdit} className="inline-flex items-center gap-1 rounded-xl border border-white/10 px-3 py-2 text-[10px] font-bold text-slate-300 hover:bg-white/5">
+                        <Pencil size={12} /> 编辑
+                      </button>
+                    )}
                     {superAdmin && <Button variant="danger" onClick={() => void remove()}><Trash2 size={13} /> 删除</Button>}
                     {!superAdmin && (
                       <Button variant="ghost" onClick={() => void requestDelete()}>申请删除</Button>
@@ -439,7 +482,35 @@ export default function ArchivesPage() {
                 </div>
               )}
 
-              <div className="archive-reader max-h-[calc(100vh-430px)] overflow-y-auto rounded-2xl bg-white p-6 text-slate-800 md:p-8" dangerouslySetInnerHTML={{ __html: safeContent }} />
+              {editing ? (
+                <div className="space-y-3 rounded-2xl border border-indigo-400/20 bg-slate-950/40 p-4">
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <label className="text-[10px] font-bold text-slate-400">标题
+                      <Input value={editTitle} onChange={(event) => setEditTitle(event.target.value)} className="mt-1" />
+                    </label>
+                    <label className="text-[10px] font-bold text-slate-400">作者
+                      <Input value={editAuthor} onChange={(event) => setEditAuthor(event.target.value)} className="mt-1" />
+                    </label>
+                  </div>
+                  <label className="block text-[10px] font-bold text-slate-400">版权说明
+                    <Input value={editCopyright} onChange={(event) => setEditCopyright(event.target.value)} className="mt-1" />
+                  </label>
+                  <label className="block text-[10px] font-bold text-slate-400">正文 HTML（仅保留安全标签）
+                    <textarea
+                      value={editContent}
+                      onChange={(event) => setEditContent(event.target.value)}
+                      className="control-field mt-1 min-h-[420px] w-full resize-y font-mono text-xs leading-relaxed"
+                      spellCheck={false}
+                    />
+                  </label>
+                  <div className="flex justify-end gap-2">
+                    <Button variant="ghost" onClick={() => setEditing(false)}>取消</Button>
+                    <Button onClick={() => void saveEdit()} disabled={busy}>保存</Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="archive-reader max-h-[calc(100vh-430px)] overflow-y-auto rounded-2xl bg-white p-6 text-slate-800 md:p-8" dangerouslySetInnerHTML={{ __html: safeContent }} />
+              )}
 
               {superAdmin && accessLogs.length > 0 && (
                 <div className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4">

@@ -53,6 +53,13 @@ class ArchiveSecurityTest {
     }
 
     @Test
+    void keepsInternalArchiveAssetImages() throws Exception {
+        String cleaned = (String) invoke("sanitize",
+                "<p>edit</p><img src=\"/api/internal/archive-assets/12\" alt=\"saved\">");
+        assertTrue(cleaned.contains("/api/internal/archive-assets/12"));
+    }
+
+    @Test
     void blocksLocalAndPrivateUrls() {
         for (String url : new String[]{
                 "file:///etc/passwd",
