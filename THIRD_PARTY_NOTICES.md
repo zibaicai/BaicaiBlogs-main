@@ -46,19 +46,27 @@ redistributed.
 Before distributing a built server image, jar, or frontend package, include the
 full license texts and any required source/relink offer for LGPL/GPL components.
 
-## Pending provenance
+## Project-original demos
 
-The following files do not currently have a recorded source or license. Confirm
-their provenance before commercial distribution:
+The following effects were created for this project during development. No
+third-party source code or asset is known to be included:
 
 - `apps/web/components/SakuraGL.tsx`
 - `apps/web/components/SakuraLights.tsx`
-- `theme-demos/` WebGL/CSS demos
-- custom footer brand SVGs in the site configuration
+- `apps/web/components/Fireflies.tsx`
+- `apps/web/components/ClickEffect.tsx`
+- WebGL/CSS demos under `theme-demos/`
 
-If any of these were adapted from an external project, add the original author,
-URL, and license here. If they are original work, record that fact with a date
-and author.
+Record the creation date and author when these files are substantially changed.
+If a future version incorporates an external shader or demo, add its author,
+URL, and license here.
+
+## Brand assets
+
+The footer includes brand names and simplified brand SVG paths for Next.js,
+React, and Tailwind CSS. These marks belong to their respective owners and are
+used only to describe the technology stack. Do not modify them or imply
+sponsorship or endorsement.
 
 ## Content
 

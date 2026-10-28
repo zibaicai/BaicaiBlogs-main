@@ -22,8 +22,8 @@
 |---|---|
 | 音乐音频、歌词、专辑封面 | 未授权；商用前需替换或接入有授权的播放服务 |
 | 默认音乐 ID | 已从前后端默认配置中移除 |
-| `SakuraGL` / `SakuraLights` | 来源待确认，见 `THIRD_PARTY_NOTICES.md` |
-| `theme-demos` 中的 WebGL/CSS 演示 | 来源待确认，商用前需核对 |
+| `SakuraGL` / `SakuraLights` | 本项目开发过程中生成的原创演示 |
+| `theme-demos` 中的 WebGL/CSS 演示 | 本项目开发过程中生成的原创演示 |
 
 ## 处理原则
 

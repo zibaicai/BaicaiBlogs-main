@@ -35,6 +35,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [agreed, setAgreed] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
   const [turnstileReady, setTurnstileReady] = useState(false);
   const [turnstileConfig, setTurnstileConfig] = useState<{ enabled: boolean; siteKey: string } | null>(null);
@@ -100,6 +101,10 @@ export default function LoginPage() {
         setMessage("请先完成人机验证");
         return;
       }
+      if (!agreed) {
+        setMessage("请先阅读并同意用户协议和隐私政策");
+        return;
+      }
     }
     setBusy(true);
     setMessage("");
@@ -121,6 +126,7 @@ export default function LoginPage() {
   const switchMode = () => {
     setMode(mode === "login" ? "register" : "login");
     setMessage("");
+    setAgreed(false);
     setTurnstileToken("");
   };
 
@@ -170,12 +176,46 @@ export default function LoginPage() {
             </div>
           )}
 
+          {mode === "register" && (
+            <label className="mt-5 flex items-start gap-2.5 rounded-2xl border border-white/30 bg-white/20 px-3.5 py-3 text-[11px] font-medium leading-relaxed text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
+              <input
+                type="checkbox"
+                checked={agreed}
+                onChange={(event) => setAgreed(event.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--ui-accent)]"
+              />
+              <span>
+                我已阅读并同意
+                <Link href="/terms" target="_blank" rel="noreferrer" className="mx-1 font-bold text-indigo-500 hover:underline">
+                  用户协议
+                </Link>
+                和
+                <Link href="/privacy" target="_blank" rel="noreferrer" className="mx-1 font-bold text-indigo-500 hover:underline">
+                  隐私政策
+                </Link>
+              </span>
+            </label>
+          )}
+
           <button type="submit" disabled={busy} className="btn btn-primary w-full mt-7 py-4 rounded-2xl disabled:opacity-50 font-black text-sm transition-all flex items-center justify-center gap-2">
             {busy && <Loader2 className="animate-spin" size={16} />}
             {mode === "login" ? "登录" : "注册"}
           </button>
 
           <div className="mt-4 text-xs text-red-400 min-h-[18px] font-bold text-center">{message}</div>
+
+          {mode === "login" && (
+            <p className="text-center text-[11px] font-medium leading-relaxed text-slate-500 dark:text-slate-400">
+              继续即表示你已阅读并同意
+              <Link href="/terms" target="_blank" rel="noreferrer" className="mx-1 font-bold text-indigo-500 hover:underline">
+                用户协议
+              </Link>
+              和
+              <Link href="/privacy" target="_blank" rel="noreferrer" className="mx-1 font-bold text-indigo-500 hover:underline">
+                隐私政策
+              </Link>
+            </p>
+          )}
 
           <div className="mt-6 flex items-center justify-between text-xs font-bold">
             <button type="button" onClick={switchMode} className="text-indigo-500 hover:underline">

@@ -15,6 +15,9 @@ export default function Footer() {
           <Link href="/about" className="hover:text-indigo-500 transition-colors">关于</Link>
           <Link href="/friends" className="hover:text-indigo-500 transition-colors">友链</Link>
           <Link href="/moments" className="hover:text-indigo-500 transition-colors">说说</Link>
+          <Link href="/terms" className="hover:text-indigo-500 transition-colors">用户协议</Link>
+          <Link href="/privacy" className="hover:text-indigo-500 transition-colors">隐私政策</Link>
+          <Link href="/copyright" className="hover:text-indigo-500 transition-colors">侵权投诉</Link>
           <a
             href="https://admin.zibaicai.cn"
             rel="nofollow noreferrer"
