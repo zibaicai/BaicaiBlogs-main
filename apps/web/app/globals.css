@@ -6149,3 +6149,102 @@ html[data-theme-preset="violet"] .site-gradient {
 html.dark[data-theme-preset="violet"] .site-gradient {
   opacity: 0.2 !important;
 }
+
+/* Homepage recent rows: shared hover interaction. */
+.home-v2 .hv-post-row,
+.home-v2 .hv-moment-row {
+  position: relative;
+  isolation: isolate;
+  margin-inline: -8px;
+  padding-inline: 8px !important;
+  border-radius: 10px;
+  cursor: pointer;
+  transition:
+    background-color .25s ease,
+    box-shadow .25s ease,
+    transform .25s cubic-bezier(.2, .8, .2, 1),
+    border-color .25s ease;
+}
+
+.home-v2 .hv-post-row::before,
+.home-v2 .hv-moment-row::before {
+  content: "";
+  position: absolute;
+  left: 1px;
+  top: 18%;
+  bottom: 18%;
+  width: 2px;
+  border-radius: 999px;
+  background: var(--hv-accent);
+  opacity: 0;
+  transform: scaleY(.35);
+  transform-origin: center;
+  transition: opacity .25s ease, transform .25s ease;
+}
+
+.home-v2 .hv-post-main strong,
+.home-v2 .hv-moment-main strong,
+.home-v2 .hv-post-index,
+.home-v2 .hv-moment-mark,
+.home-v2 .hv-post-arrow {
+  transition: color .25s ease, transform .25s ease, opacity .25s ease;
+}
+
+.home-v2 .hv-post-arrow { opacity: .55; }
+
+@media (hover: hover) {
+  .home-v2 .hv-post-row:hover,
+  .home-v2 .hv-moment-row:hover {
+    background: color-mix(in srgb, var(--hv-accent) 8%, transparent);
+    box-shadow: 0 8px 22px color-mix(in srgb, var(--hv-accent) 10%, transparent);
+    transform: translateX(4px);
+  }
+
+  .home-v2 .hv-post-row:hover::before,
+  .home-v2 .hv-moment-row:hover::before {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+
+  .home-v2 .hv-post-row:hover .hv-post-main strong,
+  .home-v2 .hv-moment-row:hover .hv-moment-main strong {
+    color: var(--hv-accent-strong);
+  }
+
+  .home-v2 .hv-post-row:hover .hv-post-index,
+  .home-v2 .hv-moment-row:hover .hv-moment-mark {
+    color: var(--hv-accent-strong);
+    transform: translateX(2px);
+  }
+
+  .home-v2 .hv-post-row:hover .hv-post-arrow {
+    opacity: 1;
+    transform: translateX(5px);
+  }
+}
+
+.home-v2 .hv-post-row:focus-visible,
+.home-v2 .hv-moment-row:focus-visible {
+  outline: 2px solid var(--hv-accent);
+  outline-offset: 3px;
+  background: color-mix(in srgb, var(--hv-accent) 8%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-v2 .hv-post-row,
+  .home-v2 .hv-moment-row,
+  .home-v2 .hv-post-row::before,
+  .home-v2 .hv-moment-row::before,
+  .home-v2 .hv-post-main strong,
+  .home-v2 .hv-moment-main strong,
+  .home-v2 .hv-post-index,
+  .home-v2 .hv-moment-mark,
+  .home-v2 .hv-post-arrow {
+    transition: none !important;
+  }
+
+  .home-v2 .hv-post-row:hover,
+  .home-v2 .hv-moment-row:hover {
+    transform: none;
+  }
+}
