@@ -151,6 +151,41 @@ public class InternalArchiveController {
         }
     }
 
+    @PostMapping("/{id}/delete-request")
+    public ApiResponse<Map<String, Object>> requestDelete(
+            @PathVariable Long id,
+            @RequestBody(required = false) Map<String, String> body) {
+        try {
+            String reason = body == null ? null : body.get("reason");
+            return ApiResponse.success("删除申请已提交", archiveService.requestDelete(currentUser(), id, reason));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/delete-requests")
+    public ApiResponse<List<Map<String, Object>>> deleteRequests() {
+        try {
+            return ApiResponse.success(archiveService.deleteRequests(currentUser()));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @PostMapping("/delete-requests/{requestId}/review")
+    public ApiResponse<Void> reviewDelete(
+            @PathVariable Long requestId,
+            @RequestBody(required = false) Map<String, Object> body) {
+        try {
+            boolean approve = body != null && Boolean.TRUE.equals(body.get("approve"));
+            String note = body == null || body.get("note") == null ? null : String.valueOf(body.get("note"));
+            archiveService.reviewDelete(currentUser(), requestId, approve, note);
+            return ApiResponse.success(approve ? "已批准并删除" : "已拒绝", null);
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
     private User currentUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof User user) return user;

@@ -24,6 +24,7 @@ type ArchiveItem = {
 
 type AdminUser = { id: number; username: string; nickname?: string };
 type Grant = { id: number; adminUserId: number; username?: string; nickname?: string; expiresAt?: string };
+type DeleteRequest = { id: number; archiveId: number; title?: string; username?: string; reason?: string; createdAt?: string };
 
 async function archiveRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
   const token = getToken();
@@ -72,6 +73,7 @@ export default function ArchivesPage() {
   const [preview, setPreview] = useState<ArchiveItem | null>(null);
   const [admins, setAdmins] = useState<AdminUser[]>([]);
   const [grants, setGrants] = useState<Grant[]>([]);
+  const [deleteRequests, setDeleteRequests] = useState<DeleteRequest[]>([]);
   const [adminId, setAdminId] = useState("");
   const [showImport, setShowImport] = useState(false);
 
@@ -93,6 +95,9 @@ export default function ArchivesPage() {
       archiveRequest<AdminUser[]>("/internal/archives/admins")
         .then(setAdmins)
         .catch(() => setAdmins([]));
+      archiveRequest<DeleteRequest[]>("/internal/archives/delete-requests")
+        .then(setDeleteRequests)
+        .catch(() => setDeleteRequests([]));
     }
   }, [load, superAdmin]);
 
@@ -216,6 +221,35 @@ export default function ArchivesPage() {
     }
   };
 
+  const requestDelete = async () => {
+    if (!selected) return;
+    const reason = window.prompt("请填写删除原因（可选）：") || "";
+    try {
+      await archiveRequest(`/internal/archives/${selected.id}/delete-request`, {
+        method: "POST",
+        body: JSON.stringify({ reason }),
+      });
+      showToast("删除申请已提交，等待超级管理员处理", "success");
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "提交失败", "error");
+    }
+  };
+
+  const reviewRequest = async (requestId: number, approve: boolean) => {
+    try {
+      await archiveRequest(`/internal/archives/delete-requests/${requestId}/review`, {
+        method: "POST",
+        body: JSON.stringify({ approve, note: approve ? "同意删除" : "暂不删除" }),
+      });
+      showToast(approve ? "已批准并删除" : "已拒绝", "success");
+      setDeleteRequests(await archiveRequest<DeleteRequest[]>("/internal/archives/delete-requests"));
+      await load();
+      if (selected) setSelected(null);
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "处理失败", "error");
+    }
+  };
+
   const safeContent = useMemo(
     () => cleanHtml(selected?.contentHtml, selected ? `/api/internal/archives/${selected.id}/image` : ""),
     [selected?.contentHtml, selected?.id]
@@ -268,6 +302,28 @@ export default function ArchivesPage() {
             </div>
           )}
         </div>
+      )}
+
+      {superAdmin && deleteRequests.length > 0 && (
+        <section className="mb-5 rounded-3xl border border-amber-400/20 bg-amber-500/5 p-4">
+          <div className="mb-3 text-[10px] font-black uppercase tracking-widest text-amber-300">
+            待处理删除申请 · {deleteRequests.length}
+          </div>
+          <div className="space-y-2">
+            {deleteRequests.map((request) => (
+              <div key={request.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-black/20 px-3 py-2.5">
+                <div className="min-w-0">
+                  <div className="truncate text-xs font-bold text-slate-200">{request.title || `存档 #${request.archiveId}`}</div>
+                  <div className="mt-1 text-[10px] text-slate-500">{request.username || `用户 #${request.requestedBy}`} · {request.reason || "未填写原因"}</div>
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="success" onClick={() => void reviewRequest(request.id, true)}>批准删除</Button>
+                  <Button size="sm" variant="ghost" onClick={() => void reviewRequest(request.id, false)}>拒绝</Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
       )}
 
       <div className="grid gap-5 lg:grid-cols-[300px_minmax(0,1fr)]">
@@ -326,6 +382,9 @@ export default function ArchivesPage() {
                       </button>
                     )}
                     {superAdmin && <Button variant="danger" onClick={() => void remove()}><Trash2 size={13} /> 删除</Button>}
+                    {!superAdmin && (
+                      <Button variant="ghost" onClick={() => void requestDelete()}>申请删除</Button>
+                    )}
                   </div>
                 </div>
                 <p className="mt-3 rounded-xl bg-amber-500/10 px-3 py-2 text-[10px] leading-relaxed text-amber-300">

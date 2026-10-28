@@ -1,10 +1,12 @@
 package com.baicaiblogs.service;
 
 import com.baicaiblogs.entity.ArchiveAccessLog;
+import com.baicaiblogs.entity.ArchiveDeleteRequest;
 import com.baicaiblogs.entity.ArchiveDocument;
 import com.baicaiblogs.entity.ArchiveGrant;
 import com.baicaiblogs.entity.User;
 import com.baicaiblogs.repository.ArchiveAccessLogRepository;
+import com.baicaiblogs.repository.ArchiveDeleteRequestRepository;
 import com.baicaiblogs.repository.ArchiveDocumentRepository;
 import com.baicaiblogs.repository.ArchiveGrantRepository;
 import com.baicaiblogs.repository.UserRepository;
@@ -62,6 +64,7 @@ public class ArchiveService {
     private final ArchiveDocumentRepository documentRepository;
     private final ArchiveGrantRepository grantRepository;
     private final ArchiveAccessLogRepository accessLogRepository;
+    private final ArchiveDeleteRequestRepository deleteRequestRepository;
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
@@ -255,7 +258,66 @@ public class ArchiveService {
         documentRepository.findById(archiveId).orElseThrow(() -> new RuntimeException("存档不存在"));
         grantRepository.deleteByArchiveId(archiveId);
         accessLogRepository.deleteByArchiveId(archiveId);
+        deleteRequestRepository.deleteByArchiveId(archiveId);
         documentRepository.deleteById(archiveId);
+    }
+
+    @Transactional
+    public Map<String, Object> requestDelete(User actor, Long archiveId, String reason) {
+        requireAdmin(actor);
+        if (isSuper(actor)) throw new RuntimeException("超级管理员可以直接删除");
+        requireRead(actor, archiveId);
+        ArchiveDocument doc = documentRepository.findById(archiveId)
+                .orElseThrow(() -> new RuntimeException("存档不存在"));
+        ArchiveDeleteRequest request = deleteRequestRepository
+                .findByArchiveIdAndRequestedByAndStatus(archiveId, actor.getId(), "PENDING")
+                .orElseGet(() -> ArchiveDeleteRequest.builder()
+                        .archiveId(archiveId)
+                        .requestedBy(actor.getId())
+                        .createdAt(LocalDateTime.now())
+                        .status("PENDING")
+                        .build());
+        request.setReason(reason == null ? null : reason.substring(0, Math.min(reason.length(), 1000)));
+        request.setCreatedAt(LocalDateTime.now());
+        request = deleteRequestRepository.save(request);
+        log(archiveId, actor, "REQUEST_DELETE", reason);
+        Map<String, Object> out = new LinkedHashMap<>();
+        out.put("id", request.getId());
+        out.put("archiveId", archiveId);
+        out.put("title", doc.getSourceTitle());
+        out.put("status", request.getStatus());
+        return out;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Map<String, Object>> deleteRequests(User actor) {
+        requireSuper(actor);
+        return deleteRequestRepository.findByStatusOrderByCreatedAtDesc("PENDING").stream().map(request -> {
+            Map<String, Object> out = new LinkedHashMap<>();
+            out.put("id", request.getId());
+            out.put("archiveId", request.getArchiveId());
+            out.put("requestedBy", request.getRequestedBy());
+            out.put("reason", request.getReason());
+            out.put("createdAt", request.getCreatedAt());
+            documentRepository.findById(request.getArchiveId()).ifPresent(doc -> out.put("title", doc.getSourceTitle()));
+            userRepository.findById(request.getRequestedBy()).ifPresent(user -> out.put("username", user.getUsername()));
+            return out;
+        }).toList();
+    }
+
+    @Transactional
+    public void reviewDelete(User actor, Long requestId, boolean approve, String note) {
+        requireSuper(actor);
+        ArchiveDeleteRequest request = deleteRequestRepository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException("删除申请不存在"));
+        if (!"PENDING".equals(request.getStatus())) throw new RuntimeException("该申请已处理");
+        request.setStatus(approve ? "APPROVED" : "REJECTED");
+        request.setReviewedBy(actor.getId());
+        request.setReviewedAt(LocalDateTime.now());
+        request.setReviewNote(note);
+        deleteRequestRepository.save(request);
+        log(request.getArchiveId(), actor, approve ? "APPROVE_DELETE" : "REJECT_DELETE", note);
+        if (approve) delete(actor, request.getArchiveId());
     }
 
     private void requireRead(User actor, Long archiveId) {
