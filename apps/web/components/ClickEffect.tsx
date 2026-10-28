@@ -1,5 +1,19 @@
 "use client";
-import { useEffect, useRef } from 'react';
+
+import { useEffect, useRef } from "react";
+
+type Ripple = {
+  x: number;
+  y: number;
+  startedAt: number;
+  duration: number;
+  from: number;
+  to: number;
+};
+
+const RIPPLE_LIFE = 620;
+const RIPPLE_START = 6;
+const RIPPLE_END = 64;
 
 export default function ClickEffect() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -7,94 +21,102 @@ export default function ClickEffect() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    const context = canvas.getContext("2d");
+    if (!context) return;
 
-    let ripples: any[] = [];
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    let pixelRatio = 1;
+    let frame = 0;
+    let disposed = false;
+    const ripples: Ripple[] = [];
 
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    window.addEventListener('resize', resize);
-    resize();
-
-    class Ripple {
-      x: number; y: number;
-      r: number;        // 半径
-      maxR: number;     // 最大半径
-      opacity: number;  // 透明度
-      velocity: number; // 扩散速度
-
-      constructor(x: number, y: number) {
-        this.x = x;
-        this.y = y;
-        this.r = 0;
-        this.maxR = 60;   // 涟漪扩散的大小，60 比较克制
-        this.opacity = 0.6;
-        this.velocity = 2.5;
-      }
-
-      update() {
-        this.r += this.velocity;
-        // 随着半径变大，扩散速度减慢（物理模拟）
-        this.velocity *= 0.96;
-        // 透明度线性衰减
-        this.opacity -= 0.015;
-      }
-
-      draw() {
-        if (!ctx) return;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-        // 使用你主题里的靛蓝色，并带上动态透明度
-        ctx.strokeStyle = `rgba(129, 140, 248, ${this.opacity})`;
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        // 内部再加一个极淡的实心圆，增加“触碰感”
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.r * 0.5, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(129, 140, 248, ${this.opacity * 0.3})`;
-        ctx.fill();
-      }
-    }
-
-    const handleClick = (e: MouseEvent) => {
-      ripples.push(new Ripple(e.clientX, e.clientY));
+    const applySize = () => {
+      pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = Math.round(width * pixelRatio);
+      canvas.height = Math.round(height * pixelRatio);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
     };
 
-    window.addEventListener('click', handleClick);
+    const accent = () => {
+      const value = getComputedStyle(document.documentElement).getPropertyValue("--ui-accent").trim();
+      return value || "#5b8bd0";
+    };
 
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const addRipple = (event: MouseEvent) => {
+      if (document.body.classList.contains("tool-click-off")) return;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-      // 增加全局模糊，让涟漪更有“云端”质感
-      ctx.shadowBlur = 15;
-      ctx.shadowColor = 'rgba(129, 140, 248, 0.5)';
+      ripples.push({
+        x: event.clientX,
+        y: event.clientY,
+        startedAt: performance.now(),
+        duration: RIPPLE_LIFE,
+        from: RIPPLE_START,
+        to: RIPPLE_END,
+      });
+    };
 
-      for (let i = 0; i < ripples.length; i++) {
-        ripples[i].update();
-        ripples[i].draw();
-        if (ripples[i].opacity <= 0) {
-          ripples.splice(i, 1);
-          i--;
+    const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
+
+    const paint = (now: number) => {
+      if (disposed) return;
+
+      context.clearRect(0, 0, width, height);
+      context.globalCompositeOperation = "lighter";
+      context.strokeStyle = accent();
+      context.lineWidth = 1.6;
+
+      for (let index = ripples.length - 1; index >= 0; index -= 1) {
+        const ripple = ripples[index];
+        const progress = Math.min(1, (now - ripple.startedAt) / ripple.duration);
+        if (progress >= 1) {
+          ripples.splice(index, 1);
+          continue;
         }
+
+        const radius = ripple.from + (ripple.to - ripple.from) * easeOut(progress);
+        const alpha = Math.pow(1 - progress, 1.8);
+
+        context.globalAlpha = alpha * 0.75;
+        context.beginPath();
+        context.arc(ripple.x, ripple.y, radius, 0, Math.PI * 2);
+        context.stroke();
+
+        context.globalAlpha = alpha * 0.16;
+        context.beginPath();
+        context.arc(ripple.x, ripple.y, radius * 0.48, 0, Math.PI * 2);
+        context.fillStyle = context.strokeStyle;
+        context.fill();
       }
-      requestAnimationFrame(animate);
+
+      context.globalAlpha = 1;
+      context.globalCompositeOperation = "source-over";
+      frame = requestAnimationFrame(paint);
     };
-    animate();
+
+    applySize();
+    window.addEventListener("resize", applySize);
+    window.addEventListener("click", addRipple);
+    frame = requestAnimationFrame(paint);
 
     return () => {
-      window.removeEventListener('resize', resize);
-      window.removeEventListener('click', handleClick);
+      disposed = true;
+      cancelAnimationFrame(frame);
+      window.removeEventListener("resize", applySize);
+      window.removeEventListener("click", addRipple);
     };
   }, []);
 
   return (
     <canvas
       ref={canvasRef}
-      className="click-effect fixed inset-0 pointer-events-none z-[9999]"
+      aria-hidden="true"
+      className="click-effect pointer-events-none fixed inset-0 z-[9999]"
     />
   );
 }

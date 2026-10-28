@@ -1,80 +1,103 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useSiteConfigContext } from '../context/SiteConfigProvider';
+import { useEffect, useRef, useState } from "react";
+import { useSiteConfigContext } from "../context/SiteConfigProvider";
+
+type SplashPhase = "idle" | "visible" | "closing";
+
+const HOLD_MS = 2200;
+const REVEAL_DELAY_MS = 500;
+const FADE_MS = 800;
 
 export default function SplashScreen() {
-  const [show, setShow] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
   const { siteInfo } = useSiteConfigContext();
+  const [mounted, setMounted] = useState(false);
+  const [phase, setPhase] = useState<SplashPhase>("idle");
+  const timers = useRef<number[]>([]);
 
   useEffect(() => {
-    setIsMounted(true);
-    const hasSeenSplash = sessionStorage.getItem('hasSeenSplash') === 'true';
+    setMounted(true);
 
-    if (!hasSeenSplash) {
-      setShow(true);
-      const timer = setTimeout(() => {
-        exitSplash();
-      }, 2200);
-      return () => clearTimeout(timer);
-    } else {
-      // 容错处理：确保直接访问时类名存在
-      document.documentElement.classList.add('splash-seen');
+    const alreadySeen = sessionStorage.getItem("hasSeenSplash") === "true";
+    if (alreadySeen) {
+      document.documentElement.classList.add("splash-seen");
+      return;
     }
+
+    setPhase("visible");
+
+    const hold = window.setTimeout(() => {
+      sessionStorage.setItem("hasSeenSplash", "true");
+      setPhase("closing");
+
+      const reveal = window.setTimeout(() => {
+        document.documentElement.classList.add("splash-seen");
+      }, REVEAL_DELAY_MS);
+
+      const finish = window.setTimeout(() => {
+        setPhase("idle");
+      }, FADE_MS);
+
+      timers.current.push(reveal, finish);
+    }, HOLD_MS);
+
+    timers.current.push(hold);
+
+    return () => {
+      for (const timer of timers.current) window.clearTimeout(timer);
+      timers.current = [];
+    };
   }, []);
 
-  const exitSplash = () => {
-    setShow(false);
-    sessionStorage.setItem('hasSeenSplash', 'true');
-
-    // 【核心解封】：动画快结束时，给 html 加上类名，CSS 会自动把内容显示出来
-    setTimeout(() => {
-      document.documentElement.classList.add('splash-seen');
-    }, 500);
-  };
-
-  if (!isMounted) return null;
+  if (!mounted || phase === "idle") return null;
 
   return (
-    <AnimatePresence>
-      {show && (
-        <motion.div
-          key="splash-screen-container"
-          exit={{ opacity: 0, scale: 1.1, filter: "blur(20px)" }}
-          transition={{ duration: 0.8, ease: "easeInOut" }}
-          className="fixed inset-0 z-[100000] flex flex-col items-center justify-center bg-white dark:bg-slate-950"
-        >
-          <div className="relative z-10 flex flex-col items-center">
-            {/* 头像光环 */}
-            <div className="relative w-24 h-24 mb-8">
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                className="absolute -inset-1.5 rounded-full bg-gradient-to-r from-[var(--ui-accent)] via-[var(--ui-accent-hover)] to-[var(--ui-accent)] opacity-60 blur-[3px]"
-              />
-              <div className="relative w-full h-full rounded-full p-1.5 bg-white dark:bg-slate-900 shadow-xl">
-                <img src={siteInfo?.avatarUrl} alt="Avatar" className="w-full h-full rounded-full object-cover" />
-              </div>
-            </div>
+    <div
+      className={`splash-shell fixed inset-0 z-[100000] flex items-center justify-center bg-white transition-[opacity,transform,filter] duration-[800ms] ease-in-out dark:bg-slate-950 ${
+        phase === "closing" ? "is-closing" : ""
+      }`}
+      role="status"
+      aria-label="页面加载中"
+    >
+      <style>{`
+        @keyframes splash-orbit { to { transform: rotate(360deg); } }
+        @keyframes splash-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+        .splash-shell.is-closing {
+          opacity: 0;
+          transform: scale(1.06);
+          filter: blur(14px);
+        }
+        .splash-orbit { animation: splash-orbit 4s linear infinite; }
+        .splash-fill { animation: splash-fill 1.8s ease-in-out both; transform-origin: left center; }
+        @media (prefers-reduced-motion: reduce) {
+          .splash-orbit, .splash-fill { animation: none; }
+          .splash-fill { transform: scaleX(1); }
+        }
+      `}</style>
 
-            <h1 className="text-2xl font-black text-slate-800 dark:text-white mb-2 tracking-[0.2em] uppercase">
-              {siteInfo?.authorName}
-            </h1>
-            <p className="text-[10px] font-black text-slate-400 tracking-[0.5em] mb-12">DIVING INTO THE ARCHIVE</p>
-
-            <div className="w-40 h-[1.5px] bg-slate-200 dark:bg-slate-800 relative">
-              <motion.div
-                initial={{ width: "0%" }}
-                animate={{ width: "100%" }}
-                transition={{ duration: 1.8, ease: "easeInOut" }}
-                className="absolute top-0 left-0 h-full bg-indigo-500 shadow-[0_0_12px_rgba(99,102,241,0.8)]"
-              />
-            </div>
+      <div className="relative flex flex-col items-center">
+        <div className="relative mb-8 h-24 w-24">
+          <div className="splash-orbit absolute -inset-1.5 rounded-full bg-[conic-gradient(from_0deg,var(--ui-accent),transparent,var(--ui-accent))] opacity-60 blur-[3px]" />
+          <div className="relative h-full w-full rounded-full bg-white p-1.5 shadow-xl dark:bg-slate-900">
+            <img
+              src={siteInfo?.avatarUrl}
+              alt={siteInfo?.authorName ? `${siteInfo.authorName} 头像` : "站点头像"}
+              className="h-full w-full rounded-full object-cover"
+            />
           </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+        </div>
+
+        <h1 className="mb-2 text-2xl font-black uppercase tracking-[0.2em] text-slate-800 dark:text-white">
+          {siteInfo?.authorName}
+        </h1>
+        <p className="mb-12 text-[10px] font-black tracking-[0.5em] text-slate-400">
+          DIVING INTO THE ARCHIVE
+        </p>
+
+        <div className="relative h-[1.5px] w-40 overflow-hidden bg-slate-200 dark:bg-slate-800">
+          <span className="splash-fill absolute inset-0 bg-[var(--ui-accent)] shadow-[0_0_12px_var(--ui-accent)]" />
+        </div>
+      </div>
+    </div>
   );
 }
