@@ -11,7 +11,7 @@ import BackgroundSection from "../components/settings/BackgroundSection";
 import MusicSection from "../components/settings/MusicSection";
 import CommentSection from "../components/settings/CommentSection";
 import RepoSection from "../components/settings/RepoSection";
-import AICatSection from "../components/settings/AICatSection";
+import AIWhaleSection from "../components/settings/AIWhaleSection";
 import FooterSection from "../components/settings/FooterSection";
 import GallerySection from "../components/settings/GallerySection";
 import DisplaySection from "../components/settings/DisplaySection";
@@ -201,7 +201,7 @@ export default function SettingsPage() {
         {activeTab === "music" && <MusicSection {...panelProps} />}
         {activeTab === "comment" && <CommentSection {...panelProps} />}
         {activeTab === "repo" && <RepoSection {...panelProps} />}
-        {activeTab === "ai" && <AICatSection {...panelProps} />}
+        {activeTab === "ai" && <AIWhaleSection {...panelProps} />}
         {activeTab === "footer" && <FooterSection {...panelProps} />}
         {activeTab === "gallery" && <GallerySection {...panelProps} />}
         {activeTab === "display" && <DisplaySection {...panelProps} />}

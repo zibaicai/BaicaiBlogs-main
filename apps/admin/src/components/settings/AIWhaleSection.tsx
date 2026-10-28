@@ -16,7 +16,7 @@ const DEFAULT_CONFIG = {
   temperature: 0.85,
 };
 
-export default function AICatSection({ formData, handleUpdate, pushToQueue }: any) {
+export default function AIWhaleSection({ formData, handleUpdate, pushToQueue }: any) {
   const config = { ...DEFAULT_CONFIG, ...(formData?.geminiConfig || {}) };
   const [promptText, setPromptText] = useState("");
 
@@ -39,11 +39,11 @@ export default function AICatSection({ formData, handleUpdate, pushToQueue }: an
 
   return (
     <SettingsCard
-      title="AI 小猫性格调度中心"
+      title="AI 鲸鱼娘性格调度中心"
       description="调整鲸鱼娘的说话方式、模型与生成参数"
       icon={<Bot size={20} className="text-indigo-400" />}
       action={
-        <SettingsSaveButton onClick={() => pushToQueue("AI 小猫配置")}>
+        <SettingsSaveButton onClick={() => pushToQueue("AI 鲸鱼娘配置")}>
           暂存到队列
         </SettingsSaveButton>
       }
