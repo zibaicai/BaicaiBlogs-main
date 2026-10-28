@@ -1,5 +1,6 @@
 // 服务端数据读取：直接访问内网后端，避免浏览器跨域；带 60s ISR 缓存。
 import { cookies } from "next/headers";
+import { isScopedPath } from "./content-scope";
 import type { Album, Category, Chatter, Friend, Moment, Post, Project } from "./api";
 import {
   DEFAULT_AI_CONFIG,
@@ -24,7 +25,7 @@ async function getJson<T>(path: string, revalidate = 60): Promise<T | null> {
     const cookieStore = await cookies();
     const mine = cookieStore.get("content-scope")?.value === "mine";
     const scopedPath =
-      mine && path.startsWith("/api/public/")
+      mine && isScopedPath(path)
         ? `${path}${path.includes("?") ? "&" : "?"}scope=mine`
         : path;
     const headers: Record<string, string> = { Accept: "application/json" };
