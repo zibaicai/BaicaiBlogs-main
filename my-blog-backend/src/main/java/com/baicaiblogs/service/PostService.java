@@ -116,6 +116,14 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
+    /** All posts owned by the current user, including drafts, for private mode. */
+    @Transactional(readOnly = true)
+    public List<PostResponse> getAllPostsByUser(Long userId) {
+        return postRepository.findAllByUserId(userId).stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
     /**
      * 获取当前登录用户所有文章中出现过的 tag 集合（去重）
      * 用于编辑器的标签历史提示功能

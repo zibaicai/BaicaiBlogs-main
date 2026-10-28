@@ -9,6 +9,7 @@ import {
   EyeOff,
   Image as ImageIcon,
   Link2,
+  Lock,
   Music2,
   Palette,
   Pause,
@@ -18,6 +19,7 @@ import {
   Settings2,
   Sparkles,
   Trash2,
+  Unlock,
   Upload,
   X,
 } from "lucide-react";
@@ -40,6 +42,7 @@ export const ICONS = {
   eyeOff: EyeOff,
   image: ImageIcon,
   link: Link2,
+  lock: Lock,
   music: Music2,
   palette: Palette,
   pause: Pause,
@@ -49,6 +52,7 @@ export const ICONS = {
   settings: Settings2,
   sparkles: Sparkles,
   trash: Trash2,
+  unlock: Unlock,
   upload: Upload,
 } satisfies Record<string, ComponentType<SVGProps<SVGSVGElement>>>;
 

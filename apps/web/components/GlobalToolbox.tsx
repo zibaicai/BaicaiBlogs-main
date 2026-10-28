@@ -6,6 +6,7 @@ import { AppIcon } from "./ui/AppIcon";
 import { usePathname } from "next/navigation";
 import { useMusic } from "./MusicProvider";
 import { useTheme } from "./ThemeProvider";
+import { usePrivateBlog } from "../lib/private-blog";
 import ThemeStudio from "./ThemeStudio";
 
 type ToolId = "danmaku" | "click" | "pet";
@@ -48,6 +49,7 @@ export default function GlobalToolbox() {
   const pathname = usePathname();
   const { currentSong, isPlaying, togglePlay } = useMusic();
   const { preset, setPreset } = useTheme();
+  const { enabled: privateMode, toggle: togglePrivateMode } = usePrivateBlog();
 
   useEffect(() => {
     try {
@@ -294,6 +296,24 @@ export default function GlobalToolbox() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <button
+        type="button"
+        onClick={() => {
+          setIsOpen(false);
+          togglePrivateMode();
+        }}
+        aria-label={privateMode ? "退出私密博客" : "开启私密博客"}
+        aria-pressed={privateMode}
+        title={privateMode ? "退出私密博客" : "开启私密博客"}
+        className={`mb-1 flex h-10 w-10 items-center justify-center rounded-full border border-white/50 shadow-xl backdrop-blur-xl transition-all duration-300 hover:scale-105 active:scale-95 dark:border-white/10 ${
+          privateMode
+            ? "bg-emerald-500 text-emerald-950"
+            : "bg-white/80 text-slate-600 dark:bg-slate-900/80 dark:text-slate-200"
+        }`}
+      >
+        <AppIcon name={privateMode ? "unlock" : "lock"} size={17} />
+      </button>
 
       <button
         type="button"

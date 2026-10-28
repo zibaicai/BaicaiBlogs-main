@@ -30,6 +30,13 @@ public class AlbumService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<AlbumResponse> getAlbumsByUser(Long userId) {
+        return albumRepository.findByUserIdOrderBySortOrderAsc(userId).stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public AlbumResponse createAlbum(AlbumRequest request) {
         if (albumRepository.existsByAlbumId(request.getAlbumId())) {

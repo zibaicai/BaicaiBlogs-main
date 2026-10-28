@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { AuthProvider } from "../lib/auth";
+import { PrivateBlogProvider } from "../lib/private-blog";
 import { SiteConfigProvider } from "../context/SiteConfigProvider";
 import { ThemeProvider } from "./ThemeProvider";
 import { TypographyProvider } from "./TypographyProvider";
@@ -19,6 +20,7 @@ import FloatingPlayer from "./FloatingPlayer";
 import GlobalToolbox from "./GlobalToolbox";
 import ClickEffect from "./ClickEffect";
 import WhalePet from "./WhalePet";
+import PrivateBlogSpace from "./PrivateBlogSpace";
 
 interface AppShellProps {
   config: any;
@@ -31,6 +33,7 @@ export default function AppShell({ config, children }: AppShellProps) {
       <ThemeProvider>
         <TypographyProvider>
           <AuthProvider>
+          <PrivateBlogProvider>
           <SiteConfigProvider initial={config}>
             <ToastProvider>
               <PageViewTracker />
@@ -88,6 +91,8 @@ export default function AppShell({ config, children }: AppShellProps) {
               </MusicProvider>
             </ToastProvider>
           </SiteConfigProvider>
+          <PrivateBlogSpace />
+          </PrivateBlogProvider>
         </AuthProvider>
         </TypographyProvider>
       </ThemeProvider>
