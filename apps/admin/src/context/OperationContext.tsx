@@ -1,62 +1,101 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useReducer,
+  useRef,
+  type ReactNode,
+} from "react";
 
-// 定义操作的类型
-export type OperationType = 'POST' | 'CHATTER' | 'CONFIG' | 'GALLERY' | 'FRIEND';
+export type OperationType = "POST" | "CHATTER" | "CONFIG" | "GALLERY" | "FRIEND";
 
 export interface Operation {
   id: string;
   type: OperationType;
-  label: string;      // 显示在列表里的简短描述，如 "修改文章：GNN研究"
-  description: string; // 详细描述
+  label: string;
+  description: string;
   timestamp: string;
-  payload: any;       // 实际要修改的数据内容
+  payload: any;
 }
 
-interface OperationContextType {
+type OperationInput = Omit<Operation, "id" | "timestamp">;
+
+type OperationApi = {
   operations: Operation[];
-  addOperation: (op: Omit<Operation, 'id' | 'timestamp'>) => void;
+  addOperation: (operation: OperationInput) => void;
   removeOperation: (id: string) => void;
   clearOperations: () => void;
+};
+
+type Action =
+  | { type: "add"; operation: Operation }
+  | { type: "remove"; id: string }
+  | { type: "clear" };
+
+const OperationContext = createContext<OperationApi | null>(null);
+
+function reducer(state: Operation[], action: Action): Operation[] {
+  switch (action.type) {
+    case "add": {
+      const next = action.operation;
+      const withoutDuplicate = state.filter(
+        (item) => !(item.type === next.type && item.label === next.label)
+      );
+      return [...withoutDuplicate, next];
+    }
+    case "remove":
+      return state.filter((item) => item.id !== action.id);
+    case "clear":
+      return [];
+    default:
+      return state;
+  }
 }
 
-const OperationContext = createContext<OperationContextType | undefined>(undefined);
+export function OperationProvider({ children }: { children: ReactNode }) {
+  const [operations, dispatch] = useReducer(reducer, []);
+  const serial = useRef(0);
 
-export function OperationProvider({ children }: { children: React.ReactNode }) {
-  const [operations, setOperations] = useState<Operation[]>([]);
+  const addOperation = useCallback((input: OperationInput) => {
+    const id =
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : `op-${Date.now()}-${++serial.current}`;
 
-  // 添加操作（如果同类型的操作已存在，则覆盖，防止重复积攒）
-  const addOperation = (op: Omit<Operation, 'id' | 'timestamp'>) => {
-    const newOp: Operation = {
-      ...op,
-      id: Math.random().toString(36).substr(2, 9),
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    };
-
-    setOperations(prev => {
-      // 如果是修改同一个文件，先过滤掉旧的，再加新的
-      const filtered = prev.filter(item => !(item.type === op.type && item.label === op.label));
-      return [...filtered, newOp];
+    dispatch({
+      type: "add",
+      operation: {
+        ...input,
+        id,
+        timestamp: new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+      },
     });
-  };
+  }, []);
 
-  const removeOperation = (id: string) => {
-    setOperations(prev => prev.filter(op => op.id !== id));
-  };
+  const removeOperation = useCallback((id: string) => {
+    dispatch({ type: "remove", id });
+  }, []);
 
-  const clearOperations = () => setOperations([]);
+  const clearOperations = useCallback(() => {
+    dispatch({ type: "clear" });
+  }, []);
 
-  return (
-    <OperationContext.Provider value={{ operations, addOperation, removeOperation, clearOperations }}>
-      {children}
-    </OperationContext.Provider>
+  const value = useMemo(
+    () => ({ operations, addOperation, removeOperation, clearOperations }),
+    [operations, addOperation, removeOperation, clearOperations]
   );
+
+  return <OperationContext.Provider value={value}>{children}</OperationContext.Provider>;
 }
 
-// 导出 Hook 方便其他组件调用
-export const useOperations = () => {
+export function useOperations() {
   const context = useContext(OperationContext);
   if (!context) throw new Error("useOperations must be used within an OperationProvider");
   return context;
-};
+}

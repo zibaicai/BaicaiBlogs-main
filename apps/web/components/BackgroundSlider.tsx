@@ -1,36 +1,40 @@
 "use client";
-import { useState, useEffect } from 'react';
-import { useSiteConfigContext } from '../context/SiteConfigProvider';
 
-export default function BackgroundSlider({ images: imageOverride }: { images?: string[] }) {
-  const [index, setIndex] = useState(0);
+import { useEffect, useState } from "react";
+import { useSiteConfigContext } from "../context/SiteConfigProvider";
+
+const ROTATE_MS = 10_000;
+
+export default function BackgroundSlider({ images: provided }: { images?: string[] }) {
   const { background } = useSiteConfigContext();
-  const images = imageOverride?.length ? imageOverride : background?.bgImages || [];
+  const images = provided?.length ? provided : background?.bgImages || [];
+  const imageKey = images.join("|");
+  const [active, setActive] = useState(0);
 
   useEffect(() => {
-    if (images.length <= 1) return;
+    setActive(0);
+    if (images.length < 2) return;
 
-    const timer = setInterval(() => {
-      setIndex((prev) => (prev + 1) % images.length);
-    }, 10000); // 10秒切换一次
+    const timer = window.setInterval(() => {
+      setActive((current) => (current + 1) % images.length);
+    }, ROTATE_MS);
 
-    return () => clearInterval(timer);
-  }, [images.length]);
+    return () => window.clearInterval(timer);
+    // imageKey intentionally represents the image list; the array may be recreated by context.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imageKey]);
+
+  if (images.length === 0) return null;
 
   return (
-    <div className="background-slider absolute inset-0 z-[-10] overflow-hidden">
-      {images.map((img, i) => (
+    <div className="background-slider absolute inset-0 z-[-10] overflow-hidden" aria-hidden="true">
+      {images.map((source, index) => (
         <div
-          key={img}
-          className="absolute inset-0 transition-opacity duration-[2000ms] ease-in-out transform-gpu"
+          key={`${source}-${index}`}
+          className="absolute inset-0 transform-gpu bg-cover bg-center transition-opacity duration-[1800ms] ease-in-out"
           style={{
-            backgroundImage: `url(${img})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            // 当前显示的图片 opacity 为 1，其他的为 0
-            opacity: i === index ? 1 : 0,
-            // 解决层级重叠导致的渲染压力
-            visibility: Math.abs(i - index) <= 1 || (i === images.length - 1 && index === 0) ? 'visible' : 'hidden'
+            backgroundImage: `url(${source})`,
+            opacity: index === active ? 1 : 0,
           }}
         />
       ))}

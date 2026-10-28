@@ -1,33 +1,38 @@
 "use client";
 
+import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
+
+type BackButtonProps = {
+  fallbackHref?: string;
+  label?: string;
+};
 
 export default function BackButton({
   fallbackHref = "/posts",
   label = "返回上一级",
-}: {
-  fallbackHref?: string;
-  label?: string;
-}) {
+}: BackButtonProps) {
   const router = useRouter();
 
-  const goBack = () => {
+  const handleBack = () => {
     if (typeof window !== "undefined" && window.history.length > 1) {
       router.back();
-    } else {
-      router.push(fallbackHref);
+      return;
     }
+    router.push(fallbackHref);
   };
 
   return (
     <button
       type="button"
-      onClick={goBack}
-      className="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 transition-all duration-300 group mb-6 bg-white/50 dark:bg-slate-800/50 px-4 py-2 rounded-full w-max shadow-sm cursor-pointer outline-none"
+      onClick={handleBack}
+      className="group mb-6 inline-flex w-max items-center gap-2 rounded-full border border-slate-200/80 bg-white/55 px-4 py-2 text-sm font-bold text-slate-600 shadow-sm outline-none backdrop-blur-sm transition-colors hover:border-[var(--ui-accent)]/40 hover:text-[var(--ui-accent)] dark:border-white/10 dark:bg-white/5 dark:text-slate-300"
     >
-      <svg className="w-4 h-4 transform transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-      </svg>
+      <ArrowLeft
+        size={16}
+        strokeWidth={2}
+        className="transition-transform duration-300 group-hover:-translate-x-0.5"
+      />
       {label}
     </button>
   );

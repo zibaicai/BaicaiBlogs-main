@@ -1,0 +1,25 @@
+BaicaiBlogs / 白菜博客
+Copyright and attribution notice
+
+Upstream project:
+  XHBlogs / XingHuisamaBlogs
+  https://github.com/heiehiehi/XinghuisamaBlogs
+
+Upstream license:
+  Creative Commons Attribution-NonCommercial 4.0 International
+  https://creativecommons.org/licenses/by-nc/4.0/
+
+This repository began as a derivative of the upstream blog template and has
+since been substantially reworked: the frontend and backend are separated, the
+backend is implemented with Spring Boot, deployment is self-hosted, and the
+theme, editing, music, and background-effect layers have been modified.
+
+Files that remain derived from the upstream project are still subject to the
+upstream license. Files that have been independently rewritten are identified
+in the project history and in the README modification notes.
+
+The original author's attribution and the upstream license must be retained.
+This project is non-commercial. Commercial use requires separate permission
+from the upstream author or replacement of all upstream-derived material.
+
+This notice is informational and is not legal advice.
