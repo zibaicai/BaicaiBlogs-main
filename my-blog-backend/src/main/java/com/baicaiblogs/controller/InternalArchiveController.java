@@ -4,6 +4,8 @@ import com.baicaiblogs.dto.ApiResponse;
 import com.baicaiblogs.entity.User;
 import com.baicaiblogs.service.ArchiveService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +34,36 @@ public class InternalArchiveController {
             return ApiResponse.success(archiveService.get(currentUser(), id));
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}/image")
+    public ResponseEntity<byte[]> image(@PathVariable Long id, @RequestParam String url) {
+        try {
+            ArchiveService.ArchiveImage image = archiveService.fetchImage(currentUser(), id, url, false);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(image.contentType()))
+                    .header("Content-Disposition", "inline")
+                    .header("X-Content-Type-Options", "nosniff")
+                    .header("Cache-Control", "private, no-store")
+                    .body(image.bytes());
+        } catch (Exception e) {
+            return ResponseEntity.status(403).build();
+        }
+    }
+
+    @GetMapping("/preview/image")
+    public ResponseEntity<byte[]> previewImage(@RequestParam String url) {
+        try {
+            ArchiveService.ArchiveImage image = archiveService.fetchImage(currentUser(), null, url, true);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(image.contentType()))
+                    .header("Content-Disposition", "inline")
+                    .header("X-Content-Type-Options", "nosniff")
+                    .header("Cache-Control", "private, no-store")
+                    .body(image.bytes());
+        } catch (Exception e) {
+            return ResponseEntity.status(403).build();
         }
     }
 

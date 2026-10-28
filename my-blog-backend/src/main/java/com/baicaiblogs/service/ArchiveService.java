@@ -38,6 +38,7 @@ import java.util.regex.Pattern;
 public class ArchiveService {
 
     private static final int MAX_HTML_BYTES = 2 * 1024 * 1024;
+    private static final int MAX_IMAGE_BYTES = 10 * 1024 * 1024;
     private static final int MAX_REDIRECTS = 3;
     private static final Pattern LANGUAGE_CLASS = Pattern.compile("language-[a-zA-Z0-9+#._-]{1,30}");
 
@@ -123,6 +124,48 @@ public class ArchiveService {
     public Map<String, Object> preview(User actor, String rawUrl) {
         requireSuper(actor);
         return toMap(fetch(rawUrl), true);
+    }
+
+    public ArchiveImage fetchImage(User actor, Long archiveId, String rawUrl, boolean preview) {
+        if (preview) {
+            requireSuper(actor);
+        } else {
+            requireRead(actor, archiveId);
+        }
+        URI uri = validateUrl(rawUrl);
+        try {
+            URI current = uri;
+            HttpResponse<byte[]> response = null;
+            for (int i = 0; i <= MAX_REDIRECTS; i++) {
+                HttpRequest request = HttpRequest.newBuilder(current)
+                        .timeout(Duration.ofSeconds(10))
+                        .header("User-Agent", "BaicaiArchiveImage/1.0 (+https://www.zibaicai.cn)")
+                        .header("Accept", "image/jpeg,image/png,image/webp,image/gif")
+                        .GET()
+                        .build();
+                response = HTTP.send(request, HttpResponse.BodyHandlers.ofByteArray());
+                int status = response.statusCode();
+                if (status >= 300 && status < 400) {
+                    String location = response.headers().firstValue("Location").orElse(null);
+                    if (location == null || location.isBlank()) throw new RuntimeException("图片重定向无效");
+                    current = validateUrl(current.resolve(location).toString());
+                    continue;
+                }
+                if (status != 200) throw new RuntimeException("图片获取失败，HTTP " + status);
+                break;
+            }
+            if (response == null) throw new RuntimeException("图片获取失败");
+            byte[] bytes = response.body();
+            if (bytes == null || bytes.length == 0) throw new RuntimeException("图片内容为空");
+            if (bytes.length > MAX_IMAGE_BYTES) throw new RuntimeException("图片超过 10MB 限制");
+            String contentType = detectImageType(bytes);
+            if (contentType == null) throw new RuntimeException("仅支持 JPEG / PNG / WebP / GIF 图片");
+            return new ArchiveImage(bytes, contentType);
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("图片抓取失败：" + e.getMessage());
+        }
     }
 
     @Transactional
@@ -406,6 +449,27 @@ public class ArchiveService {
             throw new RuntimeException("无法计算摘要");
         }
     }
+
+    private String detectImageType(byte[] b) {
+        if (b.length >= 3 && (b[0] & 0xFF) == 0xFF && (b[1] & 0xFF) == 0xD8 && (b[2] & 0xFF) == 0xFF) {
+            return "image/jpeg";
+        }
+        if (b.length >= 8 && (b[0] & 0xFF) == 0x89 && b[1] == 'P' && b[2] == 'N' && b[3] == 'G'
+                && b[4] == 0x0D && b[5] == 0x0A && b[6] == 0x1A && b[7] == 0x0A) {
+            return "image/png";
+        }
+        if (b.length >= 12 && b[0] == 'R' && b[1] == 'I' && b[2] == 'F' && b[3] == 'F'
+                && b[8] == 'W' && b[9] == 'E' && b[10] == 'B' && b[11] == 'P') {
+            return "image/webp";
+        }
+        if (b.length >= 6 && b[0] == 'G' && b[1] == 'I' && b[2] == 'F' && b[3] == '8'
+                && (b[4] == '7' || b[4] == '9') && b[5] == 'a') {
+            return "image/gif";
+        }
+        return null;
+    }
+
+    public record ArchiveImage(byte[] bytes, String contentType) {}
 
     private record Fetched(
             String sourceUrl,

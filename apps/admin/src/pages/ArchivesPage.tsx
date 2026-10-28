@@ -40,13 +40,24 @@ async function archiveRequest<T>(path: string, init: RequestInit = {}): Promise<
   return json.data as T;
 }
 
-function cleanHtml(html = "") {
-  return DOMPurify.sanitize(html, {
-    USE_PROFILES: { html: true },
-    FORBID_TAGS: ["style", "iframe", "object", "embed", "form", "input", "button", "svg", "math"],
-    FORBID_ATTR: ["style"],
-    ALLOW_DATA_ATTR: false,
-  });
+function cleanHtml(html = "", proxyBase = "") {
+  const rewriteImages = (node: Element) => {
+    if (node.tagName !== "IMG" || !proxyBase) return;
+    const src = node.getAttribute("src") || "";
+    if (!(src.startsWith("http://") || src.startsWith("https://"))) return;
+    node.setAttribute("src", `${proxyBase}?url=${encodeURIComponent(src)}`);
+  };
+  DOMPurify.addHook("afterSanitizeAttributes", rewriteImages);
+  try {
+    return DOMPurify.sanitize(html, {
+      USE_PROFILES: { html: true },
+      FORBID_TAGS: ["style", "iframe", "object", "embed", "form", "input", "button", "svg", "math"],
+      FORBID_ATTR: ["style"],
+      ALLOW_DATA_ATTR: false,
+    });
+  } finally {
+    DOMPurify.removeHook("afterSanitizeAttributes");
+  }
 }
 
 export default function ArchivesPage() {
@@ -185,8 +196,14 @@ export default function ArchivesPage() {
     }
   };
 
-  const safeContent = useMemo(() => cleanHtml(selected?.contentHtml), [selected?.contentHtml]);
-  const safePreview = useMemo(() => cleanHtml(preview?.contentHtml), [preview?.contentHtml]);
+  const safeContent = useMemo(
+    () => cleanHtml(selected?.contentHtml, selected ? `/api/internal/archives/${selected.id}/image` : ""),
+    [selected?.contentHtml, selected?.id]
+  );
+  const safePreview = useMemo(
+    () => cleanHtml(preview?.contentHtml, preview ? "/api/internal/archives/preview/image" : ""),
+    [preview?.contentHtml]
+  );
 
   return (
     <section className="px-4 py-6 md:px-8">
