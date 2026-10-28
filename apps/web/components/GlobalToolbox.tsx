@@ -55,6 +55,14 @@ export default function GlobalToolbox() {
   const { enabled: personalView, toggle: togglePersonalView } = usePersonalView();
 
   useEffect(() => {
+    if (!user || personalView) return;
+    if (sessionStorage.getItem("personal-view-pending") !== "1") return;
+    sessionStorage.removeItem("personal-view-pending");
+    togglePersonalView();
+    window.setTimeout(() => window.location.reload(), 0);
+  }, [user, personalView, togglePersonalView]);
+
+  useEffect(() => {
     try {
       const raw = localStorage.getItem("toolbox-prefs");
       if (raw) {
@@ -305,6 +313,7 @@ export default function GlobalToolbox() {
         onClick={() => {
           setIsOpen(false);
           if (!personalView && !user) {
+            sessionStorage.setItem("personal-view-pending", "1");
             router.push(`/login?next=${encodeURIComponent(pathname)}`);
             return;
           }
