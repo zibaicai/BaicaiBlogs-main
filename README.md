@@ -153,22 +153,12 @@ tail -f /var/log/nginx/*.log       # Nginx 日志
 
 见 [UpdateLog.md](UpdateLog.md)。
 
-## 致谢
+## 来源与致谢
 
-本项目早期基于 [XingHuiSama 的 XHBlogs](https://github.com/heiehiehi) 博客模板二次开发，此后已独立演化（前后端拆分、Java 后端、自托管部署体系）。感谢原作者的开源分享。
+本项目在立项与架构规划阶段参考了 [XingHuiSama 的 XHBlogs](https://github.com/heiehiehi/XinghuisamaBlogs) 模板架构，早期选用过其中部分通用组件与页面结构。此后项目按自身需求持续迭代，代码由本项目作者维护。感谢原作者的开源分享。
 
 ## 许可证
 
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
 
 本项目沿用 [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) 协议：可自由学习、分享与二次修改（发布需注明原作者），**严禁商用**。
-
-## 修改与来源说明
-
-本项目早期基于 [XingHuiSama 的 XHBlogs](https://github.com/heiehiehi/XinghuisamaBlogs) 二次开发，原始项目采用 CC BY-NC 4.0 许可证。
-
-当前版本已对部分共享组件进行独立重写，但仍有部分文件保留了早期模板的结构或接口。详细信息见根目录 `NOTICE`。无论是否重写，原始作者署名、原始许可证和本项目许可证都应保留；本项目不得用于商业用途。
-
-## Modification and provenance notice
-
-This project started from XingHuiSama's XHBlogs template. See the root `NOTICE` file for the upstream URL, license, and the scope of later modifications. Attribution and the non-commercial license must be preserved. Commercial use requires permission from the upstream author or replacement of all upstream-derived material.

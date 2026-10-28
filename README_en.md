@@ -158,7 +158,7 @@ See [UpdateLog.md](UpdateLog.md).
 
 ## Acknowledgments
 
-This project started as a fork-style derivative of XingHuiSama's XHBlogs blog template and has since evolved independently (frontend/backend split, Java backend, self-hosted deployment). Thanks to the original author for open-sourcing the template.
+This project referenced XingHuiSama's XHBlogs template architecture during project initiation and architecture planning, and used some of its shared components and page structures in early versions. The project has since evolved according to its own needs; the current code is maintained by this project's author. Thanks to the original author for open-sourcing the template.
 
 ## License
 
