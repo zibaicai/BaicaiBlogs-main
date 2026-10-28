@@ -6,23 +6,7 @@ import "./globals.css";
 import "./github-markdown-light.css";
 import "./github-markdown-dark.css";
 
-import { ThemeProvider } from "../components/ThemeProvider";
-import { AuthProvider } from "../lib/auth";
-import { SiteConfigProvider } from "../context/SiteConfigProvider";
-import { ToastProvider } from "../components/ToastProvider";
-import { MusicProvider } from "../components/MusicProvider";
-import SplashScreen from "../components/SplashScreen";
-import ThemeBackdrop from "../components/ThemeBackdrop";
-import DanmakuBackground from "../components/DanmakuBackground";
-import DanmakuComposer from "../components/DanmakuComposer";
-import GlobalSnow from "../components/GlobalSnow";
-import FloatingPlayer from "../components/FloatingPlayer";
-import GlobalToolbox from "../components/GlobalToolbox";
-import ClickEffect from "../components/ClickEffect";
-import WhalePet from "../components/WhalePet";
-import PageViewTracker from "../components/PageViewTracker";
-import PresenceHeartbeat from "../components/PresenceHeartbeat";
-import Footer from "../components/Footer";
+import AppShell from "../components/AppShell";
 import { getPublicSiteConfig } from "../lib/server-api";
 
 export const dynamic = "force-dynamic";
@@ -32,9 +16,36 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: siteInfo.title,
     description: siteInfo.bio,
-    icons: { icon: siteInfo.faviconUrl, apple: siteInfo.faviconUrl },
+    icons: {
+      icon: siteInfo.faviconUrl,
+      apple: siteInfo.faviconUrl,
+    },
   };
 }
+
+const THEME_BOOTSTRAP = `
+  try {
+    if (localStorage.getItem('blog-theme') === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+    document.documentElement.setAttribute(
+      'data-theme-preset',
+      localStorage.getItem('theme-preset') === 'violet' ? 'violet' : 'ocean'
+    );
+    var effects = localStorage.getItem('visual-effects');
+    if (effects === 'off' || (effects === null && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+      document.documentElement.setAttribute('data-visual-mode', 'plain');
+    }
+  } catch (error) {}
+`;
+
+const SPLASH_BOOTSTRAP = `
+  try {
+    if (sessionStorage.getItem('hasSeenSplash') === 'true') {
+      document.documentElement.classList.add('splash-seen');
+    }
+  } catch (error) {}
+`;
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const config = await getPublicSiteConfig();
@@ -43,101 +54,33 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="zh-CN" className="h-full antialiased" suppressHydrationWarning>
       <head>
         <Script id="theme-bootstrap" strategy="beforeInteractive">
-          {`
-            try {
-              if (localStorage.getItem('blog-theme') === 'dark') {
-                document.documentElement.classList.add('dark');
-              }
-              if (localStorage.getItem('theme-preset') === 'violet') {
-                document.documentElement.setAttribute('data-theme-preset', 'violet');
-              } else {
-                document.documentElement.setAttribute('data-theme-preset', 'ocean');
-              }
-              var effects = localStorage.getItem('visual-effects');
-              if (effects === 'off' || (effects === null && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
-                document.documentElement.setAttribute('data-visual-mode', 'plain');
-              }
-            } catch (e) {}
-          `}
+          {THEME_BOOTSTRAP}
         </Script>
+
         <style
           suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: `
               #app-mount-root { opacity: 0; visibility: hidden; pointer-events: none; }
-              html.splash-seen #app-mount-root { opacity: 1 !important; visibility: visible !important; pointer-events: auto !important; }
+              html.splash-seen #app-mount-root {
+                opacity: 1 !important;
+                visibility: visible !important;
+                pointer-events: auto !important;
+              }
             `,
           }}
         />
+
         <Script id="handle-splash-logic" strategy="beforeInteractive">
-          {`
-            try {
-              if (sessionStorage.getItem('hasSeenSplash') === 'true') {
-                document.documentElement.classList.add('splash-seen');
-              }
-            } catch (e) {}
-          `}
+          {SPLASH_BOOTSTRAP}
         </Script>
       </head>
 
       <body
-        className="w-screen overflow-x-hidden min-h-full flex flex-col relative transition-colors duration-1000 bg-slate-50 dark:bg-slate-950"
+        className="relative flex min-h-full w-screen flex-col overflow-x-hidden bg-slate-50 transition-colors duration-1000 dark:bg-slate-950"
         suppressHydrationWarning
       >
-        <ThemeProvider>
-          <AuthProvider>
-            <SiteConfigProvider initial={config}>
-              <ToastProvider>
-              <PageViewTracker />
-              <PresenceHeartbeat />
-              <SplashScreen />
-              <MusicProvider>
-                <div id="app-mount-root" className="flex-1 flex flex-col transition-opacity duration-1000">
-                  <ThemeBackdrop />
-
-                  <DanmakuBackground />
-                  <DanmakuComposer />
-                  <GlobalSnow />
-
-                  <div className="relative z-10 flex-1 flex flex-col">
-                    {children}
-                    <Footer />
-                  </div>
-
-                  <FloatingPlayer />
-                  <GlobalToolbox />
-                  <ClickEffect />
-                </div>
-
-                <style
-                  suppressHydrationWarning
-                  dangerouslySetInnerHTML={{
-                    __html: `
-                      @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-                      body.winter-mode .bg-effects-wrapper { opacity: 0 !important; visibility: hidden; }
-                      .winter-mode .snow-cap { position: relative !important; overflow: visible !important; }
-                      .dark.winter-mode .snow-cap {
-                        background-color: rgba(23, 37, 84, 0.4) !important;
-                        border-color: rgba(59, 130, 246, 0.3) !important;
-                        backdrop-filter: blur(12px) brightness(80%) !important;
-                        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
-                      }
-                      body.winter-mode .snow-cap {
-                        background-color: rgba(239, 246, 255, 0.45) !important;
-                        border-color: rgba(191, 219, 254, 0.6) !important;
-                        backdrop-filter: blur(12px) saturate(120%) !important;
-                        box-shadow: 0 8px 32px rgba(191, 219, 254, 0.25) !important;
-                        transition: all 0.7s ease !important;
-                      }
-                    `,
-                  }}
-                />
-              </MusicProvider>
-            </ToastProvider>
-            </SiteConfigProvider>
-          </AuthProvider>
-        </ThemeProvider>
-        <WhalePet />
+        <AppShell config={config}>{children}</AppShell>
       </body>
     </html>
   );
