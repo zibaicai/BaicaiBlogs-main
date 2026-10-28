@@ -2,6 +2,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
+import { TypographyProvider } from "./components/TypographyProvider";
 import "./style.css";
 
 // 管理端固定深色，但强调色跟随 C 端最后一次选择的主题预设。
@@ -25,8 +26,10 @@ document.documentElement.classList.add("dark");
 
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <TypographyProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </TypographyProvider>
   </React.StrictMode>
 );

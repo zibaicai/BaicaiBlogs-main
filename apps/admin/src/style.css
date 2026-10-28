@@ -93,7 +93,7 @@ html[data-admin-preset="violet"] {
 
   body {
     margin: 0;
-    font-family: "Source Han Serif SC", "Noto Serif SC", "Microsoft YaHei", system-ui, sans-serif;
+    font-family: var(--font-body, "Source Han Serif SC", "Noto Serif SC", "Microsoft YaHei", system-ui, sans-serif);
     color: #e2e8f0;
     background-color: #020617;
     -webkit-font-smoothing: antialiased;

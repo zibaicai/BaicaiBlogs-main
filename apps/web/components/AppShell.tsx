@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { AuthProvider } from "../lib/auth";
 import { SiteConfigProvider } from "../context/SiteConfigProvider";
 import { ThemeProvider } from "./ThemeProvider";
+import { TypographyProvider } from "./TypographyProvider";
 import { ToastProvider } from "./ToastProvider";
 import { MusicProvider } from "./MusicProvider";
 import PageViewTracker from "./PageViewTracker";
@@ -28,7 +29,8 @@ export default function AppShell({ config, children }: AppShellProps) {
   return (
     <>
       <ThemeProvider>
-        <AuthProvider>
+        <TypographyProvider>
+          <AuthProvider>
           <SiteConfigProvider initial={config}>
             <ToastProvider>
               <PageViewTracker />
@@ -87,6 +89,7 @@ export default function AppShell({ config, children }: AppShellProps) {
             </ToastProvider>
           </SiteConfigProvider>
         </AuthProvider>
+        </TypographyProvider>
       </ThemeProvider>
       <WhalePet />
     </>

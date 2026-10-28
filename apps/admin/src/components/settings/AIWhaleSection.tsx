@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Bot, Cpu, MessageSquareText, SlidersHorizontal, Sparkles } from "lucide-react";
+import { AppIcon } from "../ui/AppIcon";
 import {
   inputClass,
   SettingsCard,
@@ -45,7 +45,7 @@ export default function AIWhaleSection({ formData, handleUpdate, pushToQueue }: 
     <SettingsCard
       title="AI 鲸鱼娘性格调度中心"
       description="调整鲸鱼娘的说话方式、模型与生成参数"
-      icon={<Bot size={20} className="text-indigo-400" />}
+      icon={<AppIcon name="bot" size={20} className="text-indigo-400" />}
       action={
         <SettingsSaveButton onClick={() => pushToQueue("AI 鲸鱼娘配置")}>
           暂存到队列
@@ -66,7 +66,8 @@ export default function AIWhaleSection({ formData, handleUpdate, pushToQueue }: 
 
         <SettingsField label="模型 ID" hint="建议使用轻量模型，响应速度更快。">
           <div className="relative">
-            <Cpu
+            <AppIcon
+              name="cpu"
               size={16}
               className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
             />
@@ -82,7 +83,8 @@ export default function AIWhaleSection({ formData, handleUpdate, pushToQueue }: 
 
         <SettingsField label="灵魂 Prompt / 性格设定">
           <div className="relative">
-            <MessageSquareText
+            <AppIcon
+              name="message"
               size={16}
               className="pointer-events-none absolute left-4 top-4 text-indigo-400"
             />
@@ -99,7 +101,7 @@ export default function AIWhaleSection({ formData, handleUpdate, pushToQueue }: 
           <div className="rounded-2xl border border-slate-200/70 bg-slate-50/60 p-5 dark:border-slate-700/50 dark:bg-slate-950/30">
             <div className="mb-3 flex items-center justify-between gap-3">
               <span className="flex items-center gap-2 text-xs font-black text-slate-600 dark:text-slate-300">
-                <SlidersHorizontal size={15} /> 最大回复 Tokens
+                <AppIcon name="sliders" size={15} /> 最大回复 Tokens
               </span>
               <span className="rounded-md bg-indigo-500/10 px-2 py-1 text-[10px] font-black text-indigo-500">
                 {config.maxOutputTokens}
@@ -119,7 +121,7 @@ export default function AIWhaleSection({ formData, handleUpdate, pushToQueue }: 
           <div className="rounded-2xl border border-slate-200/70 bg-slate-50/60 p-5 dark:border-slate-700/50 dark:bg-slate-950/30">
             <div className="mb-3 flex items-center justify-between gap-3">
               <span className="flex items-center gap-2 text-xs font-black text-slate-600 dark:text-slate-300">
-                <Sparkles size={15} /> 模型发散度
+                <AppIcon name="sparkles" size={15} /> 模型发散度
               </span>
               <span className="rounded-md bg-indigo-500/10 px-2 py-1 text-[10px] font-black text-indigo-500">
                 {config.temperature}

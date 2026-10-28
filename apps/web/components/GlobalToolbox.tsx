@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Eye, EyeOff, Music2, Palette, Pause, Play, Settings2, Sparkles, X } from "lucide-react";
+import { AppIcon } from "./ui/AppIcon";
 import { usePathname } from "next/navigation";
 import { useMusic } from "./MusicProvider";
 import { useTheme } from "./ThemeProvider";
@@ -134,7 +134,7 @@ export default function GlobalToolbox() {
                 className="rounded-full p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-white"
                 aria-label="关闭工具目录"
               >
-                <X size={16} />
+                <AppIcon name="close" size={16} />
               </button>
             </div>
 
@@ -142,7 +142,7 @@ export default function GlobalToolbox() {
               <div className="flex items-center justify-between gap-4 rounded-2xl px-3 py-3 transition-colors hover:bg-slate-100/70 dark:hover:bg-white/5">
                 <div className="flex min-w-0 items-center gap-2.5">
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
-                    <Sparkles size={15} />
+                    <AppIcon name="sparkles" size={15} />
                   </span>
                   <div className="min-w-0">
                     <div className="text-sm font-bold text-slate-800 dark:text-slate-100">背景特效</div>
@@ -201,7 +201,7 @@ export default function GlobalToolbox() {
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-2.5">
                     <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
-                      <Music2 size={15} />
+                      <AppIcon name="music" size={15} />
                     </span>
                     <div className="min-w-0">
                       <div className="text-sm font-bold text-slate-800 dark:text-slate-100">音乐</div>
@@ -218,7 +218,7 @@ export default function GlobalToolbox() {
                       aria-label={isPlaying ? "暂停音乐" : "播放音乐"}
                       className="btn btn-primary flex h-8 w-8 items-center justify-center rounded-full disabled:opacity-40"
                     >
-                      {isPlaying ? <Pause size={13} /> : <Play size={13} />}
+                      {isPlaying ? <AppIcon name="pause" size={13} /> : <AppIcon name="play" size={13} />}
                     </button>
                     <button
                       type="button"
@@ -227,7 +227,7 @@ export default function GlobalToolbox() {
                       aria-label={musicVisible ? "隐藏迷你播放器" : "显示迷你播放器"}
                       className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 text-slate-500 disabled:opacity-30 dark:border-white/10 dark:text-slate-300"
                     >
-                      {musicVisible ? <EyeOff size={13} /> : <Eye size={13} />}
+                      {musicVisible ? <AppIcon name="eyeOff" size={13} /> : <AppIcon name="eye" size={13} />}
                     </button>
                   </div>
                 </div>
@@ -267,7 +267,7 @@ export default function GlobalToolbox() {
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-2.5">
                     <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[var(--ui-accent-soft)] text-[var(--ui-accent)]">
-                      <Palette size={15} />
+                      <AppIcon name="palette" size={15} />
                     </span>
                     <div className="min-w-0">
                       <div className="text-sm font-bold text-slate-800 dark:text-slate-100">配色工作台</div>
@@ -306,7 +306,7 @@ export default function GlobalToolbox() {
             : "bg-white/80 text-slate-600 dark:bg-slate-900/80 dark:text-slate-200"
         }`}
       >
-        {isOpen ? <X size={19} /> : <Settings2 size={19} />}
+        {isOpen ? <AppIcon name="close" size={19} /> : <AppIcon name="settings" size={19} />}
       </button>
       <ThemeStudio open={themeOpen} onClose={() => setThemeOpen(false)} />
     </div>
