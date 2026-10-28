@@ -5168,7 +5168,7 @@ html:not(.dark) .hv-empty {
 .music-main .music-pane-body .comment-section {
   margin: 0;
   padding: 0;
-  border: 0;
+  border: 0 !important;
   background: transparent;
   backdrop-filter: none;
 }
@@ -5183,7 +5183,7 @@ html:not(.dark) .hv-empty {
   background: transparent;
   backdrop-filter: none;
 }
-.music-main .music-lyrics { max-height: none; }
+.music-main .music-lyrics { max-height: none; overflow-x: hidden; }
 .music-player-bar { height: 68px; }
 .music-app-page .music-player-inner { height: 100%; box-sizing: border-box; }
 
