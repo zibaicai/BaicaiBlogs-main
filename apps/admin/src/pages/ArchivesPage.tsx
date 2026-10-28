@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import DOMPurify from "dompurify";
-import { Archive, Download, ExternalLink, Loader2, Lock, Plus, ShieldCheck, Trash2, UserRound, X } from "lucide-react";
+import { Archive, Download, ExternalLink, Loader2, Lock, Plus, RefreshCw, ShieldCheck, Trash2, UserRound, X } from "lucide-react";
 import { getAdminRole, getToken } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
 import { Input } from "../components/ui/Input";
@@ -205,6 +205,21 @@ export default function ArchivesPage() {
     }
   };
 
+  const refreshArchive = async () => {
+    if (!selected || !window.confirm("重新抓取会覆盖当前正文和图片，确认继续？")) return;
+    setBusy(true);
+    try {
+      const updated = await archiveRequest<ArchiveItem>(`/internal/archives/${selected.id}/refresh`, { method: "POST" });
+      setSelected(updated);
+      await load();
+      showToast("已重新抓取", "success");
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "重新抓取失败", "error");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const downloadSnapshot = async () => {
     if (!selected) return;
     try {
@@ -383,6 +398,11 @@ export default function ArchivesPage() {
                     {superAdmin && (
                       <button type="button" onClick={() => void downloadSnapshot()} className="inline-flex items-center gap-1 rounded-xl border border-white/10 px-3 py-2 text-[10px] font-bold text-slate-300 hover:bg-white/5">
                         <Download size={12} /> 原始快照
+                      </button>
+                    )}
+                    {superAdmin && (
+                      <button type="button" onClick={() => void refreshArchive()} disabled={busy} className="inline-flex items-center gap-1 rounded-xl border border-white/10 px-3 py-2 text-[10px] font-bold text-slate-300 hover:bg-white/5 disabled:opacity-50">
+                        <RefreshCw size={12} /> 重新抓取
                       </button>
                     )}
                     {superAdmin && <Button variant="danger" onClick={() => void remove()}><Trash2 size={13} /> 删除</Button>}

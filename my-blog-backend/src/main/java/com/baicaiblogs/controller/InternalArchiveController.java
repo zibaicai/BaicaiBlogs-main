@@ -111,6 +111,15 @@ public class InternalArchiveController {
         }
     }
 
+    @PostMapping("/{id}/refresh")
+    public ApiResponse<Map<String, Object>> refresh(@PathVariable Long id) {
+        try {
+            return ApiResponse.success("已重新抓取", archiveService.refresh(currentUser(), id));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
     @GetMapping("/{id}/grants")
     public ApiResponse<List<Map<String, Object>>> grants(@PathVariable Long id) {
         try {

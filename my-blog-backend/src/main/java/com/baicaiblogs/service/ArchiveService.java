@@ -391,6 +391,55 @@ public class ArchiveService {
     }
 
     @Transactional
+    public Map<String, Object> refresh(User actor, Long archiveId) {
+        requireSuper(actor);
+        ArchiveDocument doc = documentRepository.findById(archiveId)
+                .orElseThrow(() -> new RuntimeException("存档不存在"));
+        Fetched fetched = fetch(doc.getSourceUrl());
+
+        String rawSnapshotKey = null;
+        String rawSnapshot = fetched.rawSnapshot();
+        if (ossProperties.isArchiveConfigured()) {
+            try {
+                rawSnapshotKey = ossService.uploadArchiveSnapshot(
+                        "snapshot-" + UUID.randomUUID() + ".html",
+                        fetched.rawSnapshot().getBytes(StandardCharsets.UTF_8));
+                rawSnapshot = null;
+            } catch (Exception ignored) {
+                // Keep the DB fallback.
+            }
+        }
+
+        String oldRawKey = doc.getRawSnapshotKey();
+        doc.setSourceUrl(fetched.sourceUrl());
+        doc.setCanonicalUrl(fetched.canonicalUrl());
+        doc.setSourceTitle(fetched.title());
+        doc.setSourceAuthor(fetched.author());
+        doc.setSourceSite(fetched.site());
+        doc.setSourcePublishedAt(fetched.publishedAt());
+        doc.setContentHtml(fetched.html());
+        doc.setContentHash(fetched.contentHash());
+        doc.setRawSnapshot(rawSnapshot);
+        doc.setRawSnapshotKey(rawSnapshotKey);
+        doc = documentRepository.save(doc);
+
+        deleteAssetResources(archiveId);
+        persistImages(actor, doc);
+        doc = documentRepository.save(doc);
+        if (oldRawKey != null) ossService.deleteArchiveSnapshot(oldRawKey);
+        log(archiveId, actor, "REFRESH", fetched.sourceUrl());
+        return toMap(doc, true);
+    }
+
+    private void deleteAssetResources(Long archiveId) {
+        assetRepository.findByArchiveId(archiveId).forEach(asset -> {
+            if (asset.getStorageKey() != null) ossService.deleteArchiveAsset(asset.getStorageKey());
+        });
+        assetRepository.deleteByArchiveId(archiveId);
+        assetRepository.flush();
+    }
+
+    @Transactional
     public void delete(User actor, Long archiveId) {
         requireSuper(actor);
         ArchiveDocument doc = documentRepository.findById(archiveId)
@@ -398,11 +447,9 @@ public class ArchiveService {
         if (doc.getRawSnapshotKey() != null) {
             ossService.deleteArchiveSnapshot(doc.getRawSnapshotKey());
         }
-        assetRepository.findByArchiveId(archiveId).forEach(asset -> {
-            if (asset.getStorageKey() != null) ossService.deleteArchiveAsset(asset.getStorageKey());
-        });
-        assetRepository.deleteByArchiveId(archiveId);
+        deleteAssetResources(archiveId);
         grantRepository.deleteByArchiveId(archiveId);
+        accessLogRepository.deleteByArchiveId(archiveId);
         deleteRequestRepository.deleteByArchiveId(archiveId);
         documentRepository.deleteById(archiveId);
     }
