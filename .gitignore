@@ -56,6 +56,11 @@ my-blog-backend/*.iml
 
 # 取消追踪 application.yml 文件
 application.yml
+# 本地/生产密钥配置
+application-local.yml
+backend.env
+!application.yml.example
+!deploy/backend.env.example
 # monorepo apps
 apps/*/node_modules/
 apps/*/dist/

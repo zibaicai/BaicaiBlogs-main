@@ -1,0 +1,52 @@
+server:
+  port: 8080
+
+# 默认激活 dev；生产通过 --spring.profiles.active=prod
+# 或环境变量 SPRING_PROFILES_ACTIVE=prod 覆盖。
+spring:
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+    defer-datasource-initialization: true
+
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:sql/schema.sql
+      data-locations: classpath:sql/data.sql
+      encoding: UTF-8
+
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+
+jwt:
+  # 生产必须设置；建议使用 openssl rand -base64 48 生成
+  secret: "${JWT_SECRET:}"
+  expiration: "${JWT_EXPIRATION:86400000}"
+
+app:
+  turnstile:
+    # 两项都为空时注册验证关闭，详见 docs/configuration.md
+    secret: "${TURNSTILE_SECRET:}"
+    site-key: "${TURNSTILE_SITE_KEY:}"
+
+  oss:
+    endpoint: "${OSS_ENDPOINT:oss-cn-shanghai.aliyuncs.com}"
+    access-key-id: "${OSS_ACCESS_KEY_ID:}"
+    access-key-secret: "${OSS_ACCESS_KEY_SECRET:}"
+    bucket-name: "${OSS_BUCKET:}"
+    # 公开访问域名前缀，只用于公开资源
+    public-url-prefix: "${OSS_PUBLIC_URL_PREFIX:}"
+    dir: "${OSS_DIR:posts/}"
+    # 内部存档原始快照专用私有 Bucket；为空时快照回退到数据库
+    archive-bucket-name: "${OSS_ARCHIVE_BUCKET:}"
+    archive-dir: "${OSS_ARCHIVE_DIR:archive-snapshots/}"

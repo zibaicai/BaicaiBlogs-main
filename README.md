@@ -105,6 +105,21 @@ node deploy.mjs rollback admin   # 回滚管理端到最近一次备份
 
 ## 生产环境配置
 
+### 配置文件与密钥
+
+后端配置模板在
+[`my-blog-backend/src/main/resources/application.yml.example`](my-blog-backend/src/main/resources/application.yml.example)，
+服务器环境变量模板在 [`deploy/backend.env.example`](deploy/backend.env.example)。
+
+真实密钥不要写入 Git。完整配置说明见
+[docs/configuration.md](docs/configuration.md)，包括：
+
+- 本地开发与生产环境
+- 数据库、JWT、OSS、Turnstile
+- 公开 Bucket 与私有存档 Bucket
+- 密钥生成、轮换与备份
+- 常见启动错误
+
 服务器与目录等事实集中定义在 [deploy.config.json](deploy.config.json)，换服务器 / 改目录只动这一个文件：
 
 | 配置项 | 当前值 |

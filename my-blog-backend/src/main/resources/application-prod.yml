@@ -4,8 +4,8 @@
 spring:
   datasource:
     # 云服务器 MySQL 与应用同机部署，用 localhost 匹配 root@localhost 用户
-    url: jdbc:mysql://localhost:3306/blogs?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
-    username: root
+    url: ${DB_URL:jdbc:mysql://localhost:3306/blogs?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true}
+    username: ${DB_USERNAME:root}
     # 密码通过服务器环境变量注入，禁止提交到 Git
     password: '${DB_PASSWORD}'
     driver-class-name: com.mysql.cj.jdbc.Driver

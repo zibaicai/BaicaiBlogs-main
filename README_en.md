@@ -108,6 +108,18 @@ node deploy.mjs rollback admin   # restore the latest admin backup
 
 ## Production Configuration
 
+### Configuration and secrets
+
+The backend template is
+[`my-blog-backend/src/main/resources/application.yml.example`](my-blog-backend/src/main/resources/application.yml.example),
+and the server environment template is
+[`deploy/backend.env.example`](deploy/backend.env.example).
+
+Never commit real credentials. See
+[docs/configuration.md](docs/configuration.md) for local and production setup,
+database/JWT/OSS/Turnstile variables, public vs. private OSS buckets, and secret
+rotation/backup guidance.
+
 Server facts are centralized in [deploy.config.json](deploy.config.json) — change servers or paths in one place:
 
 | Item | Current value |
