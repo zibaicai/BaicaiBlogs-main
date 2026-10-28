@@ -6208,12 +6208,12 @@ html.dark[data-theme-preset="violet"] .site-gradient {
 
   .home-v2 .hv-post-row:hover .hv-post-main strong,
   .home-v2 .hv-moment-row:hover .hv-moment-main strong {
-    color: var(--hv-accent-strong);
+    color: var(--ui-accent-strong);
   }
 
   .home-v2 .hv-post-row:hover .hv-post-index,
   .home-v2 .hv-moment-row:hover .hv-moment-mark {
-    color: var(--hv-accent-strong);
+    color: var(--ui-accent-strong);
     transform: translateX(2px);
   }
 
