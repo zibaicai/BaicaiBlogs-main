@@ -18,7 +18,14 @@ import org.owasp.html.HtmlPolicyBuilder;
 import org.owasp.html.PolicyFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import jakarta.servlet.http.HttpServletRequest;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
+import java.io.ByteArrayInputStream;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -30,6 +37,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +49,8 @@ public class ArchiveService {
 
     private static final int MAX_HTML_BYTES = 2 * 1024 * 1024;
     private static final int MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+    private static final long MAX_IMAGE_PIXELS = 40_000_000L;
+    private static final int MAX_GIF_FRAMES = 300;
     private static final int MAX_REDIRECTS = 3;
     private static final Pattern LANGUAGE_CLASS = Pattern.compile("language-[a-zA-Z0-9+#._-]{1,30}");
 
@@ -85,11 +95,12 @@ public class ArchiveService {
         return documents.stream().map(doc -> toMap(doc, false)).toList();
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public Map<String, Object> get(User actor, Long id) {
         ArchiveDocument doc = documentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("存档不存在"));
         requireRead(actor, doc.getId());
+        log(doc.getId(), actor, "VIEW", null);
         return toMap(doc, true);
     }
 
@@ -174,6 +185,7 @@ public class ArchiveService {
             if (bytes.length > MAX_IMAGE_BYTES) throw new RuntimeException("图片超过 10MB 限制");
             String contentType = detectImageType(bytes);
             if (contentType == null) throw new RuntimeException("仅支持 JPEG / PNG / WebP / GIF 图片");
+            validateImageDimensions(bytes);
             return new ArchiveImage(bytes, contentType);
         } catch (RuntimeException e) {
             throw e;
@@ -350,10 +362,25 @@ public class ArchiveService {
     }
 
     private void log(Long archiveId, User actor, String action, String detail) {
+        String ipHash = null;
+        String userAgent = null;
+        ServletRequestAttributes attrs =
+                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attrs != null) {
+            HttpServletRequest request = attrs.getRequest();
+            String forwarded = request.getHeader("X-Forwarded-For");
+            String ip = forwarded == null || forwarded.isBlank()
+                    ? request.getRemoteAddr()
+                    : forwarded.split(",")[0].trim();
+            if (ip != null && !ip.isBlank()) ipHash = sha256(ip);
+            userAgent = request.getHeader("User-Agent");
+        }
         accessLogRepository.save(ArchiveAccessLog.builder()
                 .archiveId(archiveId)
                 .userId(actor.getId())
                 .action(action)
+                .ipHash(ipHash)
+                .userAgent(userAgent == null ? null : userAgent.substring(0, Math.min(userAgent.length(), 500)))
                 .detail(detail == null ? null : detail.substring(0, Math.min(detail.length(), 1000)))
                 .createdAt(LocalDateTime.now())
                 .build());
@@ -543,6 +570,31 @@ public class ArchiveService {
             return "image/gif";
         }
         return null;
+    }
+
+    private void validateImageDimensions(byte[] bytes) {
+        try (ImageInputStream input = ImageIO.createImageInputStream(new ByteArrayInputStream(bytes))) {
+            if (input == null) throw new RuntimeException("图片无法读取");
+            Iterator<ImageReader> readers = ImageIO.getImageReaders(input);
+            if (!readers.hasNext()) throw new RuntimeException("图片格式无法识别");
+            ImageReader reader = readers.next();
+            try {
+                reader.setInput(input, false, true);
+                int width = reader.getWidth(0);
+                int height = reader.getHeight(0);
+                if (width <= 0 || height <= 0 || (long) width * height > MAX_IMAGE_PIXELS) {
+                    throw new RuntimeException("图片尺寸过大");
+                }
+                int frames = reader.getNumImages(true);
+                if (frames > MAX_GIF_FRAMES) throw new RuntimeException("动图帧数过多");
+            } finally {
+                reader.dispose();
+            }
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("图片校验失败");
+        }
     }
 
     public record ArchiveImage(byte[] bytes, String contentType) {}
