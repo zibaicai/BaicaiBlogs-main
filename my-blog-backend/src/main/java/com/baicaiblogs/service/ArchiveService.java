@@ -34,6 +34,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.Duration;
@@ -212,6 +213,13 @@ public class ArchiveService {
                 break;
             }
             if (response == null) throw new RuntimeException("图片获取失败");
+            String contentLength = response.headers().firstValue("Content-Length").orElse("");
+            if (!contentLength.isBlank()) {
+                try {
+                    if (Long.parseLong(contentLength) > MAX_IMAGE_BYTES) throw new RuntimeException("图片超过 10MB 限制");
+                } catch (NumberFormatException ignored) {
+                }
+            }
             byte[] bytes = response.body();
             if (bytes == null || bytes.length == 0) throw new RuntimeException("图片内容为空");
             if (bytes.length > MAX_IMAGE_BYTES) throw new RuntimeException("图片超过 10MB 限制");
@@ -658,11 +666,18 @@ public class ArchiveService {
                     && !contentType.toLowerCase().contains("application/xhtml+xml")) {
                 throw new RuntimeException("仅支持 HTML 页面");
             }
+            String contentLength = response.headers().firstValue("Content-Length").orElse("");
+            if (!contentLength.isBlank()) {
+                try {
+                    if (Long.parseLong(contentLength) > MAX_HTML_BYTES) throw new RuntimeException("页面超过 2MB 限制");
+                } catch (NumberFormatException ignored) {
+                }
+            }
             byte[] bytes = response.body();
             if (bytes == null || bytes.length == 0) throw new RuntimeException("页面内容为空");
             if (bytes.length > MAX_HTML_BYTES) throw new RuntimeException("页面超过 2MB 限制");
 
-            Document document = Jsoup.parse(new String(bytes, StandardCharsets.UTF_8), current.toString());
+            Document document = Jsoup.parse(new String(bytes, pageCharset(contentType)), current.toString());
             String rawSnapshot = document.outerHtml();
             String title = meta(document, "meta[property=og:title]", "content");
             if (title.isBlank()) title = document.title();
@@ -753,6 +768,19 @@ public class ArchiveService {
     private String meta(Document document, String selector, String attribute) {
         Element element = document.selectFirst(selector);
         return element == null ? "" : element.attr(attribute).trim();
+    }
+
+    private Charset pageCharset(String contentType) {
+        try {
+            for (String part : contentType.split(";")) {
+                String item = part.trim();
+                if (item.toLowerCase().startsWith("charset=")) {
+                    return Charset.forName(item.substring("charset=".length()).replace("\"", "").trim());
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return StandardCharsets.UTF_8;
     }
 
     private String sha256(String value) {

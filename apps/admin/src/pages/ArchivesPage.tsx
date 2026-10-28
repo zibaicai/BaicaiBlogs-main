@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import DOMPurify from "dompurify";
-import { Archive, Download, ExternalLink, Loader2, Lock, Pencil, Plus, RefreshCw, ShieldCheck, Trash2, UserRound, X } from "lucide-react";
+import { Archive, ChevronLeft, ChevronRight, Download, ExternalLink, Loader2, Lock, Pencil, Plus, RefreshCw, Search, ShieldCheck, Trash2, UserRound, X } from "lucide-react";
 import { getAdminRole, getToken } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
 import { Input } from "../components/ui/Input";
@@ -82,6 +82,8 @@ export default function ArchivesPage() {
   const [editAuthor, setEditAuthor] = useState("");
   const [editCopyright, setEditCopyright] = useState("");
   const [editContent, setEditContent] = useState("");
+  const [query, setQuery] = useState("");
+  const [page, setPage] = useState(0);
   const [showImport, setShowImport] = useState(false);
 
   const load = useCallback(async () => {
@@ -107,6 +109,10 @@ export default function ArchivesPage() {
         .catch(() => setDeleteRequests([]));
     }
   }, [load, superAdmin]);
+
+  useEffect(() => {
+    setPage(0);
+  }, [query, items.length]);
 
   const open = async (item: ArchiveItem) => {
     setBusy(true);
@@ -315,6 +321,18 @@ export default function ArchivesPage() {
     () => cleanHtml(preview?.contentHtml, preview ? "/api/internal/archives/preview/image" : ""),
     [preview?.contentHtml]
   );
+  const pageSize = 20;
+  const filteredItems = useMemo(() => {
+    const keyword = query.trim().toLowerCase();
+    if (!keyword) return items;
+    return items.filter((item) =>
+      [item.sourceTitle, item.sourceSite, item.sourceAuthor].some((value) =>
+        (value || "").toLowerCase().includes(keyword)
+      )
+    );
+  }, [items, query]);
+  const pageCount = Math.max(1, Math.ceil(filteredItems.length / pageSize));
+  const pagedItems = filteredItems.slice(page * pageSize, (page + 1) * pageSize);
 
   return (
     <section className="px-4 py-6 md:px-8">
@@ -386,15 +404,24 @@ export default function ArchivesPage() {
       <div className="grid gap-5 lg:grid-cols-[300px_minmax(0,1fr)]">
         <aside className="rounded-3xl border border-white/10 bg-white/[0.04] p-3">
           <div className="mb-2 flex items-center justify-between px-2 text-[10px] font-black uppercase tracking-widest text-slate-500">
-            <span>存档列表</span><span>{items.length}</span>
+            <span>存档列表</span><span>{filteredItems.length}</span>
+          </div>
+          <div className="relative mb-2">
+            <Search size={13} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+            <Input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="搜索标题、站点、作者"
+              className="pl-8 text-xs"
+            />
           </div>
           {loading ? (
             <div className="py-16 text-center text-xs text-slate-500">加载中…</div>
-          ) : items.length === 0 ? (
-            <div className="px-3 py-16 text-center text-xs leading-relaxed text-slate-500">暂无可见存档。<br />{superAdmin ? "可以从右上角导入链接。" : "等待超级管理员授权。"}</div>
+          ) : filteredItems.length === 0 ? (
+            <div className="px-3 py-16 text-center text-xs leading-relaxed text-slate-500">没有匹配的存档。<br />{superAdmin ? "可以从右上角导入链接。" : "等待超级管理员授权。"}</div>
           ) : (
             <div className="space-y-1">
-              {items.map((item) => (
+              {pagedItems.map((item) => (
                 <button
                   key={item.id}
                   type="button"
@@ -405,6 +432,27 @@ export default function ArchivesPage() {
                   <div className="mt-1 truncate text-[10px] text-slate-500">{item.sourceSite} · {item.importedAt?.slice(0, 10)}</div>
                 </button>
               ))}
+            </div>
+          )}
+          {pageCount > 1 && (
+            <div className="mt-3 flex items-center justify-between border-t border-white/10 px-1 pt-3 text-[10px] text-slate-500">
+              <button
+                type="button"
+                disabled={page === 0}
+                onClick={() => setPage((value) => Math.max(0, value - 1))}
+                className="inline-flex items-center gap-1 rounded-lg px-2 py-1 hover:bg-white/5 disabled:opacity-30"
+              >
+                <ChevronLeft size={12} /> 上一页
+              </button>
+              <span>{page + 1} / {pageCount}</span>
+              <button
+                type="button"
+                disabled={page >= pageCount - 1}
+                onClick={() => setPage((value) => Math.min(pageCount - 1, value + 1))}
+                className="inline-flex items-center gap-1 rounded-lg px-2 py-1 hover:bg-white/5 disabled:opacity-30"
+              >
+                下一页 <ChevronRight size={12} />
+              </button>
             </div>
           )}
         </aside>
