@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import LegalPage from "../../components/legal/LegalPage";
+import LegalContacts from "../../components/legal/LegalContacts";
 
 export const metadata: Metadata = { title: "用户协议" };
 
@@ -70,8 +71,7 @@ export default function TermsPage() {
       <h2>8. 协议更新与联系</h2>
       <p>
         本协议可能随功能或法律要求更新，更新后会在本页发布。继续使用本站即表示接受更新后的协议。
-        如有疑问，请联系
-        <a href="mailto:contact@zibaicai.cn">contact@zibaicai.cn</a>。
+        如有疑问，请联系 <LegalContacts />。
       </p>
     </LegalPage>
   );

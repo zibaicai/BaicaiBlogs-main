@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import LegalPage from "../../components/legal/LegalPage";
+import LegalContacts from "../../components/legal/LegalContacts";
 
 export const metadata: Metadata = { title: "隐私政策" };
 
@@ -51,7 +52,6 @@ export default function PrivacyPage() {
       <ul>
         <li><strong>Cloudflare Turnstile</strong>：注册时的人机验证；</li>
         <li><strong>阿里云 OSS</strong>：图片等文件存储与访问；</li>
-        <li><strong>GitHub</strong>：如启用 GitHub 登录或代码仓库链接；</li>
         <li><strong>音乐平台接口</strong>：如启用在线音乐、歌词或歌单导入。</li>
       </ul>
       <p>
@@ -73,9 +73,7 @@ export default function PrivacyPage() {
         <li>获取关于个人信息处理的说明。</li>
       </ul>
       <p>
-        你可以通过
-        <a href="mailto:privacy@zibaicai.cn">privacy@zibaicai.cn</a>
-        提出请求。为保护账号安全，本站可能需要先核实你的身份。
+        你可以通过 <LegalContacts /> 提出请求。为保护账号安全，本站可能需要先核实你的身份。
       </p>
 
       <h2>7. 信息安全</h2>

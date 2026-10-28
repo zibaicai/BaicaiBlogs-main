@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import LegalPage from "../../components/legal/LegalPage";
+import LegalContacts from "../../components/legal/LegalContacts";
 
 export const metadata: Metadata = { title: "侵权投诉" };
 
@@ -33,9 +34,7 @@ export default function CopyrightPage() {
 
       <h2>3. 提交方式</h2>
       <p>
-        请发送邮件至
-        <a href="mailto:copyright@zibaicai.cn">copyright@zibaicai.cn</a>，
-        邮件标题建议使用：
+        请发送至 <LegalContacts />，邮件标题建议使用：
       </p>
       <p><strong>【侵权投诉】作品名称 + 被投诉页面 URL</strong></p>
       <p>
