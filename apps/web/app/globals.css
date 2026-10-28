@@ -5186,6 +5186,43 @@ html:not(.dark) .hv-empty {
   font-weight: 800;
 }
 
+/* Music comments live inside one panel. Do not add a second card inside it. */
+.music-comment-section,
+.music-comments-side .comment-section,
+.music-pane-body .comment-section {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.music-comment-section .comment-composer {
+  margin-top: 10px;
+  padding: 8px 0 12px;
+  border: 0;
+  border-bottom: 1px solid var(--ui-border);
+  border-radius: 0;
+  background: transparent;
+}
+
+.music-comment-section .comment-composer.is-expanded {
+  padding-bottom: 10px;
+}
+
+.music-comment-section .comment-empty {
+  min-height: 0;
+  margin-top: 18px;
+  padding: 18px 8px 12px;
+  border: 0;
+}
+
+.music-comments-side {
+  padding: 16px 14px 18px;
+}
+
 /* Animation wrapper, not the player bar, owns the full content height. */
 .music-app-page > div:first-of-type {
   height: 100%;
