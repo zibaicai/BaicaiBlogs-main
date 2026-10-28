@@ -4664,7 +4664,7 @@ html:not(.dark) .hv-empty {
 .comment-section {
   margin: 48px auto 0;
   padding: 22px;
-  /* 只要左右边框不要上下 */
+  /* 只要上下边框不要左右 */
   border-top: 1px solid var(--ui-border);  
   border-bottom: 1px solid var(--ui-border);  
 
