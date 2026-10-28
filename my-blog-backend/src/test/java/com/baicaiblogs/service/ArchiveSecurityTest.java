@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ArchiveSecurityTest {
 
-    private final ArchiveService service = new ArchiveService(null, null, null, null, null, null, null);
+    private final ArchiveService service = new ArchiveService(null, null, null, null, null, null, null, null);
 
     private Object invoke(String method, Object... args) throws Exception {
         Class<?>[] types = new Class<?>[args.length];

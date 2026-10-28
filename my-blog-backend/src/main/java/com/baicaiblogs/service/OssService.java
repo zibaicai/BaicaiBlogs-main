@@ -402,6 +402,52 @@ public class OssService {
         }
     }
 
+    /** 上传内部存档图片到私有 Bucket；返回对象 key。 */
+    public String uploadArchiveAsset(String fileKey, byte[] bytes, String contentType) {
+        assertArchiveConfigured();
+        String objectKey = (ossProperties.getArchiveDir() + fileKey).replaceAll("^/+", "");
+        OSS ossClient = buildClient();
+        try {
+            ObjectMetadata meta = new ObjectMetadata();
+            meta.setContentLength(bytes.length);
+            meta.setContentType(contentType);
+            ossClient.putObject(ossProperties.getArchiveBucketName(), objectKey,
+                    new ByteArrayInputStream(bytes), meta);
+            return objectKey;
+        } catch (Exception e) {
+            throw new RuntimeException("存档图片上传失败: " + e.getMessage(), e);
+        } finally {
+            ossClient.shutdown();
+        }
+    }
+
+    /** 读取私有 Bucket 中的存档图片。 */
+    public byte[] getArchiveAsset(String objectKey) {
+        assertArchiveConfigured();
+        OSS ossClient = buildClient();
+        try (OSSObject object = ossClient.getObject(ossProperties.getArchiveBucketName(), objectKey);
+             InputStream in = object.getObjectContent()) {
+            return in.readAllBytes();
+        } catch (Exception e) {
+            throw new RuntimeException("存档图片读取失败: " + e.getMessage(), e);
+        } finally {
+            ossClient.shutdown();
+        }
+    }
+
+    /** 删除私有 Bucket 中的存档图片。 */
+    public void deleteArchiveAsset(String objectKey) {
+        if (objectKey == null || objectKey.isBlank() || !ossProperties.isArchiveConfigured()) return;
+        OSS ossClient = buildClient();
+        try {
+            ossClient.deleteObject(ossProperties.getArchiveBucketName(), objectKey);
+        } catch (Exception e) {
+            log.warn("[OssService] 存档图片删除失败: {}", objectKey, e);
+        } finally {
+            ossClient.shutdown();
+        }
+    }
+
     /** 读取对象全部字节，供后端加水印。 */
     public byte[] getObjectBytes(String objectKey) {
         try (OSSObject object = getObject(objectKey);

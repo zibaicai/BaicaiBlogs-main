@@ -128,7 +128,7 @@ closed. See [`deploy/security/README.md`](../deploy/security/README.md).
 | `OSS_BUCKET` | Yes | Public bucket for covers, avatars, backgrounds, etc. |
 | `OSS_PUBLIC_URL_PREFIX` | Yes | Public domain prefix for `OSS_BUCKET` |
 | `OSS_DIR` | No | Public object prefix, default `posts/` |
-| `OSS_ARCHIVE_BUCKET` | No | Private bucket for internal archive raw snapshots |
+| `OSS_ARCHIVE_BUCKET` | No | Private bucket for internal archive snapshots and downloaded images |
 | `OSS_ARCHIVE_DIR` | No | Private archive prefix, default `archive-snapshots/` |
 
 Create a RAM user with access only to the required bucket. Do not use the
@@ -137,9 +137,15 @@ Alibaba Cloud root account AccessKey.
 The public bucket and the private archive bucket should be separate. The private
 bucket must not have public-read access.
 
-If `OSS_ARCHIVE_BUCKET` is empty, internal archive snapshots fall back to the
-database `raw_snapshot` column. The feature continues to work, but large
-snapshots consume database storage.
+When `OSS_ARCHIVE_BUCKET` is set, internal archive images and raw snapshots are
+stored there. When it is empty, both fall back to the database
+(`archive_assets.data` and `archive_documents.raw_snapshot`). The feature
+continues to work, but large archives consume database storage.
+
+During import, images are downloaded, validated, and rewritten to authenticated
+`/api/internal/archive-assets/{id}` URLs. Limits are 50 images and 50 MB total
+per archive; an image that cannot be downloaded keeps its remote URL and uses
+the authenticated proxy as a fallback.
 
 ### Frontend API address
 
@@ -192,6 +198,7 @@ Turnstile     -> regenerate the widget/secret in Cloudflare
 | Database connection refused | `DB_URL`, `DB_USERNAME`, or `DB_PASSWORD` is wrong |
 | Image upload fails | OSS variables are missing or the RAM policy is too narrow |
 | Registration is closed | Turnstile keys are empty |
+| Archive images are missing from OSS | `OSS_ARCHIVE_BUCKET` is empty; database fallback is active |
 | Archive snapshots are missing from OSS | `OSS_ARCHIVE_BUCKET` is empty; DB fallback is active |
 | `403` when opening archive images | The ADMIN has no active grant |
 

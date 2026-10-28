@@ -1,12 +1,14 @@
 package com.baicaiblogs.service;
 
 import com.baicaiblogs.entity.ArchiveAccessLog;
+import com.baicaiblogs.entity.ArchiveAsset;
 import com.baicaiblogs.entity.ArchiveDeleteRequest;
 import com.baicaiblogs.entity.ArchiveDocument;
 import com.baicaiblogs.entity.ArchiveGrant;
 import com.baicaiblogs.entity.User;
 import com.baicaiblogs.config.OssProperties;
 import com.baicaiblogs.repository.ArchiveAccessLogRepository;
+import com.baicaiblogs.repository.ArchiveAssetRepository;
 import com.baicaiblogs.repository.ArchiveDeleteRequestRepository;
 import com.baicaiblogs.repository.ArchiveDocumentRepository;
 import com.baicaiblogs.repository.ArchiveGrantRepository;
@@ -38,6 +40,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -53,6 +56,8 @@ public class ArchiveService {
     private static final int MAX_IMAGE_BYTES = 10 * 1024 * 1024;
     private static final long MAX_IMAGE_PIXELS = 40_000_000L;
     private static final int MAX_GIF_FRAMES = 300;
+    private static final int MAX_ARCHIVE_IMAGES = 50;
+    private static final long MAX_ARCHIVE_IMAGE_BYTES = 50L * 1024 * 1024;
     private static final int MAX_REDIRECTS = 3;
     private static final Pattern LANGUAGE_CLASS = Pattern.compile("language-[a-zA-Z0-9+#._-]{1,30}");
 
@@ -77,6 +82,7 @@ public class ArchiveService {
     private final ArchiveGrantRepository grantRepository;
     private final ArchiveAccessLogRepository accessLogRepository;
     private final ArchiveDeleteRequestRepository deleteRequestRepository;
+    private final ArchiveAssetRepository assetRepository;
     private final UserRepository userRepository;
     private final OssService ossService;
     private final OssProperties ossProperties;
@@ -259,9 +265,90 @@ public class ArchiveService {
                 .status("ACTIVE")
                 .build();
         doc = documentRepository.save(doc);
+        persistImages(actor, doc);
+        doc = documentRepository.save(doc);
         log(doc.getId(), actor, "IMPORT", fetched.sourceUrl());
         return toMap(doc, true);
     }
+
+    private void persistImages(User actor, ArchiveDocument doc) {
+        Document content = Jsoup.parseBodyFragment(doc.getContentHtml());
+        Map<String, Long> downloaded = new HashMap<>();
+        int count = 0;
+        long totalBytes = 0;
+        for (Element image : content.select("img[src]")) {
+            String sourceUrl = image.attr("src").trim();
+            if (!(sourceUrl.startsWith("http://") || sourceUrl.startsWith("https://"))) continue;
+            String sourceHash = sha256(sourceUrl);
+            Long existingId = downloaded.get(sourceHash);
+            if (existingId != null) {
+                image.attr("src", "/api/internal/archive-assets/" + existingId);
+                continue;
+            }
+            if (count >= MAX_ARCHIVE_IMAGES || totalBytes >= MAX_ARCHIVE_IMAGE_BYTES) continue;
+
+            try {
+                ArchiveImage imageData = fetchImage(actor, doc.getId(), sourceUrl, false);
+                if (totalBytes + imageData.bytes().length > MAX_ARCHIVE_IMAGE_BYTES) continue;
+
+                String storageKey = null;
+                byte[] databaseBytes = imageData.bytes();
+                if (ossProperties.isArchiveConfigured()) {
+                    try {
+                        storageKey = ossService.uploadArchiveAsset(
+                                "asset-" + UUID.randomUUID() + imageExtension(imageData.contentType()),
+                                imageData.bytes(),
+                                imageData.contentType());
+                        databaseBytes = null;
+                    } catch (Exception ignored) {
+                        // Fall back to the database copy.
+                    }
+                }
+
+                ArchiveAsset asset = assetRepository.save(ArchiveAsset.builder()
+                        .archiveId(doc.getId())
+                        .sourceUrl(sourceUrl)
+                        .sourceUrlHash(sourceHash)
+                        .contentType(imageData.contentType())
+                        .storageKey(storageKey)
+                        .data(databaseBytes)
+                        .sizeBytes((long) imageData.bytes().length)
+                        .sha256(sha256(sourceUrl))
+                        .createdAt(LocalDateTime.now())
+                        .build());
+                downloaded.put(sourceHash, asset.getId());
+                image.attr("src", "/api/internal/archive-assets/" + asset.getId());
+                count++;
+                totalBytes += imageData.bytes().length;
+            } catch (Exception ignored) {
+                // Keep the remote URL; the display layer will use the authenticated proxy fallback.
+            }
+        }
+        doc.setContentHtml(content.body().html());
+        doc.setContentHash(sha256(doc.getContentHtml()));
+    }
+
+    private String imageExtension(String contentType) {
+        return switch (contentType) {
+            case "image/gif" -> ".gif";
+            case "image/webp" -> ".webp";
+            case "image/png" -> ".png";
+            default -> ".jpg";
+        };
+    }
+
+    public ArchiveAssetData getAsset(User actor, Long assetId) {
+        ArchiveAsset asset = assetRepository.findById(assetId)
+                .orElseThrow(() -> new RuntimeException("图片不存在"));
+        requireRead(actor, asset.getArchiveId());
+        byte[] bytes = asset.getStorageKey() != null
+                ? ossService.getArchiveAsset(asset.getStorageKey())
+                : asset.getData();
+        if (bytes == null || bytes.length == 0) throw new RuntimeException("图片内容为空");
+        return new ArchiveAssetData(bytes, asset.getContentType());
+    }
+
+    public record ArchiveAssetData(byte[] bytes, String contentType) {}
 
     @Transactional
     public Map<String, Object> grant(User actor, Long archiveId, Long adminUserId) {
@@ -311,8 +398,11 @@ public class ArchiveService {
         if (doc.getRawSnapshotKey() != null) {
             ossService.deleteArchiveSnapshot(doc.getRawSnapshotKey());
         }
+        assetRepository.findByArchiveId(archiveId).forEach(asset -> {
+            if (asset.getStorageKey() != null) ossService.deleteArchiveAsset(asset.getStorageKey());
+        });
+        assetRepository.deleteByArchiveId(archiveId);
         grantRepository.deleteByArchiveId(archiveId);
-        accessLogRepository.deleteByArchiveId(archiveId);
         deleteRequestRepository.deleteByArchiveId(archiveId);
         documentRepository.deleteById(archiveId);
     }
