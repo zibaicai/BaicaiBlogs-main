@@ -120,6 +120,15 @@ public class InternalArchiveController {
         }
     }
 
+    @GetMapping("/{id}/logs")
+    public ApiResponse<List<Map<String, Object>>> logs(@PathVariable Long id) {
+        try {
+            return ApiResponse.success(archiveService.logs(currentUser(), id));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
     @PostMapping("/{id}/grants")
     public ApiResponse<Map<String, Object>> grant(@PathVariable Long id, @RequestBody Map<String, Object> body) {
         try {

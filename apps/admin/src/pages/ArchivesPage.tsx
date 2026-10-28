@@ -25,6 +25,7 @@ type ArchiveItem = {
 type AdminUser = { id: number; username: string; nickname?: string };
 type Grant = { id: number; adminUserId: number; username?: string; nickname?: string; expiresAt?: string };
 type DeleteRequest = { id: number; archiveId: number; title?: string; username?: string; reason?: string; createdAt?: string };
+type AccessLog = { id: number; action: string; username?: string; userId: number; ipHash?: string; userAgent?: string; createdAt?: string };
 
 async function archiveRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
   const token = getToken();
@@ -74,6 +75,7 @@ export default function ArchivesPage() {
   const [admins, setAdmins] = useState<AdminUser[]>([]);
   const [grants, setGrants] = useState<Grant[]>([]);
   const [deleteRequests, setDeleteRequests] = useState<DeleteRequest[]>([]);
+  const [accessLogs, setAccessLogs] = useState<AccessLog[]>([]);
   const [adminId, setAdminId] = useState("");
   const [showImport, setShowImport] = useState(false);
 
@@ -109,6 +111,8 @@ export default function ArchivesPage() {
       if (superAdmin) {
         const list = await archiveRequest<Grant[]>(`/internal/archives/${item.id}/grants`);
         setGrants(list || []);
+        const logs = await archiveRequest<AccessLog[]>(`/internal/archives/${item.id}/logs`);
+        setAccessLogs(logs || []);
       }
     } catch (error) {
       showToast(error instanceof Error ? error.message : "读取失败", "error");
@@ -416,6 +420,21 @@ export default function ArchivesPage() {
               )}
 
               <div className="archive-reader max-h-[calc(100vh-430px)] overflow-y-auto rounded-2xl bg-white p-6 text-slate-800 md:p-8" dangerouslySetInnerHTML={{ __html: safeContent }} />
+
+              {superAdmin && accessLogs.length > 0 && (
+                <div className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4">
+                  <div className="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">最近访问记录</div>
+                  <div className="max-h-40 space-y-1 overflow-y-auto">
+                    {accessLogs.slice(0, 10).map((log) => (
+                      <div key={log.id} className="flex flex-wrap items-center justify-between gap-2 text-[10px] text-slate-400">
+                        <span className="font-bold text-slate-300">{log.action}</span>
+                        <span>{log.username || `#${log.userId}`}</span>
+                        <span>{log.createdAt?.slice(0, 19).replace("T", " ")}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </>
           )}
         </article>

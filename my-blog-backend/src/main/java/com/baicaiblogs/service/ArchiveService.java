@@ -105,6 +105,24 @@ public class ArchiveService {
     }
 
     @Transactional(readOnly = true)
+    public List<Map<String, Object>> logs(User actor, Long archiveId) {
+        requireSuper(actor);
+        documentRepository.findById(archiveId).orElseThrow(() -> new RuntimeException("存档不存在"));
+        return accessLogRepository.findTop100ByArchiveIdOrderByCreatedAtDesc(archiveId).stream().map(log -> {
+            Map<String, Object> out = new LinkedHashMap<>();
+            out.put("id", log.getId());
+            out.put("action", log.getAction());
+            out.put("userId", log.getUserId());
+            out.put("ipHash", log.getIpHash());
+            out.put("userAgent", log.getUserAgent());
+            out.put("detail", log.getDetail());
+            out.put("createdAt", log.getCreatedAt());
+            userRepository.findById(log.getUserId()).ifPresent(user -> out.put("username", user.getUsername()));
+            return out;
+        }).toList();
+    }
+
+    @Transactional(readOnly = true)
     public List<Map<String, Object>> admins(User actor) {
         requireSuper(actor);
         return userRepository.findAll().stream()
