@@ -20,9 +20,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <input
           ref={ref}
           id={inputId}
-          className={`h-11 w-full rounded-2xl border bg-black/25 px-4 text-sm text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-indigo-400/60 focus:ring-2 focus:ring-indigo-500/20 disabled:cursor-not-allowed disabled:opacity-50 ${
-            error ? "border-red-400/60" : "border-white/10"
-          } ${className}`}
+          className={`control-field h-11 ${error ? "!border-red-400/60" : ""} ${className}`}
           {...props}
         />
         {error ? (
@@ -48,9 +46,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         <textarea
           ref={ref}
           id={inputId}
-          className={`w-full resize-none rounded-2xl border bg-black/25 px-4 py-3 text-sm text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-indigo-400/60 focus:ring-2 focus:ring-indigo-500/20 disabled:cursor-not-allowed disabled:opacity-50 ${
-            error ? "border-red-400/60" : "border-white/10"
-          } ${className}`}
+          className={`control-field control-textarea ${error ? "!border-red-400/60" : ""} ${className}`}
           {...props}
         />
         {error ? (

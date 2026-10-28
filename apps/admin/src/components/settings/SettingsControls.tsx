@@ -2,8 +2,7 @@
 
 import type { ReactNode } from "react";
 
-export const inputClass =
-  "w-full rounded-xl border border-slate-200/80 bg-white/60 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-700/60 dark:bg-slate-800/60 dark:text-slate-200";
+export const inputClass = "control-field";
 
 export function SettingsCard({
   title,

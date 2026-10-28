@@ -38,6 +38,65 @@
   --radius-panel: 18px;
   --radius-modal: 22px;
   --radius-media: 8px;
+
+  /* Shared form-control tokens. */
+  --control-height: 42px;
+  --control-radius: var(--radius-control);
+  --control-bg: rgba(255, 255, 255, 0.66);
+  --control-border: rgba(255, 255, 255, 0.5);
+  --control-text: #1e293b;
+  --control-placeholder: #64748b;
+  --control-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 8px 20px rgba(15, 23, 42, 0.06);
+  --control-focus: rgba(49, 87, 183, 0.18);
+}
+
+.dark {
+  --control-bg: rgba(15, 23, 42, 0.62);
+  --control-border: rgba(255, 255, 255, 0.12);
+  --control-text: #e2e8f0;
+  --control-placeholder: #94a3b8;
+  --control-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 8px 20px rgba(0, 0, 0, 0.16);
+  --control-focus: rgba(122, 168, 255, 0.2);
+}
+
+/* Shared control surface used by Input, Textarea and the comment composer. */
+.control-field {
+  width: 100%;
+  min-height: var(--control-height);
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--control-border);
+  border-radius: var(--control-radius);
+  background: var(--control-bg);
+  color: var(--control-text);
+  box-shadow: var(--control-shadow);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.6;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.control-field::placeholder {
+  color: var(--control-placeholder);
+}
+
+.control-field:focus {
+  border-color: var(--ui-accent);
+  box-shadow: var(--control-shadow), 0 0 0 3px var(--control-focus);
+}
+
+.control-field:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.control-textarea {
+  min-height: 110px;
+  resize: vertical;
+  line-height: 1.75;
 }
 
 [data-density="compact"] {
@@ -4605,7 +4664,10 @@ html:not(.dark) .hv-empty {
 .comment-section {
   margin: 48px auto 0;
   padding: 22px;
-  border: 1px solid var(--ui-border);
+  /* 只要左右边框不要上下 */
+  border-top: 1px solid var(--ui-border);  
+  border-bottom: 1px solid var(--ui-border);  
+
   border-radius: var(--radius-panel);
   background: color-mix(in srgb, var(--ui-secondary-bg) 88%, transparent);
   backdrop-filter: blur(18px);
@@ -5210,12 +5272,16 @@ html:not(.dark) .hv-empty {
 .music-comment-section .comment-composer {
   margin-top: 14px;
   padding: 10px 12px;
-  border: 1px solid var(--ui-border) !important;
-  border-radius: var(--radius-control) !important;
-  background: color-mix(in srgb, var(--ui-bg) 52%, transparent) !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 8px 20px rgba(2, 6, 23, 0.16) !important;
+  border: 1px solid var(--control-border) !important;
+  border-radius: var(--control-radius) !important;
+  background: var(--control-bg) !important;
+  box-shadow: var(--control-shadow) !important;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.music-comment-section .comment-composer:focus-within {
+  border-color: var(--ui-accent) !important;
+  box-shadow: var(--control-shadow), 0 0 0 3px var(--control-focus) !important;
 }
 
 .music-comment-section .comment-composer.is-expanded {

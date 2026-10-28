@@ -20,7 +20,39 @@
   --radius-panel: 18px;
   --radius-modal: 22px;
   --radius-media: 8px;
+
+  --control-height: 42px;
+  --control-radius: var(--radius-control);
+  --control-bg: rgba(2, 6, 23, 0.35);
+  --control-border: rgba(255, 255, 255, 0.12);
+  --control-text: #e2e8f0;
+  --control-placeholder: #64748b;
+  --control-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 8px 20px rgba(0, 0, 0, 0.16);
+  --control-focus: rgba(99, 102, 241, 0.22);
 }
+
+.control-field {
+  width: 100%;
+  min-height: var(--control-height);
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--control-border);
+  border-radius: var(--control-radius);
+  background: var(--control-bg);
+  color: var(--control-text);
+  box-shadow: var(--control-shadow);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  outline: none;
+  transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+}
+
+.control-field::placeholder { color: var(--control-placeholder); }
+.control-field:focus {
+  border-color: var(--color-indigo-400);
+  box-shadow: var(--control-shadow), 0 0 0 3px var(--control-focus);
+}
+.control-field:disabled { cursor: not-allowed; opacity: .55; }
+.control-textarea { min-height: 110px; resize: vertical; line-height: 1.75; }
 
 html[data-admin-preset="ocean"] {
   --admin-accent-rgb: 49, 87, 183;
