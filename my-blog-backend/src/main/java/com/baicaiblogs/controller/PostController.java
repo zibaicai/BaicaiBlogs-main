@@ -6,6 +6,7 @@ import com.baicaiblogs.service.PostService;
 import com.baicaiblogs.service.OssService;
 import com.baicaiblogs.service.ImageCompressionService;
 import com.baicaiblogs.service.ImageSecurityService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.http.CacheControl;
@@ -123,10 +124,16 @@ public class PostController {
 
     // ==================== 公开接口（无需登录） ====================
 
-    /** 获取所有已发布文章（不分用户） */
+    /** 获取所有已发布文章（scope=mine 时只返回当前用户） */
     @GetMapping("/public/posts")
-    public ApiResponse<List<PostResponse>> getAllPosts() {
+    public ApiResponse<List<PostResponse>> getAllPosts(
+            @RequestParam(defaultValue = "all") String scope,
+            HttpServletResponse response) {
         try {
+            if (isMine(scope)) {
+                noStore(response);
+                return ApiResponse.success(postService.getPostsByUser(getCurrentUserId()));
+            }
             return ApiResponse.success(postService.getAllPosts());
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
@@ -137,8 +144,19 @@ public class PostController {
     @GetMapping("/public/posts/page")
     public ApiResponse<PageResponse<PostResponse>> getPosts(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "all") String scope,
+            HttpServletResponse response) {
         try {
+            if (isMine(scope)) {
+                noStore(response);
+                List<PostResponse> all = postService.getPostsByUser(getCurrentUserId());
+                int from = Math.min(Math.max(page, 0) * Math.max(size, 1), all.size());
+                int to = Math.min(from + Math.max(size, 1), all.size());
+                int totalPages = size <= 0 ? 0 : (int) Math.ceil((double) all.size() / size);
+                return ApiResponse.success(new PageResponse<>(
+                        all.subList(from, to), all.size(), totalPages, Math.max(page, 0), Math.max(size, 1)));
+            }
             return ApiResponse.success(postService.getPosts(page, size));
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
@@ -147,18 +165,32 @@ public class PostController {
 
     /** 按 slug 获取单篇文章详情 */
     @GetMapping("/public/posts/{slug}")
-    public ApiResponse<PostResponse> getPostBySlug(@PathVariable String slug) {
+    public ApiResponse<PostResponse> getPostBySlug(
+            @PathVariable String slug,
+            @RequestParam(defaultValue = "all") String scope,
+            HttpServletResponse response) {
         try {
+            if (isMine(scope)) {
+                noStore(response);
+                return ApiResponse.success(postService.getPostBySlugForUser(getCurrentUserId(), slug));
+            }
             return ApiResponse.success(postService.getPostBySlug(slug));
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
         }
     }
 
-    /** 搜索已发布文章（按标题和描述模糊匹配） */
+    /** 搜索已发布文章（scope=mine 时只搜索当前用户） */
     @GetMapping("/public/posts/search")
-    public ApiResponse<List<PostResponse>> searchPosts(@RequestParam String keyword) {
+    public ApiResponse<List<PostResponse>> searchPosts(
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "all") String scope,
+            HttpServletResponse response) {
         try {
+            if (isMine(scope)) {
+                noStore(response);
+                return ApiResponse.success(postService.searchPostsByUser(getCurrentUserId(), keyword));
+            }
             return ApiResponse.success(postService.searchPosts(keyword));
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
@@ -327,5 +359,14 @@ public class PostController {
             return ((User) principal).getId();
         }
         throw new RuntimeException("用户未登录");
+    }
+
+    private boolean isMine(String scope) {
+        return "mine".equalsIgnoreCase(scope);
+    }
+
+    private void noStore(HttpServletResponse response) {
+        response.setHeader("Cache-Control", "private, no-store");
+        response.setHeader("Vary", "Cookie");
     }
 }

@@ -8,6 +8,7 @@ import PageTransition from "../../../components/PageTransition";
 import BackButton from "../../../components/BackButton";
 import Input from "../../../components/ui/Input";
 import CommentSection from "../../../components/comments/CommentSection";
+import { withContentScope } from "../../../lib/content-scope";
 import { useAuth } from "../../../lib/auth";
 
 interface Photo {
@@ -60,7 +61,7 @@ export default function AlbumPage() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(`/api/public/gallery/albums/${encodeURIComponent(albumId)}`, {
+      const res = await fetch(withContentScope(`/api/public/gallery/albums/${encodeURIComponent(albumId)}`), {
         credentials: "include",
       });
       const json = await res.json();

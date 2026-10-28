@@ -101,6 +101,13 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<PostResponse> searchPostsByUser(Long userId, String keyword) {
+        return postRepository.searchByUserId(userId, keyword).stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
     // ==================== 用户私有接口（需要登录，按 userId 隔离） ====================
 
     /**

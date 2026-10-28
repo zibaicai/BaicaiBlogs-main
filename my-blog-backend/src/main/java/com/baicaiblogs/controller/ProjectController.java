@@ -3,6 +3,7 @@ package com.baicaiblogs.controller;
 import com.baicaiblogs.dto.*;
 import com.baicaiblogs.entity.User;
 import com.baicaiblogs.service.ProjectService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +18,15 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @GetMapping("/public/projects")
-    public ApiResponse<List<ProjectResponse>> getAllProjects() {
+    public ApiResponse<List<ProjectResponse>> getAllProjects(
+            @RequestParam(defaultValue = "all") String scope,
+            HttpServletResponse response) {
         try {
+            if ("mine".equalsIgnoreCase(scope)) {
+                response.setHeader("Cache-Control", "private, no-store");
+                response.setHeader("Vary", "Cookie");
+                return ApiResponse.success(projectService.getProjectsByUser(getCurrentUserId()));
+            }
             return ApiResponse.success(projectService.getAllProjects());
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());

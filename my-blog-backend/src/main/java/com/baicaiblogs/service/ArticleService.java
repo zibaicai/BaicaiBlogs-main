@@ -42,6 +42,15 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
+    public List<ArticleDtos.ArticleResponse> publicListByUser(Long userId) {
+        return articleRepository.findByUserIdOrderByCreatedAtDesc(userId)
+                .stream()
+                .filter(a -> "PUBLISHED".equals(a.getStatus()) && "PUBLIC".equals(a.getVisibility()))
+                .map(this::toResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
     public ArticleDtos.ArticleResponse publicGet(String slug) {
         Article article = articleRepository.findBySlug(slug)
                 .filter(a -> "PUBLISHED".equals(a.getStatus()) && "PUBLIC".equals(a.getVisibility()))

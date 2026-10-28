@@ -3,6 +3,7 @@ package com.baicaiblogs.controller;
 import com.baicaiblogs.dto.*;
 import com.baicaiblogs.entity.User;
 import com.baicaiblogs.service.ChatterService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +18,14 @@ public class ChatterController {
     private final ChatterService chatterService;
 
     @GetMapping("/public/chatters")
-    public ApiResponse<List<ChatterResponse>> getAllChatters() {
+    public ApiResponse<List<ChatterResponse>> getAllChatters(
+            @RequestParam(defaultValue = "all") String scope,
+            HttpServletResponse response) {
         try {
+            if ("mine".equalsIgnoreCase(scope)) {
+                noStore(response);
+                return ApiResponse.success(chatterService.getMyChatters(getCurrentUserId()));
+            }
             return ApiResponse.success(chatterService.getAllChatters());
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
@@ -28,8 +35,19 @@ public class ChatterController {
     @GetMapping("/public/chatters/page")
     public ApiResponse<PageResponse<ChatterResponse>> getChatters(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "all") String scope,
+            HttpServletResponse response) {
         try {
+            if ("mine".equalsIgnoreCase(scope)) {
+                noStore(response);
+                List<ChatterResponse> all = chatterService.getMyChatters(getCurrentUserId());
+                int from = Math.min(Math.max(page, 0) * Math.max(size, 1), all.size());
+                int to = Math.min(from + Math.max(size, 1), all.size());
+                int totalPages = size <= 0 ? 0 : (int) Math.ceil((double) all.size() / size);
+                return ApiResponse.success(new PageResponse<>(
+                        all.subList(from, to), all.size(), totalPages, Math.max(page, 0), Math.max(size, 1)));
+            }
             return ApiResponse.success(chatterService.getChatters(page, size));
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
@@ -37,8 +55,15 @@ public class ChatterController {
     }
 
     @GetMapping("/public/chatters/{slug}")
-    public ApiResponse<ChatterResponse> getChatterBySlug(@PathVariable String slug) {
+    public ApiResponse<ChatterResponse> getChatterBySlug(
+            @PathVariable String slug,
+            @RequestParam(defaultValue = "all") String scope,
+            HttpServletResponse response) {
         try {
+            if ("mine".equalsIgnoreCase(scope)) {
+                noStore(response);
+                return ApiResponse.success(chatterService.getChatterBySlugForUser(getCurrentUserId(), slug));
+            }
             return ApiResponse.success(chatterService.getChatterBySlug(slug));
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
@@ -100,5 +125,10 @@ public class ChatterController {
             return user.getId();
         }
         throw new RuntimeException("未登录");
+    }
+
+    private void noStore(HttpServletResponse response) {
+        response.setHeader("Cache-Control", "private, no-store");
+        response.setHeader("Vary", "Cookie");
     }
 }

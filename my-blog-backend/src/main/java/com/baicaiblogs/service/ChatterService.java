@@ -73,6 +73,16 @@ public class ChatterService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public ChatterResponse getChatterBySlugForUser(Long userId, String slug) {
+        Chatter chatter = chatterRepository.findBySlug(slug)
+                .orElseThrow(() -> new RuntimeException("杂谈不存在: " + slug));
+        if (chatter.getUserId() == null || !chatter.getUserId().equals(userId)) {
+            throw new RuntimeException("杂谈不存在: " + slug);
+        }
+        return toResponse(chatter);
+    }
+
     @Transactional
     public ChatterResponse createChatter(Long userId, ChatterRequest request) {
         if (chatterRepository.existsBySlug(request.getSlug())) {

@@ -5,6 +5,7 @@ import com.baicaiblogs.dto.ArticleDtos;
 import com.baicaiblogs.entity.User;
 import com.baicaiblogs.repository.UserRepository;
 import com.baicaiblogs.service.ArticleService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
@@ -25,8 +26,18 @@ public class ArticleController {
     private final UserRepository userRepository;
 
     @GetMapping("/public/articles")
-    public ApiResponse<List<ArticleDtos.ArticleResponse>> publicList() {
+    public ApiResponse<List<ArticleDtos.ArticleResponse>> publicList(
+            @RequestParam(defaultValue = "all") String scope,
+            Authentication authentication,
+            HttpServletResponse response) {
         try {
+            if ("mine".equalsIgnoreCase(scope)) {
+                User user = currentUser(authentication);
+                if (user == null) return ApiResponse.error("用户未登录");
+                response.setHeader("Cache-Control", "private, no-store");
+                response.setHeader("Vary", "Cookie");
+                return ApiResponse.success(articleService.publicListByUser(user.getId()));
+            }
             return ApiResponse.success(articleService.publicList());
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());

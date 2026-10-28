@@ -1,8 +1,11 @@
 package com.baicaiblogs.controller;
 
 import com.baicaiblogs.dto.*;
+import com.baicaiblogs.entity.User;
 import com.baicaiblogs.service.AlbumService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,8 +18,15 @@ public class AlbumController {
     private final AlbumService albumService;
 
     @GetMapping("/public/albums")
-    public ApiResponse<List<AlbumResponse>> getAllAlbums() {
+    public ApiResponse<List<AlbumResponse>> getAllAlbums(
+            @RequestParam(defaultValue = "all") String scope,
+            HttpServletResponse response) {
         try {
+            if ("mine".equalsIgnoreCase(scope)) {
+                response.setHeader("Cache-Control", "private, no-store");
+                response.setHeader("Vary", "Cookie");
+                return ApiResponse.success(albumService.getAlbumsByUser(currentUserId()));
+            }
             return ApiResponse.success(albumService.getAllAlbums());
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
@@ -50,5 +60,11 @@ public class AlbumController {
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
         }
+    }
+
+    private Long currentUserId() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User user) return user.getId();
+        throw new RuntimeException("用户未登录");
     }
 }

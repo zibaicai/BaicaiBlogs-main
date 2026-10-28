@@ -3,10 +3,11 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { AppIcon } from "./ui/AppIcon";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useMusic } from "./MusicProvider";
 import { useTheme } from "./ThemeProvider";
-import { usePrivateBlog } from "../lib/private-blog";
+import { useAuth } from "../lib/auth";
+import { usePersonalView } from "../lib/personal-view";
 import ThemeStudio from "./ThemeStudio";
 
 type ToolId = "danmaku" | "click" | "pet";
@@ -47,9 +48,11 @@ export default function GlobalToolbox() {
   const [musicVisible, setMusicVisible] = useState(false);
   const [themeOpen, setThemeOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const { user } = useAuth();
   const { currentSong, isPlaying, togglePlay } = useMusic();
   const { preset, setPreset } = useTheme();
-  const { enabled: privateMode, toggle: togglePrivateMode } = usePrivateBlog();
+  const { enabled: personalView, toggle: togglePersonalView } = usePersonalView();
 
   useEffect(() => {
     try {
@@ -301,18 +304,23 @@ export default function GlobalToolbox() {
         type="button"
         onClick={() => {
           setIsOpen(false);
-          togglePrivateMode();
+          if (!personalView && !user) {
+            router.push(`/login?next=${encodeURIComponent(pathname)}`);
+            return;
+          }
+          togglePersonalView();
+          window.setTimeout(() => window.location.reload(), 0);
         }}
-        aria-label={privateMode ? "退出私密博客" : "开启私密博客"}
-        aria-pressed={privateMode}
-        title={privateMode ? "退出私密博客" : "开启私密博客"}
+        aria-label={personalView ? "查看全部内容" : "仅看我的内容"}
+        aria-pressed={personalView}
+        title={personalView ? "查看全部内容" : "仅看我的内容"}
         className={`mb-1 flex h-10 w-10 items-center justify-center rounded-full border border-white/50 shadow-xl backdrop-blur-xl transition-all duration-300 hover:scale-105 active:scale-95 dark:border-white/10 ${
-          privateMode
+          personalView
             ? "bg-emerald-500 text-emerald-950"
             : "bg-white/80 text-slate-600 dark:bg-slate-900/80 dark:text-slate-200"
         }`}
       >
-        <AppIcon name={privateMode ? "unlock" : "lock"} size={17} />
+        <AppIcon name={personalView ? "unlock" : "lock"} size={17} />
       </button>
 
       <button

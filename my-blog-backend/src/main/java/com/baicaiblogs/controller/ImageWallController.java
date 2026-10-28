@@ -54,16 +54,33 @@ public class ImageWallController {
     @GetMapping("/public/gallery/albums")
     public ApiResponse<List<AlbumResponse>> publicAlbums(
             @RequestParam(defaultValue = "all") String visibility,
-            HttpServletRequest request) {
+            @RequestParam(defaultValue = "all") String scope,
+            HttpServletRequest request,
+            HttpServletResponse response) {
         User user = imageWallService.currentUserOrNull();
-        return ApiResponse.success(imageWallService.listPublicAlbums(user, visibility));
+        List<AlbumResponse> albums = imageWallService.listPublicAlbums(user, visibility);
+        if ("mine".equalsIgnoreCase(scope)) {
+            if (user == null) return ApiResponse.error("用户未登录");
+            response.setHeader("Cache-Control", "private, no-store");
+            response.setHeader("Vary", "Cookie");
+            albums = albums.stream().filter(a -> Boolean.TRUE.equals(a.getIsOwner())).toList();
+        }
+        return ApiResponse.success(albums);
     }
 
     @GetMapping("/public/gallery/albums/{albumId}")
-    public ApiResponse<AlbumResponse> publicAlbum(@PathVariable String albumId, HttpServletRequest request) {
+    public ApiResponse<AlbumResponse> publicAlbum(
+            @PathVariable String albumId,
+            @RequestParam(defaultValue = "all") String scope,
+            HttpServletRequest request,
+            HttpServletResponse response) {
         try {
             Album album = imageWallService.getAlbum(albumId);
             User user = imageWallService.currentUserOrNull();
+            if ("mine".equalsIgnoreCase(scope)
+                    && (user == null || album.getUserId() == null || !album.getUserId().equals(user.getId()))) {
+                return ApiResponse.error("资源不存在");
+            }
             boolean unlocked = isAlbumUnlocked(album, request);
             if (!imageWallService.canView(album, user, unlocked)) {
                 if ("PASSWORD".equals(album.getVisibility()) && "VISIBLE".equals(album.getStatus())) {
@@ -77,6 +94,10 @@ public class ImageWallController {
                 String reason = request.getParameter("reason");
                 auditService.internal(user, album, "detail", "super_admin", null,
                         reason == null || reason.isBlank() ? "super-admin-patrol" : reason, ipHash(request));
+            }
+            if ("mine".equalsIgnoreCase(scope)) {
+                response.setHeader("Cache-Control", "private, no-store");
+                response.setHeader("Vary", "Cookie");
             }
             return ApiResponse.success(imageWallService.albumDetail(album, true, unlocked));
         } catch (Exception e) {

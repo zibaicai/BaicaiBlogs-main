@@ -5,6 +5,7 @@ import com.baicaiblogs.entity.User;
 import com.baicaiblogs.service.MomentService;
 import com.baicaiblogs.service.PrivateMomentAuditService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +21,14 @@ public class MomentController {
     private final PrivateMomentAuditService privateMomentAuditService;
 
     @GetMapping("/public/moments")
-    public ApiResponse<List<MomentResponse>> getAllMoments() {
+    public ApiResponse<List<MomentResponse>> getAllMoments(
+            @RequestParam(defaultValue = "all") String scope,
+            HttpServletResponse response) {
         try {
+            if ("mine".equalsIgnoreCase(scope)) {
+                noStore(response);
+                return ApiResponse.success(momentService.getMyMoments(getCurrentUserId()));
+            }
             return ApiResponse.success(momentService.getAllMoments());
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
@@ -111,5 +118,10 @@ public class MomentController {
             return user.getId();
         }
         throw new RuntimeException("未登录");
+    }
+
+    private void noStore(HttpServletResponse response) {
+        response.setHeader("Cache-Control", "private, no-store");
+        response.setHeader("Vary", "Cookie");
     }
 }

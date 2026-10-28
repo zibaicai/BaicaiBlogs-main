@@ -8,6 +8,7 @@ import DirectoryExplorer from "../../components/DirectoryExplorer";
 import ArchiveCard from "../../components/ArchiveCard";
 import { DEFAULT_MISC } from "../../lib/site-config";
 import { useAuth } from "../../lib/auth";
+import { withContentScope } from "../../lib/content-scope";
 
 export interface GalleryAlbum {
   albumId: string;
@@ -36,7 +37,7 @@ export default function PhotoWallPage() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/public/gallery/albums?visibility=all", {
+      const res = await fetch(withContentScope("/api/public/gallery/albums?visibility=all"), {
         credentials: "include",
       });
       const json = await res.json();

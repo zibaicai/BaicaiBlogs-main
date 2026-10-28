@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Search, X } from "lucide-react";
 import type { Album, Friend, Moment, Post, Project } from "../lib/api";
+import { withContentScope } from "../lib/content-scope";
 
 type Props = {
   open: boolean;
@@ -42,7 +43,7 @@ const Highlight = ({ text = "", query = "" }: { text?: string; query?: string })
 };
 
 async function fetchData<T>(path: string): Promise<T[]> {
-  const res = await fetch(path, { cache: "no-store" });
+  const res = await fetch(withContentScope(path), { cache: "no-store" });
   const json = await res.json().catch(() => null);
   return Array.isArray(json?.data) ? json.data : [];
 }

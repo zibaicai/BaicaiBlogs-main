@@ -46,6 +46,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("SELECT p FROM Post p WHERE p.status = 'PUBLISHED' AND p.visibility = 'public' AND (p.title LIKE %:keyword% OR p.description LIKE %:keyword%)")
     List<Post> searchPublished(String keyword);
 
+    @Query("SELECT p FROM Post p WHERE p.userId = :userId AND (p.title LIKE %:keyword% OR p.description LIKE %:keyword%) ORDER BY p.date DESC")
+    List<Post> searchByUserId(@Param("userId") Long userId, @Param("keyword") String keyword);
+
     Optional<Post> findBySlugAndVisibility(String slug, String visibility);
 
     boolean existsBySlug(String slug);

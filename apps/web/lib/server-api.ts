@@ -1,4 +1,5 @@
 // 服务端数据读取：直接访问内网后端，避免浏览器跨域；带 60s ISR 缓存。
+import { cookies } from "next/headers";
 import type { Album, Category, Chatter, Friend, Moment, Post, Project } from "./api";
 import {
   DEFAULT_AI_CONFIG,
@@ -20,10 +21,23 @@ const INTERNAL_BASE = (
 
 async function getJson<T>(path: string, revalidate = 60): Promise<T | null> {
   try {
-    const res = await fetch(`${INTERNAL_BASE}${path}`, {
-      next: { revalidate },
-      headers: { Accept: "application/json" },
-    });
+    const cookieStore = await cookies();
+    const mine = cookieStore.get("content-scope")?.value === "mine";
+    const scopedPath =
+      mine && path.startsWith("/api/public/")
+        ? `${path}${path.includes("?") ? "&" : "?"}scope=mine`
+        : path;
+    const headers: Record<string, string> = { Accept: "application/json" };
+    if (mine) {
+      const token = cookieStore.get("BC_TOKEN")?.value;
+      if (token) headers.Cookie = `BC_TOKEN=${token}`;
+    }
+    const res = mine
+      ? await fetch(`${INTERNAL_BASE}${scopedPath}`, { cache: "no-store", headers })
+      : await fetch(`${INTERNAL_BASE}${scopedPath}`, {
+          next: { revalidate },
+          headers,
+        });
     if (!res.ok) return null;
     const json = (await res.json()) as { success?: boolean; data?: T };
     if (json?.success === false) return null;

@@ -1,5 +1,6 @@
 // 浏览器侧 API 客户端。所有请求都走同源 `/api`，由 Next rewrite（开发）
 // 或 nginx（生产）转发到后端，因此不依赖构建期注入的地址。
+import { withContentScope } from "./content-scope";
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -299,7 +300,7 @@ export interface Article {
 }
 
 async function articleRequest<T>(path: string): Promise<T> {
-  const res = await fetch(`/api${path}`, { cache: "no-store" });
+  const res = await fetch(`/api${withContentScope(path)}`, { cache: "no-store" });
   const json = await res.json().catch(() => null);
   if (!res.ok || !json?.success) throw new Error(json?.message || `请求失败 (${res.status})`);
   return json.data as T;
@@ -312,7 +313,7 @@ export const articleApi = {
 };
 
 async function publicRequest<T>(path: string): Promise<ApiResponse<T>> {
-  const res = await fetch(`/api${path}`, { cache: "no-store" });
+  const res = await fetch(`/api${withContentScope(path)}`, { cache: "no-store" });
   const json = (await res.json().catch(() => null)) as ApiResponse<T> | null;
   if (!res.ok || !json) {
     throw new Error(json?.message || `请求失败 (${res.status})`);
