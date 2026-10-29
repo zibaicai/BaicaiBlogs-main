@@ -147,6 +147,8 @@ export default function Navbar() {
             <button
               type="button"
               aria-label="打开导航"
+              aria-expanded={mobileOpen}
+              aria-controls="mobile-nav"
               onClick={() => setMobileOpen((v) => !v)}
               className="lg:hidden w-10 h-10 rounded-xl bg-white/50 dark:bg-slate-800/50 flex items-center justify-center text-slate-700 dark:text-slate-200 border border-white/20 dark:border-white/10 shadow-sm"
             >
@@ -158,17 +160,18 @@ export default function Navbar() {
         <AnimatePresence>
           {mobileOpen && (
             <motion.nav
+              id="mobile-nav"
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               className="lg:hidden overflow-hidden bg-transparent border-t border-white/20 dark:border-white/5"
             >
-              <div className="w-full max-w-[1180px] mx-auto px-4 sm:px-8 py-4 grid grid-cols-2 gap-2">
+              <div className="w-full max-w-[1180px] mx-auto px-4 sm:px-8 py-4 grid grid-cols-3 min-[420px]:grid-cols-4 gap-2">
                 {NAV_LINKS.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
+                    className={`px-3 py-2.5 rounded-xl text-sm font-bold text-center transition-colors ${
                       isActive(link.href)
                         ? "bg-[var(--ui-accent)] text-[var(--ui-accent-contrast)]"
                         : "text-slate-700 dark:text-slate-200 hover:bg-white/60 dark:hover:bg-slate-800/60"
@@ -179,7 +182,7 @@ export default function Navbar() {
                 ))}
                 <Link
                   href="/login"
-                  className="px-4 py-3 rounded-xl text-sm font-bold text-[var(--ui-accent)] bg-[var(--ui-accent-soft)]"
+                  className="col-span-full px-4 py-2.5 rounded-xl text-sm font-bold text-center text-[var(--ui-accent)] bg-[var(--ui-accent-soft)]"
                 >
                   登录 / 账号
                 </Link>
