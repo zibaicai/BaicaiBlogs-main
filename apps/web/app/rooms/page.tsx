@@ -24,7 +24,7 @@ export default async function RoomsPage() {
               <PageTitle className="mt-2 text-slate-900 dark:text-white">
                 {communityName}目录
               </PageTitle>
-              <p className="mt-3 text-sm text-slate-500">
+              <p className="page-subtitle mt-3 text-slate-500">
                 每一间小屋，都是一个人正在生活的地方。
               </p>
             </header>

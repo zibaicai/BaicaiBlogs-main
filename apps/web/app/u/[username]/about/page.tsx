@@ -40,7 +40,7 @@ export default async function RoomAboutPage({ params }: { params: Promise<{ user
               <PageTitle className="mt-2 text-slate-900 dark:text-white">
                 {room.nickname}
               </PageTitle>
-              <p className="mt-2 text-sm text-slate-500">{room.roomName}</p>
+              <p className="page-subtitle mt-2 text-slate-500">{room.roomName}</p>
             </header>
 
             <section className="rounded-3xl border border-white/40 bg-white/60 p-8 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/50 md:p-10">

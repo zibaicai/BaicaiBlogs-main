@@ -50,7 +50,7 @@ export default function NotificationsPage() {
           <PageTitle className="mb-2 flex items-center gap-2 text-slate-900 dark:text-white">
             <Bell className="text-indigo-500" /> 消息中心
           </PageTitle>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mb-8">管理员查看你的密码相册时会在这里通知。</p>
+          <p className="page-subtitle text-slate-500 dark:text-slate-400 mb-8">管理员查看你的密码相册时会在这里通知。</p>
           {loading && <div className="text-slate-400 text-sm">加载中...</div>}
           {error && <div className="text-red-400 text-sm font-bold">{error}</div>}
           {!loading && !error && items.length === 0 && (

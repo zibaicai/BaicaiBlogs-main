@@ -39,14 +39,22 @@
   --radius-modal: 22px;
   --radius-media: 8px;
 
-  /* Shared C-side typography scale. Use these instead of ad-hoc text-* sizes. */
-  --type-page-title: clamp(1.75rem, 2.5vw, 2.25rem);
-  --type-section-title: 1.25rem;
-  --type-card-title: 1rem;
-  --type-list-title: 0.875rem;
-  --type-overlay-title: 1rem;
-  --type-body: 0.875rem;
-  --type-meta: 0.75rem;
+  /* Shared C-side typography scale. Fluid tokens keep 4K readable while
+     retaining rem-based browser zoom. */
+  --type-page-title: clamp(1.75rem, 1.3rem + 1.1vw, 2.75rem);
+  --type-page-subtitle: clamp(0.875rem, 0.82rem + 0.2vw, 1.0625rem);
+  --type-section-title: clamp(1.125rem, 0.95rem + 0.7vw, 1.5rem);
+  --type-section-subtitle: clamp(0.8125rem, 0.78rem + 0.12vw, 0.9375rem);
+  --type-card-title: clamp(1rem, 0.92rem + 0.25vw, 1.25rem);
+  --type-list-title: clamp(0.875rem, 0.82rem + 0.18vw, 1rem);
+  --type-overlay-title: clamp(1rem, 0.94rem + 0.2vw, 1.125rem);
+  --type-card-description: clamp(0.8125rem, 0.78rem + 0.12vw, 0.9375rem);
+  --type-list-description: clamp(0.75rem, 0.72rem + 0.1vw, 0.875rem);
+  --type-body: clamp(0.875rem, 0.84rem + 0.12vw, 1rem);
+  --type-meta: clamp(0.6875rem, 0.66rem + 0.1vw, 0.8125rem);
+  --type-caption: clamp(0.6875rem, 0.66rem + 0.08vw, 0.8125rem);
+  --prose-body: clamp(1rem, 0.95rem + 0.18vw, 1.0625rem);
+  --prose-line-height: 1.85;
 
   /* Shared form-control tokens. */
   --control-height: 42px;
@@ -311,8 +319,8 @@ input[type="number"] {
    7. 鏂囩珷姝ｆ枃锛堝悗绔繑鍥炵殑 sanitized HTML锛?
    ======================================================== */
 .article-prose {
-  font-size: 1rem;
-  line-height: 1.85;
+  font-size: var(--prose-body);
+  line-height: var(--prose-line-height);
   /* 姝ｆ枃浣跨敤甯歌瀛楅噸锛岄伩鍏嶇户鎵挎爣棰?鍏ㄥ眬绮椾綋锛涘姞绮楁爣璁板崟鐙彁楂樺瓧閲?*/
   font-family: "Noto Serif SC", "Songti SC", SimSun, Georgia, serif;
   font-weight: 400;
@@ -484,7 +492,8 @@ input[type="number"] {
 
   .directory-card-description {
     @apply mt-2 line-clamp-3 flex-1 leading-relaxed text-slate-500;
-    font-size: var(--type-body);
+    font-size: var(--type-card-description);
+    line-height: 1.65;
   }
 
   .dark .directory-card-description {
@@ -526,7 +535,9 @@ input[type="number"] {
   }
 
   .directory-subtitle {
-    @apply mt-3 flex flex-wrap items-center justify-center gap-2 text-sm font-medium text-slate-500;
+    @apply mt-3 flex flex-wrap items-center justify-center gap-2 font-medium text-slate-500;
+    font-size: var(--type-page-subtitle);
+    line-height: 1.6;
   }
 
   .dark .directory-subtitle {
@@ -2246,7 +2257,7 @@ body[data-nav-hidden="true"] .article-toc {
 
 /* Article body typography: normal text is 0.125rem smaller, bold keeps original size */
 .article-prose {
-  --article-body: 1rem;
+  --article-body: var(--prose-body);
   --article-body-small: calc(var(--article-body) - 0.0625rem);
 }
 
@@ -3027,7 +3038,7 @@ html[data-custom-theme="true"] .btn-secondary {
 }
 
 .directory-featured .directory-card-description {
-  font-size: 14px;
+  font-size: var(--type-card-description);
 }
 
 .timeline-row:nth-child(even) {
@@ -3299,7 +3310,7 @@ html:not(.dark) .hv-empty {
   overflow: hidden;
   margin-top: 0.35rem;
   color: var(--hv-muted);
-  font-size: 0.72rem;
+  font-size: var(--type-list-description);
   line-height: 1.55;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -4178,7 +4189,7 @@ html:not(.dark) .hv-empty {
   overflow: hidden;
   margin-top: 6px;
   color: rgba(255, 255, 255, 0.74);
-  font-size: 12px;
+  font-size: var(--type-list-description);
   line-height: 1.55;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -4279,7 +4290,7 @@ html:not(.dark) .hv-empty {
 
 .archive-masonry .directory-card:not(.archive-card) .directory-card-description {
   margin: 0;
-  font-size: 12px;
+  font-size: var(--type-list-description);
   line-height: 1.55;
   -webkit-line-clamp: 2;
 }
@@ -4312,7 +4323,7 @@ html:not(.dark) .hv-empty {
   }
 
   .cover-grid .directory-card-description {
-    font-size: 12px;
+    font-size: var(--type-list-description);
   }
 
   .archive-masonry {
@@ -4372,7 +4383,7 @@ html:not(.dark) .hv-empty {
 .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-description {
   margin-top: 6px;
   color: rgba(255, 255, 255, 0.74);
-  font-size: 12px;
+  font-size: var(--type-list-description);
   line-height: 1.55;
 }
 
@@ -4448,7 +4459,7 @@ html:not(.dark) .hv-empty {
 
   .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-description {
     margin-top: 7px;
-    font-size: 11.5px;
+    font-size: var(--type-caption);
     line-height: 1.6;
     letter-spacing: 0.01em;
   }
@@ -6304,5 +6315,35 @@ html.dark[data-theme-preset="violet"] .site-gradient {
 
 .resource-meta {
   font-size: var(--type-meta);
+  line-height: 1.5;
+}
+
+.page-subtitle {
+  font-size: var(--type-page-subtitle);
+  line-height: 1.6;
+}
+
+.section-subtitle {
+  font-size: var(--type-section-subtitle);
+  line-height: 1.55;
+}
+
+.resource-description {
+  font-size: var(--type-card-description);
+  line-height: 1.65;
+}
+
+.resource-description--compact {
+  font-size: var(--type-list-description);
+  line-height: 1.6;
+}
+
+.ui-body {
+  font-size: var(--type-body);
+  line-height: 1.7;
+}
+
+.ui-caption {
+  font-size: var(--type-caption);
   line-height: 1.5;
 }
