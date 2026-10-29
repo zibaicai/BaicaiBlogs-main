@@ -117,9 +117,9 @@ export default function FriendMessagesPage() {
                   )}
                 </div>
                 <span className={`rounded-full px-2 py-1 text-[9px] font-bold ${
-                  item.status === "VISIBLE" ? "bg-emerald-500/10 text-emerald-300" : "bg-red-500/10 text-red-300"
+                  item.status === "VISIBLE" ? "bg-emerald-500/10 text-emerald-300" : item.status === "DELETED" ? "bg-slate-500/10 text-slate-400" : "bg-red-500/10 text-red-300"
                 }`}>
-                  {item.status === "VISIBLE" ? "显示中" : "已隐藏"}
+                  {item.status === "VISIBLE" ? "显示中" : item.status === "DELETED" ? "用户已删除" : "已隐藏"}
                 </span>
               </div>
               <p className="mt-3 whitespace-pre-wrap text-xs leading-6 text-slate-300">{item.content}</p>
