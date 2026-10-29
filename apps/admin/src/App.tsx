@@ -36,7 +36,8 @@ import { ToastProvider, useToast } from "./components/ToastProvider";
 import { OperationProvider } from "./context/OperationContext";
 import { SiteConfigProvider } from "./context/SiteConfigProvider";
 import SettingsPage from "./pages/SettingsPage";
-import GalleryPage from "./pages/GalleryPage";
+import GalleryListPage from "./pages/GalleryListPage";
+import GalleryDetailPage from "./pages/GalleryDetailPage";
 import ReportsPage from "./pages/ReportsPage";
 import DanmakuPage from "./pages/DanmakuPage";
 import AccessPage from "./pages/AccessPage";
@@ -763,7 +764,8 @@ export default function App() {
             <Route path="/articles/:id/edit" element={<RequireAuth><Shell><ArticleEditorPage /></Shell></RequireAuth>} />
             <Route path="/projects" element={<RequireAuth><Shell><Projects /></Shell></RequireAuth>} />
             <Route path="/timeline" element={<RequireAuth><Shell><TimelinePreview /></Shell></RequireAuth>} />
-            <Route path="/gallery" element={<RequireAuth><Shell><GalleryPage /></Shell></RequireAuth>} />
+            <Route path="/gallery" element={<RequireAuth><Shell><GalleryListPage /></Shell></RequireAuth>} />
+            <Route path="/gallery/:albumId" element={<RequireAuth><Shell><GalleryDetailPage /></Shell></RequireAuth>} />
             <Route path="/reports" element={<RequireAuth><Shell><ReportsPage /></Shell></RequireAuth>} />
             <Route path="/moments" element={<RequireAuth><Shell><MomentsPage /></Shell></RequireAuth>} />
             <Route path="/music" element={<RequireAuth><Shell><MusicAdminPage /></Shell></RequireAuth>} />
