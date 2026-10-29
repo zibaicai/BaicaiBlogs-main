@@ -78,8 +78,8 @@ export default function RoomSettingsPage() {
                 </label>
                 <label className="block text-xs font-bold text-slate-500">
                   小屋名
-                  <Input value={roomName} onChange={(event) => setRoomName(event.target.value)} className="mt-2" placeholder="例如：叶洛的小屋" />
-                  <span className="mt-1 block text-[10px] font-normal text-slate-400">留空时自动使用“昵称的小屋”。</span>
+                  <Input value={roomName} onChange={(event) => setRoomName(event.target.value)} className="mt-2" placeholder="例如：叶洛" />
+                  <span className="mt-1 block text-[10px] font-normal text-slate-400">留空时显示昵称，不会自动添加其他文字。</span>
                 </label>
                 <label className="block text-xs font-bold text-slate-500">
                   小屋简介

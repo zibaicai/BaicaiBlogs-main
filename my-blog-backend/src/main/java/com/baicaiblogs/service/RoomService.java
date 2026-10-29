@@ -76,7 +76,7 @@ public class RoomService {
                 ? user.getUsername()
                 : user.getNickname();
         String roomName = user.getRoomName() == null || user.getRoomName().isBlank()
-                ? nickname + "的小屋"
+                ? nickname
                 : user.getRoomName();
         List<Post> posts = postRepository.findPublishedPublicByUserId(user.getId());
         List<Moment> moments = momentRepository.findPublishedPublicByUserId(user.getId());
