@@ -3,15 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import { Loader2, MessageCircle, Send } from "lucide-react";
 
-import Input from "./ui/Input";
 import Textarea from "./ui/Textarea";
 import { formatDate, type FriendMessage } from "../lib/api";
 
 export default function FriendGuestbook({ initialMessages }: { initialMessages: FriendMessage[] }) {
   const [messages, setMessages] = useState(initialMessages);
-  const [name, setName] = useState("");
-  const [website, setWebsite] = useState("");
-  const [avatar, setAvatar] = useState("");
   const [content, setContent] = useState("");
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
@@ -63,8 +59,8 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
   }, [turnstileReady, turnstileConfig]);
 
   const submit = async () => {
-    if (!name.trim() || !content.trim()) {
-      setNotice("请填写昵称和留言");
+    if (!content.trim()) {
+      setNotice("请先写点什么");
       return;
     }
     if (turnstileConfig?.enabled && !turnstileToken) {
@@ -78,12 +74,13 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, website, avatar, content, turnstileToken }),
+        body: JSON.stringify({ content, turnstileToken }),
       });
       const json = await res.json();
       if (!res.ok || !json?.success) throw new Error(json?.message || "提交失败");
       setNotice("留言已提交，审核后展示");
-      setName(""); setWebsite(""); setAvatar(""); setContent(""); setTurnstileToken("");
+      setContent("");
+      setTurnstileToken("");
       if (widgetRef.current && (window as any).turnstile) (window as any).turnstile.reset(widgetRef.current);
     } catch (error) {
       setNotice(error instanceof Error ? error.message : "提交失败");
@@ -133,12 +130,7 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
       </div>
 
       <div className="mt-6 rounded-2xl border border-indigo-400/20 bg-slate-950/20 p-4">
-        <div className="grid gap-3 sm:grid-cols-2">
-          <label className="text-[10px] font-bold text-slate-400">昵称<Input value={name} onChange={(e) => setName(e.target.value)} className="mt-1" placeholder="怎么称呼你" /></label>
-          <label className="text-[10px] font-bold text-slate-400">网站（可选）<Input value={website} onChange={(e) => setWebsite(e.target.value)} className="mt-1" placeholder="https://..." /></label>
-          <label className="text-[10px] font-bold text-slate-400">头像（可选）<Input value={avatar} onChange={(e) => setAvatar(e.target.value)} className="mt-1" placeholder="https://..." /></label>
-          <label className="text-[10px] font-bold text-slate-400 sm:col-span-2">留言<Textarea value={content} onChange={(e) => setContent(e.target.value)} rows={3} className="mt-1" placeholder="说点什么，或者留下你的网站。" /></label>
-        </div>
+        <Textarea value={content} onChange={(e) => setContent(e.target.value)} rows={4} className="mt-1" placeholder="说点什么，或者留下你的网站。" />
         {turnstileConfig?.enabled && <div ref={turnstileRef} className="mt-3 min-h-[65px]" />}
         {notice && <p className="mt-2 text-[10px] font-bold text-indigo-500">{notice}</p>}
         <div className="mt-3 flex justify-end">

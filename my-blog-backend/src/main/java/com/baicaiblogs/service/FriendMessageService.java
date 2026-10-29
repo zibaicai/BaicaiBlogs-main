@@ -26,7 +26,8 @@ public class FriendMessageService {
     @Transactional
     public Map<String, Object> submit(Map<String, String> body, String ip, String userAgent) {
         turnstileService.verify(body.get("turnstileToken"), ip);
-        String name = required(body.get("name"), "昵称", 100);
+        String name = optional(body.get("name"), 100);
+        if (name == null) name = "匿名";
         String content = required(body.get("content"), "留言内容", 500);
         String website = optionalUrl(body.get("website"), 500);
         String avatar = optionalUrl(body.get("avatar"), 500);
@@ -103,12 +104,20 @@ public class FriendMessageService {
     public Map<String, Object> promote(Long id, User reviewer) {
         FriendMessage message = messageRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("留言不存在"));
+        String website = message.getWebsite();
+        if (website == null || website.isBlank()) {
+            java.util.regex.Matcher matcher = java.util.regex.Pattern
+                    .compile("https?://[^\\s<>\"']+")
+                    .matcher(message.getContent());
+            if (matcher.find()) website = matcher.group();
+        }
+        if (website == null || website.isBlank()) throw new RuntimeException("留言中没有可收录的网站地址");
         String friendId = "message-" + message.getId();
         while (friendRepository.existsByFriendId(friendId)) friendId += "-x";
         Friend friend = friendRepository.save(Friend.builder()
                 .friendId(friendId)
                 .name(message.getName())
-                .url(message.getWebsite())
+                .url(website)
                 .description(message.getContent())
                 .avatar(message.getAvatar())
                 .sortOrder(friendRepository.findAllByOrderBySortOrderAsc().size())
