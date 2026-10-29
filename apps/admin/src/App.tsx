@@ -43,6 +43,7 @@ import AccessPage from "./pages/AccessPage";
 import EditorPage from "./pages/EditorPage";
 import ArticlesListPage from "./pages/ArticlesListPage";
 import ArticleEditorPage from "./pages/ArticleEditorPage";
+import ArticleDetailPage from "./pages/ArticleDetailPage";
 import MomentsPage from "./pages/MomentsPage";
 import CategoriesPage from "./pages/CategoriesPage";
 import PrivacyAuditPage from "./pages/PrivacyAuditPage";
@@ -838,6 +839,7 @@ export default function App() {
             <Route path="/friend-messages" element={<RequireAuth><Shell><FriendMessagesPage /></Shell></RequireAuth>} />
             <Route path="/articles" element={<RequireAuth><Shell><ArticlesListPage /></Shell></RequireAuth>} />
             <Route path="/articles/new" element={<RequireAuth><Shell><ArticleEditorPage /></Shell></RequireAuth>} />
+            <Route path="/articles/:id" element={<RequireAuth><Shell><ArticleDetailPage /></Shell></RequireAuth>} />
             <Route path="/articles/:id/edit" element={<RequireAuth><Shell><ArticleEditorPage /></Shell></RequireAuth>} />
             <Route path="/projects" element={<RequireAuth><Shell><Projects /></Shell></RequireAuth>} />
             <Route path="/timeline" element={<RequireAuth><Shell><TimelinePreview /></Shell></RequireAuth>} />

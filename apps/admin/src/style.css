@@ -261,3 +261,23 @@ html[data-admin-preset="violet"] {
 .archive-reader th, .archive-reader td { border: 1px solid #e2e8f0; padding: .5em .7em; text-align: left; }
 .archive-reader th { background: #f8fafc; font-weight: 800; }
 .archive-reader hr { margin: 1.6em 0; border: 0; border-top: 1px solid #e2e8f0; }
+
+/* Admin article detail */
+.admin-article-reader { font-size: 13px; line-height: 1.9; color: #cbd5e1; overflow-wrap: anywhere; }
+.admin-article-reader h1, .admin-article-reader h2, .admin-article-reader h3, .admin-article-reader h4 { margin: 1.4em 0 .55em; font-weight: 800; line-height: 1.3; color: #f8fafc; }
+.admin-article-reader h1 { font-size: 1.6em; }
+.admin-article-reader h2 { font-size: 1.35em; }
+.admin-article-reader h3 { font-size: 1.15em; }
+.admin-article-reader p, .admin-article-reader li { margin: .65em 0; }
+.admin-article-reader ul { list-style: disc; padding-left: 1.4em; }
+.admin-article-reader ol { list-style: decimal; padding-left: 1.4em; }
+.admin-article-reader blockquote { margin: 1em 0; border-left: 3px solid #6366f1; background: rgba(99, 102, 241, .08); padding: .65em 1em; color: #cbd5e1; }
+.admin-article-reader a { color: #818cf8; text-decoration: underline; text-underline-offset: 2px; }
+.admin-article-reader img { display: block; max-width: 100%; height: auto; margin: 1em auto; border-radius: 10px; }
+.admin-article-reader pre { overflow-x: auto; margin: 1em 0; border-radius: 10px; background: #020617; padding: .9em; color: #e2e8f0; font-size: 12px; line-height: 1.7; }
+.admin-article-reader code { border-radius: 4px; background: rgba(255,255,255,.08); padding: .12em .3em; color: #c7d2fe; font-size: .9em; }
+.admin-article-reader pre code { background: transparent; padding: 0; color: inherit; }
+.admin-article-reader table { width: 100%; margin: 1em 0; border-collapse: collapse; font-size: 12px; }
+.admin-article-reader th, .admin-article-reader td { border: 1px solid rgba(255,255,255,.1); padding: .45em .65em; text-align: left; }
+.admin-article-reader th { background: rgba(255,255,255,.05); font-weight: 800; }
+.admin-article-reader hr { margin: 1.4em 0; border: 0; border-top: 1px solid rgba(255,255,255,.1); }
