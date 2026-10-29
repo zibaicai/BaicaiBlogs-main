@@ -1,7 +1,6 @@
 const SCOPED_PREFIXES = [
   "/api/public/posts",
   "/api/public/moments",
-  "/api/public/chatters",
   "/api/public/projects",
   "/api/public/albums",
   "/api/public/gallery",

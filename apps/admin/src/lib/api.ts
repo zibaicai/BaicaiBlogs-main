@@ -72,23 +72,6 @@ export interface Moment {
   createdAt?: string;
 }
 
-export interface Chatter {
-  id: number;
-  slug: string;
-  title: string;
-  content: string;
-  htmlContent: string;
-  mood: string;
-  cover: string;
-  date: string;
-  tags: string[];
-  userId?: number;
-  status: "DRAFT" | "PUBLISHED" | string;
-  visibility: "PUBLIC" | "PRIVATE" | string;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
 export interface Tag {
   id: number;
   name: string;
@@ -241,13 +224,6 @@ export const api = {
     request<void>(`/admin/moments/${encodeURIComponent(slug)}`, { method: "DELETE" }),
   getPrivateMoments: (reason: string) =>
     request<Moment[]>(`/admin/moments/private?reason=${encodeURIComponent(reason)}`),
-  myChatters: () => request<Chatter[]>("/admin/chatters/mine"),
-  createChatter: (chatter: Partial<Chatter>) =>
-    request<Chatter>("/admin/chatters", { method: "POST", body: JSON.stringify(chatter) }),
-  updateChatter: (slug: string, chatter: Partial<Chatter>) =>
-    request<Chatter>(`/admin/chatters/${encodeURIComponent(slug)}`, { method: "PUT", body: JSON.stringify(chatter) }),
-  deleteChatter: (slug: string) =>
-    request<void>(`/admin/chatters/${encodeURIComponent(slug)}`, { method: "DELETE" }),
   getAllTags: () => request<string[]>("/admin/posts/all_tags"),
   getMyPostBySlug: (slug: string) => request<Post>(`/admin/posts/${encodeURIComponent(slug)}`),
 

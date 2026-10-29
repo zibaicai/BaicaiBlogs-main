@@ -25,7 +25,7 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** POST / MOMENT / ALBUM / TRACK / CHATTER */
+    /** POST / MOMENT / ALBUM / TRACK */
     @Column(name = "target_type", length = 20)
     private String targetType;
 
@@ -35,9 +35,6 @@ public class Comment {
     /** Legacy target columns kept for migration compatibility. */
     @Column(name = "post_id")
     private Long postId;
-
-    @Column(name = "chatter_id")
-    private Long chatterId;
 
     @Column(name = "moment_id")
     private Long momentId;

@@ -48,21 +48,6 @@ export interface Post {
   visibility?: string;
 }
 
-export interface Chatter {
-  id: number;
-  slug: string;
-  title: string;
-  description?: string;
-  content: string;
-  htmlContent: string;
-  mood: string;
-  cover: string;
-  date: string;
-  tags: string[];
-  createdAt: string;
-  updatedAt: string;
-}
-
 export interface Project {
   id: number;
   projectId: string;
@@ -346,10 +331,6 @@ class PublicApiClient {
 
   getPostBySlug(slug: string) {
     return publicRequest<Post>(`/public/posts/${encodeURIComponent(slug)}`);
-  }
-
-  getAllChatters() {
-    return publicRequest<Chatter[]>("/public/chatters");
   }
 
   getAllProjects() {

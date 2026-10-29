@@ -61,8 +61,6 @@ export interface GitalkConfig {
 }
 
 export interface MiscConfig {
-  chatterTitle: string;
-  chatterDescription: string;
   picBedName: string;
   picBedUrl: string;
   picBedToken: string;
@@ -137,14 +135,12 @@ const DEFAULT_AI_CONFIG: AiConfig = {
 };
 
 const DEFAULT_MISC: MiscConfig = {
-  chatterTitle: "海面杂谈",
-  chatterDescription: "代码、照片、音乐与日常的碎片记录",
   picBedName: "图床",
   picBedUrl: "",
   picBedToken: "",
   cloudMusicIds: [],
   friendLinkApplyFormat:
-    "名称：YeLuo / 云端小屋\n简介：写代码，也拍照片。把项目、音乐和日常里值得留下的片段，收进同一片海。\n链接：https://www.zibaicai.cn\n头像：https://www.zibaicai.cn/avatar.jpg",
+    "名称：YeLuo / 云端小屋\n简介：收集生活的砂砾，也收藏那些不想丢掉的东西。\n链接：https://www.zibaicai.cn\n头像：https://www.zibaicai.cn/avatar.jpg",
   photoWallImage: "https://www.zibaicai.cn/bg-4.webp",
   counts: { photos: 128 },
   footerBadges: [

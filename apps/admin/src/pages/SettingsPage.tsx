@@ -36,7 +36,6 @@ const SITE_INFO_KEYS = [
 const BACKGROUND_KEYS = ["useGradient", "themeColors", "bgImages", "defaultPostCover"] as const;
 
 const MISC_KEYS = [
-  "chatterTitle", "chatterDescription", "picBedName", "picBedUrl", "picBedToken",
   "cloudMusicIds", "friendLinkApplyFormat", "photoWallImage", "counts",
   "footerBadges", "gitalkConfig", "repoConfig",
 ] as const;

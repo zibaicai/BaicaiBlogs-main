@@ -11,14 +11,6 @@ SELECT 'welcome-to-baicaiblogs', '把第一束光留在这里', '一个用来存
        '2026-08-12 10:00:00', 'PUBLISHED'
 WHERE NOT EXISTS (SELECT 1 FROM posts WHERE slug = 'welcome-to-baicaiblogs');
 
--- 示例碎片
-INSERT INTO chatters (slug, title, content, mood, cover, date, tags)
-SELECT 'first-chatter', '第一片潮汐',
-       '今天把新的首页、相册和鲸鱼娘都放进了同一片海。',
-       '平静', 'https://bu.dusays.com/2026/03/24/69c1e38b4c370.jpg',
-       '2026-08-12 11:00:00', '["日常", "记录"]'
-WHERE NOT EXISTS (SELECT 1 FROM chatters WHERE slug = 'first-chatter');
-
 -- 示例项目
 INSERT INTO projects (project_id, name, description, icon, github_url, tags, sort_order)
 SELECT 'proj_001', 'Tide Archive',

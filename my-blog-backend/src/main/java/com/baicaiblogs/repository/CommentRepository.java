@@ -10,7 +10,6 @@ import java.util.List;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findByPostIdOrderByCreatedAtDesc(Long postId);
-    List<Comment> findByChatterIdOrderByCreatedAtDesc(Long chatterId);
     List<Comment> findByMomentIdOrderByCreatedAtDesc(Long momentId);
 
     List<Comment> findByTargetTypeAndTargetIdAndStatusOrderByCreatedAtDesc(String targetType, Long targetId, String status);

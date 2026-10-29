@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState, type KeyboardEvent } from "react";
-import { Clock3, Image as ImageIcon, Save, Send, Smile, Tag, X } from "lucide-react";
+import { Clock3, Image as ImageIcon, Save, Send, Tag, X } from "lucide-react";
 import type { Category } from "../../lib/api";
 import { Select } from "../ui/Select";
 import MediaField from "../ui/MediaField";
 
-type EditorType = "post" | "chatter" | "about";
+type EditorType = "post" | "about";
 
 interface MetaMatrixProps {
   type: EditorType;
@@ -19,12 +19,8 @@ interface MetaMatrixProps {
   categories: Category[];
   categoryId: string;
   setCategoryId: (value: string) => void;
-  mood?: string;
-  setMood?: (value: string) => void;
   allHistoryPostTags: string[];
-  allHistoryChatterTags: string[];
   isLoadingTags: boolean;
-  allHistoryMoods: string[];
   onSave: (publish: boolean) => void;
   isSaving: boolean;
   lastSaved: string | null;
@@ -53,19 +49,15 @@ export default function MetaMatrix({
   categories,
   categoryId,
   setCategoryId,
-  mood,
-  setMood,
   allHistoryPostTags,
-  allHistoryChatterTags,
   isLoadingTags,
-  allHistoryMoods,
   onSave,
   isSaving,
   lastSaved,
   onOpenImageTool,
 }: MetaMatrixProps) {
   const [tagInput, setTagInput] = useState("");
-  const historyTags = type === "chatter" ? allHistoryChatterTags : allHistoryPostTags;
+  const historyTags = allHistoryPostTags;
 
   const commitTag = () => {
     const value = tagInput.trim().replace(/^#/, "");
@@ -187,30 +179,6 @@ export default function MetaMatrix({
               {!isLoadingTags && historyTags.length === 0 && (
                 <span className="text-[10px] italic text-slate-500">尚未发现历史标签</span>
               )}
-            </div>
-          </section>
-        )}
-
-        {type === "chatter" && setMood && (
-          <section>
-            <SectionLabel icon={Smile} text="Mood today" />
-            <input
-              value={mood || ""}
-              onChange={(event) => setMood(event.target.value)}
-              placeholder="输入今天的心情…"
-              className="mb-3 w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-xs text-slate-800 outline-none focus:ring-2 focus:ring-yellow-500 dark:bg-black/20 dark:text-slate-200"
-            />
-            <div className="flex flex-wrap gap-2">
-              {allHistoryMoods.map((item) => (
-                <button
-                  key={item}
-                  type="button"
-                  onClick={() => setMood(item)}
-                  className="rounded-full border border-yellow-500/20 bg-yellow-500/10 px-3 py-1.5 text-[10px] font-bold text-yellow-600 transition hover:bg-yellow-500 hover:text-white dark:text-yellow-400"
-                >
-                  {item}
-                </button>
-              ))}
             </div>
           </section>
         )}

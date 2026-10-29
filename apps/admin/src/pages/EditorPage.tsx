@@ -200,9 +200,7 @@ export default function EditorPage() {
               categoryId={categoryId}
               setCategoryId={setCategoryId}
               allHistoryPostTags={historyTags}
-              allHistoryChatterTags={[]}
               isLoadingTags={isLoadingTags}
-              allHistoryMoods={["开心", "疲惫", "平静", "激动", "Emo"]}
               onSave={handleSave}
               isSaving={isSaving}
               lastSaved={lastSaved}
