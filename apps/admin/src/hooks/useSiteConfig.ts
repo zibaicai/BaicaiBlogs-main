@@ -27,7 +27,6 @@ export interface SiteInfo {
   navAfter: string;
   avatarUrl: string;
   buildDate: string;
-  enableLevelSystem: boolean;
   social: SocialLinks;
   icpConfig: IcpConfig;
 }
@@ -95,7 +94,6 @@ const DEFAULT_SITE_INFO: SiteInfo = {
   navAfter: "云端小屋",
   avatarUrl: "https://www.zibaicai.cn/avatar.jpg",
   buildDate: "2026-03-23T00:00:00",
-  enableLevelSystem: true,
   social: {
     github: "https://github.com/zibaicai",
     gitee: "https://github.com/zibaicai",

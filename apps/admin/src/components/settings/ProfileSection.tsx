@@ -239,34 +239,6 @@ export default function ProfileSection({ formData, handleUpdate, pushToQueue }: 
               </div>
             </div>
 
-            <div className="border-t border-slate-200/70 pt-5 dark:border-slate-700/50">
-              <div className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200/70 bg-white/45 p-4 dark:border-slate-700/50 dark:bg-slate-800/30">
-                <div>
-                  <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
-                    RPG 等级展示系统
-                  </p>
-                  <p className="mt-1 text-[10px] text-slate-400">
-                    开启后在创作工坊与帝江号展示等级徽章。
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={Boolean(data.enableLevelSystem)}
-                  onClick={() => handleUpdate("enableLevelSystem", !data.enableLevelSystem)}
-                  className={`relative h-6 w-11 rounded-full transition ${
-                    data.enableLevelSystem ? "bg-indigo-500" : "bg-slate-300 dark:bg-slate-700"
-                  }`}
-                >
-                  <span
-                    className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
-                      data.enableLevelSystem ? "translate-x-5" : "translate-x-0"
-                    }`}
-                  />
-                </button>
-              </div>
-            </div>
-
             <SettingsField label="友链申请模板">
               <textarea
                 rows={4}

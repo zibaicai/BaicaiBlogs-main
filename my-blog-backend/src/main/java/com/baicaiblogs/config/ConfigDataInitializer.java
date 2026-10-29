@@ -39,7 +39,7 @@ public class ConfigDataInitializer implements CommandLineRunner {
     }
 
     private static final String SITE_INFO_JSON =
-            "{\"title\":\"YeLuo / 云端小屋\",\"faviconUrl\":\"/favicon.ico\",\"authorName\":\"YeLuo\",\"bio\":\"收集生活的砂砾，也收藏那些不想丢掉的东西。\",\"navTitle\":\"YeLuo\",\"navSuffix\":\"/\",\"navAfter\":\"云端小屋\",\"avatarUrl\":\"/avatar.jpg\",\"buildDate\":\"2026-03-23T00:00:00\",\"enableLevelSystem\":true,\"social\":{\"github\":\"https://github.com/zibaicai\",\"gitee\":\"https://github.com/zibaicai\",\"google\":\"\",\"email\":\"\",\"qq\":\"\",\"wechat\":\"\"},\"icpConfig\":{\"name\":\"萌ICP备 2024102131号\",\"link\":\"https://icp.gov.moe/?keyword=2024102131\"}}";
+            "{\"title\":\"YeLuo / 云端小屋\",\"faviconUrl\":\"/favicon.ico\",\"authorName\":\"YeLuo\",\"bio\":\"收集生活的砂砾，也收藏那些不想丢掉的东西。\",\"navTitle\":\"YeLuo\",\"navSuffix\":\"/\",\"navAfter\":\"云端小屋\",\"avatarUrl\":\"/avatar.jpg\",\"buildDate\":\"2026-03-23T00:00:00\",\"social\":{\"github\":\"https://github.com/zibaicai\",\"gitee\":\"https://github.com/zibaicai\",\"google\":\"\",\"email\":\"\",\"qq\":\"\",\"wechat\":\"\"},\"icpConfig\":{\"name\":\"萌ICP备 2024102131号\",\"link\":\"https://icp.gov.moe/?keyword=2024102131\"}}";
 
     private static final String BACKGROUND_JSON =
             "{\"useGradient\":false,\"themeColors\":[\"#1e3a6e\",\"#3157b7\",\"#5b8bd0\",\"#dcebff\"],\"bgImages\":[\"/bg-1.webp\",\"/bg-2.webp\",\"/bg-5.webp\"],\"defaultPostCover\":\"/bg-5.webp\"}";
