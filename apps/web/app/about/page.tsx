@@ -59,7 +59,7 @@ export default async function AboutPage() {
               </div>
 
               <div className="mt-8 flex flex-wrap gap-3">
-                <a href="/#rooms" className="hv-button hv-button-primary">看看大家的小屋</a>
+                <a href="/rooms" className="hv-button hv-button-primary">看看大家的小屋</a>
                 <a href="/account/room" className="hv-button">布置我的小屋</a>
               </div>
             </section>

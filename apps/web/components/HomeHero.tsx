@@ -16,7 +16,7 @@ export default function HomeHero({ postCount, momentCount, photoCount, profile }
   const { siteInfo } = useSiteConfigContext();
   const displayName = profile?.nickname || siteInfo?.authorName || "YeLuo";
   const avatar = profile ? profile.avatar : siteInfo?.avatarUrl;
-  const bio = profile?.roomBio || "收集生活的砂砾，也收藏那些不想丢掉的东西。";
+  const bio = profile?.roomBio || siteInfo?.bio || "收集生活的砂砾，也收藏那些不想丢掉的东西。";
   const aboutHref = profile ? `/u/${encodeURIComponent(profile.username)}/about` : "/about";
 
   const socials = [

@@ -12,6 +12,7 @@ import NavSearch from "./NavSearch";
 
 const NAV_LINKS = [
   { name: "首页", href: "/" },
+  { name: "小屋", href: "/rooms" },
   { name: "笔记", href: "/posts" },
   { name: "文章", href: "/articles" },
   { name: "项目", href: "/projects" },
@@ -33,6 +34,8 @@ export default function Navbar() {
   const pathname = usePathname();
   const { siteInfo } = useSiteConfigContext();
   const communityName = siteInfo?.navAfter || siteInfo?.title || "云端小屋";
+  const isHome = pathname === "/";
+  const leftName = roomName || (isHome ? siteInfo?.authorName || "YeLuo" : null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -84,9 +87,9 @@ export default function Navbar() {
             href="/"
             className="text-xl font-black text-slate-800 dark:text-white tracking-tighter whitespace-nowrap"
           >
-            {roomName ? (
+            {leftName ? (
               <>
-                {roomName}
+                {leftName}
                 <span className="text-indigo-500 mx-1">/</span>
                 {communityName}
               </>
