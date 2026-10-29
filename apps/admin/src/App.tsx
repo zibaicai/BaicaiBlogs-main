@@ -348,7 +348,7 @@ function Dashboard() {
         <section className="rounded-3xl border border-white/10 bg-white/5 p-5 xl:col-span-2">
           <div className="mb-4 flex items-end justify-between">
             <div>
-              <h2 className="text-lg font-black text-white">内容资产构成</h2>
+              <h2 className="text-sm font-black text-white">内容资产构成</h2>
               <p className="mt-1 text-[10px] font-bold text-slate-500">笔记 / 文章 / 项目 / 相册 / 说说 / 照片</p>
             </div>
             <Link to="/posts" className="text-[10px] font-bold text-indigo-400 hover:underline">管理内容</Link>
@@ -373,7 +373,7 @@ function Dashboard() {
         <section className="rounded-3xl border border-white/10 bg-white/5 p-5">
           <div className="mb-4 flex items-end justify-between">
             <div>
-              <h2 className="text-lg font-black text-white">存储资产</h2>
+              <h2 className="text-sm font-black text-white">存储资产</h2>
               <p className="mt-1 text-[10px] font-bold text-slate-500">当前账号配额</p>
             </div>
             <Database size={17} className="text-emerald-400" />
@@ -390,7 +390,7 @@ function Dashboard() {
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
         <section className="rounded-3xl border border-white/10 bg-white/5 p-5">
           <div className="mb-4 flex items-end justify-between">
-            <h2 className="text-lg font-black text-white">待处理</h2>
+            <h2 className="text-sm font-black text-white">待处理</h2>
             <span className="rounded-full bg-amber-500/15 px-2 py-1 text-[9px] font-black text-amber-300">
               {pendingItems.reduce((sum, item) => sum + item.value, 0)}
             </span>
@@ -408,7 +408,7 @@ function Dashboard() {
         <section className="rounded-3xl border border-white/10 bg-white/5 p-5">
           <div className="mb-4 flex items-end justify-between">
             <div>
-              <h2 className="text-lg font-black text-white">近 7 天发布</h2>
+              <h2 className="text-sm font-black text-white">近 7 天发布</h2>
               <p className="mt-1 text-[10px] font-bold text-slate-500">按笔记发布日期统计</p>
             </div>
             <TrendingUp size={17} className="text-indigo-400" />
@@ -429,7 +429,7 @@ function Dashboard() {
 
         <section className="rounded-3xl border border-white/10 bg-white/5 p-5">
           <div className="mb-4 flex items-end justify-between">
-            <h2 className="text-lg font-black text-white">运营与系统</h2>
+            <h2 className="text-sm font-black text-white">运营与系统</h2>
             <Activity size={17} className="text-emerald-400" />
           </div>
           <div className="grid grid-cols-2 gap-2">
@@ -679,7 +679,7 @@ function Projects() {
           <div className="w-full max-w-lg rounded-3xl border border-white/10 bg-slate-900 p-6 shadow-2xl" onClick={(event) => event.stopPropagation()}>
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h2 className="text-xl font-black text-white">{editing ? "编辑项目" : "新建项目"}</h2>
+                <h2 className="text-base font-black text-white">{editing ? "编辑项目" : "新建项目"}</h2>
                 <p className="mt-1 text-xs text-slate-400">项目会显示在 C 端 Projects Matrix。</p>
               </div>
               <button onClick={() => setFormOpen(false)} className="rounded-full p-2 text-slate-400 hover:bg-white/10"><X size={16} /></button>

@@ -171,7 +171,7 @@ export default function ArticleEditorPage() {
         <div className="flex min-w-0 items-center gap-3">
           <Link to="/articles" className="rounded-lg p-2 text-slate-400 hover:bg-white/10 hover:text-white" aria-label="返回文章列表"><ArrowLeft size={18} /></Link>
           <div className="min-w-0">
-            <h1 className="truncate text-xl font-bold text-white">{isNew ? "新建文章" : "编辑文章"}</h1>
+            <h1 className="truncate text-lg font-bold text-white">{isNew ? "新建文章" : "编辑文章"}</h1>
             <p className="mt-0.5 text-[10px] text-slate-500">{isNew ? "保存后会进入编辑页，可继续完善正文" : current?.slug ? `/articles/${current.slug}` : "文章编辑"}</p>
           </div>
         </div>

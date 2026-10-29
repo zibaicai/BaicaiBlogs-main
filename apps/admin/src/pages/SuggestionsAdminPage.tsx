@@ -210,7 +210,7 @@ export default function SuggestionsAdminPage() {
                   <span>{selected.category || "其他"}</span>
                   <span>{new Date(selected.createdAt).toLocaleString("zh-CN")}</span>
                 </div>
-                <h2 className="mt-1.5 text-lg font-bold leading-tight text-white">{selected.title}</h2>
+                <h2 className="mt-1.5 text-base font-bold leading-tight text-white">{selected.title}</h2>
               </div>
 
               <div className="space-y-2 whitespace-pre-wrap text-[12px] leading-6 text-slate-300">

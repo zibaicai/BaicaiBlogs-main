@@ -41,13 +41,12 @@
   color: var(--control-text);
   font-size: 12px;
   box-shadow: var(--control-shadow);
-  font-size: 0.875rem;
   line-height: 1.6;
   outline: none;
   transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
 }
 
-.control-field::placeholder { color: var(--control-placeholder); }
+.control-field::placeholder { color: var(--control-placeholder); font-size: 12px; }
 .control-field:focus {
   border-color: var(--color-indigo-400);
   box-shadow: var(--control-shadow), 0 0 0 3px var(--control-focus);
@@ -233,14 +232,32 @@ html[data-admin-preset="violet"] {
 .admin-input {
   width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-control);
+  border-radius: 8px;
   background: rgba(0, 0, 0, 0.2);
-  padding: 10px 12px;
+  height: 32px;
+  padding: 0 10px;
   color: #e2e8f0;
   font-size: 12px;
   outline: none;
 }
+textarea.admin-input {
+  height: auto;
+  min-height: 80px;
+  padding: 8px 10px;
+  line-height: 1.7;
+  resize: vertical;
+}
 .admin-input:focus { border-color: rgba(129, 140, 248, 0.6); }
+.admin-input::placeholder { font-size: 12px; }
+.admin-bg input:not([type="checkbox"]):not([type="radio"]):not(.tiptap),
+.admin-bg textarea:not(.tiptap),
+.admin-bg select {
+  font-size: 12px;
+}
+.admin-bg input::placeholder,
+.admin-bg textarea::placeholder {
+  font-size: 12px;
+}
 
 
 /* Internal archive reader */
