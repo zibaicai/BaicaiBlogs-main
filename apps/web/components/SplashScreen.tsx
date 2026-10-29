@@ -14,6 +14,7 @@ export default function SplashScreen() {
   const [mounted, setMounted] = useState(false);
   const [phase, setPhase] = useState<SplashPhase>("idle");
   const timers = useRef<number[]>([]);
+  const communityName = siteInfo?.navAfter || siteInfo?.title || "云端小屋";
 
   useEffect(() => {
     setMounted(true);
@@ -61,42 +62,46 @@ export default function SplashScreen() {
     >
       <style>{`
         @keyframes splash-orbit { to { transform: rotate(360deg); } }
-        @keyframes splash-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
         .splash-shell.is-closing {
           opacity: 0;
           transform: scale(1.06);
           filter: blur(14px);
         }
         .splash-orbit { animation: splash-orbit 4s linear infinite; }
-        .splash-fill { animation: splash-fill 1.8s ease-in-out both; transform-origin: left center; }
+        .splash-spinner {
+          border: 2px solid color-mix(in srgb, var(--ui-accent) 20%, transparent);
+          border-top-color: var(--ui-accent);
+          animation: splash-orbit 0.8s linear infinite;
+        }
         @media (prefers-reduced-motion: reduce) {
-          .splash-orbit, .splash-fill { animation: none; }
-          .splash-fill { transform: scaleX(1); }
+          .splash-orbit, .splash-spinner { animation: none; }
         }
       `}</style>
 
       <div className="relative flex flex-col items-center">
-        <div className="relative mb-8 h-24 w-24">
-          <div className="splash-orbit absolute -inset-1.5 rounded-full bg-[conic-gradient(from_0deg,var(--ui-accent),transparent,var(--ui-accent))] opacity-60 blur-[3px]" />
+        <div className="relative mb-8 h-[100px] w-[100px]">
+          <div className="splash-orbit absolute -inset-1 rounded-full bg-[conic-gradient(from_0deg,var(--ui-accent),transparent,var(--ui-accent))] opacity-60 blur-[3px]" />
           <div className="relative h-full w-full rounded-full bg-white p-1.5 shadow-xl dark:bg-slate-900">
             <img
-              src={siteInfo?.avatarUrl}
-              alt={siteInfo?.authorName ? `${siteInfo.authorName} 头像` : "站点头像"}
+              src="/pet/whale-idle.webp"
+              alt="鲸鱼娘"
               className="h-full w-full rounded-full object-cover"
             />
           </div>
         </div>
 
         <h1 className="mb-2 text-2xl font-black uppercase tracking-[0.2em] text-slate-800 dark:text-white">
-          {siteInfo?.authorName}
+          {communityName}
         </h1>
-        <p className="mb-12 text-[10px] font-black tracking-[0.5em] text-slate-400">
-          DIVING INTO THE ARCHIVE
+        <p className="mb-12 text-[10px] font-black uppercase tracking-[0.35em] text-slate-400">
+          CLOUD CABIN IS LOADING...
         </p>
 
-        <div className="relative h-[1.5px] w-40 overflow-hidden bg-slate-200 dark:bg-slate-800">
-          <span className="splash-fill absolute inset-0 bg-[var(--ui-accent)] shadow-[0_0_12px_var(--ui-accent)]" />
-        </div>
+        <div
+          className="splash-spinner h-9 w-9 rounded-full"
+          role="progressbar"
+          aria-label="加载中"
+        />
       </div>
     </div>
   );
