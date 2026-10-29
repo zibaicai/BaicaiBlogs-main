@@ -69,6 +69,7 @@ export default function ArticlesListPage() {
       <AdminPageHeader
         title="文章管理"
         description={`独立富文本文章 · 共 ${items.length} 篇`}
+        breadcrumbs={[{ label: "内容" }, { label: "文章" }]}
         actions={<Link to="/articles/new" className="inline-flex items-center gap-2 rounded-lg bg-indigo-500 px-3 py-2 text-[11px] font-bold text-white"><Plus size={14} /> 新建文章</Link>}
       />
 

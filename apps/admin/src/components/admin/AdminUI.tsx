@@ -13,15 +13,18 @@ export function AdminPageHeader({
   description,
   actions,
   eyebrow,
+  breadcrumbs,
 }: {
   title: string;
   description?: string;
   actions?: ReactNode;
   eyebrow?: string;
+  breadcrumbs?: { label: string; to?: string }[];
 }) {
   return (
     <header className="flex flex-wrap items-center justify-between gap-3">
       <div className="min-w-0">
+        {breadcrumbs?.length ? <div className="mb-1"><AdminBreadcrumb items={breadcrumbs} /></div> : null}
         {eyebrow && <p className="text-[9px] font-bold uppercase tracking-[0.22em] text-indigo-400">{eyebrow}</p>}
         <h1 className="text-xl font-bold leading-tight text-white">{title}</h1>
         {description && <p className="mt-0.5 text-[11px] text-slate-400">{description}</p>}

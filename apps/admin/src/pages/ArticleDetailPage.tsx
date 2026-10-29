@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Eye, Loader2, Pencil, Trash2 } from "lucide-react";
 
 import { api } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
 import { AdminPageHeader, AdminPageShell, StatusBadge, TagBadge } from "../components/admin/AdminUI";
+import { Anchor, type AnchorItem } from "../components/admin/Anchor";
 
 type Article = {
   id: number;
@@ -23,12 +24,31 @@ type Article = {
   updatedAt?: string;
 };
 
+function prepareContent(html: string): { html: string; anchors: AnchorItem[] } {
+  if (!html) return { html: "", anchors: [] };
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  const anchors: AnchorItem[] = [];
+  const used = new Set<string>();
+  doc.querySelectorAll("h1, h2, h3").forEach((heading, index) => {
+    const level = Number(heading.tagName.slice(1));
+    const base = heading.id || `article-heading-${index + 1}`;
+    let id = base;
+    let suffix = 2;
+    while (used.has(id)) id = `${base}-${suffix++}`;
+    used.add(id);
+    heading.id = id;
+    anchors.push({ id, text: heading.textContent?.trim() || `章节 ${index + 1}`, level });
+  });
+  return { html: doc.body.innerHTML, anchors };
+}
+
 export default function ArticleDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
+  const prepared = useMemo(() => prepareContent(article?.contentHtml || ""), [article?.contentHtml]);
 
   useEffect(() => {
     api.adminArticle(Number(id))
@@ -68,16 +88,18 @@ export default function ArticleDetailPage() {
       <AdminPageHeader
         title={article.title}
         description={article.subtitle || article.summary || "—"}
+        breadcrumbs={[{ label: "文章管理", to: "/articles" }, { label: "详情" }]}
         actions={<StatusBadge status={article.status} />}
       />
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_240px]">
         <article className="rounded-xl border border-white/10 bg-white/[0.03] p-5 md:p-7">
           {article.cover && <img src={article.cover} alt="" className="mb-5 max-h-72 w-full rounded-lg object-cover" />}
-          <div className="admin-article-reader" dangerouslySetInnerHTML={{ __html: article.contentHtml || "" }} />
+          <div className="admin-article-reader" dangerouslySetInnerHTML={{ __html: prepared.html }} />
         </article>
 
-        <aside className="h-fit space-y-3 rounded-xl border border-white/10 bg-white/[0.03] p-4">
+        <aside className="h-fit space-y-4 rounded-xl border border-white/10 bg-white/[0.03] p-4">
+          {prepared.anchors.length > 0 && <Anchor items={prepared.anchors} />}
           <div>
             <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500">分类</p>
             <p className="mt-1 text-[11px] text-slate-300">{article.category || "未分类"}</p>

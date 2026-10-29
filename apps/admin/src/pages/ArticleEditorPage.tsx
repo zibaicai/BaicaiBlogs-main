@@ -8,7 +8,7 @@ import RichTextEditor, { type RichTextEditorHandle } from "../components/editor/
 import { Select } from "../components/ui/Select";
 import { api } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
-import { AdminPageShell } from "../components/admin/AdminUI";
+import { AdminBreadcrumb, AdminPageShell } from "../components/admin/AdminUI";
 
 type Category = { id: number; name: string; path: string };
 type Article = {
@@ -166,6 +166,7 @@ export default function ArticleEditorPage() {
 
   return (
     <AdminPageShell>
+      <AdminBreadcrumb items={[{ label: "文章管理", to: "/articles" }, { label: isNew ? "新建文章" : "编辑文章" }]} />
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
           <Link to="/articles" className="rounded-lg p-2 text-slate-400 hover:bg-white/10 hover:text-white" aria-label="返回文章列表"><ArrowLeft size={18} /></Link>
