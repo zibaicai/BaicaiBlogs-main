@@ -3,6 +3,7 @@ import { ArrowUpRight, Radio } from "lucide-react";
 
 import Navbar from "../../components/Navbar";
 import PageTransition from "../../components/PageTransition";
+import { PageTitle } from "../../components/ui/Typography";
 import { getPublicSiteConfig, getRooms } from "../../lib/server-api";
 
 export const dynamic = "force-dynamic";
@@ -20,9 +21,9 @@ export default async function RoomsPage() {
           <div className="max-w-6xl mx-auto">
             <header className="mb-10">
               <p className="text-[10px] font-black uppercase tracking-[0.22em] text-indigo-400">ROOM DIRECTORY</p>
-              <h1 className="page-title mt-2 text-slate-900 dark:text-white">
+              <PageTitle className="mt-2 text-slate-900 dark:text-white">
                 {communityName}目录
-              </h1>
+              </PageTitle>
               <p className="mt-3 text-sm text-slate-500">
                 每一间小屋，都是一个人正在生活的地方。
               </p>

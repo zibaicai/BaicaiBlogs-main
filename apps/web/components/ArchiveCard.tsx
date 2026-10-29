@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { ResourceTitle, type ResourceTitleVariant } from "./ui/Typography";
 
 type ArchiveCardProps = {
   href: string;
@@ -13,6 +14,7 @@ type ArchiveCardProps = {
   badges?: ReactNode;
   imageClassName?: string;
   external?: boolean;
+  variant?: ResourceTitleVariant;
 };
 
 export default function ArchiveCard({
@@ -27,6 +29,7 @@ export default function ArchiveCard({
   badges,
   imageClassName = "",
   external = false,
+  variant,
 }: ArchiveCardProps) {
   const content = (
     <>
@@ -47,7 +50,7 @@ export default function ArchiveCard({
         )}
       </div>
       <div className="archive-card-body">
-        <h2 className="archive-card-title">{title}</h2>
+        <ResourceTitle className="archive-card-title" variant={variant}>{title}</ResourceTitle>
         {description && <p className="archive-card-description">{description}</p>}
         <div className="archive-card-foot">
           {eyebrow && <div className="archive-card-eyebrow">{eyebrow}</div>}

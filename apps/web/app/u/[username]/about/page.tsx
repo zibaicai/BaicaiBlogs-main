@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import Navbar from "../../../../components/Navbar";
 import PageTransition from "../../../../components/PageTransition";
+import { PageTitle } from "../../../../components/ui/Typography";
 import { formatDate } from "../../../../lib/api";
 import { getRoom } from "../../../../lib/server-api";
 
@@ -36,9 +37,9 @@ export default async function RoomAboutPage({ params }: { params: Promise<{ user
                 )}
               </div>
               <p className="text-[10px] font-black uppercase tracking-[0.22em] text-indigo-400">ROOM / OWNER</p>
-              <h1 className="page-title mt-2 text-slate-900 dark:text-white">
+              <PageTitle className="mt-2 text-slate-900 dark:text-white">
                 {room.nickname}
-              </h1>
+              </PageTitle>
               <p className="mt-2 text-sm text-slate-500">{room.roomName}</p>
             </header>
 

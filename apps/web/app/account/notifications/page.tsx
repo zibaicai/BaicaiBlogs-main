@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Bell, Check } from "lucide-react";
 import Navbar from "../../../components/Navbar";
 import PageTransition from "../../../components/PageTransition";
+import { PageTitle } from "../../../components/ui/Typography";
 
 interface Notice {
   id: number;
@@ -46,9 +47,9 @@ export default function NotificationsPage() {
       <PageTransition>
         <main className="directory-shell">
           <div className="max-w-3xl mx-auto">
-          <h1 className="page-title mb-2 flex items-center gap-2 text-slate-900 dark:text-white">
+          <PageTitle className="mb-2 flex items-center gap-2 text-slate-900 dark:text-white">
             <Bell className="text-indigo-500" /> 消息中心
-          </h1>
+          </PageTitle>
           <p className="text-sm text-slate-500 dark:text-slate-400 mb-8">管理员查看你的密码相册时会在这里通知。</p>
           {loading && <div className="text-slate-400 text-sm">加载中...</div>}
           {error && <div className="text-red-400 text-sm font-bold">{error}</div>}

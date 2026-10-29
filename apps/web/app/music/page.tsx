@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Disc3, Flame, Heart, ListMusic, Loader2, Music2, Pause, Play, SkipBack, SkipForward, ThumbsDown, UserRound } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import PageTransition from "../../components/PageTransition";
+import { PageTitle } from "../../components/ui/Typography";
 import Input from "../../components/ui/Input";
 import MusicCommentSection from "../../components/comments/MusicCommentSection";
 import { musicApi, type MusicPlaylist, type MusicTrack } from "../../lib/api";
@@ -194,7 +195,7 @@ export default function MusicPage() {
           <header className="music-topbar">
             <div>
               <div className="music-kicker">BAICAI / MUSIC</div>
-              <h1 className="music-title">音乐</h1>
+              <PageTitle className="music-title">音乐</PageTitle>
             </div>
             <div className="music-top-actions">
               <div className="music-layout-switch" role="group" aria-label="音乐页布局">

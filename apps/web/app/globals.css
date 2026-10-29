@@ -470,7 +470,7 @@ input[type="number"] {
 
   .directory-card-title {
     @apply line-clamp-2 font-bold text-slate-800 transition-colors duration-300;
-    font-size: var(--type-card-title);
+    font-size: var(--resource-title-size, var(--type-card-title));
     line-height: 1.4;
   }
 
@@ -3022,7 +3022,7 @@ html[data-custom-theme="true"] .btn-secondary {
 }
 
 .directory-featured .directory-card-title {
-  font-size: clamp(1.5rem, 2.2vw, 2rem);
+  --resource-title-size: clamp(1.5rem, 2.2vw, 2rem);
   line-height: 1.2;
 }
 
@@ -3287,7 +3287,7 @@ html:not(.dark) .hv-empty {
   overflow: hidden;
   color: var(--hv-text);
   font-family: "Songti SC", "Noto Serif SC", Georgia, serif;
-  font-size: var(--type-card-title);
+  font-size: var(--resource-title-size, var(--type-card-title));
   font-weight: 600;
   line-height: 1.35;
   text-overflow: ellipsis;
@@ -3373,7 +3373,7 @@ html:not(.dark) .hv-empty {
   }
 
   .archive-card-title {
-    font-size: 0.9375rem;
+    --resource-title-size: 0.9375rem;
   }
 
   .archive-card-description {
@@ -3400,7 +3400,7 @@ html:not(.dark) .hv-empty {
 }
 
 .directory-grid.directory-grid-compact > * .directory-card:not(.archive-card) .directory-card-title {
-  font-size: var(--type-list-title);
+  --resource-title-size: var(--type-list-title);
 }
 
 @media (max-width: 767px) {
@@ -4164,7 +4164,7 @@ html:not(.dark) .hv-empty {
   overflow: hidden;
   color: #fff;
   font-family: var(--font-display);
-  font-size: 16px;
+  --resource-title-size: var(--type-overlay-title);
   font-weight: 700;
   line-height: 1.3;
   white-space: normal;
@@ -4268,7 +4268,7 @@ html:not(.dark) .hv-empty {
 }
 
 .archive-masonry .directory-card:not(.archive-card) .directory-card-title {
-  font-size: 16px;
+  --resource-title-size: var(--type-overlay-title);
   line-height: 1.35;
   white-space: normal;
   display: -webkit-box;
@@ -4308,7 +4308,7 @@ html:not(.dark) .hv-empty {
   }
 
   .cover-grid .directory-card-title {
-    font-size: 15px;
+    --resource-title-size: 0.9375rem;
   }
 
   .cover-grid .directory-card-description {
@@ -4363,7 +4363,7 @@ html:not(.dark) .hv-empty {
 }
 
 .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-title {
-  font-size: 16px;
+  --resource-title-size: var(--type-overlay-title);
   line-height: 1.3;
   white-space: normal;
   color: #fff;
@@ -4441,7 +4441,7 @@ html:not(.dark) .hv-empty {
   }
 
   .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-title {
-    font-size: 15px;
+    --resource-title-size: 0.9375rem;
     line-height: 1.45;
     letter-spacing: 0.025em;
   }
@@ -6282,23 +6282,23 @@ html.dark[data-theme-preset="violet"] .site-gradient {
 }
 
 .resource-title {
-  font-size: var(--type-card-title);
+  font-size: var(--resource-title-size, var(--type-card-title));
   font-weight: 700;
   line-height: 1.4;
 }
 
 .resource-title--compact {
-  font-size: var(--type-list-title);
+  --resource-title-size: var(--type-list-title);
   line-height: 1.45;
 }
 
 .resource-title--overlay {
-  font-size: var(--type-overlay-title);
+  --resource-title-size: var(--type-overlay-title);
   line-height: 1.35;
 }
 
 .resource-title--featured {
-  font-size: clamp(1.5rem, 2.2vw, 2rem);
+  --resource-title-size: clamp(1.5rem, 2.2vw, 2rem);
   line-height: 1.2;
 }
 

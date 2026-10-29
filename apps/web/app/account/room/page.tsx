@@ -6,6 +6,7 @@ import { ArrowLeft, Loader2, Save } from "lucide-react";
 
 import Navbar from "../../../components/Navbar";
 import PageTransition from "../../../components/PageTransition";
+import { PageTitle } from "../../../components/ui/Typography";
 import Input from "../../../components/ui/Input";
 import Textarea from "../../../components/ui/Textarea";
 import { roomApi, type RoomProfile } from "../../../lib/api";
@@ -59,7 +60,7 @@ export default function RoomSettingsPage() {
             </Link>
             <header className="mb-8">
               <p className="text-[10px] font-black uppercase tracking-[0.22em] text-indigo-400">MY ROOM</p>
-              <h1 className="page-title mt-2 text-slate-900 dark:text-white">我的小屋</h1>
+              <PageTitle className="mt-2 text-slate-900 dark:text-white">我的小屋</PageTitle>
               <p className="mt-2 text-sm text-slate-500">修改后，导航和首页会显示你的小屋名与昵称。</p>
             </header>
 

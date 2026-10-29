@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { ResourceTitle, type ResourceTitleVariant } from "./ui/Typography";
 
 export type ArchiveMedia =
   | { kind: "cover"; src: string; alt?: string; fit?: "cover" | "contain" }
@@ -18,6 +19,7 @@ export interface ArchiveItemCardProps {
   cornerBadge?: ReactNode;
   footnote?: ReactNode;
   media?: ArchiveMedia;
+  variant?: ResourceTitleVariant;
 }
 
 export default function ArchiveItemCard({
@@ -32,6 +34,7 @@ export default function ArchiveItemCard({
   cornerBadge,
   footnote,
   media,
+  variant,
 }: ArchiveItemCardProps) {
   const content = (
     <>
@@ -66,7 +69,7 @@ export default function ArchiveItemCard({
       <div className="directory-card-body">
         <div className="directory-card-copy">
           {label && <time className="directory-card-time">{label}</time>}
-          <h2 className="directory-card-title">{title}</h2>
+          <ResourceTitle className="directory-card-title" variant={variant}>{title}</ResourceTitle>
           {description && <p className="directory-card-description">{description}</p>}
           {footnote && <p className="directory-card-footnote">{footnote}</p>}
         </div>

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Sparkles } from "lucide-react";
+import { PageTitle } from "./ui/Typography";
 
 export default function ArchiveHeader({
   eyebrow,
@@ -17,7 +18,7 @@ export default function ArchiveHeader({
   return (
     <header className="directory-header">
       <p className="directory-eyebrow">{eyebrow}</p>
-      <h1 className="directory-title">{title}</h1>
+      <PageTitle className="directory-title">{title}</PageTitle>
       <div className="directory-subtitle">
         <Sparkles size={15} className="text-indigo-500" />
         {subtitle && <span>{subtitle}</span>}

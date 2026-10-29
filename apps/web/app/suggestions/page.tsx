@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ImagePlus, Lightbulb, Loader2, Send, X } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import PageTransition from "../../components/PageTransition";
+import { PageTitle } from "../../components/ui/Typography";
 import Select from "../../components/ui/Select";
 import Input from "../../components/ui/Input";
 import Textarea from "../../components/ui/Textarea";
@@ -100,7 +101,7 @@ export default function SuggestionsPage() {
         <main className="directory-shell suggestions-shell">
           <header className="mb-8">
             <span className="font-mono text-[9px] font-black tracking-[0.2em] text-indigo-400">SUGGESTIONS</span>
-            <h1 className="page-title mt-2 text-slate-900 dark:text-white">建议与想法</h1>
+            <PageTitle className="mt-2 text-slate-900 dark:text-white">建议与想法</PageTitle>
             <p className="mt-3 max-w-2xl text-sm text-slate-500 dark:text-slate-400">
               对博客的功能、界面和体验提出建议。可以附截图或草图，超级管理员会审核并回复，采纳后会有 1-5 元奖励。
             </p>
