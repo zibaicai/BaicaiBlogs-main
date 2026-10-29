@@ -20,7 +20,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <input
           ref={ref}
           id={inputId}
-          className={`control-field h-11 ${error ? "!border-red-400/60" : ""} ${className}`}
+          className={`control-field h-8 rounded-lg text-[11px] ${error ? "!border-red-400/60" : ""} ${className}`}
           {...props}
         />
         {error ? (

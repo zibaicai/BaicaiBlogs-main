@@ -21,7 +21,7 @@
   --radius-modal: 22px;
   --radius-media: 8px;
 
-  --control-height: 42px;
+  --control-height: 34px;
   --control-radius: var(--radius-control);
   --control-bg: rgba(2, 6, 23, 0.35);
   --control-border: rgba(255, 255, 255, 0.12);
@@ -34,11 +34,12 @@
 .control-field {
   width: 100%;
   min-height: var(--control-height);
-  padding: 0.65rem 1rem;
+  padding: 0.4rem 0.7rem;
   border: 1px solid var(--control-border);
   border-radius: var(--control-radius);
   background: var(--control-bg);
   color: var(--control-text);
+  font-size: 12px;
   box-shadow: var(--control-shadow);
   font-size: 0.875rem;
   line-height: 1.6;
@@ -52,7 +53,7 @@
   box-shadow: var(--control-shadow), 0 0 0 3px var(--control-focus);
 }
 .control-field:disabled { cursor: not-allowed; opacity: .55; }
-.control-textarea { min-height: 110px; resize: vertical; line-height: 1.75; }
+.control-textarea { min-height: 96px; resize: vertical; line-height: 1.7; }
 
 html[data-admin-preset="ocean"] {
   --admin-accent-rgb: 49, 87, 183;

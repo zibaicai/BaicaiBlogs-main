@@ -160,12 +160,12 @@ export function Select({
             if (open) setOpen(false);
           }
         }}
-        className={`flex h-11 w-full items-center justify-between gap-3 rounded-2xl border border-white/10 bg-black/25 px-4 text-left text-sm outline-none transition focus:border-indigo-400/60 focus:ring-2 focus:ring-indigo-500/20 disabled:cursor-not-allowed disabled:opacity-45 ${
+        className={`flex h-8 w-full items-center justify-between gap-2 rounded-lg border border-white/10 bg-black/25 px-3 text-left text-[11px] outline-none transition focus:border-indigo-400/60 focus:ring-2 focus:ring-indigo-500/20 disabled:cursor-not-allowed disabled:opacity-45 ${
           selected ? "text-slate-100" : "text-slate-500"
         } ${className}`}
       >
         <span className="min-w-0 truncate">{selected?.label || placeholder}</span>
-        <ChevronDown size={15} className={`shrink-0 text-slate-500 transition-transform ${open ? "rotate-180" : ""}`} />
+        <ChevronDown size={13} className={`shrink-0 text-slate-500 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
 
       {open &&
@@ -185,7 +185,7 @@ export function Select({
               maxHeight: rect.maxHeight,
               zIndex: 400,
             }}
-            className="admin-scrollbar overflow-y-auto rounded-2xl border border-white/10 bg-slate-900/95 p-1.5 shadow-2xl shadow-black/40 backdrop-blur-2xl"
+            className="admin-scrollbar overflow-y-auto rounded-xl border border-white/10 bg-slate-900/95 p-1 shadow-2xl shadow-black/40 backdrop-blur-2xl"
           >
             {options.length === 0 ? (
               <div className="px-3 py-3 text-xs text-slate-500">暂无可选项</div>
@@ -202,7 +202,7 @@ export function Select({
                     aria-disabled={option.disabled}
                     onMouseEnter={() => !option.disabled && setActiveIndex(index)}
                     onClick={() => choose(index)}
-                    className={`flex cursor-pointer items-center justify-between gap-3 rounded-xl px-3 py-2.5 transition-colors ${
+                    className={`flex cursor-pointer items-center justify-between gap-2 rounded-lg px-2.5 py-2 transition-colors ${
                       option.disabled
                         ? "cursor-not-allowed text-slate-600"
                         : isActive

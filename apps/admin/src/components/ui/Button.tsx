@@ -20,14 +20,14 @@ const variants: Record<Variant, string> = {
 };
 
 const sizes: Record<Size, string> = {
-  sm: "h-8 rounded-xl px-3 text-[10px]",
-  md: "h-10 rounded-2xl px-4 text-xs",
+  sm: "h-8 rounded-lg px-2.5 text-[10px]",
+  md: "h-10 rounded-xl px-4 text-xs",
   lg: "h-12 rounded-2xl px-6 text-sm",
-  icon: "h-9 w-9 rounded-xl",
+  icon: "h-7 w-7 rounded-lg",
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className = "", variant = "primary", size = "md", type = "button", disabled, children, ...props }, ref) => (
+  ({ className = "", variant = "primary", size = "sm", type = "button", disabled, children, ...props }, ref) => (
     <button
       ref={ref}
       type={type}
