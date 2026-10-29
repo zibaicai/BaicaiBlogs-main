@@ -181,7 +181,7 @@ export default function MyPhotosPage() {
         <main className="directory-shell">
           <div className="max-w-6xl mx-auto">
           <header className="mb-8">
-            <h1 className="text-4xl font-black text-slate-900 dark:text-white">我的图片</h1>
+            <h1 className="page-title text-slate-900 dark:text-white">我的图片</h1>
             <p className="text-sm text-slate-500 dark:text-slate-400 font-medium mt-2">
               单次最多 10 张、单张 10MB；公开+私密合计每天 10 张
             </p>

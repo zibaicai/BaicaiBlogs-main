@@ -59,7 +59,7 @@ export default function RoomSettingsPage() {
             </Link>
             <header className="mb-8">
               <p className="text-[10px] font-black uppercase tracking-[0.22em] text-indigo-400">MY ROOM</p>
-              <h1 className="mt-2 text-3xl font-black text-slate-900 dark:text-white">我的小屋</h1>
+              <h1 className="page-title mt-2 text-slate-900 dark:text-white">我的小屋</h1>
               <p className="mt-2 text-sm text-slate-500">修改后，导航和首页会显示你的小屋名与昵称。</p>
             </header>
 

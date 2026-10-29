@@ -20,7 +20,7 @@ export default async function RoomsPage() {
           <div className="max-w-6xl mx-auto">
             <header className="mb-10">
               <p className="text-[10px] font-black uppercase tracking-[0.22em] text-indigo-400">ROOM DIRECTORY</p>
-              <h1 className="mt-2 text-4xl font-black tracking-tighter text-slate-900 dark:text-white">
+              <h1 className="page-title mt-2 text-slate-900 dark:text-white">
                 {communityName}目录
               </h1>
               <p className="mt-3 text-sm text-slate-500">

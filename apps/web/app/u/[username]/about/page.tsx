@@ -36,7 +36,7 @@ export default async function RoomAboutPage({ params }: { params: Promise<{ user
                 )}
               </div>
               <p className="text-[10px] font-black uppercase tracking-[0.22em] text-indigo-400">ROOM / OWNER</p>
-              <h1 className="mt-2 text-4xl font-black tracking-tighter text-slate-900 dark:text-white">
+              <h1 className="page-title mt-2 text-slate-900 dark:text-white">
                 {room.nickname}
               </h1>
               <p className="mt-2 text-sm text-slate-500">{room.roomName}</p>
