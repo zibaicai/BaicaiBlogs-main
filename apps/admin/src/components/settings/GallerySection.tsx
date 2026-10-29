@@ -17,7 +17,7 @@ export default function GallerySection({ formData, handleUpdate, pushToQueue }: 
     >
       <div className="flex justify-between items-center mb-8 border-b border-white/30 dark:border-slate-700/50 pb-6">
         <div>
-          <h2 className="text-2xl font-black text-slate-800 dark:text-white flex items-center gap-2">
+          <h2 className="text-base font-bold text-slate-800 dark:text-white flex items-center gap-2">
             <ImageIcon size={22} className="text-pink-400" /> 照片墙
           </h2>
           <p className="text-slate-500 text-sm mt-2 font-bold">

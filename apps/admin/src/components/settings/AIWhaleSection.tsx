@@ -91,7 +91,7 @@ export default function AIWhaleSection({ formData, handleUpdate, pushToQueue }: 
             <textarea
               value={promptText}
               onChange={(event) => updatePrompt(event.target.value)}
-              className={`${inputClass} min-h-[190px] resize-y pl-11 leading-relaxed`}
+              className={`${inputClass} min-h-[140px] resize-y pl-11 leading-relaxed`}
               placeholder="输入 AI 的性格、行为模式和约束..."
             />
           </div>

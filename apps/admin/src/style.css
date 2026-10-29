@@ -249,6 +249,13 @@ textarea.admin-input {
 }
 .admin-input:focus { border-color: rgba(129, 140, 248, 0.6); }
 .admin-input::placeholder { font-size: 12px; }
+
+/* Unlayered control padding otherwise overrides Tailwind pl-* utilities. */
+.control-field.pl-11 { padding-left: 2.75rem; }
+.control-field.pl-10 { padding-left: 2.5rem; }
+.control-field.pl-9 { padding-left: 2.25rem; }
+.admin-input.pl-9 { padding-left: 2.25rem; }
+.admin-input.pl-8 { padding-left: 2rem; }
 .admin-bg input:not([type="checkbox"]):not([type="radio"]):not(.tiptap),
 .admin-bg textarea:not(.tiptap),
 .admin-bg select {

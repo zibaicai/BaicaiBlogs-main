@@ -18,15 +18,15 @@ export function SettingsCard({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-[30px] border border-white/50 bg-white/40 p-7 shadow-xl backdrop-blur-xl dark:border-slate-800/50 dark:bg-slate-900/40">
-      <header className="mb-7 flex flex-wrap items-start justify-between gap-4 border-b border-white/30 pb-5 dark:border-slate-700/50">
+    <section className="rounded-xl border border-white/50 bg-white/40 p-4 shadow-lg backdrop-blur-xl dark:border-slate-800/50 dark:bg-slate-900/40">
+      <header className="mb-4 flex flex-wrap items-start justify-between gap-3 border-b border-white/30 pb-3 dark:border-slate-700/50">
         <div>
-          <h2 className="flex items-center gap-2 text-xl font-black text-slate-800 dark:text-white">
+          <h2 className="flex items-center gap-2 text-base font-bold text-slate-800 dark:text-white">
             {icon}
             {title}
           </h2>
           {description && (
-            <p className="mt-2 text-xs font-bold text-slate-500 dark:text-slate-400">{description}</p>
+            <p className="mt-1 text-[10px] font-medium text-slate-500 dark:text-slate-400">{description}</p>
           )}
         </div>
         {action}
@@ -47,11 +47,11 @@ export function SettingsField({
 }) {
   return (
     <label className="block">
-      <span className="mb-2 block text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">
+      <span className="mb-1.5 block text-[9px] font-bold uppercase tracking-[0.14em] text-slate-400">
         {label}
       </span>
       {children}
-      {hint && <span className="mt-2 block text-[10px] leading-5 text-slate-400">{hint}</span>}
+      {hint && <span className="mt-1.5 block text-[9px] leading-4 text-slate-400">{hint}</span>}
     </label>
   );
 }
@@ -67,7 +67,7 @@ export function SettingsSaveButton({
     <button
       type="button"
       onClick={onClick}
-      className="rounded-xl bg-indigo-500 px-5 py-2.5 text-xs font-black text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-600"
+      className="rounded-lg bg-indigo-500 px-3 py-2 text-[10px] font-bold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-600"
     >
       {children}
     </button>
