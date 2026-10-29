@@ -21,7 +21,7 @@
   --radius-modal: 22px;
   --radius-media: 8px;
 
-  --control-height: 34px;
+  --control-height: 32px;
   --control-radius: var(--radius-control);
   --control-bg: rgba(2, 6, 23, 0.35);
   --control-border: rgba(255, 255, 255, 0.12);
