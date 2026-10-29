@@ -2,7 +2,8 @@ import Navbar from "../../components/Navbar";
 import PageTransition from "../../components/PageTransition";
 import ArchiveItemCard from "../../components/ArchiveItemCard";
 import DirectoryExplorer from "../../components/DirectoryExplorer";
-import { getFriends } from "../../lib/server-api";
+import FriendApplySection from "../../components/FriendApplySection";
+import { getFriends, getPublicSiteConfig } from "../../lib/server-api";
 import { formatDay } from "../../lib/api";
 import { DEFAULT_SITE_INFO } from "../../lib/site-config";
 
@@ -18,7 +19,7 @@ function hostOf(url: string) {
 }
 
 export default async function FriendsPage() {
-  const friends = await getFriends();
+  const [friends, { siteInfo }] = await Promise.all([getFriends(), getPublicSiteConfig()]);
 
   const items = friends.map((friend) => ({
     key: String(friend.friendId || friend.id),
@@ -72,6 +73,7 @@ export default async function FriendsPage() {
             searchPlaceholder="搜索朋友、简介或链接..."
             empty={empty}
           />
+          <FriendApplySection siteInfo={siteInfo} />
         </main>
       </PageTransition>
     </div>

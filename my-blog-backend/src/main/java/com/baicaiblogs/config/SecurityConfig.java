@@ -63,6 +63,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 // 公开页面访问计数（PV）
                 .requestMatchers(HttpMethod.POST, "/api/public/visit").permitAll()
+                // 游客友链申请
+                .requestMatchers(HttpMethod.POST, "/api/public/friend-applications").permitAll()
                 // 公开 GET 接口（相册/文章/图片墙）免登录；原图下载接口在 Controller 内单独校验
                 .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll()
                 // 管理接口允许 ADMIN 与 SUPER_ADMIN
