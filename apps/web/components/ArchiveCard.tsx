@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { ResourceTitle, type ResourceTitleVariant } from "./ui/Typography";
+import { OptimizedImage } from "./ui/OptimizedImage";
 
 type ArchiveCardProps = {
   href: string;
@@ -37,10 +38,9 @@ export default function ArchiveCard({
         {media ? (
           media
         ) : image ? (
-          <img
+          <OptimizedImage
             src={image}
             alt={alt}
-            loading="lazy"
             className={`h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04] ${imageClassName}`}
           />
         ) : (

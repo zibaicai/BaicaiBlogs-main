@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Loader2, MessageCircle, Send } from "lucide-react";
 
 import Textarea from "./ui/Textarea";
+import { OptimizedImage } from "./ui/OptimizedImage";
 import { formatDate, type FriendMessage } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { useFeedback } from "./FeedbackProvider";
@@ -161,7 +162,7 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
           <article key={message.id} className="rounded-2xl border border-white/40 bg-white/50 p-4 dark:border-white/10 dark:bg-slate-900/40">
             <div className="flex items-center gap-3">
               {message.avatar ? (
-                <img src={message.avatar} alt={message.name} className="h-9 w-9 rounded-full object-cover" />
+                <OptimizedImage src={message.avatar} alt={message.name} className="h-9 w-9 rounded-full object-cover" />
               ) : (
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-500/15 text-xs font-black text-indigo-500">
                   {message.name.slice(0, 1)}

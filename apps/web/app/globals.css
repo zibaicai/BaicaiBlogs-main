@@ -6347,3 +6347,12 @@ html.dark[data-theme-preset="violet"] .site-gradient {
   font-size: var(--type-caption);
   line-height: 1.5;
 }
+
+/* Keep off-screen resource cards out of layout/paint until they approach the
+   viewport. This reduces long-list scroll cost without changing the DOM. */
+.directory-card,
+.archive-card,
+.moment-card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 320px;
+}

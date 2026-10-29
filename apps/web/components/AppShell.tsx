@@ -13,14 +13,9 @@ import PageViewTracker from "./PageViewTracker";
 import PresenceHeartbeat from "./PresenceHeartbeat";
 import SplashScreen from "./SplashScreen";
 import ThemeBackdrop from "./ThemeBackdrop";
-import DanmakuBackground from "./DanmakuBackground";
-import DanmakuComposer from "./DanmakuComposer";
-import GlobalSnow from "./GlobalSnow";
 import Footer from "./Footer";
-import FloatingPlayer from "./FloatingPlayer";
 import GlobalToolbox from "./GlobalToolbox";
-import ClickEffect from "./ClickEffect";
-import WhalePet from "./WhalePet";
+import DeferredEffects from "./DeferredEffects";
 
 interface AppShellProps {
   config: any;
@@ -44,19 +39,16 @@ export default function AppShell({ config, children }: AppShellProps) {
               <MusicProvider>
                 <div id="app-mount-root" className="flex flex-1 flex-col transition-opacity duration-1000">
                   <ThemeBackdrop />
-                  <DanmakuBackground />
-                  <DanmakuComposer />
-                  <GlobalSnow />
 
                   <div className="relative z-10 flex flex-1 flex-col">
                     {children}
                     <Footer />
                   </div>
 
-                  <FloatingPlayer />
                   <GlobalToolbox />
-                  <ClickEffect />
                 </div>
+
+                <DeferredEffects />
 
                 <style
                   suppressHydrationWarning
@@ -97,7 +89,6 @@ export default function AppShell({ config, children }: AppShellProps) {
         </AuthProvider>
         </TypographyProvider>
       </ThemeProvider>
-      <WhalePet />
     </>
   );
 }

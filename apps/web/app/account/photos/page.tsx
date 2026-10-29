@@ -9,6 +9,7 @@ import PageTransition from "../../../components/PageTransition";
 import { useAuth } from "../../../lib/auth";
 import Select from "../../../components/ui/Select";
 import { PageTitle } from "../../../components/ui/Typography";
+import { OptimizedImage } from "../../../components/ui/OptimizedImage";
 import Input from "../../../components/ui/Input";
 import {
   galleryRequest,
@@ -242,7 +243,7 @@ export default function MyPhotosPage() {
                   >
                     <div className="w-11 h-11 rounded-xl overflow-hidden bg-slate-800 shrink-0">
                       {album.coverThumbUrl ? (
-                        <img src={album.coverThumbUrl} alt="" className="w-full h-full object-cover" />
+                        <OptimizedImage src={album.coverThumbUrl} alt="" className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-slate-500"><ImageIcon size={16} /></div>
                       )}

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import Navbar from "../../../../components/Navbar";
 import PageTransition from "../../../../components/PageTransition";
 import { PageTitle } from "../../../../components/ui/Typography";
+import { OptimizedImage } from "../../../../components/ui/OptimizedImage";
 import { formatDate } from "../../../../lib/api";
 import { getRoom } from "../../../../lib/server-api";
 
@@ -29,7 +30,7 @@ export default async function RoomAboutPage({ params }: { params: Promise<{ user
             <header className="text-center mb-10">
               <div className="mx-auto mb-4 h-24 w-24 overflow-hidden rounded-3xl bg-white/50 shadow-lg">
                 {room.avatar ? (
-                  <img src={room.avatar} alt={room.nickname} className="h-full w-full object-cover" />
+                  <OptimizedImage src={room.avatar} alt={room.nickname} className="h-full w-full object-cover" />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center text-3xl font-black text-indigo-500">
                     {room.nickname.slice(0, 1)}

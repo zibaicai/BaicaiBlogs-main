@@ -4,6 +4,7 @@ import { ArrowUpRight, Radio } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import PageTransition from "../../components/PageTransition";
 import { PageTitle } from "../../components/ui/Typography";
+import { OptimizedImage } from "../../components/ui/OptimizedImage";
 import { getPublicSiteConfig, getRooms } from "../../lib/server-api";
 
 export const dynamic = "force-dynamic";
@@ -38,7 +39,7 @@ export default async function RoomsPage() {
                 >
                   <div className="flex items-center gap-3">
                     {room.avatar ? (
-                      <img src={room.avatar} alt={room.nickname} className="h-12 w-12 rounded-2xl object-cover" />
+                      <OptimizedImage src={room.avatar} alt={room.nickname} className="h-12 w-12 rounded-2xl object-cover" />
                     ) : (
                       <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-500/15 text-lg font-black text-indigo-500">
                         {room.nickname.slice(0, 1)}

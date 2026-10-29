@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { ResourceTitle, type ResourceTitleVariant } from "./ui/Typography";
+import { OptimizedImage } from "./ui/OptimizedImage";
 
 export type ArchiveMedia =
   | { kind: "cover"; src: string; alt?: string; fit?: "cover" | "contain" }
@@ -42,12 +43,11 @@ export default function ArchiveItemCard({
         {media?.kind === "icon" ? (
           <div className="archive-item-icon">{media.content}</div>
         ) : media ? (
-          <img
+          <OptimizedImage
             className={`directory-card-media-image ${media.kind === "cover" && media.fit === "contain" ? "object-contain" : ""}`}
             style={media.kind === "cover" && media.fit === "contain" ? { objectFit: "contain" } : undefined}
             src={media.src}
             alt={media.alt || title}
-            loading="lazy"
           />
         ) : (
           <div className="archive-item-icon">✦</div>
@@ -59,6 +59,8 @@ export default function ArchiveItemCard({
             alt=""
             aria-hidden="true"
             loading="lazy"
+            decoding="async"
+            fetchPriority="low"
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
