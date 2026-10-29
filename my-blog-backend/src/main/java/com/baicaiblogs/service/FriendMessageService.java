@@ -25,7 +25,6 @@ public class FriendMessageService {
 
     @Transactional
     public Map<String, Object> submit(Map<String, String> body, String ip, String userAgent, User user) {
-        turnstileService.verify(body.get("turnstileToken"), ip);
         String content = required(body.get("content"), "留言内容", 500);
         String name = user == null
                 ? "匿名"
@@ -41,6 +40,9 @@ public class FriendMessageService {
                 throw new RuntimeException("请勿重复提交相同留言");
             }
         }
+
+        // 先完成业务校验，再消耗一次性的 Turnstile token
+        turnstileService.verify(body.get("turnstileToken"), ip);
 
         FriendMessage message = messageRepository.save(FriendMessage.builder()
                 .name(name)

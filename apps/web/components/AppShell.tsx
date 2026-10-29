@@ -7,6 +7,7 @@ import { SiteConfigProvider } from "../context/SiteConfigProvider";
 import { ThemeProvider } from "./ThemeProvider";
 import { TypographyProvider } from "./TypographyProvider";
 import { ToastProvider } from "./ToastProvider";
+import { FeedbackProvider } from "./FeedbackProvider";
 import { MusicProvider } from "./MusicProvider";
 import PageViewTracker from "./PageViewTracker";
 import PresenceHeartbeat from "./PresenceHeartbeat";
@@ -34,6 +35,7 @@ export default function AppShell({ config, children }: AppShellProps) {
           <AuthProvider>
           <PersonalViewProvider>
           <SiteConfigProvider initial={config}>
+            <FeedbackProvider>
             <ToastProvider>
               <PageViewTracker />
               <PresenceHeartbeat />
@@ -89,6 +91,7 @@ export default function AppShell({ config, children }: AppShellProps) {
                 />
               </MusicProvider>
             </ToastProvider>
+            </FeedbackProvider>
           </SiteConfigProvider>
           </PersonalViewProvider>
         </AuthProvider>

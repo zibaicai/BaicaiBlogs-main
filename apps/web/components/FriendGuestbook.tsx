@@ -6,13 +6,16 @@ import { Loader2, MessageCircle, Send } from "lucide-react";
 import Textarea from "./ui/Textarea";
 import { formatDate, type FriendMessage } from "../lib/api";
 import { useAuth } from "../lib/auth";
+import { useFeedback } from "./FeedbackProvider";
+import { useToast } from "./ToastProvider";
 
 export default function FriendGuestbook({ initialMessages }: { initialMessages: FriendMessage[] }) {
   const { user } = useAuth();
+  const { alert, confirm } = useFeedback();
+  const { showToast } = useToast();
   const [messages, setMessages] = useState(initialMessages);
   const [content, setContent] = useState("");
   const [busy, setBusy] = useState(false);
-  const [notice, setNotice] = useState("");
   const [turnstileConfig, setTurnstileConfig] = useState<{ enabled: boolean; siteKey: string } | null>(null);
   const [turnstileToken, setTurnstileToken] = useState("");
   const [turnstileReady, setTurnstileReady] = useState(false);
@@ -79,29 +82,36 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
   }, [content, needsReverify]);
 
   const remove = async (id: number) => {
-    if (!window.confirm("确认删除这条留言？")) return;
+    const ok = await confirm({
+      kind: "warning",
+      title: "删除这条留言？",
+      description: "删除后无法恢复。",
+      confirmText: "删除",
+      cancelText: "取消",
+    });
+    if (!ok) return;
     try {
       const res = await fetch(`/api/user/friend-messages/${id}`, { method: "DELETE", credentials: "include" });
       const json = await res.json();
       if (!res.ok || !json?.success) throw new Error(json?.message || "删除失败");
       setMessages((current) => current.filter((message) => message.id !== id));
-      setNotice("留言已删除");
+      showToast("留言已删除", "success");
     } catch (error) {
-      setNotice(error instanceof Error ? error.message : "删除失败");
+      await alert({ kind: "error", title: "删除失败", description: error instanceof Error ? error.message : "请稍后重试" });
     }
   };
 
   const submit = async () => {
     if (!content.trim()) {
-      setNotice("请先写点什么");
+      await alert({ kind: "warning", title: "还没有写留言", description: "请先写点什么。" });
       return;
     }
     if (turnstileConfig?.enabled && !turnstileToken) {
-      setNotice("请完成人机验证");
+      await alert({ kind: "warning", title: "请完成人机验证", description: "验证通过后就可以发布留言。" });
       return;
     }
     setBusy(true);
-    setNotice("");
+    let status = 0;
     try {
       const res = await fetch("/api/public/friend-messages", {
         method: "POST",
@@ -109,20 +119,26 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content, turnstileToken }),
       });
+      status = res.status;
       const json = await res.json();
       if (!res.ok || !json?.success) throw new Error(json?.message || "提交失败");
       if (json.data) setMessages((current) => [json.data, ...current]);
-      setNotice("留言已发布");
+      showToast("留言已发布", "success");
       setContent("");
       setTurnstileToken("");
       setTurnstilePassed(true);
       setNeedsReverify(true);
       if (widgetRef.current && (window as any).turnstile) (window as any).turnstile.reset(widgetRef.current);
     } catch (error) {
-      setNotice(error instanceof Error ? error.message : "提交失败");
-      setTurnstilePassed(false);
-      setNeedsReverify(false);
-      setTurnstileToken("");
+      const text = error instanceof Error ? error.message : "提交失败";
+      const turnstileError = status >= 500 || /人机验证|验证失败|验证服务/.test(text);
+      if (turnstileError) {
+        setTurnstilePassed(false);
+        setNeedsReverify(false);
+        setTurnstileToken("");
+        if (widgetRef.current && (window as any).turnstile) (window as any).turnstile.reset(widgetRef.current);
+      }
+      await alert({ kind: "error", title: "留言未发布", description: text, confirmText: "知道了" });
     } finally {
       setBusy(false);
     }
@@ -184,7 +200,6 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
           </div>
         )}
         {turnstileConfig?.enabled && turnstilePassed && <p className="mt-2 text-[10px] font-bold text-emerald-500">人机验证已通过</p>}
-        {notice && <p className="mt-2 text-[10px] font-bold text-indigo-500">{notice}</p>}
         <div className="mt-3 flex justify-end">
           <button type="button" onClick={() => void submit()} disabled={busy} className="hv-button hv-button-primary inline-flex items-center gap-2 disabled:opacity-50">
             {busy ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />} 发表留言
