@@ -31,7 +31,7 @@ public class FriendMessageController {
     public ApiResponse<Map<String, Object>> submit(@RequestBody Map<String, String> body, HttpServletRequest request) {
         try {
             String ip = clientIp(request);
-            return ApiResponse.success("留言已提交，审核后展示", service.submit(body, ip, request.getHeader("User-Agent")));
+            return ApiResponse.success("留言已发布", service.submit(body, ip, request.getHeader("User-Agent"), optionalUser()));
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
         }
@@ -89,6 +89,11 @@ public class FriendMessageController {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof User user) return user;
         throw new RuntimeException("用户未登录");
+    }
+
+    private User optionalUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return principal instanceof User user ? user : null;
     }
 
     private String clientIp(HttpServletRequest request) {

@@ -5,8 +5,10 @@ import { Loader2, MessageCircle, Send } from "lucide-react";
 
 import Textarea from "./ui/Textarea";
 import { formatDate, type FriendMessage } from "../lib/api";
+import { useAuth } from "../lib/auth";
 
 export default function FriendGuestbook({ initialMessages }: { initialMessages: FriendMessage[] }) {
+  const { user } = useAuth();
   const [messages, setMessages] = useState(initialMessages);
   const [content, setContent] = useState("");
   const [busy, setBusy] = useState(false);
@@ -154,6 +156,9 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
       </div>
 
       <div className="mt-6 rounded-2xl border border-indigo-400/20 bg-slate-950/20 p-4">
+        <p className="mb-2 text-[10px] font-bold text-slate-400">
+          {user ? `以 ${user.nickname || user.username} 的身份留言` : "当前为匿名留言"}
+        </p>
         <Textarea value={content} onChange={(e) => setContent(e.target.value)} rows={4} className="mt-1" placeholder="说点什么，或者留下你的网站。" />
         {turnstileConfig?.enabled && (
           <div className={turnstilePassed ? "h-0 overflow-hidden" : "mt-3 min-h-[65px]"}>

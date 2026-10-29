@@ -24,14 +24,13 @@ public class FriendMessageService {
     private final TurnstileService turnstileService;
 
     @Transactional
-    public Map<String, Object> submit(Map<String, String> body, String ip, String userAgent) {
+    public Map<String, Object> submit(Map<String, String> body, String ip, String userAgent, User user) {
         turnstileService.verify(body.get("turnstileToken"), ip);
-        String name = optional(body.get("name"), 100);
-        if (name == null) name = "匿名";
         String content = required(body.get("content"), "留言内容", 500);
-        String website = optionalUrl(body.get("website"), 500);
-        String avatar = optionalUrl(body.get("avatar"), 500);
-        String contact = optional(body.get("contact"), 500);
+        String name = user == null
+                ? "匿名"
+                : (user.getNickname() == null || user.getNickname().isBlank() ? user.getUsername() : user.getNickname());
+        String avatar = user == null ? null : user.getAvatar();
         String ipHash = ip == null || ip.isBlank() ? null : IpBanService.hash(ip);
 
         if (ipHash != null) {
@@ -45,10 +44,9 @@ public class FriendMessageService {
 
         FriendMessage message = messageRepository.save(FriendMessage.builder()
                 .name(name)
-                .website(website)
                 .avatar(avatar)
                 .content(content)
-                .contact(contact)
+                .userId(user == null ? null : user.getId())
                 .status("VISIBLE")
                 .ipHash(ipHash)
                 .userAgent(optional(userAgent, 500))
@@ -134,6 +132,7 @@ public class FriendMessageService {
         out.put("website", message.getWebsite());
         out.put("avatar", message.getAvatar());
         out.put("content", message.getContent());
+        out.put("avatar", message.getAvatar());
         out.put("status", message.getStatus());
         out.put("createdAt", message.getCreatedAt());
         return out;

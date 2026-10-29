@@ -39,6 +39,9 @@ public class FriendMessage {
     @Column(length = 500)
     private String contact;
 
+    @Column(name = "user_id")
+    private Long userId;
+
     @Column(nullable = false, length = 20)
     @Builder.Default
     private String status = "VISIBLE";
