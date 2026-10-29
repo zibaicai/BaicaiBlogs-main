@@ -2,8 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import {
   ChevronDown,
   ChevronUp,
-  Eye,
-  EyeOff,
   Image as ImageIcon,
   Loader2,
   Lock,
@@ -15,6 +13,9 @@ import {
 import { api, uploadToOss, type GalleryAlbum, type GalleryPhoto } from "../lib/api";
 import AuthImage from "../components/AuthImage";
 import { useToast } from "../components/ToastProvider";
+import { AdminEmptyState, AdminLoading, AdminPageHeader, AdminPageShell } from "../components/admin/AdminUI";
+import { Button } from "../components/ui/Button";
+import { Input } from "../components/ui/Input";
 import { Select } from "../components/ui/Select";
 
 function readImageSize(file: File): Promise<{ width: number; height: number }> {
@@ -32,6 +33,12 @@ function readImageSize(file: File): Promise<{ width: number; height: number }> {
     img.src = url;
   });
 }
+
+const VISIBILITY_OPTIONS = [
+  { value: "PUBLIC", label: "公开" },
+  { value: "PASSWORD", label: "密码" },
+  { value: "PRIVATE", label: "私密" },
+];
 
 export default function GalleryPage() {
   const { showToast } = useToast();
@@ -218,132 +225,132 @@ export default function GalleryPage() {
     }
   };
 
-  return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black text-white">影像</h1>
-          <p className="text-sm text-slate-400 mt-1 font-bold">
-            单次最多 10 张、单张 10MB；权重最高的图片自动成为封面
-          </p>
-        </div>
-        <button
-          onClick={() => void loadAlbums(selected?.albumId)}
-          className="px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 text-slate-300 text-xs font-black flex items-center gap-2 hover:bg-white/10"
-        >
-          <RefreshCw size={14} /> 刷新
-        </button>
-      </div>
+  const photos = selected?.photos || [];
 
-      <div className="grid grid-cols-1 xl:grid-cols-[320px_1fr] gap-5 items-start">
-        <aside className="rounded-3xl bg-white/5 border border-white/10 p-4">
-          <div className="space-y-3 mb-5">
-            <input
+  return (
+    <AdminPageShell>
+      <AdminPageHeader
+        title="影像"
+        description="单次最多 10 张、单张 10MB；权重最高的图片自动成为封面"
+        eyebrow="图库"
+        actions={
+          <Button variant="secondary" onClick={() => void loadAlbums(selected?.albumId)} disabled={loading}>
+            <RefreshCw size={13} className={loading ? "animate-spin" : ""} /> 刷新
+          </Button>
+        }
+      />
+
+      <div className="grid grid-cols-1 items-start gap-3 xl:grid-cols-[280px_minmax(0,1fr)]">
+        <aside className="space-y-2.5 rounded-xl border border-white/10 bg-white/[0.03] p-2.5">
+          <div className="flex items-center justify-between px-0.5">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">相册</span>
+            <span className="text-[10px] text-slate-600">{albums.length} 个</span>
+          </div>
+
+          <div className="space-y-2">
+            <Input
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
               placeholder="新相册名称"
-              className="w-full rounded-xl bg-black/20 border border-white/10 px-4 py-2.5 text-sm text-slate-100 outline-none focus:ring-2 focus:ring-indigo-500"
+              aria-label="新相册名称"
             />
-            <div className="flex gap-2">
+            <div className="flex gap-1.5">
               <Select
                 value={newVisibility}
                 onChange={setNewVisibility}
                 ariaLabel="新相册可见性"
-                className="flex-1 !h-10"
-                options={[
-                  { value: "PUBLIC", label: "公开" },
-                  { value: "PASSWORD", label: "密码" },
-                  { value: "PRIVATE", label: "私密" },
-                ]}
+                className="flex-1"
+                options={VISIBILITY_OPTIONS}
               />
-              <button
-                onClick={createAlbum}
-                className="px-4 py-2.5 rounded-xl bg-indigo-500 text-white text-xs font-black flex items-center gap-1"
-              >
-                <Plus size={14} /> 新建
-              </button>
+              <Button onClick={() => void createAlbum()} className="shrink-0">
+                <Plus size={13} /> 新建
+              </Button>
             </div>
             {newVisibility === "PASSWORD" && (
-              <input
+              <Input
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="相册密码"
                 type="password"
-                className="w-full rounded-xl bg-black/20 border border-white/10 px-4 py-2.5 text-sm text-slate-100 outline-none"
+                aria-label="相册密码"
               />
             )}
           </div>
 
-          <div className="space-y-2 max-h-[65vh] overflow-y-auto admin-scrollbar pr-1">
-            {albums.map((album) => (
-              <button
-                key={album.albumId}
-                onClick={() => void loadAlbum(album.albumId)}
-                className={`w-full text-left rounded-2xl p-2.5 border transition-all flex gap-3 items-center ${
-                  selected?.albumId === album.albumId
-                    ? "bg-indigo-500/20 border-indigo-400/40"
-                    : "bg-black/10 border-white/5 hover:bg-white/5"
-                }`}
-              >
-                <div className="w-12 h-12 rounded-xl overflow-hidden bg-slate-800 shrink-0">
-                  {album.coverThumbUrl ? (
-                    <AuthImage src={album.coverThumbUrl} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-slate-500">
-                      <ImageIcon size={18} />
-                    </div>
-                  )}
-                </div>
-                <div className="min-w-0">
-                  <div className="text-sm font-bold text-slate-100 truncate">{album.title}</div>
-                  <div className="text-[10px] text-slate-500 mt-0.5">
-                    {album.photoCount} 张 · {album.visibility}
+          <div className="admin-scrollbar max-h-[65vh] space-y-1 overflow-y-auto pr-0.5">
+            {loading && albums.length === 0 ? (
+              <AdminLoading label="正在加载相册…" />
+            ) : albums.length === 0 ? (
+              <p className="px-2 py-6 text-center text-[10px] text-slate-500">还没有相册，先在上方创建一个。</p>
+            ) : (
+              albums.map((album) => (
+                <button
+                  key={album.albumId}
+                  onClick={() => void loadAlbum(album.albumId)}
+                  className={`flex w-full items-center gap-2 rounded-lg border p-1.5 text-left transition-colors ${
+                    selected?.albumId === album.albumId
+                      ? "border-indigo-400/40 bg-indigo-500/15"
+                      : "border-transparent bg-white/[0.02] hover:bg-white/5"
+                  }`}
+                >
+                  <div className="h-10 w-10 shrink-0 overflow-hidden rounded-md bg-slate-800">
+                    {album.coverThumbUrl ? (
+                      <AuthImage src={album.coverThumbUrl} className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-slate-500">
+                        <ImageIcon size={15} />
+                      </div>
+                    )}
                   </div>
-                </div>
-              </button>
-            ))}
-            {!loading && albums.length === 0 && (
-              <div className="text-center py-8 text-xs text-slate-500">还没有相册</div>
+                  <div className="min-w-0">
+                    <div className="truncate text-[11px] font-bold text-slate-100">{album.title}</div>
+                    <div className="mt-0.5 truncate text-[9px] text-slate-500">
+                      {album.photoCount ?? 0} 张 · {album.visibility}
+                    </div>
+                  </div>
+                </button>
+              ))
             )}
           </div>
         </aside>
 
-        <section className="rounded-3xl bg-white/5 border border-white/10 p-5 min-h-[60vh]">
+        <section className="min-h-[60vh] rounded-xl border border-white/10 bg-white/[0.03] p-3">
           {!selected ? (
-            <div className="h-full min-h-[50vh] flex flex-col items-center justify-center text-slate-500 gap-3">
-              <ImageIcon size={28} />
-              <div className="text-sm font-bold">选择左侧相册，或新建一个</div>
+            <div className="flex min-h-[55vh] items-center justify-center">
+              <div className="w-full max-w-sm">
+                <AdminEmptyState
+                  title="未选择相册"
+                  description="从左侧选择一个相册，或新建一个相册开始整理影像。"
+                />
+              </div>
             </div>
           ) : (
-            <div className="flex flex-col gap-5">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-                <div>
-                  <h2 className="text-xl font-black text-white">{selected.title}</h2>
-                  <div className="text-[11px] text-slate-500 mt-1">
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <h2 className="truncate text-base font-bold text-white">{selected.title}</h2>
+                  <div className="mt-0.5 text-[10px] text-slate-500">
                     {selected.photoCount} 张 · 封面 = 权重最高 · 状态：{selected.status}
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-1.5">
                   {selected.isOwner === false ? (
                     <button
                       onClick={() => void requestAccess()}
-                      className="px-3 py-2 rounded-xl bg-amber-500/10 text-amber-300 text-xs font-bold flex items-center gap-1"
+                      className="inline-flex h-8 items-center gap-1 rounded-lg bg-amber-500/10 px-2.5 text-[10px] font-bold text-amber-300 hover:bg-amber-500/20"
                     >
-                      <Lock size={13} /> 申请查看
+                      <Lock size={12} /> 申请查看
                     </button>
                   ) : (
                     <>
-                      <button
-                        onClick={() => setEditMode((v) => !v)}
-                        className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-slate-300"
-                      >
+                      <Button variant="secondary" onClick={() => setEditMode((v) => !v)}>
                         {editMode ? "收起编辑" : "编辑相册"}
-                      </button>
+                      </Button>
                       <button
-                        onClick={deleteAlbum}
-                        className="px-3 py-2 rounded-xl bg-red-500/10 text-red-400 text-xs font-bold flex items-center gap-1"
+                        onClick={() => void deleteAlbum()}
+                        className="inline-flex h-8 items-center gap-1 rounded-lg bg-red-500/10 px-2.5 text-[10px] font-bold text-red-300 hover:bg-red-500/20"
                       >
-                        <Trash2 size={13} /> 删除
+                        <Trash2 size={12} /> 删除
                       </button>
                     </>
                   )}
@@ -351,145 +358,140 @@ export default function GalleryPage() {
               </div>
 
               {editMode && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 rounded-2xl bg-black/15 p-4 border border-white/5">
-                  <input
+                <div className="grid grid-cols-1 gap-2 rounded-lg border border-white/5 bg-black/15 p-2.5 md:grid-cols-3">
+                  <Input
                     value={selected.title}
                     onChange={(e) => setSelected({ ...selected, title: e.target.value })}
-                    className="rounded-xl bg-black/20 border border-white/10 px-4 py-2.5 text-sm text-slate-100"
+                    placeholder="相册标题"
+                    aria-label="相册标题"
                   />
                   <Select
                     value={selected.visibility}
                     onChange={(value) => setSelected({ ...selected, visibility: value })}
                     ariaLabel="相册可见性"
-                    className="!h-10"
-                    options={[
-                      { value: "PUBLIC", label: "公开" },
-                      { value: "PASSWORD", label: "密码" },
-                      { value: "PRIVATE", label: "私密" },
-                    ]}
+                    options={VISIBILITY_OPTIONS}
                   />
-                  <input
+                  <Input
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     type="password"
                     placeholder={selected.hasPassword ? "新密码（留空不变）" : "设置密码"}
-                    className="rounded-xl bg-black/20 border border-white/10 px-4 py-2.5 text-sm text-slate-100"
+                    aria-label="相册密码"
                   />
-                  <label className="md:col-span-3 flex items-center gap-2 text-xs text-slate-400 font-bold">
+                  <label className="flex items-center gap-2 text-[10px] font-bold text-slate-400 md:col-span-3">
                     <input
                       type="checkbox"
                       checked={hideCount}
                       onChange={(e) => setHideCount(e.target.checked)}
-                      className="w-4 h-4 accent-indigo-500"
+                      className="h-3.5 w-3.5 accent-indigo-500"
                     />
                     未解锁时隐藏照片数量
                   </label>
-                  <button
-                    onClick={saveAlbum}
-                    className="md:col-span-3 py-2.5 rounded-xl bg-indigo-500 text-white text-sm font-black"
-                  >
+                  <Button onClick={() => void saveAlbum()} className="w-full md:col-span-3">
                     保存相册设置
-                  </button>
+                  </Button>
                 </div>
               )}
 
               {selected.isOwner !== false && (
-              <div
-                onClick={() => fileRef.current?.click()}
-                className="rounded-3xl border-2 border-dashed border-white/15 hover:border-indigo-400/60 bg-black/10 p-8 text-center cursor-pointer transition-colors"
-              >
-                <input
-                  ref={fileRef}
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
-                  multiple
-                  className="hidden"
-                  onChange={(e) => void uploadFiles(e.target.files)}
-                />
-                {uploading ? (
-                  <div className="flex flex-col items-center gap-3">
-                    <Loader2 className="animate-spin text-indigo-400" />
-                    <div className="text-sm font-bold text-slate-300">上传中...</div>
-                    <div className="w-full max-w-md space-y-1">
-                      {Object.entries(progress).map(([name, percent]) => (
-                        <div key={name} className="text-left text-[10px] text-slate-400">
-                          <div className="truncate">{name}</div>
-                          <div className="h-1 bg-white/10 rounded-full mt-1">
-                            <div className="h-1 bg-indigo-500 rounded-full" style={{ width: `${percent}%` }} />
+                <div
+                  onClick={() => fileRef.current?.click()}
+                  className="cursor-pointer rounded-xl border border-dashed border-white/15 bg-black/10 p-4 text-center transition-colors hover:border-indigo-400/60"
+                >
+                  <input
+                    ref={fileRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => void uploadFiles(e.target.files)}
+                  />
+                  {uploading ? (
+                    <div className="flex flex-col items-center gap-2">
+                      <Loader2 className="animate-spin text-indigo-400" size={18} />
+                      <div className="text-[11px] font-bold text-slate-300">上传中...</div>
+                      <div className="w-full max-w-md space-y-1">
+                        {Object.entries(progress).map(([name, percent]) => (
+                          <div key={name} className="text-left text-[10px] text-slate-400">
+                            <div className="truncate">{name}</div>
+                            <div className="mt-1 h-1 rounded-full bg-white/10">
+                              <div className="h-1 rounded-full bg-indigo-500" style={{ width: `${percent}%` }} />
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center gap-2 text-slate-400">
-                    <UploadCloud size={28} />
-                    <div className="text-sm font-bold">点击选择图片（最多 10 张，单张 10MB）</div>
-                    <div className="text-[10px]">浏览器直传 OSS，不经过服务器</div>
-                  </div>
-                )}
-              </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-1.5 text-slate-400">
+                      <UploadCloud size={22} />
+                      <div className="text-[11px] font-bold">点击选择图片（最多 10 张，单张 10MB）</div>
+                      <div className="text-[9px]">浏览器直传 OSS，不经过服务器</div>
+                    </div>
+                  )}
+                </div>
               )}
 
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {(selected.photos || []).map((photo, index) => (
-                  <div
-                    key={photo.id}
-                    className="group relative rounded-2xl overflow-hidden bg-slate-800 border border-white/10"
-                  >
-                    <div className="aspect-square relative">
-                      <AuthImage src={photo.thumbUrl} alt={photo.caption} className="w-full h-full object-cover" />
-                      {index === 0 && (
-                        <span className="absolute top-2 left-2 px-2 py-1 rounded-md bg-indigo-500 text-white text-[9px] font-black">
-                          封面
-                        </span>
-                      )}
-                      {photo.status !== "VISIBLE" && (
-                        <span className="absolute top-2 right-2 px-2 py-1 rounded-md bg-amber-500 text-black text-[9px] font-black">
-                          审核中
-                        </span>
-                      )}
-                    </div>
-                    <div className="p-2.5">
-                      <div className="text-[10px] text-slate-300 truncate">{photo.caption || `图片 ${photo.id}`}</div>
-                      <div className="flex items-center justify-between mt-2">
-                        <span className="text-[9px] text-slate-500">权重 {photo.weight}</span>
-                        <div className="flex items-center gap-1">
-                          <button
-                            onClick={() => void movePhoto(index, -1)}
-                            className="p-1 rounded bg-white/5 text-slate-300 hover:bg-white/10"
-                            title="上移"
-                          >
-                            <ChevronUp size={12} />
-                          </button>
-                          <button
-                            onClick={() => void movePhoto(index, 1)}
-                            className="p-1 rounded bg-white/5 text-slate-300 hover:bg-white/10"
-                            title="下移"
-                          >
-                            <ChevronDown size={12} />
-                          </button>
-                          <button
-                            onClick={() => void deletePhoto(photo)}
-                            className="p-1 rounded bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white"
-                            title="删除"
-                          >
-                            <Trash2 size={12} />
-                          </button>
+              {photos.length > 0 && (
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5">
+                  {photos.map((photo, index) => (
+                    <div
+                      key={photo.id}
+                      className="group relative overflow-hidden rounded-lg border border-white/10 bg-slate-800"
+                    >
+                      <div className="relative aspect-square">
+                        <AuthImage src={photo.thumbUrl} alt={photo.caption} className="h-full w-full object-cover" />
+                        {index === 0 && (
+                          <span className="absolute left-1.5 top-1.5 rounded bg-indigo-500 px-1.5 py-0.5 text-[8px] font-bold text-white">
+                            封面
+                          </span>
+                        )}
+                        {photo.status !== "VISIBLE" && (
+                          <span className="absolute right-1.5 top-1.5 rounded bg-amber-500 px-1.5 py-0.5 text-[8px] font-bold text-black">
+                            审核中
+                          </span>
+                        )}
+                      </div>
+                      <div className="p-2">
+                        <div className="truncate text-[10px] text-slate-300">{photo.caption || `图片 ${photo.id}`}</div>
+                        <div className="mt-1.5 flex items-center justify-between">
+                          <span className="text-[9px] text-slate-500">权重 {photo.weight}</span>
+                          <div className="flex items-center gap-0.5">
+                            <button
+                              onClick={() => void movePhoto(index, -1)}
+                              className="rounded bg-white/5 p-1 text-slate-300 hover:bg-white/10"
+                              title="上移"
+                            >
+                              <ChevronUp size={12} />
+                            </button>
+                            <button
+                              onClick={() => void movePhoto(index, 1)}
+                              className="rounded bg-white/5 p-1 text-slate-300 hover:bg-white/10"
+                              title="下移"
+                            >
+                              <ChevronDown size={12} />
+                            </button>
+                            <button
+                              onClick={() => void deletePhoto(photo)}
+                              className="rounded bg-red-500/10 p-1 text-red-400 hover:bg-red-500 hover:text-white"
+                              title="删除"
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
 
-              {(selected.photos || []).length === 0 && (
-                <div className="text-center py-10 text-xs text-slate-500">还没有图片，先上传几张吧</div>
+              {photos.length === 0 && (
+                <AdminEmptyState title="还没有图片" description="点击上方上传区域，添加第一批影像。" />
               )}
             </div>
           )}
         </section>
       </div>
-    </div>
+    </AdminPageShell>
   );
 }

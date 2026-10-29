@@ -1,7 +1,13 @@
+"use client";
+
 import { useEffect, useMemo, useState } from "react";
-import { MessageSquareText, RefreshCw, Trash2 } from "lucide-react";
+import { RefreshCw, Search, Trash2 } from "lucide-react";
+
 import { api } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
+import { Button, Input } from "../components/ui";
+import { AdminEmptyState, AdminLoading, AdminPageHeader, AdminPageShell } from "../components/admin/AdminUI";
+import { DataTable } from "../components/admin/DataTable";
 
 interface Danmaku {
   id: number;
@@ -47,7 +53,7 @@ export default function DanmakuPage() {
   }, [items, query]);
 
   const remove = async (item: Danmaku) => {
-    if (!confirm(`删除这条弹幕？\n\n${item.text}`)) return;
+    if (!window.confirm(`删除这条弹幕？\n\n${item.text}`)) return;
     try {
       await api.deleteDanmaku(item.id);
       showToast("已删除", "success");
@@ -58,62 +64,107 @@ export default function DanmakuPage() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black text-white flex items-center gap-2">
-            <MessageSquareText className="text-indigo-400" /> 弹幕管理
-          </h1>
-          <p className="text-sm text-slate-400 mt-1 font-bold">
-            当前最多保留 500 条；超出后自动删除最早弹幕。发现恶意内容可直接删除。
-          </p>
-        </div>
-        <button
-          onClick={() => void load()}
-          className="px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 text-slate-300 text-xs font-black flex items-center gap-2 hover:bg-white/10"
-        >
-          <RefreshCw size={14} /> 刷新
-        </button>
-      </div>
+    <AdminPageShell>
+      <AdminPageHeader
+        title="弹幕管理"
+        description="当前最多保留 500 条；超出后自动删除最早弹幕。发现恶意内容可直接删除。"
+        actions={
+          <Button variant="secondary" onClick={() => void load()} disabled={loading}>
+            <RefreshCw size={12} className={loading ? "animate-spin" : ""} /> 刷新
+          </Button>
+        }
+      />
 
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="搜索弹幕内容、用户名或 IP 哈希..."
-          className="w-full md:max-w-md rounded-2xl bg-black/20 border border-white/10 px-4 py-3 text-sm text-slate-100 outline-none focus:ring-2 focus:ring-indigo-500/40"
-        />
-        <div className="text-[11px] text-slate-500 font-bold">
+      <div className="flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-2.5">
+        <div className="relative min-w-[220px] flex-1">
+          <Search size={13} className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500" />
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="搜索弹幕内容、用户名或 IP 哈希..."
+            className="pl-8"
+          />
+        </div>
+        <span className="px-1 text-[10px] font-bold text-slate-500">
           共 {items.length} 条 / 显示 {filtered.length} 条
-        </div>
+        </span>
       </div>
 
-      {loading && <div className="text-slate-400 text-sm">加载中...</div>}
-      {!loading && filtered.length === 0 && (
-        <div className="text-center py-20 text-slate-500 font-bold">暂无弹幕</div>
+      {loading ? (
+        <AdminLoading />
+      ) : filtered.length === 0 ? (
+        <AdminEmptyState
+          title={query.trim() ? "没有匹配的弹幕" : "暂无弹幕"}
+          description={query.trim() ? "换个关键词试试。" : "用户发送的弹幕会显示在这里。"}
+        />
+      ) : (
+        <DataTable
+          rows={filtered}
+          rowKey={(item) => item.id}
+          columns={[
+            {
+              key: "id",
+              header: "ID",
+              width: "56px",
+              cell: (item) => <span className="font-mono text-[9px] text-slate-600">#{item.id}</span>,
+            },
+            {
+              key: "text",
+              header: "弹幕内容",
+              className: "max-w-[420px]",
+              cell: (item) => (
+                <p className="line-clamp-2 break-words text-[11px] leading-5 text-slate-200">{item.text}</p>
+              ),
+            },
+            {
+              key: "username",
+              header: "用户",
+              width: "120px",
+              cell: (item) => (
+                <span className="block max-w-[100px] truncate text-[10px] text-slate-400">
+                  {item.username || "匿名"}
+                </span>
+              ),
+            },
+            {
+              key: "ipHash",
+              header: "IP 哈希",
+              width: "130px",
+              cell: (item) => (
+                <span className="block max-w-[110px] truncate font-mono text-[9px] text-slate-600" title={item.ipHash || ""}>
+                  {item.ipHash || "-"}
+                </span>
+              ),
+            },
+            {
+              key: "createdAt",
+              header: "时间",
+              width: "120px",
+              cell: (item) => (
+                <span className="whitespace-nowrap text-[10px] text-slate-500">
+                  {item.createdAt ? item.createdAt.slice(0, 16).replace("T", " ") : "—"}
+                </span>
+              ),
+            },
+            {
+              key: "action",
+              header: "操作",
+              className: "text-right",
+              width: "64px",
+              cell: (item) => (
+                <button
+                  type="button"
+                  onClick={() => void remove(item)}
+                  title="删除弹幕"
+                  className="rounded-md p-1.5 text-slate-500 hover:bg-red-500/10 hover:text-red-300"
+                >
+                  <Trash2 size={13} />
+                </button>
+              ),
+            },
+          ]}
+        />
       )}
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-        {filtered.map((item) => (
-          <div key={item.id} className="rounded-2xl bg-white/5 border border-white/10 p-4">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <div className="text-sm font-black text-white break-words">{item.text}</div>
-                <div className="text-[10px] text-slate-500 mt-2">
-                  #{item.id} · {item.username || "匿名"} · IP {item.ipHash || "-"} · {item.createdAt}
-                </div>
-              </div>
-              <button
-                onClick={() => void remove(item)}
-                className="shrink-0 p-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-colors"
-                title="删除弹幕"
-              >
-                <Trash2 size={14} />
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
+    </AdminPageShell>
   );
 }

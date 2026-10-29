@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
-import { Download, ShieldAlert, Trash2, UserX } from "lucide-react";
+import { Download, RefreshCw, Trash2, UserX } from "lucide-react";
 import { api, getAdminRole } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
 import AuthImage from "../components/AuthImage";
+import { Button, Input } from "../components/ui";
+import { AdminEmptyState, AdminPageHeader, AdminPageShell, StatusBadge } from "../components/admin/AdminUI";
+import { DataTable } from "../components/admin/DataTable";
 
 interface Report {
   id: number;
@@ -139,159 +142,287 @@ export default function ReportsPage() {
     }
   };
 
+  const permanentDeleteComment = async (targetId: number) => {
+    if (!window.confirm("永久删除这条评论？")) return;
+    try {
+      await api.deleteComment(targetId);
+      await load();
+      showToast("评论已永久删除", "success");
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : "删除失败", "error");
+    }
+  };
+
   return (
-    <div className="flex flex-col gap-5">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <div>
-          <h1 className="text-3xl font-black text-white flex items-center gap-2">
-            <ShieldAlert className="text-amber-400" /> 举报管理
-          </h1>
-          <p className="text-sm text-slate-400 mt-1 font-bold">
-            10 个有效举报自动隐藏；导出 ZIP 仅超级管理员可删除记录
-          </p>
+    <AdminPageShell>
+      <AdminPageHeader
+        title="举报管理"
+        description="10 个有效举报自动隐藏；导出 ZIP 仅超级管理员可删除记录"
+        actions={
+          <>
+            <Button variant="ghost" onClick={() => void load()}>
+              <RefreshCw size={13} /> 刷新
+            </Button>
+            <Button variant="secondary" onClick={exportAndMaybeDelete} disabled={selected.length === 0}>
+              <Download size={13} /> 导出选中
+            </Button>
+            <Button variant="danger" onClick={deleteSelected} disabled={selected.length === 0}>
+              <Trash2 size={13} /> 删除记录
+            </Button>
+          </>
+        }
+      />
+
+      <section className="space-y-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-[11px] font-bold text-white">
+            举报列表 <span className="font-normal text-slate-500">· {reports.length} 条</span>
+          </h2>
+          <span className="text-[10px] text-slate-500">已选 {selected.length} 条</span>
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={exportAndMaybeDelete}
-            disabled={selected.length === 0}
-            className="px-4 py-2.5 rounded-2xl bg-indigo-500 disabled:opacity-40 text-white text-xs font-black flex items-center gap-2"
-          >
-            <Download size={14} /> 导出选中
-          </button>
-          <button
-            onClick={deleteSelected}
-            disabled={selected.length === 0}
-            className="px-4 py-2.5 rounded-2xl bg-red-500/15 disabled:opacity-40 text-red-400 text-xs font-black flex items-center gap-2"
-          >
-            <Trash2 size={14} /> 删除记录
-          </button>
-        </div>
-      </div>
 
-      {loading && <div className="text-slate-400 text-sm">加载中...</div>}
-      {!loading && reports.length === 0 && (
-        <div className="text-center py-20 text-slate-500 font-bold">暂无举报</div>
-      )}
-
-      <div className="flex flex-col gap-3">
-        {reports.map((report) => (
-          <div key={report.id} className="rounded-3xl bg-white/5 border border-white/10 p-5">
-            <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-              <div className="flex items-start gap-3">
-                <input
-                  type="checkbox"
-                  checked={selected.includes(report.id)}
-                  onChange={() => toggle(report.id)}
-                  className="mt-1 w-4 h-4 accent-indigo-500"
-                />
-                <div>
-                  <div className="text-sm font-black text-white">
-                    #{report.id} · {report.targetType} #{report.targetId} · {report.reason}
+        {!loading && reports.length === 0 ? (
+          <AdminEmptyState title="暂无举报" description="收到用户举报后会显示在这里。" />
+        ) : (
+          <DataTable
+            rows={reports}
+            loading={loading}
+            rowKey={(report) => report.id}
+            empty="暂无举报"
+            columns={[
+              {
+                key: "select",
+                header: "选择",
+                width: "48px",
+                cell: (report) => (
+                  <input
+                    type="checkbox"
+                    checked={selected.includes(report.id)}
+                    onChange={() => toggle(report.id)}
+                    aria-label={`选择举报 #${report.id}`}
+                    className="h-3.5 w-3.5 accent-indigo-500"
+                  />
+                ),
+              },
+              {
+                key: "target",
+                header: "举报",
+                className: "max-w-[240px]",
+                cell: (report) => (
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-mono text-[10px] text-slate-500">#{report.id}</span>
+                      <span className="truncate text-[11px] font-bold text-slate-200">
+                        {report.targetType} #{report.targetId}
+                      </span>
+                    </div>
+                    <div className="mt-0.5 truncate text-[10px] text-amber-300/90">{report.reason}</div>
                   </div>
-                  <div className="text-[11px] text-slate-500 mt-1">
-                    举报人 #{report.reporterId} · IP {report.reporterIp} · {report.createdAt}
+                ),
+              },
+              {
+                key: "reporter",
+                header: "举报人",
+                className: "max-w-[180px]",
+                cell: (report) => (
+                  <div className="text-[10px] leading-5 text-slate-500">
+                    <div className="truncate">#{report.reporterId}</div>
+                    <div className="truncate font-mono">IP {report.reporterIp}</div>
+                    <div className="whitespace-nowrap">{report.createdAt}</div>
                   </div>
-                  <div className="text-xs text-slate-400 mt-2 max-w-2xl">{report.detail}</div>
-                  <div className="text-[10px] text-slate-500 mt-2">
-                    状态：{report.status} · 证据：{report.evidenceKey || "无"}
+                ),
+              },
+              {
+                key: "detail",
+                header: "详情",
+                className: "max-w-[320px]",
+                cell: (report) => (
+                  <div>
+                    <p className="line-clamp-2 text-[10px] leading-5 text-slate-400">{report.detail}</p>
+                    {report.evidenceKey && (
+                      <AuthImage
+                        src={`/api/admin/reports/${report.id}/evidence`}
+                        className="mt-1.5 h-14 w-24 rounded-md border border-white/10 object-cover"
+                      />
+                    )}
                   </div>
-                  {report.evidenceKey && (
-                    <AuthImage
-                      src={`/api/admin/reports/${report.id}/evidence`}
-                      className="mt-3 max-h-40 rounded-xl border border-white/10 object-cover"
-                    />
-                  )}
-                </div>
-              </div>
-              <div className="flex flex-wrap items-center gap-2 shrink-0">
-                <button
-                  onClick={() => resolve(report.id, "restore")}
-                  className="px-3 py-2 rounded-xl bg-emerald-500/10 text-emerald-400 text-[10px] font-black"
-                >
-                  恢复
-                </button>
-                <button
-                  onClick={() => resolve(report.id, "hide")}
-                  className="px-3 py-2 rounded-xl bg-amber-500/10 text-amber-400 text-[10px] font-black"
-                >
-                  下架
-                </button>
-                {report.targetType === "comment" && isSuperAdmin && (
-                  <button
-                    onClick={async () => {
-                      if (!window.confirm("永久删除这条评论？")) return;
-                      try {
-                        await api.deleteComment(report.targetId);
-                        await load();
-                        showToast("评论已永久删除", "success");
-                      } catch (e) {
-                        showToast(e instanceof Error ? e.message : "删除失败", "error");
-                      }
-                    }}
-                    className="px-3 py-2 rounded-xl bg-red-500/15 text-red-400 text-[10px] font-black"
-                  >
-                    永久删除评论
-                  </button>
-                )}
-                <button
-                  onClick={() => ban(report.targetUserId)}
-                  className="px-3 py-2 rounded-xl bg-red-500/10 text-red-400 text-[10px] font-black flex items-center gap-1"
-                >
-                  <UserX size={12} /> 封禁上传者
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <section className="rounded-3xl bg-white/5 border border-white/10 p-5">
-        <h2 className="text-lg font-black text-white mb-3">申诉审核</h2>
-        <div className="flex flex-col gap-2">
-          {appeals.map((appeal) => (
-            <div key={appeal.id} className="rounded-2xl bg-black/15 border border-white/5 p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
-              <div>
-                <div className="text-sm font-bold text-slate-200">
-                  #{appeal.id} · {appeal.targetType} #{appeal.targetId} · {appeal.status}
-                </div>
-                <div className="text-[10px] text-slate-500 mt-1">用户 #{appeal.userId} · {appeal.reason}</div>
-              </div>
-              <div className="flex gap-2">
-                <button onClick={() => handleAppeal(appeal.id, "accept")} className="px-3 py-2 rounded-xl bg-emerald-500/10 text-emerald-400 text-[10px] font-black">通过</button>
-                <button onClick={() => handleAppeal(appeal.id, "reject")} className="px-3 py-2 rounded-xl bg-red-500/10 text-red-400 text-[10px] font-black">驳回</button>
-                <button onClick={() => reopenAppeal(appeal.id)} className="px-3 py-2 rounded-xl bg-amber-500/10 text-amber-400 text-[10px] font-black">超管翻案</button>
-              </div>
-            </div>
-          ))}
-          {appeals.length === 0 && <div className="text-xs text-slate-500">暂无申诉</div>}
-        </div>
-      </section>
-
-      <section className="rounded-3xl bg-white/5 border border-white/10 p-5">
-        <h2 className="text-lg font-black text-white mb-3">IP 黑名单</h2>
-        <div className="flex gap-2 mb-3">
-          <input
-            value={banIp}
-            onChange={(e) => setBanIp(e.target.value)}
-            placeholder="输入要永久封禁的 IP"
-            className="flex-1 rounded-xl bg-black/20 border border-white/10 px-4 py-2.5 text-sm text-slate-100 outline-none"
+                ),
+              },
+              {
+                key: "status",
+                header: "状态",
+                width: "130px",
+                cell: (report) => (
+                  <div className="flex flex-col items-start gap-1">
+                    <StatusBadge status={report.status} />
+                    <span className="max-w-[110px] truncate text-[9px] text-slate-600">
+                      证据：{report.evidenceKey || "无"}
+                    </span>
+                  </div>
+                ),
+              },
+              {
+                key: "actions",
+                header: "操作",
+                className: "text-right",
+                cell: (report) => (
+                  <div className="flex min-w-[150px] flex-wrap justify-end gap-1">
+                    <button
+                      type="button"
+                      onClick={() => void resolve(report.id, "restore")}
+                      className="rounded-md bg-emerald-500/10 px-2 py-1 text-[9px] font-bold text-emerald-300 hover:bg-emerald-500/20"
+                    >
+                      恢复
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void resolve(report.id, "hide")}
+                      className="rounded-md bg-amber-500/10 px-2 py-1 text-[9px] font-bold text-amber-300 hover:bg-amber-500/20"
+                    >
+                      下架
+                    </button>
+                    {report.targetType === "comment" && isSuperAdmin && (
+                      <button
+                        type="button"
+                        onClick={() => void permanentDeleteComment(report.targetId)}
+                        className="rounded-md bg-red-500/15 px-2 py-1 text-[9px] font-bold text-red-300 hover:bg-red-500/25"
+                      >
+                        永久删除评论
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => void ban(report.targetUserId)}
+                      className="inline-flex items-center gap-1 rounded-md bg-red-500/10 px-2 py-1 text-[9px] font-bold text-red-300 hover:bg-red-500/20"
+                    >
+                      <UserX size={11} /> 封禁上传者
+                    </button>
+                  </div>
+                ),
+              },
+            ]}
           />
-          <button onClick={submitIpBan} className="px-4 py-2.5 rounded-xl bg-red-500/15 text-red-400 text-xs font-black">
-            永久封禁
-          </button>
-        </div>
-        <div className="flex flex-col gap-2">
-          {ipBans.map((ban) => (
-            <div key={ban.id} className="flex items-center justify-between rounded-xl bg-black/15 px-4 py-3">
-              <span className="text-xs font-mono text-slate-300">{ban.ipHash} · {ban.reason}</span>
-              <button onClick={async () => { await api.unbanIp(ban.id); await load(); }} className="text-[10px] font-black text-emerald-400">
-                解封
-              </button>
+        )}
+      </section>
+
+      <section className="space-y-2">
+        <h2 className="text-[11px] font-bold text-white">
+          申诉审核 <span className="font-normal text-slate-500">· {appeals.length} 条</span>
+        </h2>
+
+        {!loading && appeals.length === 0 ? (
+          <AdminEmptyState title="暂无申诉" description="用户提交申诉后会显示在这里。" />
+        ) : (
+          <DataTable
+            rows={appeals}
+            loading={loading}
+            rowKey={(appeal) => appeal.id}
+            empty="暂无申诉"
+            columns={[
+              {
+                key: "appeal",
+                header: "申诉",
+                cell: (appeal) => (
+                  <div className="min-w-0">
+                    <div className="truncate text-[11px] font-bold text-slate-200">
+                      #{appeal.id} · {appeal.targetType} #{appeal.targetId}
+                    </div>
+                  </div>
+                ),
+              },
+              {
+                key: "user",
+                header: "用户与原因",
+                className: "max-w-[320px]",
+                cell: (appeal) => (
+                  <div className="text-[10px] leading-5">
+                    <span className="text-slate-500">用户 #{appeal.userId}</span>
+                    <p className="line-clamp-2 text-slate-400">{appeal.reason}</p>
+                  </div>
+                ),
+              },
+              {
+                key: "status",
+                header: "状态",
+                cell: (appeal) => <StatusBadge status={appeal.status} />,
+              },
+              {
+                key: "actions",
+                header: "操作",
+                className: "text-right",
+                cell: (appeal) => (
+                  <div className="flex justify-end gap-1">
+                    <button
+                      type="button"
+                      onClick={() => void handleAppeal(appeal.id, "accept")}
+                      className="rounded-md bg-emerald-500/10 px-2 py-1 text-[9px] font-bold text-emerald-300 hover:bg-emerald-500/20"
+                    >
+                      通过
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void handleAppeal(appeal.id, "reject")}
+                      className="rounded-md bg-red-500/10 px-2 py-1 text-[9px] font-bold text-red-300 hover:bg-red-500/20"
+                    >
+                      驳回
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void reopenAppeal(appeal.id)}
+                      className="rounded-md bg-amber-500/10 px-2 py-1 text-[9px] font-bold text-amber-300 hover:bg-amber-500/20"
+                    >
+                      超管翻案
+                    </button>
+                  </div>
+                ),
+              },
+            ]}
+          />
+        )}
+      </section>
+
+      <section className="space-y-2">
+        <h2 className="text-[11px] font-bold text-white">
+          IP 黑名单 <span className="font-normal text-slate-500">· {ipBans.length} 条</span>
+        </h2>
+
+        <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+          <div className="flex gap-2">
+            <div className="min-w-0 flex-1">
+              <Input
+                value={banIp}
+                onChange={(e) => setBanIp(e.target.value)}
+                placeholder="输入要永久封禁的 IP"
+                aria-label="要永久封禁的 IP"
+              />
             </div>
-          ))}
-          {ipBans.length === 0 && <div className="text-xs text-slate-500">暂无封禁</div>}
+            <Button variant="danger" className="shrink-0" onClick={() => void submitIpBan()}>
+              永久封禁
+            </Button>
+          </div>
+
+          <div className="mt-2 divide-y divide-white/[0.06]">
+            {ipBans.map((ipBan) => (
+              <div key={ipBan.id} className="flex items-center justify-between gap-2 py-1.5">
+                <span className="min-w-0 truncate font-mono text-[10px] text-slate-300">
+                  {ipBan.ipHash} · {ipBan.reason}
+                </span>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await api.unbanIp(ipBan.id);
+                    await load();
+                  }}
+                  className="shrink-0 rounded-md px-2 py-1 text-[9px] font-bold text-emerald-300 hover:bg-emerald-500/10"
+                >
+                  解封
+                </button>
+              </div>
+            ))}
+            {ipBans.length === 0 && <p className="py-2 text-[10px] text-slate-500">暂无封禁</p>}
+          </div>
         </div>
       </section>
-    </div>
+    </AdminPageShell>
   );
 }

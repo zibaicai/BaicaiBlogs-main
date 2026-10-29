@@ -44,6 +44,8 @@ import EditorPage from "./pages/EditorPage";
 import ArticlesListPage from "./pages/ArticlesListPage";
 import ArticleEditorPage from "./pages/ArticleEditorPage";
 import ArticleDetailPage from "./pages/ArticleDetailPage";
+import { AdminPageHeader, AdminPageShell } from "./components/admin/AdminUI";
+import { DataTable } from "./components/admin/DataTable";
 import MomentsPage from "./pages/MomentsPage";
 import CategoriesPage from "./pages/CategoriesPage";
 import PrivacyAuditPage from "./pages/PrivacyAuditPage";
@@ -193,64 +195,64 @@ function Shell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="h-screen overflow-hidden admin-bg flex">
-      <aside className="hidden lg:flex w-64 shrink-0 flex-col gap-6 p-5 border-r border-white/5 bg-slate-950/40 backdrop-blur-2xl overflow-y-auto">
-        <Link to="/" className="flex items-center gap-3 px-3 py-3">
-          <span className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-xl shadow-lg shadow-indigo-500/30">
+      <aside className="hidden lg:flex w-56 shrink-0 flex-col gap-4 p-3.5 border-r border-white/5 bg-slate-950/40 backdrop-blur-2xl overflow-y-auto">
+        <Link to="/" className="flex items-center gap-2.5 px-2 py-2">
+          <span className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-lg shadow-lg shadow-indigo-500/30">
             🌌
           </span>
           <span>
-            <span className="block text-sm font-black text-white tracking-wider">Baicai CMS</span>
-            <span className="block text-[9px] font-bold uppercase tracking-[0.25em] text-slate-500">
+            <span className="block text-[13px] font-black text-white tracking-wider">Baicai CMS</span>
+            <span className="block text-[8px] font-bold uppercase tracking-[0.22em] text-slate-500">
               Admin Console
             </span>
           </span>
         </Link>
 
-        <nav className="flex flex-col gap-1.5">
+        <nav className="flex flex-col gap-0.5">
           {visibleNavItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               end={item.end}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all ${
+                `flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[12px] font-bold transition-all ${
                   isActive
                     ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/25"
                     : "text-slate-400 hover:bg-white/5 hover:text-slate-100"
                 }`
               }
             >
-              <item.icon size={17} />
+              <item.icon size={15} />
               {item.label}
             </NavLink>
           ))}
         </nav>
 
-        <div className="mt-auto rounded-3xl bg-white/5 border border-white/10 p-4">
-          <div className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">
+        <div className="mt-auto rounded-2xl bg-white/5 border border-white/10 p-3">
+          <div className="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-0.5">
             当前账号
           </div>
-          <div className="text-sm font-bold text-slate-200 truncate">{user || "admin"}</div>
+          <div className="text-[12px] font-bold text-slate-200 truncate">{user || "admin"}</div>
           <button
             onClick={logout}
-            className="mt-3 w-full py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white text-xs font-black transition-all flex items-center justify-center gap-2"
+            className="mt-2 w-full py-2 rounded-lg bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white text-[10px] font-black transition-all flex items-center justify-center gap-1.5"
           >
-            <LogOut size={14} /> 退出登录
+            <LogOut size={13} /> 退出登录
           </button>
         </div>
       </aside>
 
       <div className="flex-1 min-w-0 flex flex-col min-h-0">
-        <header className="h-20 shrink-0 px-5 md:px-8 flex items-center justify-between border-b border-white/5 bg-slate-950/30 backdrop-blur-xl">
-          <div className="flex items-center gap-3">
-            <span className="lg:hidden w-9 h-9 rounded-xl bg-indigo-500 flex items-center justify-center text-white text-sm">
+        <header className="h-16 shrink-0 px-5 md:px-6 flex items-center justify-between border-b border-white/5 bg-slate-950/30 backdrop-blur-xl">
+          <div className="flex items-center gap-2.5">
+            <span className="lg:hidden w-8 h-8 rounded-lg bg-indigo-500 flex items-center justify-center text-white text-xs">
               🌌
             </span>
             <div>
-              <div className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">
+              <div className="text-[9px] font-black uppercase tracking-[0.25em] text-slate-500">
                 Baicai Console
               </div>
-              <div className="text-sm font-bold text-slate-200">内容与配置中心</div>
+              <div className="text-[12px] font-bold text-slate-200">内容与配置中心</div>
             </div>
           </div>
           <div className="flex items-center gap-3 md:gap-4">
@@ -260,14 +262,14 @@ function Shell({ children }: { children: React.ReactNode }) {
               href="https://www.zibaicai.cn"
               target="_blank"
               rel="noreferrer"
-              className="hidden sm:flex text-xs font-bold text-slate-400 hover:text-indigo-400 transition-colors items-center gap-1"
+              className="hidden sm:flex text-[10px] font-bold text-slate-400 hover:text-indigo-400 transition-colors items-center gap-1"
             >
-              访问 C 端 <ArrowUpRight size={14} />
+              访问 C 端 <ArrowUpRight size={13} />
             </a>
           </div>
         </header>
 
-        <main className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden admin-scrollbar px-5 md:px-8 pt-5 md:pt-8 pb-5 md:pb-8">
+        <main className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden admin-scrollbar px-5 md:px-6 pt-5 pb-5">
           {children}
         </main>
       </div>
@@ -277,10 +279,10 @@ function Shell({ children }: { children: React.ReactNode }) {
 
 function StatCard({ icon, label, value, tone }: { icon: React.ReactNode; label: string; value: number; tone: string }) {
   return (
-    <div className="rounded-3xl bg-white/5 border border-white/10 p-5 backdrop-blur-xl">
-      <div className={`w-10 h-10 rounded-2xl flex items-center justify-center mb-4 ${tone}`}>{icon}</div>
-      <div className="text-3xl font-black text-white">{value}</div>
-      <div className="text-[10px] font-black uppercase tracking-widest text-slate-500 mt-1">{label}</div>
+    <div className="rounded-xl border border-white/10 bg-white/5 p-3 backdrop-blur-xl">
+      <div className={`mb-2 flex h-7 w-7 items-center justify-center rounded-lg ${tone}`}>{icon}</div>
+      <div className="text-2xl font-black text-white">{value}</div>
+      <div className="mt-0.5 text-[9px] font-bold uppercase tracking-widest text-slate-500">{label}</div>
     </div>
   );
 }
@@ -321,21 +323,16 @@ function Dashboard() {
   };
 
   return (
-    <div className="flex flex-col gap-5">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <div className="text-[9px] font-black uppercase tracking-[0.3em] text-indigo-400">Data Assets</div>
-          <h1 className="mt-1 text-3xl font-black text-white">数据资产概览</h1>
-          <p className="mt-1 text-sm font-bold text-slate-400">内容、存储、互动和需要处理的事项</p>
-        </div>
-        <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-[10px] font-bold text-slate-400">
-          <span className={`h-2 w-2 rounded-full ${healthOk ? "bg-emerald-400" : "bg-amber-400"}`} />
-          {healthOk ? "系统正常" : "需要关注"}
-        </div>
-      </div>
+    <AdminPageShell>
+      <AdminPageHeader
+        title="数据资产概览"
+        eyebrow="Data Assets"
+        description="内容、存储、互动和需要处理的事项"
+        actions={<div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[10px] font-bold text-slate-400"><span className={`h-1.5 w-1.5 rounded-full ${healthOk ? "bg-emerald-400" : "bg-amber-400"}`} />{healthOk ? "系统正常" : "需要关注"}</div>}
+      />
 
-      {error && <div className="rounded-2xl border border-red-500/20 bg-red-500/10 px-5 py-4 text-sm font-bold text-red-300">{error}</div>}
-      {loading && <div className="flex items-center gap-2 text-sm text-slate-400"><Loader2 className="animate-spin" size={16} /> 正在汇总资产…</div>}
+      {error && <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-[11px] font-bold text-red-300">{error}</div>}
+      {loading && <div className="flex items-center gap-2 text-[11px] text-slate-400"><Loader2 className="animate-spin" size={14} /> 正在汇总资产…</div>}
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
         <StatCard icon={<BookOpen size={17} />} label="笔记" value={assets.posts || 0} tone="bg-indigo-500/20 text-indigo-400" />
@@ -468,7 +465,7 @@ function Dashboard() {
           <Link to="/settings" className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-black text-slate-200 hover:bg-white/10"><Settings size={15} className="text-indigo-400" /> 站点设置</Link>
         </div>
       </section>
-    </div>
+    </AdminPageShell>
   );
 }
 
@@ -525,83 +522,47 @@ function Posts() {
       await api.setPostVisibility(slug, nextVisibility(value));
       reload();
     } catch (e) {
-      alert("切换失败：" + (e instanceof Error ? e.message : "未知错误"));
+      showToast("切换失败：" + (e instanceof Error ? e.message : "未知错误"), "error");
     }
   };
 
   return (
-    <div className="flex flex-col gap-5">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-black text-white">笔记</h1>
-          <p className="text-sm text-slate-400 mt-1 font-bold">可见性决定 C 端是否展示</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <label className="px-5 py-3 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 font-black text-sm cursor-pointer transition-all flex items-center gap-2">
-            <Upload size={16} /> {uploading ? "导入中..." : "上传 MD"}
-            <input
-              type="file"
-              accept=".md,.markdown,text/markdown"
-              className="hidden"
-              disabled={uploading}
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                e.currentTarget.value = "";
-                if (file) void uploadMarkdown(file);
-              }}
-            />
+    <AdminPageShell>
+      <AdminPageHeader
+        title="笔记"
+        description="可见性决定 C 端是否展示"
+        actions={<>
+          <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2.5 py-2 text-[10px] font-bold text-slate-300 hover:bg-white/10">
+            <Upload size={13} /> {uploading ? "导入中..." : "上传 MD"}
+            <input type="file" accept=".md,.markdown,text/markdown" className="hidden" disabled={uploading} onChange={(e) => { const file = e.target.files?.[0]; e.currentTarget.value = ""; if (file) void uploadMarkdown(file); }} />
           </label>
-          <Link
-            to="/editor/new"
-            className="px-5 py-3 rounded-2xl bg-indigo-500 hover:bg-indigo-600 text-white font-black text-sm shadow-lg shadow-indigo-500/25 transition-all"
-          >
-            + 新建
-          </Link>
-        </div>
-      </div>
+          <Link to="/editor/new" className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-500 px-2.5 py-2 text-[10px] font-bold text-white"><Plus size={13} /> 新建</Link>
+        </>}
+      />
 
-      {loading && <div className="text-slate-400 flex items-center gap-2"><Loader2 className="animate-spin" size={16} />加载中…</div>}
-      {error && <div className="rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 px-5 py-4 text-sm font-bold">失败：{error}</div>}
+      {error && <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-[11px] font-bold text-red-300">失败：{error}</div>}
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-        {list.map((post: Any) => (
-          <div key={post.slug} className="rounded-3xl bg-white/5 border border-white/10 p-5 hover:border-indigo-500/30 transition-colors">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <div className="text-base font-black text-white truncate">{post.title}</div>
-                <div className="text-[11px] text-slate-500 font-mono mt-1 truncate">{post.slug}</div>
-              </div>
-              <VisibilityBadge value={post.visibility} />
-            </div>
-            <div className="text-xs text-slate-400 mt-3 line-clamp-2">{post.description}</div>
-            <div className="flex items-center justify-between mt-4">
-              <span className="text-[10px] font-bold text-slate-500">{String(post.date || "").slice(0, 10)}</span>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => toggle(post.slug, post.visibility)}
-                  className="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-[10px] font-black uppercase tracking-widest transition-colors"
-                >
-                  切换可见性
-                </button>
-                <Link
-                  to={`/editor/${encodeURIComponent(post.slug)}`}
-                  className="px-3 py-2 rounded-xl bg-indigo-500/15 hover:bg-indigo-500 text-indigo-300 hover:text-white text-[10px] font-black uppercase tracking-widest transition-colors"
-                >
-                  编辑
-                </Link>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-      {!loading && list.length === 0 && <div className="text-center py-16 text-slate-500 font-bold">暂无笔记</div>}
-    </div>
+      <DataTable
+        rows={list}
+        loading={loading}
+        rowKey={(post: Any) => post.slug}
+        empty="暂无笔记"
+        columns={[
+          { key: "title", header: "标题", cell: (post: Any) => <div className="min-w-0"><p className="max-w-[280px] truncate text-[12px] font-bold text-white">{post.title}</p><p className="mt-0.5 max-w-[240px] truncate font-mono text-[9px] text-slate-600">{post.slug}</p></div> },
+          { key: "visibility", header: "可见性", cell: (post: Any) => <VisibilityBadge value={post.visibility} /> },
+          { key: "description", header: "简介", className: "max-w-[260px]", cell: (post: Any) => <p className="line-clamp-2 text-[10px] leading-5 text-slate-500">{post.description || "—"}</p> },
+          { key: "date", header: "日期", cell: (post: Any) => <span className="whitespace-nowrap text-[10px] text-slate-500">{String(post.date || "").slice(0, 10) || "—"}</span> },
+          { key: "action", header: "操作", className: "text-right", cell: (post: Any) => <div className="flex justify-end gap-1"><button onClick={() => void toggle(post.slug, post.visibility)} className="rounded-md px-2 py-1 text-[9px] font-bold text-slate-400 hover:bg-white/10 hover:text-white">切换可见性</button><Link to={`/editor/${encodeURIComponent(post.slug)}`} className="rounded-md bg-indigo-500/10 px-2 py-1 text-[9px] font-bold text-indigo-300 hover:bg-indigo-500 hover:text-white">编辑</Link></div> },
+        ]}
+      />
+    </AdminPageShell>
   );
 }
 
 function Projects() {
   const { data, loading, error, reload } = useLoad<any>(() => api.myProjects());
   const list = data?.data || [];
+  const { showToast } = useToast();
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Any>(null);
   const [saving, setSaving] = useState(false);
@@ -620,7 +581,7 @@ function Projects() {
       await api.setProjectVisibility(projectId, nextVisibility(value));
       reload();
     } catch (e) {
-      alert("切换失败：" + (e instanceof Error ? e.message : "未知错误"));
+      showToast("切换失败：" + (e instanceof Error ? e.message : "未知错误"), "error");
     }
   };
 
@@ -654,7 +615,7 @@ function Projects() {
 
   const save = async () => {
     if (!form.name.trim()) {
-      alert("请填写项目名称");
+      showToast("请填写项目名称", "error");
       return;
     }
     setSaving(true);
@@ -673,7 +634,7 @@ function Projects() {
       setFormOpen(false);
       reload();
     } catch (e) {
-      alert("保存失败：" + (e instanceof Error ? e.message : "未知错误"));
+      showToast("保存失败：" + (e instanceof Error ? e.message : "未知错误"), "error");
     } finally {
       setSaving(false);
     }
@@ -685,62 +646,32 @@ function Projects() {
       await api.deleteProject(project.projectId);
       reload();
     } catch (e) {
-      alert("删除失败：" + (e instanceof Error ? e.message : "未知错误"));
+      showToast("删除失败：" + (e instanceof Error ? e.message : "未知错误"), "error");
     }
   };
 
   return (
-    <div className="flex flex-col gap-5">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black text-white">项目</h1>
-          <p className="text-sm text-slate-400 mt-1 font-bold">公开项目会出现在 C 端 Projects Matrix</p>
-        </div>
-        <button onClick={openCreate} className="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-2.5 text-xs font-black text-white">
-          <Plus size={15} /> 新建项目
-        </button>
-      </div>
+    <AdminPageShell>
+      <AdminPageHeader
+        title="项目"
+        description="公开项目会出现在 C 端 Projects Matrix"
+        actions={<button onClick={openCreate} className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-500 px-2.5 py-2 text-[10px] font-bold text-white"><Plus size={13} /> 新建项目</button>}
+      />
 
-      {loading && <div className="text-slate-400 flex items-center gap-2"><Loader2 className="animate-spin" size={16} />加载中…</div>}
-      {error && <div className="rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 px-5 py-4 text-sm font-bold">失败：{error}</div>}
+      {error && <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-[11px] font-bold text-red-300">失败：{error}</div>}
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-        {list.map((project: Any) => (
-          <div key={project.projectId} className="rounded-3xl bg-white/5 border border-white/10 p-5">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex items-center gap-3 min-w-0">
-                <span className="text-3xl">{project.icon || "🚀"}</span>
-                <div className="min-w-0">
-                  <div className="text-base font-black text-white truncate">{project.name}</div>
-                  <div className="text-[11px] text-slate-500 font-mono truncate">{project.projectId}</div>
-                </div>
-              </div>
-              <VisibilityBadge value={project.visibility} />
-            </div>
-            <div className="text-xs text-slate-400 mt-3 line-clamp-2">{project.description}</div>
-            {project.tags?.length > 0 && (
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {project.tags.map((tag: string) => <span key={tag} className="rounded-full bg-white/5 px-2 py-1 text-[9px] font-bold text-slate-400">#{tag}</span>)}
-              </div>
-            )}
-            <div className="flex flex-wrap items-center justify-end gap-2 mt-4">
-              <button
-                onClick={() => toggle(project.projectId, project.visibility)}
-                className="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-[10px] font-black uppercase tracking-widest transition-colors"
-              >
-                切换可见性
-              </button>
-              <button onClick={() => openEdit(project)} className="inline-flex items-center gap-1 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-[10px] font-black">
-                <Pencil size={12} /> 编辑
-              </button>
-              <button onClick={() => void remove(project)} className="inline-flex items-center gap-1 px-3 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-300 text-[10px] font-black">
-                <Trash2 size={12} /> 删除
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-      {!loading && list.length === 0 && <div className="text-center py-16 text-slate-500 font-bold">暂无项目</div>}
+      <DataTable
+        rows={list}
+        loading={loading}
+        rowKey={(project: Any) => project.projectId}
+        empty="暂无项目"
+        columns={[
+          { key: "name", header: "项目", cell: (project: Any) => <div className="flex items-center gap-2"><span className="text-lg">{project.icon || "🚀"}</span><div className="min-w-0"><p className="max-w-[220px] truncate text-[12px] font-bold text-white">{project.name}</p><p className="mt-0.5 max-w-[180px] truncate font-mono text-[9px] text-slate-600">{project.projectId}</p></div></div> },
+          { key: "visibility", header: "可见性", cell: (project: Any) => <VisibilityBadge value={project.visibility} /> },
+          { key: "description", header: "简介", className: "max-w-[260px]", cell: (project: Any) => <div><p className="line-clamp-1 text-[10px] text-slate-500">{project.description || "—"}</p>{project.tags?.length > 0 && <div className="mt-1 flex flex-wrap gap-1">{project.tags.slice(0, 3).map((tag: string) => <span key={tag} className="rounded bg-white/5 px-1 py-0.5 text-[8px] text-slate-500">#{tag}</span>)}</div>}</div> },
+          { key: "action", header: "操作", className: "text-right", cell: (project: Any) => <div className="flex justify-end gap-0.5"><button onClick={() => void toggle(project.projectId, project.visibility)} className="rounded-md px-2 py-1 text-[9px] font-bold text-slate-400 hover:bg-white/10 hover:text-white">切换可见性</button><button onClick={() => openEdit(project)} className="rounded-md p-1.5 text-slate-400 hover:bg-white/10 hover:text-white"><Pencil size={13} /></button><button onClick={() => void remove(project)} className="rounded-md p-1.5 text-slate-500 hover:bg-red-500/10 hover:text-red-300"><Trash2 size={13} /></button></div> },
+        ]}
+      />
 
       {formOpen && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm" onClick={() => setFormOpen(false)}>
@@ -784,7 +715,7 @@ function Projects() {
           </div>
         </div>
       )}
-    </div>
+    </AdminPageShell>
   );
 }
 
@@ -793,30 +724,19 @@ function TimelinePreview() {
   const list = data?.data || [];
 
   return (
-    <div className="flex flex-col gap-5">
-      <div>
-        <h1 className="text-3xl font-black text-white">归档</h1>
-        <p className="text-sm text-slate-400 mt-1 font-bold">公开数据源，与 C 端 /timeline 一致</p>
-      </div>
-      {loading && <div className="text-slate-400 flex items-center gap-2"><Loader2 className="animate-spin" size={16} />加载中…</div>}
-      <div className="flex flex-col gap-2">
-        {list.map((post: Any) => (
-          <a
-            key={post.slug}
-            href={`https://www.zibaicai.cn/posts/${encodeURIComponent(post.slug)}`}
-            target="_blank"
-            rel="noreferrer"
-            className="rounded-2xl bg-white/5 border border-white/10 px-5 py-4 flex items-center justify-between gap-4 hover:border-indigo-500/30 transition-colors"
-          >
-            <div className="min-w-0">
-              <div className="text-sm font-bold text-slate-200 truncate">{post.title}</div>
-              <div className="text-[10px] text-slate-500 font-mono mt-0.5">{String(post.date || "").slice(0, 10)}</div>
-            </div>
-            <ArrowUpRight size={15} className="text-slate-500 shrink-0" />
-          </a>
-        ))}
-      </div>
-    </div>
+    <AdminPageShell>
+      <AdminPageHeader title="归档" description="公开数据源，与 C 端 /timeline 一致" />
+      <DataTable
+        rows={list}
+        loading={loading}
+        rowKey={(post: Any) => post.slug}
+        empty="暂无归档"
+        columns={[
+          { key: "title", header: "标题", cell: (post: Any) => <a href={`https://www.zibaicai.cn/posts/${encodeURIComponent(post.slug)}`} target="_blank" rel="noreferrer" className="inline-flex max-w-[420px] items-center gap-1 truncate text-[12px] font-bold text-slate-200 hover:text-indigo-300">{post.title}<ArrowUpRight size={12} className="shrink-0 text-slate-500" /></a> },
+          { key: "date", header: "日期", cell: (post: Any) => <span className="whitespace-nowrap text-[10px] text-slate-500">{String(post.date || "").slice(0, 10) || "—"}</span> },
+        ]}
+      />
+    </AdminPageShell>
   );
 }
 

@@ -1,7 +1,40 @@
-import { useEffect, useState } from "react";
-import { Check, Loader2, Music2, Plus, Trash2, X } from "lucide-react";
+import { useEffect, useState, type ReactNode } from "react";
+import { Check, RefreshCw, X } from "lucide-react";
 import { api } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
+import { Button, Input, Textarea } from "../components/ui";
+import { AdminPageHeader, AdminPageShell, StatusBadge } from "../components/admin/AdminUI";
+import { DataTable } from "../components/admin/DataTable";
+
+function Panel({
+  title,
+  hint,
+  actions,
+  children,
+}: {
+  title: string;
+  hint?: string;
+  actions?: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <section className="rounded-xl border border-white/10 bg-white/[0.03]">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 px-3 py-2">
+        <div className="min-w-0">
+          <h2 className="text-[11px] font-bold text-white">{title}</h2>
+          {hint && <p className="mt-0.5 text-[10px] text-slate-500">{hint}</p>}
+        </div>
+        {actions}
+      </div>
+      <div className="p-3">{children}</div>
+    </section>
+  );
+}
+
+const PLAYLIST_STATUS_STYLE: Record<string, string> = {
+  ACTIVE: "bg-emerald-500/10 text-emerald-300",
+  DEMOTED: "bg-amber-500/10 text-amber-300",
+};
 
 export default function MusicAdminPage() {
   const { showToast } = useToast();
@@ -57,7 +90,10 @@ export default function MusicAdminPage() {
     if (!title.trim()) return;
     setSaving(true);
     try {
-      const ids = trackIds.split(",").map((item) => Number(item.trim())).filter((item) => Number.isFinite(item) && item > 0);
+      const ids = trackIds
+        .split(",")
+        .map((item) => Number(item.trim()))
+        .filter((item) => Number.isFinite(item) && item > 0);
       await api.createMusicPlaylist({ title, cover, description, trackIds: ids });
       setTitle("");
       setCover("");
@@ -87,7 +123,8 @@ export default function MusicAdminPage() {
     }
   };
 
-  const review = async (id: number, approve: boolean) => {    try {
+  const review = async (id: number, approve: boolean) => {
+    try {
       await api.reviewMusicApplication(id, approve, approve ? "审核通过" : "暂不推荐");
       showToast(approve ? "已通过" : "已拒绝", "success");
       await load();
@@ -106,100 +143,285 @@ export default function MusicAdminPage() {
     }
   };
 
+  const editTracks = (item: any) => {
+    const value = window.prompt(
+      "输入曲目 ID，逗号分隔",
+      String((item.tracks || []).map((track: any) => track.id).join(","))
+    );
+    if (value == null) return;
+    const ids = value
+      .split(",")
+      .map((v) => Number(v.trim()))
+      .filter((v) => Number.isFinite(v) && v > 0);
+    void api
+      .setMusicPlaylistTracks(item.id, ids)
+      .then(() => load())
+      .catch((error) => showToast(error instanceof Error ? error.message : "更新失败", "error"));
+  };
+
+  const pendingApplications = applications.filter((item) => item.status === "PENDING").length;
+
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
-      <header>
-        <h1 className="text-3xl font-black text-white">音乐管理</h1>
-        <p className="mt-1 text-sm font-bold text-slate-400">
-          先录入歌曲，再用歌曲 ID 创建推荐歌单。私人导入不在此处展示。
-        </p>
-      </header>
+    <AdminPageShell>
+      <AdminPageHeader
+        title="音乐管理"
+        description="先录入歌曲，再用歌曲 ID 创建推荐歌单。私人导入不在此处展示。"
+        actions={
+          <Button variant="ghost" onClick={() => void load()}>
+            <RefreshCw size={13} /> 刷新
+          </Button>
+        }
+      />
 
-      <section className="rounded-3xl border border-indigo-400/20 bg-indigo-500/10 p-5">
-        <h2 className="mb-3 flex items-center gap-2 text-lg font-black text-white"><Music2 size={16} /> 导入公开歌单</h2>
-        <p className="mb-3 text-xs font-bold text-slate-400">支持网易云公开歌单 ID 或分享链接；只保存歌单 ID，不保存 uct2。</p>
-        <div className="flex flex-col gap-2 md:flex-row">
-          <input value={importPlaylistId} onChange={(e) => setImportPlaylistId(e.target.value)} placeholder="例如 2823950709 或 https://music.163.com/playlist?id=2823950709" className="admin-input" />
-          <button onClick={() => void importPlaylist()} disabled={saving} className="shrink-0 rounded-xl bg-indigo-500 px-4 py-2 text-xs font-black text-white disabled:opacity-50">
-            {saving ? "导入中..." : "导入歌单"}
-          </button>
-        </div>
-      </section>
-
-      <section className="rounded-3xl border border-white/10 bg-white/5 p-5">
-        <h2 className="mb-3 flex items-center gap-2 text-lg font-black text-white"><Plus size={16} /> 录入歌曲</h2>
-        <div className="grid gap-3 md:grid-cols-5">
-          <input value={track.externalTrackId} onChange={(e) => setTrack({ ...track, externalTrackId: e.target.value })} placeholder="平台歌曲 ID" className="admin-input" />
-          <input value={track.title} onChange={(e) => setTrack({ ...track, title: e.target.value })} placeholder="歌曲名" className="admin-input" />
-          <input value={track.artist} onChange={(e) => setTrack({ ...track, artist: e.target.value })} placeholder="歌手" className="admin-input" />
-          <input value={track.cover} onChange={(e) => setTrack({ ...track, cover: e.target.value })} placeholder="封面 URL" className="admin-input" />
-          <input value={track.externalUrl} onChange={(e) => setTrack({ ...track, externalUrl: e.target.value })} placeholder="平台链接" className="admin-input" />
-        </div>
-        <button onClick={() => void saveTrack()} disabled={saving} className="mt-3 rounded-xl bg-indigo-500 px-4 py-2 text-xs font-black text-white disabled:opacity-50">
-          保存歌曲
-        </button>
-      </section>
-
-      <section className="rounded-3xl border border-white/10 bg-white/5 p-5">
-        <h2 className="mb-3 flex items-center gap-2 text-lg font-black text-white"><Music2 size={16} /> 新建推荐歌单</h2>
-        <div className="grid gap-3 md:grid-cols-2">
-          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="歌单标题" className="admin-input" />
-          <input value={cover} onChange={(e) => setCover(e.target.value)} placeholder="封面 URL" className="admin-input" />
-          <input value={trackIds} onChange={(e) => setTrackIds(e.target.value)} placeholder="歌曲 ID，逗号分隔" className="admin-input md:col-span-2" />
-          <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="简介" rows={2} className="admin-input md:col-span-2" />
-        </div>
-        <button onClick={() => void createPlaylist()} disabled={saving} className="mt-3 rounded-xl bg-indigo-500 px-4 py-2 text-xs font-black text-white disabled:opacity-50">
-          创建推荐歌单
-        </button>
-      </section>
-
-      <section className="rounded-3xl border border-white/10 bg-white/5 p-5">
-        <h2 className="mb-3 text-lg font-black text-white">用户申请 · {applications.filter((item) => item.status === "PENDING").length} 待审核</h2>
-        <div className="space-y-2">
-          {applications.map((item) => (
-            <div key={item.id} className="flex flex-col gap-2 rounded-2xl bg-black/15 p-4 md:flex-row md:items-center md:justify-between">
-              <div>
-                <div className="text-sm font-bold text-white">#{item.id} · {item.title || item.externalPlaylistId} · {item.status}</div>
-                <div className="text-xs text-slate-400">{item.note || item.description || "无备注"}</div>
-              </div>
-              {item.status === "PENDING" && (
-                <div className="flex gap-2">
-                  <button onClick={() => void review(item.id, true)} className="rounded-xl bg-emerald-500/15 px-3 py-2 text-[10px] font-black text-emerald-300"><Check size={12} className="inline" /> 通过</button>
-                  <button onClick={() => void review(item.id, false)} className="rounded-xl bg-red-500/15 px-3 py-2 text-[10px] font-black text-red-300"><X size={12} className="inline" /> 拒绝</button>
-                </div>
-              )}
+      <div className="grid gap-3 xl:grid-cols-2">
+        <Panel
+          title="导入公开歌单"
+          hint="支持网易云公开歌单 ID 或分享链接；只保存歌单 ID，不保存 uct2。"
+        >
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <div className="min-w-0 flex-1">
+              <Input
+                value={importPlaylistId}
+                onChange={(e) => setImportPlaylistId(e.target.value)}
+                placeholder="例如 2823950709 或 https://music.163.com/playlist?id=2823950709"
+                aria-label="公开歌单 ID 或链接"
+              />
             </div>
-          ))}
-          {applications.length === 0 && <div className="text-xs text-slate-500">暂无申请。</div>}
+            <Button className="shrink-0" onClick={() => void importPlaylist()} disabled={saving}>
+              {saving ? "导入中..." : "导入歌单"}
+            </Button>
+          </div>
+        </Panel>
+
+        <Panel title="录入歌曲">
+          <div className="grid gap-2 sm:grid-cols-2">
+            <Input
+              value={track.externalTrackId}
+              onChange={(e) => setTrack({ ...track, externalTrackId: e.target.value })}
+              placeholder="平台歌曲 ID"
+              aria-label="平台歌曲 ID"
+            />
+            <Input
+              value={track.title}
+              onChange={(e) => setTrack({ ...track, title: e.target.value })}
+              placeholder="歌曲名"
+              aria-label="歌曲名"
+            />
+            <Input
+              value={track.artist}
+              onChange={(e) => setTrack({ ...track, artist: e.target.value })}
+              placeholder="歌手"
+              aria-label="歌手"
+            />
+            <Input
+              value={track.cover}
+              onChange={(e) => setTrack({ ...track, cover: e.target.value })}
+              placeholder="封面 URL"
+              aria-label="封面 URL"
+            />
+            <div className="sm:col-span-2">
+              <Input
+                value={track.externalUrl}
+                onChange={(e) => setTrack({ ...track, externalUrl: e.target.value })}
+                placeholder="平台链接"
+                aria-label="平台链接"
+              />
+            </div>
+          </div>
+          <Button className="mt-2" onClick={() => void saveTrack()} disabled={saving}>
+            保存歌曲
+          </Button>
+        </Panel>
+      </div>
+
+      <Panel title="新建推荐歌单">
+        <div className="grid gap-2 md:grid-cols-2">
+          <Input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="歌单标题"
+            aria-label="歌单标题"
+          />
+          <Input
+            value={cover}
+            onChange={(e) => setCover(e.target.value)}
+            placeholder="封面 URL"
+            aria-label="歌单封面 URL"
+          />
+          <div className="md:col-span-2">
+            <Input
+              value={trackIds}
+              onChange={(e) => setTrackIds(e.target.value)}
+              placeholder="歌曲 ID，逗号分隔"
+              aria-label="歌曲 ID，逗号分隔"
+            />
+          </div>
+          <div className="md:col-span-2">
+            <Textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="简介"
+              rows={2}
+              aria-label="歌单简介"
+            />
+          </div>
         </div>
+        <Button className="mt-2" onClick={() => void createPlaylist()} disabled={saving}>
+          创建推荐歌单
+        </Button>
+      </Panel>
+
+      <section className="space-y-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-[11px] font-bold text-white">
+            用户申请 <span className="font-normal text-slate-500">· {pendingApplications} 待审核 / 共 {applications.length} 条</span>
+          </h2>
+        </div>
+        <DataTable
+          rows={applications}
+          loading={loading}
+          rowKey={(item) => item.id}
+          empty="暂无申请。"
+          columns={[
+            {
+              key: "application",
+              header: "申请",
+              cell: (item) => (
+                <div className="min-w-0">
+                  <div className="truncate text-[11px] font-bold text-slate-200">
+                    {item.title || item.externalPlaylistId || "未命名歌单"}
+                  </div>
+                  <div className="mt-0.5 font-mono text-[9px] text-slate-500">#{item.id}</div>
+                </div>
+              ),
+            },
+            {
+              key: "external",
+              header: "歌单 ID",
+              cell: (item) => (
+                <span className="font-mono text-[10px] text-slate-400">{item.externalPlaylistId || "—"}</span>
+              ),
+            },
+            {
+              key: "note",
+              header: "备注",
+              className: "max-w-[280px]",
+              cell: (item) => (
+                <p className="line-clamp-2 text-[10px] leading-5 text-slate-400">
+                  {item.note || item.description || "无备注"}
+                </p>
+              ),
+            },
+            {
+              key: "status",
+              header: "状态",
+              cell: (item) => <StatusBadge status={item.status} />,
+            },
+            {
+              key: "actions",
+              header: "操作",
+              className: "text-right",
+              cell: (item) =>
+                item.status === "PENDING" ? (
+                  <div className="flex justify-end gap-0.5">
+                    <button
+                      type="button"
+                      onClick={() => void review(item.id, true)}
+                      className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-1 text-[9px] font-bold text-emerald-300 hover:bg-emerald-500/20"
+                    >
+                      <Check size={11} /> 通过
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void review(item.id, false)}
+                      className="inline-flex items-center gap-1 rounded-md bg-red-500/10 px-2 py-1 text-[9px] font-bold text-red-300 hover:bg-red-500/20"
+                    >
+                      <X size={11} /> 拒绝
+                    </button>
+                  </div>
+                ) : (
+                  <span className="text-slate-600">—</span>
+                ),
+            },
+          ]}
+        />
       </section>
 
-      <section className="rounded-3xl border border-white/10 bg-white/5 p-5">
-        <h2 className="mb-3 text-lg font-black text-white">推荐歌单</h2>
-        {loading ? <Loader2 className="animate-spin text-indigo-400" /> : (
-          <div className="space-y-2">
-            {playlists.map((item) => (
-              <div key={item.id} className="flex flex-col gap-2 rounded-2xl bg-black/15 p-4 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <div className="text-sm font-bold text-white">{item.title} <span className="text-xs text-slate-400">#{item.id} · {item.status}</span></div>
-                  <div className="text-xs text-slate-400">{item.trackCount} 首 · 热度 {item.heatScore} · {item.likeCount}/{item.dislikeCount}</div>
+      <section className="space-y-2">
+        <h2 className="text-[11px] font-bold text-white">
+          推荐歌单 <span className="font-normal text-slate-500">· 共 {playlists.length} 个</span>
+        </h2>
+        <DataTable
+          rows={playlists}
+          loading={loading}
+          rowKey={(item) => item.id}
+          empty="暂无推荐歌单。"
+          columns={[
+            {
+              key: "playlist",
+              header: "歌单",
+              cell: (item) => (
+                <div className="min-w-0">
+                  <div className="truncate text-[11px] font-bold text-slate-200">{item.title}</div>
+                  <div className="mt-0.5 font-mono text-[9px] text-slate-500">#{item.id}</div>
                 </div>
-                <div className="flex gap-2">
-                  <button onClick={() => {
-                    const value = window.prompt("输入曲目 ID，逗号分隔", String((item.tracks || []).map((track: any) => track.id).join(",")));
-                    if (value == null) return;
-                    const ids = value.split(",").map((v) => Number(v.trim())).filter((v) => Number.isFinite(v) && v > 0);
-                    void api.setMusicPlaylistTracks(item.id, ids).then(() => load()).catch((error) => showToast(error instanceof Error ? error.message : "更新失败", "error"));
-                  }} className="rounded-xl bg-indigo-500/15 px-3 py-2 text-[10px] font-black text-indigo-300">曲目</button>
-                  <button onClick={() => void setStatus(item.id, "ACTIVE")} className="rounded-xl bg-emerald-500/15 px-3 py-2 text-[10px] font-black text-emerald-300">恢复</button>
-                  <button onClick={() => void setStatus(item.id, "DEMOTED")} className="rounded-xl bg-amber-500/15 px-3 py-2 text-[10px] font-black text-amber-300">下架</button>
+              ),
+            },
+            {
+              key: "stats",
+              header: "数据",
+              cell: (item) => (
+                <span className="whitespace-nowrap text-[10px] text-slate-400">
+                  {item.trackCount} 首 · 热度 {item.heatScore} · {item.likeCount}/{item.dislikeCount}
+                </span>
+              ),
+            },
+            {
+              key: "status",
+              header: "状态",
+              cell: (item) => (
+                <span
+                  className={`inline-flex rounded-full px-2 py-0.5 text-[9px] font-bold ${
+                    PLAYLIST_STATUS_STYLE[item.status] || "bg-white/10 text-slate-300"
+                  }`}
+                >
+                  {item.status}
+                </span>
+              ),
+            },
+            {
+              key: "actions",
+              header: "操作",
+              className: "text-right",
+              cell: (item) => (
+                <div className="flex justify-end gap-0.5">
+                  <button
+                    type="button"
+                    onClick={() => editTracks(item)}
+                    className="rounded-md bg-indigo-500/10 px-2 py-1 text-[9px] font-bold text-indigo-300 hover:bg-indigo-500/20"
+                  >
+                    曲目
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void setStatus(item.id, "ACTIVE")}
+                    className="rounded-md bg-emerald-500/10 px-2 py-1 text-[9px] font-bold text-emerald-300 hover:bg-emerald-500/20"
+                  >
+                    恢复
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void setStatus(item.id, "DEMOTED")}
+                    className="rounded-md bg-amber-500/10 px-2 py-1 text-[9px] font-bold text-amber-300 hover:bg-amber-500/20"
+                  >
+                    下架
+                  </button>
                 </div>
-              </div>
-            ))}
-            {playlists.length === 0 && <div className="text-xs text-slate-500">暂无推荐歌单。</div>}
-          </div>
-        )}
+              ),
+            },
+          ]}
+        />
       </section>
-    </div>
+    </AdminPageShell>
   );
 }

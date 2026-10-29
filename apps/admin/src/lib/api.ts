@@ -52,6 +52,7 @@ export interface Post {
   date: string;
   status: string;
   visibility?: string;
+  categoryId?: number;
   views: number;
   tags: string[];
   fileUrl?: string;

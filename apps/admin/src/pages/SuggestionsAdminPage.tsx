@@ -1,9 +1,19 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Lightbulb, Loader2, Save } from "lucide-react";
+import { Loader2, RefreshCw, Save } from "lucide-react";
 import { api } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
+import { Button, Input, Select, Textarea } from "../components/ui";
+import {
+  AdminEmptyState,
+  AdminLoading,
+  AdminPageHeader,
+  AdminPageShell,
+  FormActions,
+  FormField,
+  StatusBadge,
+} from "../components/admin/AdminUI";
 
 const STATUSES = [
   "IN_REVIEW",
@@ -134,84 +144,139 @@ export default function SuggestionsAdminPage() {
     }
   };
 
-  return (
-    <div className="mx-auto max-w-7xl space-y-6">
-      <header>
-        <h1 className="flex items-center gap-2 text-3xl font-black text-white"><Lightbulb size={25} /> 建议审核</h1>
-        <p className="mt-1 text-sm font-bold text-slate-400">仅超级管理员可审核、评分和设置奖励。</p>
-      </header>
+  const selectedLabel = selected ? STATUS_LABEL[selected.status] || selected.status : "";
 
-      <div className="grid gap-6 lg:grid-cols-[340px_minmax(0,1fr)]">
-        <aside className="space-y-2">
-          {loading && <div className="flex items-center gap-2 text-sm text-slate-400"><Loader2 className="animate-spin" size={16} /> 加载中</div>}
-          {!loading && items.length === 0 && <div className="rounded-2xl bg-white/5 p-5 text-sm text-slate-400">暂无建议。</div>}
-          {items.map((item) => (
-            <button key={item.id} onClick={() => setSelected(item)} className={`w-full rounded-2xl border p-4 text-left transition ${selected?.id === item.id ? "border-indigo-400/50 bg-indigo-500/15" : "border-white/10 bg-white/5 hover:bg-white/10"}`}>
-              <div className="flex items-start justify-between gap-2">
-                <strong className="line-clamp-2 text-sm text-white">{item.title}</strong>
-                <span className="shrink-0 rounded-full bg-white/10 px-2 py-1 text-[9px] font-black text-slate-300">{STATUS_LABEL[item.status] || item.status}</span>
-              </div>
-              <div className="mt-2 text-[10px] text-slate-500">#{item.id} · {item.author} · {item.category || "其他"}</div>
-            </button>
-          ))}
+  return (
+    <AdminPageShell>
+      <AdminPageHeader
+        title="建议审核"
+        description="仅超级管理员可审核、评分和设置奖励。"
+        actions={
+          <Button variant="ghost" onClick={() => void load()}>
+            <RefreshCw size={13} /> 刷新
+          </Button>
+        }
+      />
+
+      <div className="grid items-start gap-3 lg:grid-cols-[300px_minmax(0,1fr)]">
+        <aside className="rounded-xl border border-white/10 bg-white/[0.03] p-2 lg:sticky lg:top-4">
+          <div className="flex items-center justify-between px-1 pb-2">
+            <h2 className="text-[10px] font-bold uppercase tracking-wider text-slate-500">建议列表</h2>
+            <span className="text-[10px] text-slate-500">{items.length}</span>
+          </div>
+
+          {loading ? (
+            <AdminLoading />
+          ) : items.length === 0 ? (
+            <AdminEmptyState title="暂无建议" description="用户提交建议后会出现在这里。" />
+          ) : (
+            <div className="admin-scrollbar flex max-h-[calc(100vh-240px)] flex-col gap-1 overflow-y-auto">
+              {items.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setSelected(item)}
+                  className={`w-full rounded-lg border px-2.5 py-2 text-left transition ${
+                    selected?.id === item.id
+                      ? "border-indigo-400/40 bg-indigo-500/10"
+                      : "border-transparent hover:bg-white/5"
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <strong className="line-clamp-2 text-[11px] font-bold text-slate-200">{item.title}</strong>
+                    <span className="shrink-0">
+                      <StatusBadge status={item.status} label={STATUS_LABEL[item.status] || item.status} />
+                    </span>
+                  </div>
+                  <div className="mt-1 truncate text-[9px] text-slate-500">
+                    #{item.id} · {item.author} · {item.category || "其他"}
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
         </aside>
 
-        <section className="rounded-3xl border border-white/10 bg-white/5 p-6">
+        <section className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03]">
           {!selected ? (
-            <div className="py-20 text-center text-sm text-slate-400">选择一条建议查看详情。</div>
+            <AdminEmptyState title="选择一条建议" description="从左侧列表选择建议，查看详情、评分并设置奖励。" />
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-4 p-4">
               <div>
-                <div className="flex flex-wrap items-center gap-2 text-[10px] font-black text-slate-400">
-                  <span className="rounded-full bg-indigo-500/15 px-2 py-1 text-indigo-300">{STATUS_LABEL[selected.status] || selected.status}</span>
+                <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold text-slate-500">
+                  <StatusBadge status={selected.status} label={selectedLabel} />
                   <span>#{selected.id}</span>
                   <span>{selected.author}</span>
+                  <span>{selected.category || "其他"}</span>
                   <span>{new Date(selected.createdAt).toLocaleString("zh-CN")}</span>
                 </div>
-                <h2 className="mt-3 text-2xl font-black text-white">{selected.title}</h2>
+                <h2 className="mt-1.5 text-lg font-bold leading-tight text-white">{selected.title}</h2>
               </div>
 
-              <div className="space-y-3 whitespace-pre-wrap text-sm leading-7 text-slate-300">
+              <div className="space-y-2 whitespace-pre-wrap text-[12px] leading-6 text-slate-300">
                 {contentParts.map((part, index) => {
                   const markdownImage = part.match(/^!\[[^\]]*\]\(attachment:\/\/(\d+)\)$/);
                   const rawImage = part.match(/^attachment:\/\/(\d+)$/);
                   const match = markdownImage || rawImage;
                   if (!match) return part ? <p key={index}>{part}</p> : null;
                   const imageId = Number(match[1]);
-                  return imageUrls[imageId] ? <img key={index} src={imageUrls[imageId]} alt="参考图片" className="max-h-[520px] rounded-2xl border border-white/10 object-contain" /> : null;
+                  return imageUrls[imageId] ? (
+                    <img
+                      key={index}
+                      src={imageUrls[imageId]}
+                      alt="参考图片"
+                      className="max-h-[420px] rounded-lg border border-white/10 object-contain"
+                    />
+                  ) : null;
                 })}
-                {imageLoading && <div className="text-xs text-slate-500">图片加载中…</div>}
+                {imageLoading && <div className="text-[10px] text-slate-500">图片加载中…</div>}
               </div>
 
-              <div className="grid gap-4 md:grid-cols-3">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                  状态
-                  <select value={status} onChange={(event) => setStatus(event.target.value)} className="admin-input mt-2">
-                    {STATUSES.map((value) => <option key={value} value={value}>{STATUS_LABEL[value]}</option>)}
-                  </select>
-                </label>
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                  评分 1-5
-                  <input value={score} onChange={(event) => setScore(event.target.value)} type="number" min="1" max="5" className="admin-input mt-2" />
-                </label>
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                  奖励金额 1-5 元
-                  <input value={rewardAmount} onChange={(event) => setRewardAmount(event.target.value)} type="number" min="1" max="5" step="0.01" className="admin-input mt-2" />
-                </label>
+              <div className="grid gap-3 border-t border-white/10 pt-3 md:grid-cols-3">
+                <FormField label="状态">
+                  <Select
+                    value={status}
+                    onChange={setStatus}
+                    ariaLabel="审核状态"
+                    options={STATUSES.map((value) => ({ value, label: STATUS_LABEL[value] }))}
+                  />
+                </FormField>
+                <Input
+                  label="评分 1-5"
+                  value={score}
+                  onChange={(event) => setScore(event.target.value)}
+                  type="number"
+                  min="1"
+                  max="5"
+                />
+                <Input
+                  label="奖励金额 1-5 元"
+                  value={rewardAmount}
+                  onChange={(event) => setRewardAmount(event.target.value)}
+                  type="number"
+                  min="1"
+                  max="5"
+                  step="0.01"
+                />
               </div>
 
-              <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400">
-                审核回复
-                <textarea value={reviewNote} onChange={(event) => setReviewNote(event.target.value)} rows={5} className="admin-input mt-2" placeholder="告诉用户是否采纳、原因和下一步计划" />
-              </label>
+              <Textarea
+                label="审核回复"
+                value={reviewNote}
+                onChange={(event) => setReviewNote(event.target.value)}
+                rows={4}
+                placeholder="告诉用户是否采纳、原因和下一步计划"
+              />
 
-              <button onClick={() => void review()} disabled={saving} className="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-2.5 text-xs font-black text-white disabled:opacity-50">
-                {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />} 保存审核
-              </button>
+              <FormActions>
+                <Button onClick={() => void review()} disabled={saving}>
+                  {saving ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />} 保存审核
+                </Button>
+              </FormActions>
             </div>
           )}
         </section>
       </div>
-    </div>
+    </AdminPageShell>
   );
 }

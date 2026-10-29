@@ -1,8 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
-import { ImagePlus, Loader2, Pencil, Plus, Trash2, X } from "lucide-react";
+import { ImagePlus, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react";
 import { api, type Moment } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
 import { Button, Dialog, Input, MediaField, Select, Textarea } from "../components/ui";
+import {
+  AdminEmptyState,
+  AdminPageHeader,
+  AdminPageShell,
+  FilterTabs,
+  FormActions,
+  FormField,
+  StatusBadge,
+} from "../components/admin/AdminUI";
+import { DataTable } from "../components/admin/DataTable";
 
 type MomentDraft = {
   content: string;
@@ -19,6 +29,21 @@ const emptyDraft = (): MomentDraft => ({
   status: "DRAFT",
   visibility: "PRIVATE",
 });
+
+const previewText = (content: string) => (content || "").replace(/[#*`>\[\]]/g, "").slice(0, 260);
+
+function VisibilityBadge({ visibility }: { visibility: string }) {
+  const isPrivate = visibility === "PRIVATE";
+  return (
+    <span
+      className={`inline-flex rounded-full px-2 py-0.5 text-[9px] font-bold ${
+        isPrivate ? "bg-red-500/10 text-red-300" : "bg-emerald-500/10 text-emerald-300"
+      }`}
+    >
+      {isPrivate ? "私密" : "公开"}
+    </span>
+  );
+}
 
 export default function MomentsPage() {
   const { showToast } = useToast();
@@ -114,71 +139,145 @@ export default function MomentsPage() {
   };
 
   return (
-    <div className="flex flex-col gap-5">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black text-white">说说</h1>
-          <p className="text-sm text-slate-400 mt-1 font-bold">草稿仅自己可见，私密说说仅拥有者可见</p>
-        </div>
-        <button onClick={openCreate} className="flex items-center gap-2 rounded-2xl bg-indigo-500 px-5 py-3 text-sm font-black text-white shadow-lg shadow-indigo-500/25 hover:bg-indigo-600">
-          <Plus size={16} /> 新建说说
-        </button>
+    <AdminPageShell>
+      <AdminPageHeader
+        title="说说"
+        description="草稿仅自己可见，私密说说仅拥有者可见"
+        actions={
+          <>
+            <Button variant="ghost" onClick={() => void load()}>
+              <RefreshCw size={13} /> 刷新
+            </Button>
+            <Button onClick={openCreate}>
+              <Plus size={13} /> 新建说说
+            </Button>
+          </>
+        }
+      />
+
+      <div className="flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-2.5">
+        <FilterTabs
+          value={filter}
+          onChange={(value) => setFilter(value as typeof filter)}
+          options={[
+            { value: "all", label: "全部", count: items.length },
+            { value: "draft", label: "草稿", count: items.filter((item) => item.status === "DRAFT").length },
+            {
+              value: "private",
+              label: "私密",
+              count: items.filter((item) => item.status === "PUBLISHED" && item.visibility === "PRIVATE").length,
+            },
+            {
+              value: "public",
+              label: "公开",
+              count: items.filter((item) => item.status === "PUBLISHED" && item.visibility === "PUBLIC").length,
+            },
+          ]}
+        />
+        <span className="ml-auto text-[10px] text-slate-500">
+          共 {items.length} 条 · 当前 {filtered.length} 条
+        </span>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        {[
-          ["all", "全部", items.length],
-          ["draft", "草稿", items.filter((item) => item.status === "DRAFT").length],
-          ["private", "私密", items.filter((item) => item.status === "PUBLISHED" && item.visibility === "PRIVATE").length],
-          ["public", "公开", items.filter((item) => item.status === "PUBLISHED" && item.visibility === "PUBLIC").length],
-        ].map(([value, label, count]) => (
-          <button
-            key={value}
-            onClick={() => setFilter(value as typeof filter)}
-            className={`rounded-full px-4 py-2 text-xs font-black transition-colors ${
-              filter === value ? "bg-indigo-500 text-white" : "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-slate-200"
-            }`}
-          >
-            {label} <span className="opacity-60">{count}</span>
-          </button>
-        ))}
-      </div>
-
-      {loading && <div className="flex items-center gap-2 text-slate-400"><Loader2 className="animate-spin" size={16} />加载中…</div>}
-
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-        {filtered.map((item) => (
-          <div key={item.slug} className="rounded-3xl border border-white/10 bg-white/5 p-5">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <div className="text-[10px] font-mono text-slate-500">{item.slug}</div>
-                <p className="mt-3 line-clamp-4 text-sm leading-relaxed text-slate-300">
-                  {(item.content || "").replace(/[#*`>\[\]]/g, "").slice(0, 260)}
-                </p>
-              </div>
-              <span className={`shrink-0 rounded-full px-2 py-1 text-[9px] font-black ${
-                item.status === "DRAFT"
-                  ? "bg-amber-500/15 text-amber-300"
-                  : item.visibility === "PRIVATE"
-                  ? "bg-red-500/15 text-red-300"
-                  : "bg-emerald-500/15 text-emerald-300"
-              }`}>
-                {item.status === "DRAFT" ? "草稿" : item.visibility === "PRIVATE" ? "私密" : "公开"}
-              </span>
-            </div>
-            {item.images?.length > 0 && <div className="mt-3 flex gap-2 overflow-hidden">{item.images.slice(0, 3).map((url) => <img key={url} src={url} alt="" className="h-14 w-14 rounded-xl object-cover" />)}</div>}
-            <div className="mt-4 flex items-center justify-between">
-              <span className="text-[10px] font-bold text-slate-500">{String(item.date || "").slice(0, 10)}</span>
-              <div className="flex gap-2">
-                <button onClick={() => openEdit(item)} className="rounded-xl bg-white/5 px-3 py-2 text-[10px] font-black text-slate-300 hover:bg-white/10"><Pencil size={12} className="mr-1 inline" />编辑</button>
-                <button onClick={() => remove(item)} className="rounded-xl bg-red-500/10 px-3 py-2 text-[10px] font-black text-red-300 hover:bg-red-500/20"><Trash2 size={12} className="mr-1 inline" />删除</button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {!loading && filtered.length === 0 && <div className="py-16 text-center text-sm font-bold text-slate-500">暂无说说</div>}
+      {!loading && items.length === 0 ? (
+        <AdminEmptyState
+          title="暂无说说"
+          description="记录第一条说说，草稿仅自己可见。"
+          action={
+            <Button onClick={openCreate}>
+              <Plus size={13} /> 新建说说
+            </Button>
+          }
+        />
+      ) : (
+        <DataTable
+          rows={filtered}
+          loading={loading}
+          rowKey={(item) => item.slug}
+          empty="没有符合条件的说说"
+          columns={[
+            {
+              key: "content",
+              header: "内容",
+              className: "max-w-[460px]",
+              cell: (item) => (
+                <div className="min-w-0">
+                  <p className="line-clamp-2 text-[11px] leading-5 text-slate-200">{previewText(item.content)}</p>
+                  <p className="mt-0.5 truncate font-mono text-[9px] text-slate-600">{item.slug}</p>
+                </div>
+              ),
+            },
+            {
+              key: "images",
+              header: "图片",
+              width: "120px",
+              cell: (item) => (
+                <div className="flex items-center gap-1">
+                  {(item.images || []).slice(0, 3).map((url) => (
+                    <img
+                      key={url}
+                      src={url}
+                      alt=""
+                      className="h-7 w-7 rounded-md border border-white/10 object-cover"
+                    />
+                  ))}
+                  {(item.images?.length || 0) === 0 && <span className="text-slate-600">—</span>}
+                  {(item.images?.length || 0) > 3 && (
+                    <span className="text-[9px] font-bold text-slate-500">+{item.images.length - 3}</span>
+                  )}
+                </div>
+              ),
+            },
+            {
+              key: "status",
+              header: "状态",
+              width: "130px",
+              cell: (item) => (
+                <div className="flex flex-wrap items-center gap-1">
+                  <StatusBadge status={item.status} />
+                  {item.status !== "DRAFT" && <VisibilityBadge visibility={item.visibility} />}
+                </div>
+              ),
+            },
+            {
+              key: "date",
+              header: "日期",
+              width: "100px",
+              cell: (item) => (
+                <span className="whitespace-nowrap text-[10px] text-slate-500">
+                  {String(item.date || "").slice(0, 10) || "—"}
+                </span>
+              ),
+            },
+            {
+              key: "actions",
+              header: "操作",
+              className: "text-right",
+              width: "120px",
+              cell: (item) => (
+                <div className="flex justify-end gap-0.5">
+                  <button
+                    type="button"
+                    title="编辑"
+                    onClick={() => openEdit(item)}
+                    className="rounded-md p-1.5 text-slate-400 hover:bg-white/10 hover:text-white"
+                  >
+                    <Pencil size={13} />
+                  </button>
+                  <button
+                    type="button"
+                    title="删除"
+                    onClick={() => void remove(item)}
+                    className="rounded-md p-1.5 text-slate-500 hover:bg-red-500/10 hover:text-red-300"
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                </div>
+              ),
+            },
+          ]}
+        />
+      )}
 
       <Dialog
         open={formOpen}
@@ -187,14 +286,24 @@ export default function MomentsPage() {
         description="支持 Markdown；草稿仅自己可见，私密说说仅拥有者可见。"
         widthClassName="max-w-2xl"
         footer={
-          <div className="flex justify-end gap-3">
-            <Button variant="ghost" onClick={() => setFormOpen(false)}>取消</Button>
-            <Button onClick={save} disabled={saving}>{saving ? "保存中…" : "保存"}</Button>
-          </div>
+          <FormActions>
+            <Button variant="ghost" onClick={() => setFormOpen(false)}>
+              取消
+            </Button>
+            <Button onClick={() => void save()} disabled={saving}>
+              {saving ? "保存中…" : "保存"}
+            </Button>
+          </FormActions>
         }
       >
         <div className="grid gap-3">
-          <Textarea value={draft.content} onChange={(e) => setDraft({ ...draft, content: e.target.value })} rows={9} placeholder="说说内容，支持 Markdown" />
+          <Textarea
+            label="内容"
+            value={draft.content}
+            onChange={(e) => setDraft({ ...draft, content: e.target.value })}
+            rows={7}
+            placeholder="说说内容，支持 Markdown"
+          />
           <MediaField
             label="说说图片"
             hint="支持 JPG / PNG / WebP，最多 9 张"
@@ -205,30 +314,41 @@ export default function MomentsPage() {
             kind="image"
           />
           <div className="grid gap-3 sm:grid-cols-2">
-            <Input type="date" value={draft.date} onChange={(e) => setDraft({ ...draft, date: e.target.value })} />
-            <Select
-              value={draft.status}
-              onChange={(value) => setDraft({ ...draft, status: value as MomentDraft["status"] })}
-              ariaLabel="说说状态"
-              options={[
-                { value: "DRAFT", label: "保存为草稿" },
-                { value: "PUBLISHED", label: "发布" },
-              ]}
+            <Input
+              label="日期"
+              type="date"
+              value={draft.date}
+              onChange={(e) => setDraft({ ...draft, date: e.target.value })}
             />
-            <Select
-              value={draft.visibility}
-              onChange={(value) => setDraft({ ...draft, visibility: value as MomentDraft["visibility"] })}
-              disabled={draft.status === "DRAFT"}
-              ariaLabel="说说可见性"
-              options={[
-                { value: "PRIVATE", label: "私密" },
-                { value: "PUBLIC", label: "公开" },
-              ]}
-            />
-            <div className="flex items-center gap-2 text-[10px] text-slate-400"><ImagePlus size={13} /> 图片可为空</div>
+            <FormField label="状态">
+              <Select
+                value={draft.status}
+                onChange={(value) => setDraft({ ...draft, status: value as MomentDraft["status"] })}
+                ariaLabel="说说状态"
+                options={[
+                  { value: "DRAFT", label: "保存为草稿" },
+                  { value: "PUBLISHED", label: "发布" },
+                ]}
+              />
+            </FormField>
+            <FormField label="可见性">
+              <Select
+                value={draft.visibility}
+                onChange={(value) => setDraft({ ...draft, visibility: value as MomentDraft["visibility"] })}
+                disabled={draft.status === "DRAFT"}
+                ariaLabel="说说可见性"
+                options={[
+                  { value: "PRIVATE", label: "私密" },
+                  { value: "PUBLIC", label: "公开" },
+                ]}
+              />
+            </FormField>
+            <div className="flex items-center gap-2 text-[10px] text-slate-500 sm:self-end">
+              <ImagePlus size={13} /> 图片可为空，最多 9 张
+            </div>
           </div>
         </div>
       </Dialog>
-    </div>
+    </AdminPageShell>
   );
 }

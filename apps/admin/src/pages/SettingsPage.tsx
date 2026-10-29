@@ -5,6 +5,7 @@ import { Loader2, Save } from "lucide-react";
 import { useSiteConfigContext } from "../context/SiteConfigProvider";
 import { useToast } from "../components/ToastProvider";
 import { api } from "../lib/api";
+import { AdminLoading, AdminPageHeader, AdminPageShell, Tabs } from "../components/admin/AdminUI";
 
 import ProfileSection from "../components/settings/ProfileSection";
 import BackgroundSection from "../components/settings/BackgroundSection";
@@ -142,53 +143,50 @@ export default function SettingsPage() {
 
   if (config.loading && !hydrated) {
     return (
-      <div className="flex items-center justify-center py-32 text-slate-400 gap-3">
-        <Loader2 className="animate-spin" size={20} />
-        正在加载站点配置...
-      </div>
+      <AdminPageShell>
+        <AdminPageHeader
+          title="系统设置"
+          description="所有面板直接读写 /api/admin/config，保存后 C 端下一次请求即可生效"
+          eyebrow="站点配置"
+        />
+        <AdminLoading label="正在加载站点配置…" />
+      </AdminPageShell>
     );
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-3xl font-black text-slate-900 dark:text-white">系统设置</h1>
-        <p className="text-sm text-slate-400 mt-1 font-bold">
-          所有面板直接读写 /api/admin/config，保存后 C 端下一次请求即可生效
-        </p>
-      </div>
+    <AdminPageShell>
+      <AdminPageHeader
+        title="系统设置"
+        description="所有面板直接读写 /api/admin/config，保存后 C 端下一次请求即可生效"
+        eyebrow="站点配置"
+      />
 
       {headerSlot &&
         createPortal(
           <button
             onClick={() => saveAll("全部站点配置")}
             disabled={saving}
-            className="shrink-0 px-5 py-2.5 rounded-2xl bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 text-white font-black text-sm shadow-lg shadow-indigo-500/30 flex items-center justify-center gap-2 transition-all active:scale-95"
+            className="inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-lg bg-indigo-500 px-3 text-[11px] font-bold text-white shadow-lg shadow-indigo-500/20 transition-all hover:bg-indigo-400 active:scale-[0.98] disabled:opacity-50"
           >
-            {saving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
+            {saving ? <Loader2 className="animate-spin" size={13} /> : <Save size={13} />}
             <span className="hidden sm:inline">{saving ? "保存中..." : "保存全部配置"}</span>
           </button>,
           headerSlot
         )}
 
-      <div className="flex flex-wrap gap-2 bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl border border-white/40 dark:border-slate-800/60 rounded-3xl p-3">
-        {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all ${
-              activeTab === tab.id
-                ? "bg-indigo-500 text-white shadow-md shadow-indigo-500/30"
-                : "text-slate-500 dark:text-slate-400 hover:bg-white/60 dark:hover:bg-slate-800/60"
-            }`}
-          >
-            <span className="mr-1">{tab.icon}</span>
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      <Tabs
+        value={activeTab}
+        onChange={setActiveTab}
+        items={TABS.map((tab) => ({ value: tab.id, label: `${tab.icon} ${tab.label}` }))}
+      />
 
-      <motion.div key={activeTab} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+      <motion.div
+        key={activeTab}
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.18, ease: "easeOut" }}
+      >
         {activeTab === "profile" && <ProfileSection {...panelProps} />}
         {activeTab === "background" && <BackgroundSection {...panelProps} />}
         {activeTab === "music" && <MusicSection {...panelProps} />}
@@ -197,6 +195,6 @@ export default function SettingsPage() {
         {activeTab === "gallery" && <GallerySection {...panelProps} />}
         {activeTab === "display" && <DisplaySection {...panelProps} />}
       </motion.div>
-    </div>
+    </AdminPageShell>
   );
 }

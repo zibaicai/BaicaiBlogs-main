@@ -1,8 +1,13 @@
+"use client";
+
 import { useEffect, useState } from "react";
-import { Check, Hash, Loader2, Plus, X } from "lucide-react";
+import { Check, Hash, Plus, RefreshCw, X } from "lucide-react";
+
 import { api, type Tag } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
-import { Button, Card, Input } from "../components/ui";
+import { Button, Input } from "../components/ui";
+import { AdminEmptyState, AdminLoading, AdminPageHeader, AdminPageShell } from "../components/admin/AdminUI";
+import { DataTable } from "../components/admin/DataTable";
 
 export default function TagsPage() {
   const { showToast } = useToast();
@@ -68,49 +73,119 @@ export default function TagsPage() {
   const active = items.filter((item) => item.status === "ACTIVE");
 
   return (
-    <div className="flex flex-col gap-5">
-      <div>
-        <h1 className="text-3xl font-black text-white">标签库</h1>
-        <p className="mt-1 text-sm font-bold text-slate-400">完全扁平标签；用户申请后在这里审批，通过/拒绝都会发站内信。</p>
-      </div>
+    <AdminPageShell>
+      <AdminPageHeader
+        title="标签库"
+        description="完全扁平标签；用户申请后在这里审批，通过/拒绝都会发站内信。"
+        actions={
+          <>
+            <span className="rounded-md border border-amber-500/20 bg-amber-500/10 px-2 py-1 text-[10px] font-bold text-amber-300">
+              待审批 {pending.length}
+            </span>
+            <span className="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-[10px] font-bold text-slate-400">
+              已启用 {active.length}
+            </span>
+            <Button variant="secondary" onClick={() => void load()} disabled={loading}>
+              <RefreshCw size={12} className={loading ? "animate-spin" : ""} /> 刷新
+            </Button>
+          </>
+        }
+      />
 
-      <Card className="flex gap-2 p-4" padded={false}>
-        <div className="min-w-0 flex-1">
-          <Input value={name} onChange={(event) => setName(event.target.value)} placeholder="直接添加标签，例如 React" />
+      <div className="flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-2.5">
+        <div className="min-w-[180px] flex-1">
+          <Input
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            placeholder="直接添加标签，例如 React"
+          />
         </div>
         <Button onClick={create} disabled={busy} className="shrink-0">
-          <Plus size={14} /> 添加
+          <Plus size={13} /> 添加
         </Button>
-      </Card>
+      </div>
 
-      <section>
-        <h2 className="mb-3 text-xs font-black uppercase tracking-widest text-amber-300">待审批 {pending.length}</h2>
-        {loading && <div className="flex items-center gap-2 text-slate-400"><Loader2 className="animate-spin" size={16} />加载中…</div>}
-        <div className="grid gap-3 md:grid-cols-2">
-          {pending.map((tag) => (
-            <div key={tag.id} className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2 text-sm font-black text-white"><Hash size={14} />{tag.name}</div>
-                <div className="flex gap-2">
-                  <button onClick={() => approve(tag)} className="rounded-xl bg-emerald-500/15 px-3 py-2 text-[10px] font-black text-emerald-300"><Check size={12} className="mr-1 inline" />通过</button>
-                  <button onClick={() => reject(tag)} className="rounded-xl bg-red-500/15 px-3 py-2 text-[10px] font-black text-red-300"><X size={12} className="mr-1 inline" />拒绝</button>
-                </div>
+      {loading ? (
+        <AdminLoading />
+      ) : (
+        <>
+          <section className="space-y-2">
+            <h2 className="text-[10px] font-bold uppercase tracking-widest text-amber-300">
+              待审批 {pending.length}
+            </h2>
+            <DataTable
+              rows={pending}
+              rowKey={(tag) => tag.id}
+              empty="暂无待审批标签"
+              columns={[
+                {
+                  key: "name",
+                  header: "标签",
+                  className: "max-w-[220px]",
+                  cell: (tag) => (
+                    <div className="flex min-w-0 items-center gap-2 text-[11px] font-bold text-white">
+                      <Hash size={12} className="shrink-0 text-amber-300" />
+                      <span className="truncate">{tag.name}</span>
+                    </div>
+                  ),
+                },
+                {
+                  key: "note",
+                  header: "申请理由",
+                  className: "max-w-[420px]",
+                  cell: (tag) => (
+                    <p className="line-clamp-2 text-[10px] leading-5 text-slate-400">{tag.reviewNote || "—"}</p>
+                  ),
+                },
+                {
+                  key: "action",
+                  header: "操作",
+                  className: "text-right",
+                  width: "150px",
+                  cell: (tag) => (
+                    <div className="flex justify-end gap-1">
+                      <button
+                        type="button"
+                        onClick={() => void approve(tag)}
+                        className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-1 text-[10px] font-bold text-emerald-300 hover:bg-emerald-500/20"
+                      >
+                        <Check size={11} /> 通过
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void reject(tag)}
+                        className="inline-flex items-center gap-1 rounded-md bg-red-500/10 px-2 py-1 text-[10px] font-bold text-red-300 hover:bg-red-500/20"
+                      >
+                        <X size={11} /> 拒绝
+                      </button>
+                    </div>
+                  ),
+                },
+              ]}
+            />
+          </section>
+
+          <section className="space-y-2">
+            <h2 className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+              已启用 {active.length}
+            </h2>
+            {active.length === 0 ? (
+              <AdminEmptyState title="暂无已启用标签" description="在上方输入名称即可直接添加标签。" />
+            ) : (
+              <div className="flex flex-wrap gap-1.5 rounded-xl border border-white/10 bg-white/[0.02] p-2.5">
+                {active.map((tag) => (
+                  <span
+                    key={tag.id}
+                    className="rounded-md border border-white/10 bg-white/[0.06] px-2 py-1 text-[10px] font-bold text-slate-300"
+                  >
+                    #{tag.name}
+                  </span>
+                ))}
               </div>
-              {tag.reviewNote && <p className="mt-2 text-[10px] text-slate-400">申请理由：{tag.reviewNote}</p>}
-            </div>
-          ))}
-        </div>
-        {!loading && pending.length === 0 && <div className="rounded-2xl border border-white/5 bg-white/5 py-8 text-center text-xs text-slate-500">暂无待审批标签</div>}
-      </section>
-
-      <section>
-        <h2 className="mb-3 text-xs font-black uppercase tracking-widest text-slate-400">已启用 {active.length}</h2>
-        <div className="flex flex-wrap gap-2">
-          {active.map((tag) => (
-            <span key={tag.id} className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-300">#{tag.name}</span>
-          ))}
-        </div>
-      </section>
-    </div>
+            )}
+          </section>
+        </>
+      )}
+    </AdminPageShell>
   );
 }

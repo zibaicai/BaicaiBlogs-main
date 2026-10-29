@@ -1,7 +1,18 @@
+"use client";
+
 import { useState } from "react";
 import { Eye, Loader2, ShieldAlert } from "lucide-react";
+
 import { api, getAdminRole, type Moment } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
+import { Button, Textarea } from "../components/ui";
+import {
+  AdminEmptyState,
+  AdminLoading,
+  AdminPageHeader,
+  AdminPageShell,
+  FormField,
+} from "../components/admin/AdminUI";
 
 export default function PrivacyAuditPage() {
   const { showToast } = useToast();
@@ -30,51 +41,75 @@ export default function PrivacyAuditPage() {
 
   if (userRole !== "SUPER_ADMIN") {
     return (
-      <div className="rounded-3xl border border-red-500/20 bg-red-500/5 p-8 text-center">
-        <ShieldAlert className="mx-auto mb-3 text-red-400" size={28} />
-        <h1 className="text-xl font-black text-white">仅超级管理员可访问</h1>
-        <p className="mt-2 text-sm text-slate-400">该入口用于数据恢复、违规处理等兜底场景，所有查看都会写入审计日志。</p>
-      </div>
+      <AdminPageShell>
+        <AdminPageHeader title="隐私审计" description="仅超级管理员可访问" />
+        <div className="flex flex-col items-center rounded-xl border border-red-500/20 bg-red-500/[0.04] px-6 py-10 text-center">
+          <ShieldAlert size={24} className="text-red-400" />
+          <p className="mt-2 max-w-md text-[11px] leading-5 text-slate-400">
+            该入口用于数据恢复、违规处理等兜底场景，所有查看都会写入审计日志。
+          </p>
+        </div>
+      </AdminPageShell>
     );
   }
 
   return (
-    <div className="flex flex-col gap-5">
-      <div>
-        <h1 className="text-3xl font-black text-white">隐私审计</h1>
-        <p className="mt-1 text-sm font-bold text-slate-400">私密说说只读兜底入口。查看必须填写原因，用户不会收到通知。</p>
-      </div>
+    <AdminPageShell>
+      <AdminPageHeader
+        title="隐私审计"
+        description="私密说说只读兜底入口。查看必须填写原因，用户不会收到通知。"
+        actions={
+          <span className="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-[10px] font-bold text-slate-400">
+            共 {items.length} 条
+          </span>
+        }
+      />
 
-      <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
-        <label className="text-xs font-black text-slate-400">
-          查看原因
-          <textarea
+      <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+        <FormField label="查看原因">
+          <Textarea
             value={reason}
             onChange={(event) => setReason(event.target.value)}
             rows={3}
             placeholder="例如：用户申请数据恢复，需核对私密内容"
-            className="mt-2 w-full resize-none rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none focus:ring-2 focus:ring-indigo-500"
           />
-        </label>
-        <button onClick={load} disabled={loading} className="btn btn-primary mt-3 flex items-center gap-2 rounded-2xl px-5 py-3 text-xs font-black disabled:opacity-50">
-          {loading ? <Loader2 size={14} className="animate-spin" /> : <Eye size={14} />}
-          查看私密说说
-        </button>
+        </FormField>
+        <div className="mt-2 flex justify-end">
+          <Button onClick={() => void load()} disabled={loading}>
+            {loading ? <Loader2 size={13} className="animate-spin" /> : <Eye size={13} />}
+            查看私密说说
+          </Button>
+        </div>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-2">
-        {items.map((item) => (
-          <div key={item.slug} className="rounded-3xl border border-white/10 bg-white/5 p-5">
-            <div className="flex items-center justify-between gap-3">
-              <div className="text-[10px] font-mono text-slate-500">{item.slug}</div>
-              <span className="rounded-full bg-red-500/15 px-2 py-1 text-[9px] font-black text-red-300">私密</span>
+      {loading ? (
+        <AdminLoading label="正在读取私密说说…" />
+      ) : items.length === 0 ? (
+        <AdminEmptyState title="暂无私密说说" description="填写原因后可查看私密说说。" />
+      ) : (
+        <div className="grid gap-2.5 xl:grid-cols-2">
+          {items.map((item) => (
+            <div key={item.slug} className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+              <div className="flex items-center justify-between gap-2">
+                <span className="min-w-0 truncate font-mono text-[9px] text-slate-500" title={item.slug}>
+                  {item.slug}
+                </span>
+                <span className="shrink-0 rounded-full bg-red-500/15 px-1.5 py-0.5 text-[9px] font-bold text-red-300">
+                  私密
+                </span>
+              </div>
+              <div
+                className="admin-article-reader admin-scrollbar mt-2 max-h-56 overflow-y-auto"
+                dangerouslySetInnerHTML={{ __html: item.htmlContent || "" }}
+              />
+              <div className="mt-2 flex items-center justify-between gap-2 text-[9px] text-slate-500">
+                <span>{String(item.date || "").slice(0, 10)}</span>
+                <span>user #{item.userId || "-"}</span>
+              </div>
             </div>
-            <div className="article-prose mt-3 text-sm text-slate-300" dangerouslySetInnerHTML={{ __html: item.htmlContent || "" }} />
-            <div className="mt-4 text-[10px] text-slate-500">{String(item.date || "").slice(0, 10)} · user #{item.userId || "-"}</div>
-          </div>
-        ))}
-      </div>
-      {!loading && items.length === 0 && <div className="py-16 text-center text-sm font-bold text-slate-500">填写原因后可查看私密说说。</div>}
-    </div>
+          ))}
+        </div>
+      )}
+    </AdminPageShell>
   );
 }
