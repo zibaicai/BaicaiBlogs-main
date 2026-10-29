@@ -9,8 +9,6 @@ import { api } from "../lib/api";
 import ProfileSection from "../components/settings/ProfileSection";
 import BackgroundSection from "../components/settings/BackgroundSection";
 import MusicSection from "../components/settings/MusicSection";
-import CommentSection from "../components/settings/CommentSection";
-import RepoSection from "../components/settings/RepoSection";
 import AIWhaleSection from "../components/settings/AIWhaleSection";
 import FooterSection from "../components/settings/FooterSection";
 import GallerySection from "../components/settings/GallerySection";
@@ -20,8 +18,6 @@ const TABS = [
   { id: "profile", label: "站点信息", icon: "🪪" },
   { id: "background", label: "背景", icon: "🖼️" },
   { id: "music", label: "音乐", icon: "🎵" },
-  { id: "comment", label: "评论", icon: "🗨️" },
-  { id: "repo", label: "仓库", icon: "🗂️" },
   { id: "ai", label: "AI", icon: "🤖" },
   { id: "footer", label: "页脚", icon: "📄" },
   { id: "gallery", label: "图库", icon: "🌄" },
@@ -36,8 +32,8 @@ const SITE_INFO_KEYS = [
 const BACKGROUND_KEYS = ["useGradient", "themeColors", "bgImages", "defaultPostCover"] as const;
 
 const MISC_KEYS = [
-  "cloudMusicIds", "friendLinkApplyFormat", "photoWallImage", "counts",
-  "footerBadges", "gitalkConfig", "repoConfig",
+  "cloudMusicIds", "friendLinkApplyFormat", "photoWallImage",
+  "footerBadges",
 ] as const;
 
 function pick(source: Record<string, any>, keys: readonly string[]) {
@@ -66,14 +62,7 @@ function buildFlat(config: any) {
     danmakuList: config.danmakuList || [],
     social: { ...(siteInfo.social || {}) },
     icpConfig: { ...(siteInfo.icpConfig || {}) },
-    counts: { ...(misc.counts || {}) },
     footerBadges: misc.footerBadges || [],
-    gitalkConfig: { ...(misc.gitalkConfig || { admin: [] }) },
-    repoConfig: {
-      repoUrl: "https://github.com/zibaicai/BaicaiBlogs-main",
-      note: "",
-      ...(misc.repoConfig || {}),
-    },
     cloudMusicIds: misc.cloudMusicIds || [],
     bgImages: background.bgImages || [],
     themeColors: background.themeColors || [],
@@ -203,8 +192,6 @@ export default function SettingsPage() {
         {activeTab === "profile" && <ProfileSection {...panelProps} />}
         {activeTab === "background" && <BackgroundSection {...panelProps} />}
         {activeTab === "music" && <MusicSection {...panelProps} />}
-        {activeTab === "comment" && <CommentSection {...panelProps} />}
-        {activeTab === "repo" && <RepoSection {...panelProps} />}
         {activeTab === "ai" && <AIWhaleSection {...panelProps} />}
         {activeTab === "footer" && <FooterSection {...panelProps} />}
         {activeTab === "gallery" && <GallerySection {...panelProps} />}

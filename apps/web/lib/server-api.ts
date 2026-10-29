@@ -117,8 +117,6 @@ export async function getPublicSiteConfig(): Promise<PublicSiteConfig> {
     misc: {
       ...DEFAULT_MISC,
       ...(misc || {}),
-      counts: { ...DEFAULT_MISC.counts, ...((misc || {}).counts || {}) },
-      gitalkConfig: { ...DEFAULT_MISC.gitalkConfig, ...((misc || {}).gitalkConfig || {}) },
       footerBadges: (misc || {}).footerBadges?.length ? misc!.footerBadges! : DEFAULT_MISC.footerBadges,
     },
   };

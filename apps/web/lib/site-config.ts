@@ -50,24 +50,11 @@ export interface FooterBadge {
   svg: string;
 }
 
-export interface GitalkConfig {
-  clientID: string;
-  clientSecret: string;
-  repo: string;
-  owner: string;
-  admin: string[];
-}
-
 export interface MiscConfig {
-  picBedName: string;
-  picBedUrl: string;
-  picBedToken: string;
   cloudMusicIds: string[];
   friendLinkApplyFormat: string;
   photoWallImage: string;
-  counts: { photos: number };
   footerBadges: FooterBadge[];
-  gitalkConfig: GitalkConfig;
 }
 
 export interface SiteConfigState {
@@ -132,18 +119,13 @@ export const DEFAULT_AI_CONFIG: AiConfig = {
 };
 
 export const DEFAULT_MISC: MiscConfig = {
-  picBedName: "图床",
-  picBedUrl: "",
-  picBedToken: "",
   cloudMusicIds: [],
   friendLinkApplyFormat:
     "名称：YeLuo / 云端小屋\n简介：收集生活的砂砾，也收藏那些不想丢掉的东西。\n链接：https://www.zibaicai.cn\n头像：/avatar.jpg",
   photoWallImage: "/bg-4.webp",
-  counts: { photos: 128 },
   footerBadges: [
     { name: "Next.js 16", color: "text-sky-500", svg: "<path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z\"/>" },
     { name: "React 19", color: "text-cyan-400", svg: "<path d=\"M12 22.6l-9.8-5.6V5.6L12 0l9.8 5.6v11.4l-9.8 5.6zm-8.2-6.5l8.2 4.7 8.2-4.7V7.5L12 2.8 3.8 7.5v8.6z\"/>" },
     { name: "Tailwind 4", color: "text-teal-400", svg: "<path d=\"M12.001,4.8c-3.2,0-5.2,1.6-6,4.8c1.2-1.6,2.6-2.2,4.2-1.8c0.913,0.228,1.565,0.89,2.288,1.624C13.666,10.618,15.027,12,18.001,12 c3.2,0,5.2-1.6,6-4.8c-1.2,1.6-2.6,2.2-4.2,1.8c-0.913-0.228-1.565-0.89-2.288-1.624C16.337,6.182,14.976,4.8,12.001,4.8z M6.001,12c-3.2,0-5.2,1.6-6,4.8c1.2-1.6,2.6-2.2,4.2-1.8c0.913,0.228,1.565,0.89,2.288,1.624c1.177,1.194,2.538,2.576,5.512,2.576 c3.2,0,5.2-1.6,6-4.8c-1.2,1.6-2.6,2.2-4.2,1.8c-0.913-0.228-1.565-0.89-2.288-1.624C10.337,13.382,8.976,12,6.001,12z\"/>" },
   ],
-  gitalkConfig: { clientID: "", clientSecret: "", repo: "", owner: "", admin: [""] },
 };

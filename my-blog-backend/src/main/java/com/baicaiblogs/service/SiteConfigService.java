@@ -83,37 +83,14 @@ public class SiteConfigService {
         return getConfigAsMap("misc");
     }
 
-    /** Public view: remove tokens and private integration secrets. */
+    /** Public view of misc config. */
     @Transactional(readOnly = true)
     public Map<String, Object> getPublicMiscConfig() {
-        Map<String, Object> misc = new LinkedHashMap<>(getConfigAsMap("misc"));
-        misc.remove("picBedToken");
-        Object gitalk = misc.get("gitalkConfig");
-        if (gitalk instanceof Map<?, ?> source) {
-            Map<String, Object> safe = new LinkedHashMap<>();
-            for (String key : new String[]{"clientID", "repo", "owner", "admin"}) {
-                if (source.get(key) != null) safe.put(key, source.get(key));
-            }
-            misc.put("gitalkConfig", safe);
-        }
-        return misc;
+        return getConfigAsMap("misc");
     }
 
     public Map<String, Object> getAdminMiscConfig(boolean superAdmin) {
-        Map<String, Object> misc = new LinkedHashMap<>(getConfigAsMap("misc"));
-        if (!superAdmin) {
-            misc.remove("picBedToken");
-            Object gitalk = misc.get("gitalkConfig");
-            if (gitalk instanceof Map<?, ?> source) {
-                Map<String, Object> safe = new LinkedHashMap<>();
-                for (String key : new String[]{"clientID", "repo", "owner", "admin"}) {
-                    if (source.get(key) != null) safe.put(key, source.get(key));
-                }
-                misc.put("gitalkConfig", safe);
-            }
-            misc.put("__restricted", List.of("picBedToken", "gitalkConfig.clientSecret"));
-        }
-        return misc;
+        return getConfigAsMap("misc");
     }
 
     private Map<String, Object> getConfigAsMap(String key) {
@@ -273,26 +250,8 @@ public class SiteConfigService {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private String mergePrivateMisc(String configKey, String newValue) {
-        try {
-            Map<String, Object> current = getConfigAsMap(configKey);
-            Map<String, Object> incoming = objectMapper.readValue(newValue, Map.class);
-            if (current.get("picBedToken") != null && incoming.get("picBedToken") == null) {
-                incoming.put("picBedToken", current.get("picBedToken"));
-            }
-            Object currentGitalk = current.get("gitalkConfig");
-            Object incomingGitalk = incoming.get("gitalkConfig");
-            if (currentGitalk instanceof Map<?, ?> oldGitalk && incomingGitalk instanceof Map<?, ?> newGitalk) {
-                Map<String, Object> merged = new LinkedHashMap<>((Map<String, Object>) newGitalk);
-                merged.put("clientSecret", oldGitalk.get("clientSecret"));
-                incoming.put("gitalkConfig", merged);
-            }
-            incoming.remove("__restricted");
-            return objectMapper.writeValueAsString(incoming);
-        } catch (Exception e) {
-            return newValue;
-        }
+        return newValue;
     }
 
     @Transactional

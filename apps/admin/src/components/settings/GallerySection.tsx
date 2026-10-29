@@ -3,10 +3,7 @@ import { Image as ImageIcon, Save } from "lucide-react";
 
 export default function GallerySection({ formData, handleUpdate, pushToQueue }: any) {
   const save = () => {
-    pushToQueue("图床与照片墙配置", "galleryConfig", {
-      picBedName: formData.picBedName,
-      picBedUrl: formData.picBedUrl,
-      picBedToken: formData.picBedToken,
+    pushToQueue("照片墙配置", "galleryConfig", {
       photoWallImage: formData.photoWallImage,
     });
   };
@@ -21,10 +18,10 @@ export default function GallerySection({ formData, handleUpdate, pushToQueue }: 
       <div className="flex justify-between items-center mb-8 border-b border-white/30 dark:border-slate-700/50 pb-6">
         <div>
           <h2 className="text-2xl font-black text-slate-800 dark:text-white flex items-center gap-2">
-            <ImageIcon size={22} className="text-pink-400" /> 图床与照片墙
+            <ImageIcon size={22} className="text-pink-400" /> 照片墙
           </h2>
           <p className="text-slate-500 text-sm mt-2 font-bold">
-            配置外链图床信息与首页照片墙预览图
+            设置首页照片墙的预览封面。
           </p>
         </div>
         <button
@@ -36,42 +33,6 @@ export default function GallerySection({ formData, handleUpdate, pushToQueue }: 
       </div>
 
       <div className="space-y-6 max-w-2xl">
-        <div>
-          <label className="text-[10px] font-black uppercase text-slate-400 ml-1">图床名称</label>
-          <input
-            type="text"
-            value={formData.picBedName || ""}
-            onChange={(e) => handleUpdate("picBedName", e.target.value)}
-            className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm mt-1 outline-none focus:ring-2 focus:ring-indigo-500"
-            placeholder="例如：Lsky Pro"
-          />
-        </div>
-
-        <div>
-          <label className="text-[10px] font-black uppercase text-slate-400 ml-1">图床 API 地址</label>
-          <input
-            type="text"
-            value={formData.picBedUrl || ""}
-            onChange={(e) => handleUpdate("picBedUrl", e.target.value)}
-            className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm mt-1 outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
-            placeholder="https://pic.example.com"
-          />
-        </div>
-
-        <div>
-          <label className="text-[10px] font-black uppercase text-slate-400 ml-1">图床 Token</label>
-          <input
-            type="password"
-            value={formData.picBedToken || ""}
-            onChange={(e) => handleUpdate("picBedToken", e.target.value)}
-            className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm mt-1 outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
-            placeholder="留空表示不启用图床上传"
-          />
-          <p className="text-[10px] text-slate-400 mt-2 ml-1">
-            浏览器端不再直连第三方图床；编辑器暂时只支持外链插入，Token 仅作为配置留存。
-          </p>
-        </div>
-
         <div>
           <label className="text-[10px] font-black uppercase text-slate-400 ml-1">首页照片墙预览图</label>
           <input
