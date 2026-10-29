@@ -9,6 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { AlertTriangle, CheckCircle2, Info, XCircle } from "lucide-react";
 
 export type ToastKind = "success" | "warning" | "error" | "info";
 
@@ -27,10 +28,17 @@ const TOAST_DURATION = 3000;
 const MAX_VISIBLE = 3;
 
 const KIND_CLASS: Record<ToastKind, string> = {
-  success: "border-emerald-300/70 bg-emerald-600/95 text-white",
-  warning: "border-amber-300/70 bg-amber-600/95 text-white",
-  error: "border-rose-300/70 bg-rose-600/95 text-white",
-  info: "border-sky-300/70 bg-sky-600/95 text-white",
+  success: "border-emerald-200/80 bg-emerald-50/95 text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-950/90 dark:text-emerald-300",
+  warning: "border-amber-200/80 bg-amber-50/95 text-amber-700 dark:border-amber-400/20 dark:bg-amber-950/90 dark:text-amber-300",
+  error: "border-rose-200/80 bg-rose-50/95 text-rose-700 dark:border-rose-400/20 dark:bg-rose-950/90 dark:text-rose-300",
+  info: "border-sky-200/80 bg-sky-50/95 text-sky-700 dark:border-sky-400/20 dark:bg-sky-950/90 dark:text-sky-300",
+};
+
+const KIND_ICON = {
+  success: CheckCircle2,
+  warning: AlertTriangle,
+  error: XCircle,
+  info: Info,
 };
 
 export function ToastProvider({ children }: { children: ReactNode }) {
@@ -80,23 +88,27 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         aria-live="polite"
         aria-atomic="false"
       >
-        {items.map((item) => (
+        {items.map((item) => {
+          const Icon = KIND_ICON[item.kind];
+          return (
           <div
             key={item.id}
             role="status"
-            className={`toast-card pointer-events-auto flex max-w-[min(32rem,calc(100vw-2rem))] items-center gap-2 rounded-2xl border px-5 py-3 shadow-xl backdrop-blur-md ${KIND_CLASS[item.kind]}`}
+            className={`toast-card pointer-events-auto flex max-w-[min(30rem,calc(100vw-2rem))] items-center gap-2.5 rounded-xl border px-4 py-2.5 shadow-lg backdrop-blur-md ${KIND_CLASS[item.kind]}`}
           >
-            <span className="text-sm font-bold leading-6">{item.message}</span>
+            <Icon size={15} className="shrink-0" />
+            <span className="text-[13px] font-bold leading-5">{item.message}</span>
             <button
               type="button"
               onClick={() => remove(item.id)}
-              className="ml-1 rounded-full px-1 text-lg leading-none text-white/70 transition hover:text-white"
+              className="ml-1 rounded-full px-1 text-lg leading-none opacity-60 transition hover:opacity-100"
               aria-label="关闭提示"
             >
               ×
             </button>
           </div>
-        ))}
+          );
+        })}
       </div>
     </ToastContext.Provider>
   );

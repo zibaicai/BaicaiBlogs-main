@@ -6,7 +6,7 @@ import { AlertTriangle, CheckCircle2, Info, Loader2, XCircle } from "lucide-reac
 
 export type FeedbackKind = "success" | "error" | "warning" | "info";
 
-type DialogMode = "alert" | "confirm" | "prompt";
+type DialogMode = "confirm" | "prompt";
 
 type DialogState = {
   mode: DialogMode;
@@ -17,18 +17,14 @@ type DialogState = {
   cancelText: string;
   placeholder?: string;
   value: string;
-  busy: boolean;
   resolve: (value: any) => void;
 };
 
-type AlertOptions = {
+type ConfirmOptions = {
   kind?: FeedbackKind;
   title: string;
   description?: string;
   confirmText?: string;
-};
-
-type ConfirmOptions = AlertOptions & {
   cancelText?: string;
 };
 
@@ -37,7 +33,6 @@ type PromptOptions = ConfirmOptions & {
 };
 
 type FeedbackApi = {
-  alert: (options: AlertOptions) => Promise<void>;
   confirm: (options: ConfirmOptions) => Promise<boolean>;
   prompt: (options: PromptOptions) => Promise<string | null>;
 };
@@ -65,25 +60,23 @@ export function FeedbackProvider({ children }: { children: ReactNode }) {
   useEffect(() => setMounted(true), []);
 
   const open = useCallback(
-    (mode: DialogMode, options: AlertOptions & { cancelText?: string; placeholder?: string }) =>
+    (mode: DialogMode, options: ConfirmOptions & { placeholder?: string }) =>
       new Promise<any>((resolve) => {
         setDialog({
           mode,
           kind: options.kind || "info",
           title: options.title,
           description: options.description,
-          confirmText: options.confirmText || "知道了",
+          confirmText: options.confirmText || "确定",
           cancelText: options.cancelText || "取消",
           placeholder: options.placeholder,
           value: "",
-          busy: false,
           resolve,
         });
       }),
     []
   );
 
-  const alert = useCallback((options: AlertOptions) => open("alert", options), [open]);
   const confirm = useCallback((options: ConfirmOptions) => open("confirm", options), [open]);
   const prompt = useCallback((options: PromptOptions) => open("prompt", options), [open]);
 
@@ -97,8 +90,8 @@ export function FeedbackProvider({ children }: { children: ReactNode }) {
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") close(dialog.mode === "alert" ? undefined : dialog.mode === "confirm" ? false : null);
-      if (event.key === "Enter" && dialog.mode !== "prompt") close(dialog.mode === "confirm" ? true : undefined);
+      if (event.key === "Escape") close(dialog.mode === "confirm" ? false : null);
+      if (event.key === "Enter" && dialog.mode === "confirm") close(true);
     };
     window.addEventListener("keydown", onKey);
     return () => {
@@ -107,34 +100,38 @@ export function FeedbackProvider({ children }: { children: ReactNode }) {
     };
   }, [dialog]);
 
-  if (!mounted) return <FeedbackContext.Provider value={{ alert, confirm, prompt }}>{children}</FeedbackContext.Provider>;
+  if (!mounted) return <FeedbackContext.Provider value={{ confirm, prompt }}>{children}</FeedbackContext.Provider>;
 
   const Icon = dialog ? ICON[dialog.kind] : Info;
 
   return (
-    <FeedbackContext.Provider value={{ alert, confirm, prompt }}>
+    <FeedbackContext.Provider value={{ confirm, prompt }}>
       {children}
       {dialog && createPortal(
         <div
-          className="fixed inset-0 z-[120000] flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-[120000] flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-[2px]"
           role="presentation"
           onMouseDown={(event) => {
-            if (event.target === event.currentTarget && dialog.mode === "alert") close(undefined);
+            if (event.target === event.currentTarget) close(false);
           }}
         >
           <div
-            role={dialog.mode === "alert" ? "alertdialog" : "dialog"}
+            role="dialog"
             aria-modal="true"
             aria-labelledby="feedback-title"
-            className="w-full max-w-md rounded-3xl border border-white/50 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-slate-900"
+            className="w-full max-w-sm rounded-2xl border border-white/60 bg-white p-5 shadow-2xl dark:border-white/10 dark:bg-slate-900"
           >
-            <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${TONE[dialog.kind]}`}>
-              <Icon size={22} />
+            <div className="flex items-start gap-3">
+              <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${TONE[dialog.kind]}`}>
+                <Icon size={17} />
+              </div>
+              <div className="min-w-0">
+                <h2 id="feedback-title" className="text-sm font-black text-slate-900 dark:text-white">{dialog.title}</h2>
+                {dialog.description && (
+                  <p className="mt-1 whitespace-pre-wrap text-xs leading-5 text-slate-500 dark:text-slate-400">{dialog.description}</p>
+                )}
+              </div>
             </div>
-            <h2 id="feedback-title" className="mt-4 text-lg font-black text-slate-900 dark:text-white">{dialog.title}</h2>
-            {dialog.description && (
-              <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-500 dark:text-slate-400">{dialog.description}</p>
-            )}
 
             {dialog.mode === "prompt" && (
               <textarea
@@ -142,23 +139,19 @@ export function FeedbackProvider({ children }: { children: ReactNode }) {
                 onChange={(event) => setDialog((current) => current ? { ...current, value: event.target.value } : current)}
                 placeholder={dialog.placeholder}
                 rows={3}
-                className="mt-4 w-full rounded-2xl border border-slate-200 bg-white/80 p-3 text-sm text-slate-800 outline-none focus:border-indigo-400 dark:border-white/10 dark:bg-slate-950/40 dark:text-slate-100"
+                className="mt-3 w-full rounded-xl border border-slate-200 bg-white/80 p-2.5 text-xs text-slate-800 outline-none focus:border-indigo-400 dark:border-white/10 dark:bg-slate-950/40 dark:text-slate-100"
               />
             )}
 
-            <div className="mt-6 flex justify-end gap-2">
-              {dialog.mode !== "alert" && (
-                <button type="button" onClick={() => close(dialog.mode === "confirm" ? false : null)} className="hv-button">
-                  {dialog.cancelText}
-                </button>
-              )}
+            <div className="mt-4 flex justify-end gap-2">
+              <button type="button" onClick={() => close(dialog.mode === "confirm" ? false : null)} className="hv-button">
+                {dialog.cancelText}
+              </button>
               <button
                 type="button"
-                disabled={dialog.busy}
-                onClick={() => close(dialog.mode === "confirm" ? true : dialog.mode === "prompt" ? dialog.value : undefined)}
-                className="hv-button hv-button-primary inline-flex items-center gap-2 disabled:opacity-50"
+                onClick={() => close(dialog.mode === "confirm" ? true : dialog.value)}
+                className="hv-button hv-button-primary"
               >
-                {dialog.busy && <Loader2 size={14} className="animate-spin" />}
                 {dialog.confirmText}
               </button>
             </div>

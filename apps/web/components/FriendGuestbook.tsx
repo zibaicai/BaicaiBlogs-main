@@ -11,7 +11,7 @@ import { useToast } from "./ToastProvider";
 
 export default function FriendGuestbook({ initialMessages }: { initialMessages: FriendMessage[] }) {
   const { user } = useAuth();
-  const { alert, confirm } = useFeedback();
+  const { confirm } = useFeedback();
   const { showToast } = useToast();
   const [messages, setMessages] = useState(initialMessages);
   const [content, setContent] = useState("");
@@ -97,17 +97,17 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
       setMessages((current) => current.filter((message) => message.id !== id));
       showToast("留言已删除", "success");
     } catch (error) {
-      await alert({ kind: "error", title: "删除失败", description: error instanceof Error ? error.message : "请稍后重试" });
+      showToast(error instanceof Error ? error.message : "删除失败", "error");
     }
   };
 
   const submit = async () => {
     if (!content.trim()) {
-      await alert({ kind: "warning", title: "还没有写留言", description: "请先写点什么。" });
+      showToast("请先写点什么", "warning");
       return;
     }
     if (turnstileConfig?.enabled && !turnstileToken) {
-      await alert({ kind: "warning", title: "请完成人机验证", description: "验证通过后就可以发布留言。" });
+      showToast("请完成人机验证", "warning");
       return;
     }
     setBusy(true);
@@ -138,7 +138,7 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
         setTurnstileToken("");
         if (widgetRef.current && (window as any).turnstile) (window as any).turnstile.reset(widgetRef.current);
       }
-      await alert({ kind: "error", title: "留言未发布", description: text, confirmText: "知道了" });
+      showToast(text, "error");
     } finally {
       setBusy(false);
     }
