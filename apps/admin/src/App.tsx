@@ -50,6 +50,7 @@ import MusicAdminPage from "./pages/MusicAdminPage";
 import SuggestionsAdminPage from "./pages/SuggestionsAdminPage";
 import ArchivesPage from "./pages/ArchivesPage";
 import FriendApplicationsPage from "./pages/FriendApplicationsPage";
+import FriendMessagesPage from "./pages/FriendMessagesPage";
 
 type Any = Record<string, any>;
 
@@ -153,6 +154,7 @@ const NAV_ITEMS = [
   { to: "/posts", label: "笔记", icon: BookOpen },
   { to: "/archives", label: "内部存档", icon: Archive },
   { to: "/friend-applications", label: "友链申请", icon: Link2 },
+  { to: "/friend-messages", label: "友链留言", icon: MessageSquareText },
   { to: "/articles", label: "文章", icon: PenLine },
   { to: "/projects", label: "项目", icon: FolderKanban },
   { to: "/gallery", label: "影像", icon: Images },
@@ -832,6 +834,7 @@ export default function App() {
             <Route path="/posts" element={<RequireAuth><Shell><Posts /></Shell></RequireAuth>} />
             <Route path="/archives" element={<RequireAuth><Shell><ArchivesPage /></Shell></RequireAuth>} />
             <Route path="/friend-applications" element={<RequireAuth><Shell><FriendApplicationsPage /></Shell></RequireAuth>} />
+            <Route path="/friend-messages" element={<RequireAuth><Shell><FriendMessagesPage /></Shell></RequireAuth>} />
             <Route path="/articles" element={<RequireAuth><Shell><ArticlesAdminPage /></Shell></RequireAuth>} />
             <Route path="/projects" element={<RequireAuth><Shell><Projects /></Shell></RequireAuth>} />
             <Route path="/timeline" element={<RequireAuth><Shell><TimelinePreview /></Shell></RequireAuth>} />

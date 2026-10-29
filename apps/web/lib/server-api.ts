@@ -1,7 +1,7 @@
 // 服务端数据读取：直接访问内网后端，避免浏览器跨域；带 60s ISR 缓存。
 import { cookies } from "next/headers";
 import { isScopedPath } from "./content-scope";
-import type { Album, Category, Friend, Moment, Post, Project, RoomProfile } from "./api";
+import type { Album, Category, Friend, FriendMessage, Moment, Post, Project, RoomProfile } from "./api";
 import {
   DEFAULT_AI_CONFIG,
   DEFAULT_BACKGROUND,
@@ -99,6 +99,11 @@ export async function getAlbums(): Promise<Album[]> {
 
 export async function getFriends(): Promise<Friend[]> {
   const data = await getJson<Friend[]>("/api/public/friends");
+  return data || [];
+}
+
+export async function getFriendMessages(): Promise<FriendMessage[]> {
+  const data = await getJson<FriendMessage[]>("/api/public/friend-messages", 0);
   return data || [];
 }
 

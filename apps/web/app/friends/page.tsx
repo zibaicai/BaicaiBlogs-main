@@ -3,7 +3,8 @@ import PageTransition from "../../components/PageTransition";
 import ArchiveItemCard from "../../components/ArchiveItemCard";
 import DirectoryExplorer from "../../components/DirectoryExplorer";
 import FriendApplySection from "../../components/FriendApplySection";
-import { getFriends, getPublicSiteConfig } from "../../lib/server-api";
+import FriendGuestbook from "../../components/FriendGuestbook";
+import { getFriendMessages, getFriends, getPublicSiteConfig } from "../../lib/server-api";
 import { formatDay } from "../../lib/api";
 import { DEFAULT_SITE_INFO } from "../../lib/site-config";
 
@@ -19,7 +20,7 @@ function hostOf(url: string) {
 }
 
 export default async function FriendsPage() {
-  const [friends, { siteInfo }] = await Promise.all([getFriends(), getPublicSiteConfig()]);
+  const [friends, { siteInfo }, messages] = await Promise.all([getFriends(), getPublicSiteConfig(), getFriendMessages()]);
 
   const items = friends.map((friend) => ({
     key: String(friend.friendId || friend.id),
@@ -74,6 +75,7 @@ export default async function FriendsPage() {
             empty={empty}
           />
           <FriendApplySection siteInfo={siteInfo} />
+          <FriendGuestbook initialMessages={messages} />
         </main>
       </PageTransition>
     </div>

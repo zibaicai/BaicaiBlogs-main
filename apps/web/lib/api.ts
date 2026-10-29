@@ -67,6 +67,15 @@ export interface RoomMoment {
   date: string;
 }
 
+export interface FriendMessage {
+  id: number;
+  name: string;
+  website?: string;
+  avatar?: string;
+  content: string;
+  createdAt?: string;
+}
+
 export interface RoomProfile {
   id: number;
   username: string;
