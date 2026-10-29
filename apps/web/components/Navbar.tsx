@@ -37,8 +37,7 @@ export default function Navbar() {
   const { siteInfo } = useSiteConfigContext();
   const { user } = useAuth();
   const communityName = siteInfo?.navAfter || siteInfo?.title || "云端小屋";
-  const isHome = pathname === "/";
-  const leftName = roomName || (isHome ? myRoomName || siteInfo?.authorName || "YeLuo" : null);
+  const leftName = roomName || myRoomName || siteInfo?.authorName || "YeLuo";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -72,7 +71,7 @@ export default function Navbar() {
       };
     }
     setRoomName(null);
-    if (pathname === "/" && user) {
+    if (user) {
       let cancelled = false;
       apiClient
         .getRoom(user.username)
