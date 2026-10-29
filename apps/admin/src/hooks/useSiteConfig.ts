@@ -22,8 +22,6 @@ export interface SiteInfo {
   faviconUrl: string;
   authorName: string;
   bio: string;
-  navTitle: string;
-  navSuffix: string;
   navAfter: string;
   avatarUrl: string;
   buildDate: string;
@@ -73,9 +71,7 @@ const DEFAULT_SITE_INFO: SiteInfo = {
   title: "YeLuo / 云端小屋",
   faviconUrl: "https://www.zibaicai.cn/favicon.ico",
   authorName: "YeLuo",
-  bio: "写代码，也拍照片。把项目、音乐和日常里值得留下的片段，收进同一片海。",
-  navTitle: "YeLuo",
-  navSuffix: "/",
+  bio: "收集生活的砂砾，也收藏那些不想丢掉的东西。",
   navAfter: "云端小屋",
   avatarUrl: "https://www.zibaicai.cn/avatar.jpg",
   buildDate: "2026-03-23T00:00:00",

@@ -1,7 +1,7 @@
 // 服务端数据读取：直接访问内网后端，避免浏览器跨域；带 60s ISR 缓存。
 import { cookies } from "next/headers";
 import { isScopedPath } from "./content-scope";
-import type { Album, Category, Friend, Moment, Post, Project } from "./api";
+import type { Album, Category, Friend, Moment, Post, Project, RoomProfile } from "./api";
 import {
   DEFAULT_AI_CONFIG,
   DEFAULT_BACKGROUND,
@@ -59,6 +59,15 @@ export async function getPosts(): Promise<Post[]> {
 
 export async function getPost(slug: string): Promise<Post | null> {
   return getJson<Post>(`/api/public/posts/${encodeURIComponent(slug)}`, 30);
+}
+
+export async function getRooms(): Promise<RoomProfile[]> {
+  const data = await getJson<RoomProfile[]>("/api/public/rooms", 0);
+  return data || [];
+}
+
+export async function getRoom(username: string): Promise<RoomProfile | null> {
+  return getJson<RoomProfile>(`/api/public/rooms/${encodeURIComponent(username)}`, 0);
 }
 
 export async function getProjects(): Promise<Project[]> {

@@ -129,24 +129,20 @@ export default function ProfileSection({ formData, handleUpdate, pushToQueue }: 
           <div className="space-y-6">
             <div className="rounded-2xl border border-slate-200/70 bg-white/35 p-4 dark:border-slate-700/50 dark:bg-slate-800/30">
               <h3 className="mb-4 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
-                导航栏文字
+                社区名称
               </h3>
-              <div className="grid gap-4 sm:grid-cols-3">
-                {[
-                  ["navTitle", "前缀"],
-                  ["navSuffix", "连接符"],
-                  ["navAfter", "尾部"],
-                ].map(([field, label]) => (
-                  <SettingsField key={field} label={label}>
-                    <input
-                      type="text"
-                      value={data[field] || ""}
-                      onChange={(event) => handleUpdate(field, event.target.value)}
-                      className={inputClass}
-                    />
-                  </SettingsField>
-                ))}
-              </div>
+              <SettingsField label="社区名称">
+                <input
+                  type="text"
+                  value={data.navAfter || ""}
+                  onChange={(event) => handleUpdate("navAfter", event.target.value)}
+                  className={inputClass}
+                  placeholder="例如：云端小屋"
+                />
+              </SettingsField>
+              <p className="mt-2 text-[10px] text-slate-400">
+                导航中的左侧小屋名来自用户自己的小屋设置，这里只设置右侧社区名。
+              </p>
             </div>
 
             <div className="grid gap-5 md:grid-cols-2">

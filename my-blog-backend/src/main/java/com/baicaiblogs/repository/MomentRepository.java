@@ -18,4 +18,8 @@ public interface MomentRepository extends JpaRepository<Moment, Long> {
     List<Moment> findByUserIdOrderByDateDesc(Long userId);
     List<Moment> findByStatusOrderByDateDesc(String status);
     List<Moment> findByVisibilityOrderByDateDesc(String visibility);
+
+    @org.springframework.data.jpa.repository.Query(
+            "SELECT m FROM Moment m WHERE m.userId = :userId AND m.status = 'PUBLISHED' AND m.visibility = 'PUBLIC' ORDER BY m.date DESC")
+    List<Moment> findPublishedPublicByUserId(@org.springframework.data.repository.query.Param("userId") Long userId);
 }

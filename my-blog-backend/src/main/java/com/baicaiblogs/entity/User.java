@@ -37,6 +37,12 @@ public class User {
     @Column(length = 500)
     private String avatar;
 
+    @Column(name = "room_name", length = 80)
+    private String roomName;
+
+    @Column(name = "room_bio", length = 500)
+    private String roomBio;
+
     /** ACTIVE / BANNED */
     @Column(length = 20)
     @Builder.Default

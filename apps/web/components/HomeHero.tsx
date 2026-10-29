@@ -3,15 +3,21 @@
 import Link from "next/link";
 import { ArrowUpRight, Code2, Radio } from "lucide-react";
 import { useSiteConfigContext } from "../context/SiteConfigProvider";
+import type { RoomProfile } from "../lib/api";
 
 type Props = {
   postCount: number;
   momentCount: number;
   photoCount: number;
+  profile?: RoomProfile;
 };
 
-export default function HomeHero({ postCount, momentCount, photoCount }: Props) {
+export default function HomeHero({ postCount, momentCount, photoCount, profile }: Props) {
   const { siteInfo } = useSiteConfigContext();
+  const displayName = profile?.nickname || siteInfo?.authorName || "YeLuo";
+  const avatar = profile ? profile.avatar : siteInfo?.avatarUrl;
+  const bio = profile?.roomBio || "收集生活的砂砾，也收藏那些不想丢掉的东西。";
+  const aboutHref = profile ? `/u/${encodeURIComponent(profile.username)}/about` : "/about";
 
   const socials = [
     { label: "GitHub", href: siteInfo?.social?.github, icon: Code2 },
@@ -27,31 +33,29 @@ export default function HomeHero({ postCount, momentCount, photoCount }: Props) 
 
       <div className="hv-author-row">
         <div className="hv-avatar">
-          {siteInfo?.avatarUrl ? (
-            <img src={siteInfo.avatarUrl} alt={siteInfo.authorName || "avatar"} />
+          {avatar ? (
+            <img src={avatar} alt={displayName} />
           ) : (
-            <span>{(siteInfo?.authorName || "Y").slice(0, 1)}</span>
+            <span>{displayName.slice(0, 1)}</span>
           )}
         </div>
         <div className="hv-author-id">
-          <span className="hv-profile-label">MAKER / OWNER</span>
-          <strong>{siteInfo?.authorName || "YeLuo"}</strong>
+          <span className="hv-profile-label">{profile ? "ROOM / OWNER" : "MAKER / OWNER"}</span>
+          <strong>{displayName}</strong>
         </div>
         <span className="hv-online"><Radio size={10} /> PRESENT</span>
       </div>
 
       <p className="hv-intro-copy">
-        把代码、照片、音乐，和一些未完成的想法，
-        <br className="hidden sm:block" />
-        收进同一片海。
+        {bio}
       </p>
 
       <div className="hv-hero-actions">
         <Link href="/posts" className="hv-button hv-button-primary">
           翻阅档案 <ArrowUpRight size={15} />
         </Link>
-        <Link href="/about" className="hv-button">
-          认识我
+        <Link href={aboutHref} className="hv-button">
+          关于我
         </Link>
       </div>
 
@@ -79,7 +83,7 @@ export default function HomeHero({ postCount, momentCount, photoCount }: Props) 
               </a>
             ))
           ) : (
-            <Link href="/about" aria-label="关于我">
+            <Link href={aboutHref} aria-label="关于我">
               <ArrowUpRight size={14} />
             </Link>
           )}

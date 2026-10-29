@@ -48,6 +48,41 @@ export interface Post {
   visibility?: string;
 }
 
+export interface RoomPost {
+  id: number;
+  slug: string;
+  title: string;
+  description?: string;
+  cover?: string;
+  date: string;
+  views?: number;
+}
+
+export interface RoomMoment {
+  id: number;
+  slug: string;
+  content: string;
+  htmlContent?: string;
+  images?: string;
+  date: string;
+}
+
+export interface RoomProfile {
+  id: number;
+  username: string;
+  nickname: string;
+  roomName: string;
+  roomBio: string;
+  avatar: string;
+  joinedAt?: string;
+  postCount: number;
+  momentCount: number;
+  albumCount: number;
+  photoCount: number;
+  posts?: RoomPost[];
+  moments?: RoomMoment[];
+}
+
 export interface Project {
   id: number;
   projectId: string;
@@ -306,6 +341,25 @@ async function publicRequest<T>(path: string): Promise<ApiResponse<T>> {
   return json;
 }
 
+async function userRequest<T>(path: string, init: RequestInit = {}): Promise<ApiResponse<T>> {
+  const res = await fetch(`/api${path}`, {
+    credentials: "include",
+    headers: { "Content-Type": "application/json", ...(init.headers as Record<string, string>) },
+    ...init,
+  });
+  const json = (await res.json().catch(() => null)) as ApiResponse<T> | null;
+  if (!res.ok || !json?.success) {
+    throw new Error(json?.message || `请求失败 (${res.status})`);
+  }
+  return json;
+}
+
+export const roomApi = {
+  mine: () => userRequest<RoomProfile>("/user/room"),
+  update: (payload: { nickname?: string; roomName?: string; roomBio?: string; avatar?: string }) =>
+    userRequest<RoomProfile>("/user/room", { method: "PUT", body: JSON.stringify(payload) }),
+};
+
 /**
  * 兼容旧组件的客户端。C 端只保留公开读取能力；
  * 管理端写操作一律在 apps/admin 中完成。
@@ -331,6 +385,14 @@ class PublicApiClient {
 
   getPostBySlug(slug: string) {
     return publicRequest<Post>(`/public/posts/${encodeURIComponent(slug)}`);
+  }
+
+  getRooms() {
+    return publicRequest<RoomProfile[]>("/public/rooms");
+  }
+
+  getRoom(username: string) {
+    return publicRequest<RoomProfile>(`/public/rooms/${encodeURIComponent(username)}`);
   }
 
   getAllProjects() {

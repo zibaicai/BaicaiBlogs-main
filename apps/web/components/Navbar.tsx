@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { useSiteConfigContext } from "../context/SiteConfigProvider";
+import { apiClient } from "../lib/api";
 import UserMenu from "./UserMenu";
 import NavSearch from "./NavSearch";
 
@@ -28,8 +29,10 @@ export default function Navbar() {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [roomName, setRoomName] = useState<string | null>(null);
   const pathname = usePathname();
   const { siteInfo } = useSiteConfigContext();
+  const communityName = siteInfo?.navAfter || siteInfo?.title || "云端小屋";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -44,6 +47,26 @@ export default function Navbar() {
   useEffect(() => {
     setMobileOpen(false);
     setSearchOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    const match = pathname.match(/^\/u\/([^/]+)/);
+    if (!match) {
+      setRoomName(null);
+      return;
+    }
+    let cancelled = false;
+    apiClient
+      .getRoom(decodeURIComponent(match[1]))
+      .then((response) => {
+        if (!cancelled) setRoomName(response.data.roomName);
+      })
+      .catch(() => {
+        if (!cancelled) setRoomName(null);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [pathname]);
 
   const isActive = (href: string) =>
@@ -61,9 +84,15 @@ export default function Navbar() {
             href="/"
             className="text-xl font-black text-slate-800 dark:text-white tracking-tighter whitespace-nowrap"
           >
-            {siteInfo?.navTitle}
-            <span className="text-indigo-500 mx-1">{siteInfo?.navSuffix || "/"}</span>
-            {siteInfo?.navAfter}
+            {roomName ? (
+              <>
+                {roomName}
+                <span className="text-indigo-500 mx-1">/</span>
+                {communityName}
+              </>
+            ) : (
+              communityName
+            )}
           </Link>
 
           <div className="nav-cluster hidden lg:flex items-center gap-1">

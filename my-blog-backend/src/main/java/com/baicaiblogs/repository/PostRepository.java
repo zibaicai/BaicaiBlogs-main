@@ -24,6 +24,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("SELECT p FROM Post p WHERE p.userId = :userId AND p.status = 'PUBLISHED' ORDER BY p.date DESC")
     List<Post> findPublishedByUserId(@Param("userId") Long userId);
 
+    @Query("SELECT p FROM Post p WHERE p.userId = :userId AND p.status = 'PUBLISHED' AND p.visibility = 'public' ORDER BY p.date DESC")
+    List<Post> findPublishedPublicByUserId(@Param("userId") Long userId);
+
     /** 查询某用户的全部文章（不限状态），按发布时间倒序 */
     @Query("SELECT p FROM Post p WHERE p.userId = :userId ORDER BY p.date DESC")
     List<Post> findAllByUserId(@Param("userId") Long userId);
