@@ -25,7 +25,7 @@ declare global {
   }
 }
 
-type Application = { id: number; name: string; url: string; status: string; bound?: boolean };
+type Application = { id: number; name: string; url: string; avatar?: string; description?: string; contact?: string; status: string; bound?: boolean };
 
 export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo }) {
   const { user } = useAuth();
@@ -40,6 +40,7 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [application, setApplication] = useState<Application | null>(null);
+  const [editingApplication, setEditingApplication] = useState(false);
   const [turnstileConfig, setTurnstileConfig] = useState<{ enabled: boolean; siteKey: string } | null>(null);
   const [turnstileToken, setTurnstileToken] = useState("");
   const [turnstileReady, setTurnstileReady] = useState(false);
@@ -131,24 +132,27 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
       setMessage("请先确认信息无误");
       return;
     }
-    if (turnstileConfig?.enabled && !turnstileToken) {
+    if (turnstileConfig?.enabled && !turnstileToken && !editingApplication) {
       setMessage("请完成人机验证");
       return;
     }
     setBusy(true);
     setMessage("");
     try {
-      const res = await fetch("/api/public/friend-applications", {
-        method: "POST",
+      const payload = { name, url, avatar, description, contact, hasBacklink: String(hasBacklink), turnstileToken };
+      const res = await fetch(editingApplication ? "/api/user/friend-application" : "/api/public/friend-applications", {
+        method: editingApplication ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, url, avatar, description, contact, hasBacklink: String(hasBacklink), turnstileToken }),
+        body: JSON.stringify(payload),
       });
       const json = await res.json();
       if (!res.ok || !json?.success) throw new Error(json?.message || "提交失败");
-      setMessage("申请已提交，管理员核验后会展示");
+      setMessage(editingApplication ? "资料已更新" : "申请已提交，管理员核验后会展示");
       if (json.data?.bound) setApplication(json.data);
+      if (editingApplication) setApplication(json.data);
       setOpen(false);
+      setEditingApplication(false);
       setName(""); setUrl(""); setAvatar(""); setDescription(""); setContact(""); setHasBacklink(false); setAgreed(false);
       if (widgetRef.current && window.turnstile) window.turnstile.reset(widgetRef.current);
       setTurnstileToken("");
@@ -157,6 +161,17 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
     } finally {
       setBusy(false);
     }
+  };
+
+  const startEdit = () => {
+    if (!application) return;
+    setName(application.name);
+    setUrl(application.url);
+    setAvatar(application.avatar || "");
+    setDescription(application.description || "");
+    setContact(application.contact || "");
+    setEditingApplication(true);
+    setOpen(true);
   };
 
   const siteName = siteInfo.navAfter || siteInfo.title || "云端小屋";
@@ -196,9 +211,12 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
       {user && (
         <div className="mt-5 rounded-2xl border border-white/40 bg-white/50 p-4 dark:border-white/10 dark:bg-slate-900/40">
           {application ? (
-            <p className="text-xs text-slate-600 dark:text-slate-300">
-              你的友链申请：<strong>{application.name}</strong> · {application.status === "APPROVED" ? "已通过" : application.status === "REJECTED" ? "未通过" : "审核中"}
-            </p>
+            <>
+              <p className="text-xs text-slate-600 dark:text-slate-300">
+                你的友链申请：<strong>{application.name}</strong> · {application.status === "APPROVED" ? "已通过" : application.status === "REJECTED" ? "未通过" : "审核中"}
+              </p>
+              <button type="button" onClick={startEdit} className="mt-2 text-[10px] font-bold text-indigo-500 hover:underline">编辑资料</button>
+            </>
           ) : (
             <div className="flex flex-wrap items-center gap-3">
               <span className="text-xs text-slate-500">之前提交过友链？登录后可绑定到当前账户。</span>
@@ -213,12 +231,12 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
       {open && (
         <div className="mt-6 rounded-2xl border border-indigo-400/20 bg-slate-950/30 p-4 md:p-5">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-sm font-black text-slate-800 dark:text-white">申请友链</h3>
+            <h3 className="text-sm font-black text-slate-800 dark:text-white">{editingApplication ? "编辑友链资料" : "申请友链"}</h3>
             <button type="button" onClick={() => setOpen(false)} className="rounded-lg p-1 text-slate-400 hover:bg-white/10"><X size={16} /></button>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="text-[10px] font-bold text-slate-400">称谓<Input value={name} onChange={(e) => setName(e.target.value)} className="mt-1" placeholder="你的名字或站点名" /></label>
-            <label className="text-[10px] font-bold text-slate-400">网站地址<Input value={url} onChange={(e) => setUrl(e.target.value)} className="mt-1" placeholder="https://..." /></label>
+            <label className="text-[10px] font-bold text-slate-400">网站地址<Input value={url} onChange={(e) => setUrl(e.target.value)} disabled={application?.status === "APPROVED"} className="mt-1" placeholder="https://..." /></label>
             <label className="text-[10px] font-bold text-slate-400">头像地址<Input value={avatar} onChange={(e) => setAvatar(e.target.value)} className="mt-1" placeholder="https://..." /></label>
             <label className="text-[10px] font-bold text-slate-400">联系方式（仅管理员可见）<Input value={contact} onChange={(e) => setContact(e.target.value)} className="mt-1" placeholder="邮箱 / QQ / 其他" /></label>
             <label className="text-[10px] font-bold text-slate-400 sm:col-span-2">简介<Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="mt-1" placeholder="一句话介绍你的小屋" /></label>

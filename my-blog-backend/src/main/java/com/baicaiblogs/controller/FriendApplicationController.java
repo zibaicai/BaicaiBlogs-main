@@ -94,6 +94,15 @@ public class FriendApplicationController {
         }
     }
 
+    @PutMapping("/user/friend-application")
+    public ApiResponse<Map<String, Object>> updateMine(@RequestBody Map<String, String> body) {
+        try {
+            return ApiResponse.success("已保存", service.updateMine(currentUser(), body));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
     private User currentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !(authentication.getPrincipal() instanceof User user)) {

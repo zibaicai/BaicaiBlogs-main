@@ -127,6 +127,30 @@ public class FriendApplicationService {
     }
 
     @Transactional
+    public Map<String, Object> updateMine(User user, Map<String, String> body) {
+        FriendApplication application = applicationRepository
+                .findFirstByBoundUserIdOrderByCreatedAtDesc(user.getId())
+                .orElseThrow(() -> new RuntimeException("还没有绑定友链申请"));
+        if (body.get("name") != null) application.setName(required(body.get("name"), "称谓", 100));
+        if (body.get("avatar") != null) application.setAvatar(optionalUrl(body.get("avatar"), 500));
+        if (body.get("description") != null) application.setDescription(optional(body.get("description"), 1000));
+        if (body.get("contact") != null) application.setContact(optional(body.get("contact"), 500));
+        if ("PENDING".equals(application.getStatus()) && body.get("url") != null) {
+            application.setUrl(normalizeUrl(required(body.get("url"), "网站地址", 500)));
+        }
+        applicationRepository.save(application);
+        if ("APPROVED".equals(application.getStatus()) && application.getFriendId() != null) {
+            friendRepository.findByFriendId(application.getFriendId()).ifPresent(friend -> {
+                friend.setName(application.getName());
+                friend.setAvatar(application.getAvatar());
+                friend.setDescription(application.getDescription());
+                friendRepository.save(friend);
+            });
+        }
+        return userMap(application);
+    }
+
+    @Transactional
     public Map<String, Object> bind(User user, String rawToken) {
         if (rawToken == null || rawToken.isBlank()) {
             throw new RuntimeException("绑定码为空");
@@ -156,6 +180,7 @@ public class FriendApplicationService {
         out.put("url", application.getUrl());
         out.put("avatar", application.getAvatar());
         out.put("description", application.getDescription());
+        out.put("contact", application.getContact());
         out.put("status", application.getStatus());
         out.put("friendId", application.getFriendId());
         out.put("bound", application.getBoundUserId() != null);
