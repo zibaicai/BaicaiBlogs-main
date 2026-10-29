@@ -117,9 +117,9 @@ export default function FriendMessagesPage() {
                   )}
                 </div>
                 <span className={`rounded-full px-2 py-1 text-[9px] font-bold ${
-                  item.status === "APPROVED" ? "bg-emerald-500/10 text-emerald-300" : item.status === "REJECTED" ? "bg-red-500/10 text-red-300" : "bg-amber-500/10 text-amber-300"
+                  item.status === "VISIBLE" ? "bg-emerald-500/10 text-emerald-300" : "bg-red-500/10 text-red-300"
                 }`}>
-                  {item.status === "APPROVED" ? "已通过" : item.status === "REJECTED" ? "已拒绝" : "待审核"}
+                  {item.status === "VISIBLE" ? "显示中" : "已隐藏"}
                 </span>
               </div>
               <p className="mt-3 whitespace-pre-wrap text-xs leading-6 text-slate-300">{item.content}</p>
@@ -128,9 +128,9 @@ export default function FriendMessagesPage() {
                 <p>时间：{item.createdAt?.slice(0, 19).replace("T", " ") || "未知"}</p>
               </div>
               <div className="mt-4 flex flex-wrap gap-2">
-                {item.status === "PENDING" && <Button size="sm" variant="success" onClick={() => void act(item.id, "approve")}>通过</Button>}
-                {item.status === "PENDING" && <Button size="sm" variant="ghost" onClick={() => void act(item.id, "reject")}>拒绝</Button>}
-                {item.website && !item.friendId && <Button size="sm" onClick={() => void act(item.id, "promote")}>收录为友链</Button>}
+                {item.status !== "VISIBLE" && <Button size="sm" variant="success" onClick={() => void act(item.id, "approve")}>显示</Button>}
+                {item.status === "VISIBLE" && <Button size="sm" variant="ghost" onClick={() => void act(item.id, "reject")}>隐藏</Button>}
+                {!item.friendId && <Button size="sm" onClick={() => void act(item.id, "promote")}>收录为友链</Button>}
                 <Button size="sm" variant="ghost" onClick={() => void remove(item.id)}><Trash2 size={12} /> 删除</Button>
               </div>
             </article>

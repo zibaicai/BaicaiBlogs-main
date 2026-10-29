@@ -14,6 +14,7 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
   const [turnstileConfig, setTurnstileConfig] = useState<{ enabled: boolean; siteKey: string } | null>(null);
   const [turnstileToken, setTurnstileToken] = useState("");
   const [turnstileReady, setTurnstileReady] = useState(false);
+  const [turnstilePassed, setTurnstilePassed] = useState(false);
   const turnstileRef = useRef<HTMLDivElement>(null);
   const widgetRef = useRef<string | null>(null);
 
@@ -43,20 +44,33 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
   }, [turnstileConfig]);
 
   useEffect(() => {
-    if (!turnstileReady || !turnstileConfig?.siteKey || !turnstileRef.current) return;
+    if (!turnstileReady || !turnstileConfig?.siteKey || turnstilePassed || !turnstileRef.current) return;
     const turnstile = (window as any).turnstile;
     const widget = turnstile?.render(turnstileRef.current, {
       sitekey: turnstileConfig.siteKey,
-      callback: setTurnstileToken,
-      "expired-callback": () => setTurnstileToken(""),
-      "error-callback": () => setTurnstileToken(""),
+      callback: (token: string) => {
+        setTurnstileToken(token);
+        setTurnstilePassed(true);
+      },
+      "expired-callback": () => {
+        setTurnstileToken("");
+        setTurnstilePassed(false);
+      },
+      "error-callback": () => {
+        setTurnstileToken("");
+        setTurnstilePassed(false);
+      },
     });
     widgetRef.current = widget || null;
     return () => {
       if (widgetRef.current && turnstile) turnstile.remove(widgetRef.current);
       widgetRef.current = null;
     };
-  }, [turnstileReady, turnstileConfig]);
+  }, [turnstileReady, turnstileConfig, turnstilePassed]);
+
+  useEffect(() => {
+    if (turnstilePassed && content.length > 0) setTurnstilePassed(false);
+  }, [content, turnstilePassed]);
 
   const submit = async () => {
     if (!content.trim()) {
@@ -78,12 +92,16 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
       });
       const json = await res.json();
       if (!res.ok || !json?.success) throw new Error(json?.message || "提交失败");
-      setNotice("留言已提交，审核后展示");
+      if (json.data) setMessages((current) => [json.data, ...current]);
+      setNotice("留言已发布");
       setContent("");
       setTurnstileToken("");
+      setTurnstilePassed(true);
       if (widgetRef.current && (window as any).turnstile) (window as any).turnstile.reset(widgetRef.current);
     } catch (error) {
       setNotice(error instanceof Error ? error.message : "提交失败");
+      setTurnstilePassed(false);
+      setTurnstileToken("");
     } finally {
       setBusy(false);
     }
@@ -131,7 +149,8 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
 
       <div className="mt-6 rounded-2xl border border-indigo-400/20 bg-slate-950/20 p-4">
         <Textarea value={content} onChange={(e) => setContent(e.target.value)} rows={4} className="mt-1" placeholder="说点什么，或者留下你的网站。" />
-        {turnstileConfig?.enabled && <div ref={turnstileRef} className="mt-3 min-h-[65px]" />}
+        {turnstileConfig?.enabled && !turnstilePassed && <div ref={turnstileRef} className="mt-3 min-h-[65px]" />}
+        {turnstileConfig?.enabled && turnstilePassed && <p className="mt-2 text-[10px] font-bold text-emerald-500">人机验证已通过</p>}
         {notice && <p className="mt-2 text-[10px] font-bold text-indigo-500">{notice}</p>}
         <div className="mt-3 flex justify-end">
           <button type="button" onClick={() => void submit()} disabled={busy} className="hv-button hv-button-primary inline-flex items-center gap-2 disabled:opacity-50">

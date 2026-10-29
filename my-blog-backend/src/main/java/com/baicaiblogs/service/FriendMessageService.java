@@ -49,19 +49,16 @@ public class FriendMessageService {
                 .avatar(avatar)
                 .content(content)
                 .contact(contact)
-                .status("PENDING")
+                .status("VISIBLE")
                 .ipHash(ipHash)
                 .userAgent(optional(userAgent, 500))
                 .build());
-        Map<String, Object> out = new LinkedHashMap<>();
-        out.put("id", message.getId());
-        out.put("status", message.getStatus());
-        return out;
+        return publicMap(message);
     }
 
     @Transactional(readOnly = true)
     public List<Map<String, Object>> publicMessages() {
-        return messageRepository.findByStatusOrderByCreatedAtDesc("APPROVED").stream()
+        return messageRepository.findByStatusOrderByCreatedAtDesc("VISIBLE").stream()
                 .map(this::publicMap)
                 .toList();
     }
@@ -77,7 +74,7 @@ public class FriendMessageService {
     public void approve(Long id, User reviewer) {
         FriendMessage message = messageRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("留言不存在"));
-        message.setStatus("APPROVED");
+        message.setStatus("VISIBLE");
         message.setReviewedBy(reviewer.getId());
         message.setReviewedAt(LocalDateTime.now());
         messageRepository.save(message);
@@ -87,7 +84,7 @@ public class FriendMessageService {
     public void reject(Long id, User reviewer, String note) {
         FriendMessage message = messageRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("留言不存在"));
-        message.setStatus("REJECTED");
+        message.setStatus("HIDDEN");
         message.setReviewedBy(reviewer.getId());
         message.setReviewedAt(LocalDateTime.now());
         message.setReviewNote(optional(note, 1000));
@@ -122,7 +119,7 @@ public class FriendMessageService {
                 .avatar(message.getAvatar())
                 .sortOrder(friendRepository.findAllByOrderBySortOrderAsc().size())
                 .build());
-        message.setStatus("APPROVED");
+        message.setStatus("VISIBLE");
         message.setFriendId(friend.getFriendId());
         message.setReviewedBy(reviewer.getId());
         message.setReviewedAt(LocalDateTime.now());
@@ -137,6 +134,7 @@ public class FriendMessageService {
         out.put("website", message.getWebsite());
         out.put("avatar", message.getAvatar());
         out.put("content", message.getContent());
+        out.put("status", message.getStatus());
         out.put("createdAt", message.getCreatedAt());
         return out;
     }

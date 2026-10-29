@@ -41,7 +41,7 @@ public class FriendMessage {
 
     @Column(nullable = false, length = 20)
     @Builder.Default
-    private String status = "PENDING";
+    private String status = "VISIBLE";
 
     @Column(name = "ip_hash", length = 64)
     private String ipHash;
