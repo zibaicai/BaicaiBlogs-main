@@ -98,7 +98,29 @@ public class RoomService {
         if (includeContent) {
             out.put("posts", posts.stream().limit(12).map(this::postMap).toList());
             out.put("moments", moments.stream().limit(12).map(this::momentMap).toList());
+            out.put("albums", albums.stream().limit(12).map(this::albumMap).toList());
         }
+        return out;
+    }
+
+    private Map<String, Object> albumMap(Album album) {
+        Map<String, Object> out = new LinkedHashMap<>();
+        out.put("id", album.getId());
+        out.put("albumId", album.getAlbumId());
+        out.put("title", album.getTitle());
+        out.put("description", album.getDescription());
+        out.put("cover", album.getCover());
+        out.put("date", album.getDate());
+        out.put("sortOrder", album.getSortOrder());
+        out.put("visibility", album.getVisibility());
+        out.put("photos", album.getPhotos() == null ? List.of() : album.getPhotos().stream().map(photo -> {
+            Map<String, Object> item = new LinkedHashMap<>();
+            item.put("id", photo.getId());
+            item.put("url", photo.getUrl());
+            item.put("caption", photo.getCaption());
+            item.put("sortOrder", photo.getSortOrder());
+            return item;
+        }).toList());
         return out;
     }
 

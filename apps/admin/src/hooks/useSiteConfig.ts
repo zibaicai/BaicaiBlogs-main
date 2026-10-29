@@ -19,6 +19,7 @@ export interface IcpConfig {
 
 export interface SiteInfo {
   title: string;
+  ownerUsername: string;
   faviconUrl: string;
   authorName: string;
   bio: string;
@@ -68,7 +69,8 @@ export interface SiteConfigState {
 }
 
 const DEFAULT_SITE_INFO: SiteInfo = {
-  title: "YeLuo / 云端小屋",
+  title: "云端小屋",
+  ownerUsername: "admin",
   faviconUrl: "https://www.zibaicai.cn/favicon.ico",
   authorName: "YeLuo",
   bio: "收集生活的砂砾，也收藏那些不想丢掉的东西。",

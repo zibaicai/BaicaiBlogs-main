@@ -25,7 +25,7 @@ const TABS = [
 ];
 
 const SITE_INFO_KEYS = [
-  "title", "faviconUrl", "authorName", "bio", "navAfter",
+  "title", "ownerUsername", "faviconUrl", "authorName", "bio", "navAfter",
   "avatarUrl", "buildDate", "social", "icpConfig",
 ] as const;
 

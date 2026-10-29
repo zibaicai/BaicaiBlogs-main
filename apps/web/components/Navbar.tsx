@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { useSiteConfigContext } from "../context/SiteConfigProvider";
 import { apiClient } from "../lib/api";
+import { useAuth } from "../lib/auth";
 import UserMenu from "./UserMenu";
 import NavSearch from "./NavSearch";
 
@@ -31,11 +32,13 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [roomName, setRoomName] = useState<string | null>(null);
+  const [myRoomName, setMyRoomName] = useState<string | null>(null);
   const pathname = usePathname();
   const { siteInfo } = useSiteConfigContext();
+  const { user } = useAuth();
   const communityName = siteInfo?.navAfter || siteInfo?.title || "云端小屋";
   const isHome = pathname === "/";
-  const leftName = roomName || (isHome ? siteInfo?.authorName || "YeLuo" : null);
+  const leftName = roomName || (isHome ? myRoomName || siteInfo?.authorName || "YeLuo" : null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -54,23 +57,38 @@ export default function Navbar() {
 
   useEffect(() => {
     const match = pathname.match(/^\/u\/([^/]+)/);
-    if (!match) {
-      setRoomName(null);
-      return;
+    if (match) {
+      let cancelled = false;
+      apiClient
+        .getRoom(decodeURIComponent(match[1]))
+        .then((response) => {
+          if (!cancelled) setRoomName(response.data.roomName);
+        })
+        .catch(() => {
+          if (!cancelled) setRoomName(null);
+        });
+      return () => {
+        cancelled = true;
+      };
     }
-    let cancelled = false;
-    apiClient
-      .getRoom(decodeURIComponent(match[1]))
-      .then((response) => {
-        if (!cancelled) setRoomName(response.data.roomName);
-      })
-      .catch(() => {
-        if (!cancelled) setRoomName(null);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [pathname]);
+    setRoomName(null);
+    if (pathname === "/" && user) {
+      let cancelled = false;
+      apiClient
+        .getRoom(user.username)
+        .then((response) => {
+          if (!cancelled) setMyRoomName(response.data.roomName);
+        })
+        .catch(() => {
+          if (!cancelled) setMyRoomName(null);
+        });
+      return () => {
+        cancelled = true;
+      };
+    }
+    setMyRoomName(null);
+    return undefined;
+  }, [pathname, user]);
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);

@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 
 import Navbar from "../components/Navbar";
 import PageTransition from "../components/PageTransition";
@@ -7,7 +7,7 @@ import HomeHero from "../components/HomeHero";
 import HomeThemeToggle from "../components/HomeThemeToggle";
 import SiteDashboard from "../components/SiteDashboard";
 import { formatDate } from "../lib/api";
-import { getAlbums, getMoments, getPosts } from "../lib/server-api";
+import { getAlbums, getCurrentUser, getMoments, getPosts, getPublicSiteConfig, getRoom } from "../lib/server-api";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +27,13 @@ function plainText(value: string) {
 }
 
 export default async function Home() {
-  const [posts, moments, albums] = await Promise.all([getPosts(), getMoments(), getAlbums()]);
+  const [{ siteInfo }, me] = await Promise.all([getPublicSiteConfig(), getCurrentUser()]);
+  const [room, posts, moments, albums] = await Promise.all([
+    getRoom(me?.username || siteInfo.ownerUsername || "admin"),
+    getPosts(),
+    getMoments(),
+    getAlbums(),
+  ]);
 
   const recentPosts = posts.slice(0, 6).map((p) => ({
     ...p,
@@ -49,6 +55,7 @@ export default async function Home() {
         <div className="home-v2-inner w-full max-w-[1180px] mx-auto px-4 sm:px-8 lg:pr-[200px] pt-24">
           <section className="hv-hero">
             <HomeHero
+              displayName={room?.nickname}
               postCount={posts.length}
               momentCount={moments.length}
               photoCount={photoCount}

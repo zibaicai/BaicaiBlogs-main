@@ -48,6 +48,23 @@ async function getJson<T>(path: string, revalidate = 60): Promise<T | null> {
   }
 }
 
+export async function getCurrentUser(): Promise<{ username: string; nickname?: string } | null> {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("BC_TOKEN")?.value;
+    if (!token) return null;
+    const res = await fetch(`${INTERNAL_BASE}/api/auth/me`, {
+      cache: "no-store",
+      headers: { Accept: "application/json", Cookie: `BC_TOKEN=${token}` },
+    });
+    if (!res.ok) return null;
+    const json = (await res.json()) as { success?: boolean; data?: { username: string; nickname?: string } };
+    return json?.success === false ? null : json?.data ?? null;
+  } catch {
+    return null;
+  }
+}
+
 function sortByDate<T extends { date?: string }>(items: T[]): T[] {
   return [...items].sort((a, b) => (b.date || "").localeCompare(a.date || ""));
 }

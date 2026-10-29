@@ -81,6 +81,7 @@ export interface RoomProfile {
   photoCount: number;
   posts?: RoomPost[];
   moments?: RoomMoment[];
+  albums?: Album[];
 }
 
 export interface Project {

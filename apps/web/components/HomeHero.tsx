@@ -10,11 +10,12 @@ type Props = {
   momentCount: number;
   photoCount: number;
   profile?: RoomProfile;
+  displayName?: string;
 };
 
-export default function HomeHero({ postCount, momentCount, photoCount, profile }: Props) {
+export default function HomeHero({ postCount, momentCount, photoCount, profile, displayName }: Props) {
   const { siteInfo } = useSiteConfigContext();
-  const displayName = profile?.nickname || siteInfo?.authorName || "YeLuo";
+  const name = displayName || profile?.nickname || siteInfo?.authorName || "YeLuo";
   const avatar = profile ? profile.avatar : siteInfo?.avatarUrl;
   const bio = profile?.roomBio || siteInfo?.bio || "收集生活的砂砾，也收藏那些不想丢掉的东西。";
   const aboutHref = profile ? `/u/${encodeURIComponent(profile.username)}/about` : "/about";
@@ -34,14 +35,14 @@ export default function HomeHero({ postCount, momentCount, photoCount, profile }
       <div className="hv-author-row">
         <div className="hv-avatar">
           {avatar ? (
-            <img src={avatar} alt={displayName} />
+            <img src={avatar} alt={name} />
           ) : (
-            <span>{displayName.slice(0, 1)}</span>
+            <span>{name.slice(0, 1)}</span>
           )}
         </div>
         <div className="hv-author-id">
           <span className="hv-profile-label">{profile ? "ROOM / OWNER" : "MAKER / OWNER"}</span>
-          <strong>{displayName}</strong>
+          <strong>{name}</strong>
         </div>
         <span className="hv-online"><Radio size={10} /> PRESENT</span>
       </div>
