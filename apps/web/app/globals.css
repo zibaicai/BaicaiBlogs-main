@@ -242,6 +242,8 @@ input[type=range]::-webkit-slider-thumb {
     min-height: 100%;
     margin: 0;
     padding: 0;
+    overflow-x: hidden; /* 老浏览器兜底 */
+    overflow-x: clip; /* 根治亚像素舍入导致的 1px 横向溢出；clip 不产生滚动容器，不影响 fixed/sticky */
   }
 }
 
