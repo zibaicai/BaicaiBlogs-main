@@ -85,6 +85,16 @@ public class FriendMessageController {
         }
     }
 
+    @DeleteMapping("/user/friend-messages/{id}")
+    public ApiResponse<Void> deleteOwn(@PathVariable Long id) {
+        try {
+            service.deleteOwn(currentUser(), id);
+            return ApiResponse.success("已删除", null);
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
     private User currentUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof User user) return user;

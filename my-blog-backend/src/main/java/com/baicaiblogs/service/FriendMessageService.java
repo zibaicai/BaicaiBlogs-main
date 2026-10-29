@@ -96,6 +96,22 @@ public class FriendMessageService {
     }
 
     @Transactional
+    public void deleteOwn(User user, Long id) {
+        FriendMessage message = messageRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("留言不存在"));
+        if (message.getUserId() == null || !message.getUserId().equals(user.getId())) {
+            throw new RuntimeException("只能删除自己的留言");
+        }
+        message.setStatus("DELETED");
+        message.setName("已删除");
+        message.setAvatar(null);
+        message.setWebsite(null);
+        message.setContact(null);
+        message.setContent("");
+        messageRepository.save(message);
+    }
+
+    @Transactional
     public Map<String, Object> promote(Long id, User reviewer) {
         FriendMessage message = messageRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("留言不存在"));
@@ -128,6 +144,7 @@ public class FriendMessageService {
     private Map<String, Object> publicMap(FriendMessage message) {
         Map<String, Object> out = new LinkedHashMap<>();
         out.put("id", message.getId());
+        out.put("userId", message.getUserId());
         out.put("name", message.getName());
         out.put("website", message.getWebsite());
         out.put("avatar", message.getAvatar());

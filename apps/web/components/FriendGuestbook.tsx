@@ -78,6 +78,19 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
     }
   }, [content, needsReverify]);
 
+  const remove = async (id: number) => {
+    if (!window.confirm("确认删除这条留言？")) return;
+    try {
+      const res = await fetch(`/api/user/friend-messages/${id}`, { method: "DELETE", credentials: "include" });
+      const json = await res.json();
+      if (!res.ok || !json?.success) throw new Error(json?.message || "删除失败");
+      setMessages((current) => current.filter((message) => message.id !== id));
+      setNotice("留言已删除");
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : "删除失败");
+    }
+  };
+
   const submit = async () => {
     if (!content.trim()) {
       setNotice("请先写点什么");
@@ -151,6 +164,11 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
               </div>
             </div>
             <p className="mt-3 whitespace-pre-wrap text-xs leading-6 text-slate-600 dark:text-slate-300">{message.content}</p>
+            {user && message.userId === user.id && (
+              <button type="button" onClick={() => void remove(message.id)} className="mt-2 text-[10px] font-bold text-slate-400 hover:text-red-500">
+                删除
+              </button>
+            )}
           </article>
         ))}
       </div>
