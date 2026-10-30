@@ -95,12 +95,11 @@ export default function Navbar() {
   return (
     <>
       <header
-        className={`site-navbar w-full fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${
+        className={`site-navbar w-full fixed top-0 left-0 right-0 z-[100] transition-all duration-500 border-b ${
           showNav ? "translate-y-0" : "-translate-y-full"
-        }`}
+        } bg-white/40 dark:bg-slate-900/50 backdrop-blur-xl border-white/20 dark:border-white/5 shadow-sm`}
       >
-        <div className="site-navbar-inner w-full max-w-[1180px] mx-auto bg-white/40 dark:bg-slate-900/50 backdrop-blur-xl border-x border-b border-white/20 dark:border-white/5 shadow-sm rounded-none lg:rounded-b-2xl lg:w-[calc(100%-40px)] max-lg:border-x-0">
-          <div className="w-full h-16 flex items-center justify-between px-4 sm:px-8 box-border">
+        <div className="w-full max-w-[1180px] mx-auto h-16 flex items-center justify-between px-4 sm:px-8 box-border">
           <Link
             href="/"
             className="text-xl font-black text-slate-800 dark:text-white tracking-tighter whitespace-nowrap"
@@ -190,7 +189,6 @@ export default function Navbar() {
             </motion.nav>
           )}
         </AnimatePresence>
-        </div>
       </header>
     </>
   );

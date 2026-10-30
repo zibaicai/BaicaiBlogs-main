@@ -13,28 +13,15 @@ html[data-visual-mode="plain"] .home-v2::after {
   display: none !important;
 }
 html[data-visual-mode="plain"] .site-navbar {
-  background: transparent !important;
-  border-color: transparent !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-}
-html[data-visual-mode="plain"] .site-navbar-inner {
   background: #ffffff !important;
   border-color: #e2e8f0 !important;
   box-shadow: 0 1px 0 rgba(15, 23, 42, 0.06) !important;
   backdrop-filter: none !important;
 }
 html.dark[data-visual-mode="plain"] .site-navbar {
-  background: transparent !important;
-  border-color: transparent !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-}
-html.dark[data-visual-mode="plain"] .site-navbar-inner {
   background: #0f172a !important;
   border-color: #1e293b !important;
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3) !important;
-  backdrop-filter: none !important;
 }
 html[data-visual-mode="plain"] .hv-panel,
 html[data-visual-mode="plain"] .directory-card,
