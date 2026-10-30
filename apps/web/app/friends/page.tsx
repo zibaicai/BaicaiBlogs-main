@@ -70,7 +70,7 @@ export default async function FriendsPage() {
             filters={[{ value: "all", label: "全部朋友", count: friends.length }]}
             views={["grid", "timeline", "masonry"]}
             compact
-            gridClassName="cover-grid"
+            gridVariant="cover"
             searchPlaceholder="搜索朋友、简介或链接..."
             empty={empty}
           />

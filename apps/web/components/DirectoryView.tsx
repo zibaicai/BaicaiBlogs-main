@@ -1,11 +1,13 @@
 "use client";
 
-import type { ComponentType, ReactNode } from "react";
+import type { CSSProperties, ComponentType, ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { Columns3, LayoutGrid, ListTree, MessageCircle, type LucideIcon } from "lucide-react";
 import { motion } from "framer-motion";
 
 export type ArchiveViewMode = "grid" | "timeline" | "masonry" | "thread";
+export type ArchiveGridVariant = "row" | "cover";
+export type ArchiveGridSurface = "glass" | "solid" | "ghost";
 
 export interface ArchiveViewDefinition {
   label: string;
@@ -17,6 +19,9 @@ export interface ArchiveLayoutProps {
   items: ReactNode[];
   featuredFirst?: boolean;
   compact?: boolean;
+  gridVariant?: ArchiveGridVariant;
+  surface?: ArchiveGridSurface;
+  gridStyle?: CSSProperties;
   gridClassName?: string;
   masonryColumns?: number;
 }
@@ -51,10 +56,20 @@ export function ArchiveGrid({
   items,
   featuredFirst = false,
   compact = false,
+  gridVariant = "row",
+  surface,
+  gridStyle,
   gridClassName = "",
 }: ArchiveLayoutProps) {
   return (
-    <div className={`directory-grid ${compact ? "directory-grid-compact" : ""} ${gridClassName}`}>
+    <div
+      className={`directory-grid ${compact ? "directory-grid-compact" : ""} ${
+        gridVariant === "cover" ? "cover-grid" : "row-grid"
+      } ${surface ? `archive-grid-surface--${surface}` : ""} ${gridClassName}`}
+      data-grid-variant={gridVariant}
+      data-grid-surface={surface}
+      style={gridStyle}
+    >
       {items.map((item, index) => (
         <motion.div
           key={index}
@@ -69,6 +84,8 @@ export function ArchiveGrid({
     </div>
   );
 }
+
+export const ArchiveGridShell = ArchiveGrid;
 
 export function ArchiveMasonry({ items, masonryColumns = 4 }: ArchiveLayoutProps) {  const [columnCount, setColumnCount] = useState(masonryColumns);
 
@@ -138,6 +155,9 @@ export default function DirectoryView({
   mode,
   featuredFirst = false,
   compact = false,
+  gridVariant = "row",
+  surface,
+  gridStyle,
   gridClassName = "",
   masonryColumns = 4,
 }: ArchiveLayoutProps & { mode: ArchiveViewMode }) {
@@ -148,6 +168,9 @@ export default function DirectoryView({
       items={items}
       featuredFirst={featuredFirst}
       compact={compact}
+      gridVariant={gridVariant}
+      surface={surface}
+      gridStyle={gridStyle}
       gridClassName={gridClassName}
       masonryColumns={masonryColumns}
     />

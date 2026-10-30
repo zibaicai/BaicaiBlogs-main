@@ -1484,4 +1484,18 @@ html:not(.dark) .hv-empty {
   }
 }
 
+/* Optional grid-level surface presets. Cards inherit these defaults and can
+   still be overridden by utilities or a local className. */
+.archive-grid-surface--solid .directory-card {
+  background: var(--ui-secondary-bg);
+  backdrop-filter: none;
+}
+
+.archive-grid-surface--ghost .directory-card {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
 }

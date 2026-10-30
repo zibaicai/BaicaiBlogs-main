@@ -76,7 +76,7 @@ export default function ArticlesPage() {
               views={["grid", "timeline", "masonry"]}
               featuredFirst
               compact
-              gridClassName="cover-grid"
+              gridVariant="cover"
               pageSize={12}
               defaultSort="newest"
               searchPlaceholder="搜索标题、摘要、分类或标签..."

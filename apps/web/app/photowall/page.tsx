@@ -123,6 +123,7 @@ export default function PhotoWallPage() {
               items={items}
               filters={filters}
               compact
+              gridVariant="row"
               views={["grid"]}
               pageSize={12}
               defaultSort="newest"

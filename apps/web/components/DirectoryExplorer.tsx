@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Check, SlidersHorizontal, X } from "lucide-react";
 import ArchiveHeader from "./ArchiveHeader";
 import ArchiveToolbar, { type SortOption } from "./ArchiveToolbar";
-import DirectoryView, { type ArchiveViewMode } from "./DirectoryView";
+import DirectoryView, { type ArchiveGridSurface, type ArchiveGridVariant, type ArchiveViewMode } from "./DirectoryView";
 
 export interface DirectoryItem {
   key: string;
@@ -57,6 +57,9 @@ export default function DirectoryExplorer({
   views = ["grid", "timeline"],
   featuredFirst = false,
   compact = false,
+  gridVariant = "row",
+  surface,
+  gridStyle,
   gridClassName = "",
   pageSize = 0,
   initialPage = 1,
@@ -77,6 +80,9 @@ export default function DirectoryExplorer({
   views?: ArchiveViewMode[];
   featuredFirst?: boolean;
   compact?: boolean;
+  gridVariant?: ArchiveGridVariant;
+  surface?: ArchiveGridSurface;
+  gridStyle?: CSSProperties;
   gridClassName?: string;
   pageSize?: number;
   initialPage?: number;
@@ -240,6 +246,9 @@ export default function DirectoryExplorer({
           mode={mode}
           featuredFirst={featuredFirst}
           compact={compact}
+          gridVariant={gridVariant}
+          surface={surface}
+          gridStyle={gridStyle}
           gridClassName={gridClassName}
           masonryColumns={masonryColumns}
         />

@@ -54,7 +54,7 @@ export default function ProjectsBoard({ projects }: { projects: Project[] }) {
         filters={filters}
         views={["grid", "timeline", "masonry"]}
         compact
-        gridClassName="cover-grid"
+        gridVariant="row"
         searchPlaceholder="搜索项目、代号或技术栈..."
         empty="还没有公开的项目。"
       />

@@ -64,7 +64,7 @@ export default async function PostsPage({
             views={["grid", "timeline", "masonry"]}
             featuredFirst
             compact
-            gridClassName="cover-grid"
+            gridVariant="cover"
             pageSize={12}
             initialPage={initialPage}
             defaultSort="newest"
