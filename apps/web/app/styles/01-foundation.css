@@ -140,6 +140,7 @@
   --type-list-title: clamp(0.875rem, 0.82rem + 0.18vw, 1rem);
   --type-overlay-title: clamp(1rem, 0.94rem + 0.2vw, 1.125rem);
   --type-card-description: clamp(0.8125rem, 0.78rem + 0.12vw, 0.9375rem);
+  --type-description: var(--type-card-description);
   --type-list-description: clamp(0.75rem, 0.72rem + 0.1vw, 0.875rem);
   --type-body: clamp(0.875rem, 0.84rem + 0.12vw, 1rem);
   --type-control: clamp(0.75rem, 0.72rem + 0.1vw, 0.875rem);

@@ -464,7 +464,7 @@ body.tool-pet-off .whale-pet {
   max-width: 540px;
   margin: 24px 0 0;
   color: var(--hv-muted);
-  font-size: var(--type-resource-title);
+  font-size: var(--type-card-title);
   line-height: 1.9;
 }
 .hv-hero-meta {

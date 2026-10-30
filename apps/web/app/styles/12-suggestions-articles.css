@@ -14,7 +14,7 @@
   max-width: 680px;
   margin: 0 auto;
   color: var(--ui-text);
-  font-size: var(--type-resource-title);
+  font-size: var(--type-card-title);
   line-height: 1.9;
   word-break: break-word;
 }

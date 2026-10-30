@@ -106,7 +106,7 @@
 .comment-composer-foot button:disabled { opacity: .45; }
 /* 移动端：字号低于 16px 时 iOS Safari 会在聚焦输入框时自动放大页面 */
 @media (max-width: 640px) {
-  .comment-composer textarea { font-size: var(--type-resource-title); }
+  .comment-composer textarea { font-size: var(--type-card-title); }
 }
 /* 尊重系统的"减少动态效果" */
 @media (prefers-reduced-motion: reduce) {
