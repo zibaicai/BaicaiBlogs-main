@@ -135,7 +135,7 @@ html[data-visual-mode="plain"] .directory-toolbar {
   border-radius: 14px !important;
 }
 html[data-visual-mode="plain"] :is(
-  .directory-sort-select,
+  .ui-select-trigger,
   .directory-view-toggle,
   .directory-filter-trigger
 ) {
@@ -145,7 +145,7 @@ html[data-visual-mode="plain"] :is(
   backdrop-filter: none !important;
 }
 html.dark[data-visual-mode="plain"] :is(
-  .directory-sort-select,
+  .ui-select-trigger,
   .directory-view-toggle,
   .directory-filter-trigger
 ) {

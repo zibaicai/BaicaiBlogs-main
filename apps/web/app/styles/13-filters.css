@@ -10,18 +10,6 @@
   align-items: center;
   gap: 0.45rem;
 }
-.directory-sort-select {
-  width: 132px !important;
-  height: 36px !important;
-  border-color: rgba(255, 255, 255, 0.22) !important;
-  background: rgba(255, 255, 255, 0.24) !important;
-  padding-inline: 0.7rem !important;
-  font-size: var(--type-control) !important;
-}
-.dark .directory-sort-select {
-  border-color: rgba(255, 255, 255, 0.09) !important;
-  background: rgba(15, 23, 42, 0.34) !important;
-}
 .directory-filter-trigger {
   display: inline-flex;
   height: 36px;
@@ -242,10 +230,6 @@
   .directory-toolbar-actions {
     width: 100%;
     justify-content: flex-end;
-  }
-
-  .directory-sort-select {
-    width: 112px !important;
   }
 
   .archive-filter-backdrop {

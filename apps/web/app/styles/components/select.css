@@ -1,0 +1,200 @@
+@layer components {
+  /* Select is layout-agnostic by default: the consumer owns width/placement,
+     while size/tone own the control surface tokens. */
+  .ui-select-trigger {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.6);
+    color: #1e293b;
+    text-align: left;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  }
+
+  .ui-select-trigger:hover {
+    border-color: rgba(99, 102, 241, 0.38);
+  }
+
+  .ui-select-trigger:focus-visible {
+    border-color: rgba(99, 102, 241, 0.6);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  }
+
+  .ui-select-trigger:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+
+  .ui-select-trigger.is-placeholder {
+    color: #94a3b8;
+  }
+
+  .dark .ui-select-trigger {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(15, 23, 42, 0.5);
+    color: #f1f5f9;
+  }
+
+  .dark .ui-select-trigger:hover {
+    border-color: rgba(129, 140, 248, 0.45);
+  }
+
+  .dark .ui-select-trigger.is-placeholder {
+    color: #64748b;
+  }
+
+  .ui-select-trigger--sm {
+    height: 36px;
+    padding: 0 0.7rem;
+    border-radius: 0.7rem;
+    font-size: var(--type-control);
+    line-height: 1.25rem;
+  }
+
+  .ui-select-trigger--md {
+    height: 40px;
+    padding: 0 0.9rem;
+    border-radius: 0.8rem;
+    font-size: var(--type-control);
+    line-height: 1.35rem;
+  }
+
+  .ui-select-trigger--lg {
+    height: 44px;
+    padding: 0 1rem;
+    border-radius: 0.9rem;
+    font-size: var(--type-description);
+    line-height: 1.5rem;
+  }
+
+  .ui-select-trigger--auto {
+    width: auto;
+  }
+
+  .ui-select-trigger--full {
+    width: 100%;
+  }
+
+  .ui-select-trigger--compact {
+    width: 132px;
+  }
+
+  .ui-select-trigger--subtle {
+    border-color: rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.24);
+  }
+
+  .dark .ui-select-trigger--subtle {
+    border-color: rgba(255, 255, 255, 0.09);
+    background: rgba(15, 23, 42, 0.34);
+  }
+
+  .ui-select-trigger--ghost {
+    border-color: transparent;
+    background: transparent;
+  }
+
+  .ui-select-value {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ui-select-chevron {
+    flex: 0 0 auto;
+    color: #64748b;
+    transition: transform 0.2s ease;
+  }
+
+  .ui-select-chevron.is-open {
+    transform: rotate(180deg);
+  }
+
+  .ui-select-menu {
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.96);
+    padding: 0.375rem;
+    box-shadow: 0 25px 50px rgba(15, 23, 42, 0.2);
+    backdrop-filter: blur(40px);
+  }
+
+  .dark .ui-select-menu {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(15, 23, 42, 0.96);
+  }
+
+  .ui-select-option {
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    border-radius: 0.75rem;
+    padding: 0.625rem 0.75rem;
+    color: #475569;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  .ui-select-option.is-active {
+    background: rgba(49, 87, 183, 0.1);
+    color: #0f172a;
+  }
+
+  .ui-select-option.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .dark .ui-select-option {
+    color: #cbd5e1;
+  }
+
+  .dark .ui-select-option.is-active {
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+  }
+
+  .ui-select-option-label {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .ui-select-option-description {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-top: 0.125rem;
+    color: #94a3b8;
+    font-size: var(--type-meta);
+  }
+
+  .ui-select-empty {
+    padding: 0.75rem;
+    color: #64748b;
+    font-size: 0.75rem;
+  }
+
+  .ui-select-footer {
+    margin-top: 0.25rem;
+    padding: 0.5rem;
+    border-top: 1px solid rgba(148, 163, 184, 0.2);
+  }
+
+  @media (max-width: 767px) {
+    .ui-select-trigger--compact {
+      width: 112px;
+    }
+  }
+}

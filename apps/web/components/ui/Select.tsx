@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Check, ChevronDown } from "lucide-react";
 
@@ -11,14 +11,43 @@ export interface SelectOption {
   disabled?: boolean;
 }
 
+export type SelectSize = "sm" | "md" | "lg";
+export type SelectWidth = "auto" | "full" | "compact";
+export type SelectTone = "default" | "subtle" | "ghost";
+export type SelectMenuWidth = "trigger" | "content" | number;
+
+export interface SelectOptionState {
+  selected: boolean;
+  active: boolean;
+  disabled: boolean;
+}
+
 export interface SelectProps {
   value: string;
   onChange: (value: string) => void;
   options: SelectOption[];
   placeholder?: string;
   disabled?: boolean;
-  className?: string;
   ariaLabel?: string;
+
+  size?: SelectSize;
+  width?: SelectWidth;
+  tone?: SelectTone;
+  menuWidth?: SelectMenuWidth;
+
+  open?: boolean;
+  defaultOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+
+  className?: string;
+  triggerClassName?: string;
+  menuClassName?: string;
+  portalContainer?: HTMLElement | null;
+
+  renderValue?: (option?: SelectOption) => ReactNode;
+  renderOption?: (option: SelectOption, state: SelectOptionState) => ReactNode;
+  empty?: ReactNode;
+  footer?: ReactNode;
 }
 
 interface MenuRect {
@@ -34,10 +63,25 @@ export default function Select({
   options,
   placeholder = "请选择",
   disabled = false,
-  className = "",
   ariaLabel,
+  size = "lg",
+  width = "full",
+  tone = "default",
+  menuWidth = "trigger",
+  open: controlledOpen,
+  defaultOpen = false,
+  onOpenChange,
+  className = "",
+  triggerClassName = "",
+  menuClassName = "",
+  portalContainer,
+  renderValue,
+  renderOption,
+  empty,
+  footer,
 }: SelectProps) {
-  const [open, setOpen] = useState(false);
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(defaultOpen);
+  const open = controlledOpen ?? uncontrolledOpen;
   const [activeIndex, setActiveIndex] = useState(-1);
   const [rect, setRect] = useState<MenuRect | null>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -51,6 +95,11 @@ export default function Select({
     () => options.map((option, index) => ({ option, index })).filter((item) => !item.option.disabled),
     [options]
   );
+
+  const setOpenState = (next: boolean) => {
+    if (controlledOpen === undefined) setUncontrolledOpen(next);
+    onOpenChange?.(next);
+  };
 
   const updateRect = () => {
     const trigger = triggerRef.current;
@@ -73,11 +122,11 @@ export default function Select({
     if (disabled) return;
     updateRect();
     setActiveIndex(selectedIndex >= 0 ? selectedIndex : enabledIndexes[0]?.index ?? -1);
-    setOpen(true);
+    setOpenState(true);
   };
 
   const closeMenu = (restoreFocus = true) => {
-    setOpen(false);
+    setOpenState(false);
     if (restoreFocus) triggerRef.current?.focus();
   };
 
@@ -93,7 +142,7 @@ export default function Select({
     const onPointerDown = (event: PointerEvent) => {
       const target = event.target as Node;
       if (triggerRef.current?.contains(target) || menuRef.current?.contains(target)) return;
-      setOpen(false);
+      setOpenState(false);
     };
     const onWindowChange = () => updateRect();
     document.addEventListener("pointerdown", onPointerDown);
@@ -117,6 +166,20 @@ export default function Select({
         : (currentPosition + direction + enabledIndexes.length) % enabledIndexes.length;
     setActiveIndex(enabledIndexes[nextPosition].index);
   };
+
+  const menuStyle: CSSProperties = {
+    position: "fixed",
+    left: rect?.left ?? 0,
+    top: rect?.top ?? 0,
+    maxHeight: rect?.maxHeight ?? 300,
+    zIndex: 400,
+    ...(menuWidth === "trigger"
+      ? { width: rect?.width }
+      : menuWidth === "content"
+        ? {}
+        : { width: menuWidth }),
+  };
+  const portalTarget = portalContainer ?? (typeof document !== "undefined" ? document.body : null);
 
   return (
     <>
@@ -150,37 +213,37 @@ export default function Select({
               closeMenu();
             }
           } else if (event.key === "Tab" && open) {
-            setOpen(false);
+            setOpenState(false);
           }
         }}
-        className={`flex h-11 w-full items-center justify-between gap-3 rounded-xl border border-white/40 bg-white/60 px-4 text-left text-sm font-semibold text-slate-800 outline-none transition focus:border-indigo-400/60 focus:ring-2 focus:ring-indigo-500/15 disabled:cursor-not-allowed disabled:opacity-45 dark:border-white/10 dark:bg-slate-900/50 dark:text-slate-100 ${
-          selected ? "" : "text-slate-400 dark:text-slate-500"
-        } ${className}`}
+        className={`ui-select-trigger ui-select-trigger--${size} ui-select-trigger--${width} ui-select-trigger--${tone} ${
+          selected ? "" : "is-placeholder"
+        } ${triggerClassName} ${className}`}
       >
-        <span className="min-w-0 truncate">{selected?.label || placeholder}</span>
-        <ChevronDown size={14} className={`shrink-0 text-slate-500 transition-transform ${open ? "rotate-180" : ""}`} />
+        <span className="ui-select-value">
+          {renderValue ? renderValue(selected) : selected?.label || placeholder}
+        </span>
+        <ChevronDown
+          size={14}
+          className={`ui-select-chevron shrink-0 ${open ? "is-open" : ""}`}
+          aria-hidden="true"
+        />
       </button>
 
       {open &&
         rect &&
+        portalTarget &&
         createPortal(
           <div
             ref={menuRef}
             id={listId}
             role="listbox"
             aria-label={ariaLabel}
-            style={{
-              position: "fixed",
-              left: rect.left,
-              top: rect.top,
-              width: rect.width,
-              maxHeight: rect.maxHeight,
-              zIndex: 400,
-            }}
-            className="admin-scrollbar overflow-y-auto rounded-2xl border border-white/40 bg-white/95 p-1.5 shadow-2xl shadow-slate-900/20 backdrop-blur-2xl dark:border-white/10 dark:bg-slate-900/95"
+            style={menuStyle}
+            className={`ui-select-menu admin-scrollbar ${menuClassName}`}
           >
             {options.length === 0 ? (
-              <div className="px-3 py-3 text-xs text-slate-500">暂无可选项</div>
+              <div className="ui-select-empty">{empty ?? "暂无可选项"}</div>
             ) : (
               options.map((option, index) => {
                 const isSelected = option.value === value;
@@ -194,25 +257,30 @@ export default function Select({
                     aria-disabled={option.disabled}
                     onMouseEnter={() => !option.disabled && setActiveIndex(index)}
                     onClick={() => choose(index)}
-                    className={`flex cursor-pointer items-center justify-between gap-3 rounded-xl px-3 py-2.5 transition-colors ${
-                      option.disabled
-                        ? "cursor-not-allowed text-slate-400 opacity-50"
-                        : isActive
-                          ? "bg-indigo-500/15 text-slate-900 dark:text-white"
-                          : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/5"
+                    className={`ui-select-option ${isActive ? "is-active" : ""} ${
+                      option.disabled ? "is-disabled" : ""
                     }`}
                   >
-                    <span className="min-w-0">
-                      <span className="block truncate text-xs font-bold">{option.label}</span>
-                      {option.description && <span className="mt-0.5 block truncate text-meta text-slate-400">{option.description}</span>}
-                    </span>
-                    {isSelected && <Check size={14} className="shrink-0 text-indigo-500" />}
+                    {renderOption ? (
+                      renderOption(option, { selected: isSelected, active: isActive, disabled: Boolean(option.disabled) })
+                    ) : (
+                      <>
+                        <span className="min-w-0">
+                          <span className="ui-select-option-label">{option.label}</span>
+                          {option.description && (
+                            <span className="ui-select-option-description">{option.description}</span>
+                          )}
+                        </span>
+                        {isSelected && <Check size={14} className="shrink-0 text-indigo-500" />}
+                      </>
+                    )}
                   </div>
                 );
               })
             )}
+            {footer && <div className="ui-select-footer">{footer}</div>}
           </div>,
-          document.body
+          portalTarget
         )}
     </>
   );

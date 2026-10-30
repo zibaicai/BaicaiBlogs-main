@@ -60,7 +60,9 @@ export default function ArchiveToolbar({
           value={sort}
           onChange={onSort}
           ariaLabel="排序方式"
-          className="directory-sort-select"
+          size="sm"
+          width="compact"
+          tone="subtle"
           options={sortOptions}
         />
         {showFilters && (

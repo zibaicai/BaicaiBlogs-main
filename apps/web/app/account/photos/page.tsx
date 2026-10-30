@@ -204,7 +204,9 @@ export default function MyPhotosPage() {
                     value={visibility}
                     onChange={setVisibility}
                     ariaLabel="新相册可见性"
-                    className="!h-10 flex-1"
+                    size="md"
+                    width="full"
+                    className="flex-1"
                     options={[
                       { value: "PRIVATE", label: "私密" },
                       { value: "PASSWORD", label: "密码" },
