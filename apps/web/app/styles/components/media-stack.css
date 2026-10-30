@@ -210,6 +210,11 @@
     object-fit: cover;
   }
 
+  .media-stack-collage-image:nth-child(1) { object-position: left top; }
+  .media-stack-collage-image:nth-child(2) { object-position: right top; }
+  .media-stack-collage-image:nth-child(3) { object-position: left bottom; }
+  .media-stack-collage-image:nth-child(4) { object-position: right bottom; }
+
   .media-stack-card--collage .media-stack-body {
     right: 12px;
     bottom: 12px;
