@@ -161,6 +161,11 @@
   background: color-mix(in srgb, var(--ui-bg) 82%, transparent);
   backdrop-filter: blur(22px);
 }
+/* The generic `.music-app-page > div { height: 100% }` rule is more specific
+   than `.music-player-bar`, so the fixed bar needs its explicit height here. */
+.music-app-page > .music-player-bar {
+  height: 68px;
+}
 .music-player-inner {
   display: grid;
   grid-template-columns: minmax(180px, 1fr) auto minmax(220px, 1.2fr);
