@@ -69,16 +69,6 @@
 .moment-grid > * {
   grid-column: auto !important;
 }
-.moment-card {
-  width: 100%;
-  overflow: hidden;
-  border: 1px solid var(--ui-border);
-  border-radius: 1.4rem;
-  background: var(--ui-secondary-bg);
-  padding: 18px 20px 14px;
-  box-shadow: 0 16px 42px rgba(24, 38, 55, 0.08);
-  backdrop-filter: blur(22px) saturate(130%);
-}
 .moment-head,
 .moment-foot {
   display: flex;
@@ -274,42 +264,6 @@
 .moment-head time {
   margin-left: auto;
   flex: 0 0 auto;
-}
-.moment-card {
-  position: relative;
-  border-radius: 1.25rem 1.25rem 1.25rem 0.35rem;
-}
-.archive-masonry-column:nth-child(2) .moment-card {
-  border-radius: 1.25rem 1.25rem 0.35rem 1.25rem;
-}
-.archive-masonry-column:nth-child(2) .moment-card::after {
-  right: -5px;
-  left: auto;
-  border-left-color: var(--ui-border);
-  border-right-color: transparent;
-}
-.moment-card::after {
-  content: "";
-  position: absolute;
-  bottom: 12px;
-  left: -5px;
-  width: 12px;
-  height: 12px;
-  border-bottom: 1px solid var(--ui-border);
-  border-left: 1px solid var(--ui-border);
-  background: var(--ui-secondary-bg);
-  transform: rotate(45deg);
-}
-@media (max-width: 767px) {
-  .moment-card,
-  .archive-masonry-column:nth-child(2) .moment-card {
-    border-radius: 1.15rem;
-  }
-
-  .moment-card::after,
-  .archive-masonry-column:nth-child(2) .moment-card::after {
-    display: none;
-  }
 }
 .directory-card-foot {
   display: flex;

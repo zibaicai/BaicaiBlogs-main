@@ -144,8 +144,7 @@
 }
 /* Radius migration: semantic surfaces. */
 .hv-panel,
-.directory-card,
-.moment-card {
+.directory-card {
   border-radius: var(--radius-panel);
 }
 .archive-card,
@@ -160,12 +159,6 @@
 .archive-timeline .archive-card-media,
 .archive-masonry .directory-card:not(.archive-card) .directory-card-media {
   border-radius: var(--radius-media);
-}
-.moment-card {
-  border-radius: var(--radius-panel) var(--radius-panel) var(--radius-panel) var(--radius-xs);
-}
-.archive-masonry-column:nth-child(2) .moment-card {
-  border-radius: var(--radius-panel) var(--radius-panel) var(--radius-xs) var(--radius-panel);
 }
 .hv-toolbar-meta-only .hv-toolbar-meta {
   border-radius: var(--radius-pill);
