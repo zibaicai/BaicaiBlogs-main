@@ -68,6 +68,7 @@ export default function DirectoryExplorer({
   compact = false,
   gridVariant = "profile",
   columns,
+  minCardWidth,
   gap,
   cardSize,
   density,
@@ -96,6 +97,7 @@ export default function DirectoryExplorer({
   compact?: boolean;
   gridVariant?: ArchiveGridVariant;
   columns?: ArchiveGridColumns;
+  minCardWidth?: number;
   gap?: ArchiveGridGap;
   cardSize?: ArchiveCardSize;
   density?: ArchiveGridDensity;
@@ -267,6 +269,7 @@ export default function DirectoryExplorer({
           compact={compact}
           gridVariant={gridVariant}
           columns={columns}
+          minCardWidth={minCardWidth}
           gap={gap}
           cardSize={cardSize}
           density={density}

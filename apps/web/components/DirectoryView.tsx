@@ -36,6 +36,7 @@ export interface ArchiveLayoutProps {
   compact?: boolean;
   gridVariant?: ArchiveGridVariant;
   columns?: ArchiveGridColumns;
+  minCardWidth?: number;
   gap?: ArchiveGridGap;
   cardSize?: ArchiveCardSize;
   density?: ArchiveGridDensity;
@@ -78,6 +79,7 @@ export function ArchiveGrid({
   compact = false,
   gridVariant = "profile",
   columns,
+  minCardWidth,
   gap,
   cardSize,
   density,
@@ -98,6 +100,7 @@ export function ArchiveGrid({
     if (columns.lg !== undefined) columnStyle["--grid-cols-lg" as string] = String(columns.lg);
     if (columns.xl !== undefined) columnStyle["--grid-cols-xl" as string] = String(columns.xl);
   }
+  if (minCardWidth !== undefined) columnStyle["--grid-card-min" as string] = `${minCardWidth}px`;
 
   return (
     <div
@@ -204,6 +207,7 @@ export default function DirectoryView({
   compact = false,
   gridVariant = "profile",
   columns,
+  minCardWidth,
   gap,
   cardSize,
   density,
@@ -222,6 +226,7 @@ export default function DirectoryView({
       compact={compact}
       gridVariant={gridVariant}
       columns={columns}
+      minCardWidth={minCardWidth}
       gap={gap}
       cardSize={cardSize}
       density={density}

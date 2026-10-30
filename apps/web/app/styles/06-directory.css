@@ -1656,7 +1656,7 @@ html:not(.dark) .hv-empty {
 }
 
 .directory-grid[data-grid-columns="auto"] {
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--grid-card-min, 280px)), 1fr));
 }
 
 .directory-grid[data-grid-columns="auto"] > * {
