@@ -1,4 +1,3 @@
-@layer components {
 /* Top navigation search */
 .nav-links {
   max-width: none;
@@ -256,6 +255,4 @@
 
 .hv-toolbar-meta-only .hv-toolbar-meta {
   margin-left: 0;
-}
-
 }

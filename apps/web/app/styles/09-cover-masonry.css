@@ -1,4 +1,3 @@
-@layer components {
 /* =========================================================
    Post view modes
    grid    : square cover card with a progressive bottom blur
@@ -421,6 +420,4 @@
   .cover-grid .archive-item-icon {
     font-size: 42px;
   }
-}
-
 }

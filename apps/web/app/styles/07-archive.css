@@ -1,4 +1,3 @@
-@layer components {
 /* Archive pages live outside .home-v2, so give the shared card its own tokens. */
 .archive-card {
   --hv-text: var(--ui-text);
@@ -294,6 +293,4 @@
 .archive-card-foot .archive-card-eyebrow {
   margin-bottom: 0;
   white-space: nowrap;
-}
-
 }

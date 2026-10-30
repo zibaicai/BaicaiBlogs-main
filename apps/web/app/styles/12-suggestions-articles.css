@@ -1,4 +1,3 @@
-@layer components {
 /* Suggestions pages: keep the shared shell margin but drop the extra top padding. */
 .suggestions-shell {
   padding-top: 0;
@@ -80,6 +79,4 @@
 }
 .cover-grid .directory-card-footnote {
   color: rgba(255, 255, 255, 0.58);
-}
-
 }

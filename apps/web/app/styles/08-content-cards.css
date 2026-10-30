@@ -1,4 +1,3 @@
-@layer components {
 /* One content rail for all public pages. */
 .directory-shell {
   width: 100%;
@@ -171,6 +170,4 @@
     --radius-panel: 16px;
     --radius-media: 6px;
   }
-}
-
 }
