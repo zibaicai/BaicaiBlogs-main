@@ -17,11 +17,14 @@ type FontTokens = {
   serif: string;
   display: string;
   mono: string;
+  ui: string;
+  prose: string;
+  literary: string;
 };
 
 /**
  * Font presets are intentionally data-only. Adding a new preset here is enough
- * for every component that uses --font-body / --font-serif / --font-mono.
+ * for every component that uses --font-ui / --font-body / --font-prose / --font-mono.
  */
 export const FONT_PRESETS: Record<FontPreset, FontTokens> = {
   editorial: {
@@ -29,18 +32,27 @@ export const FONT_PRESETS: Record<FontPreset, FontTokens> = {
     serif: '"Source Han Serif SC", "Noto Serif SC", "Songti SC", "SimSun", Georgia, serif',
     display: '"Source Han Serif SC", "Noto Serif SC", "Songti SC", Georgia, serif',
     mono: '"JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace',
+    ui: '"Noto Sans SC", "PingFang SC", "Microsoft YaHei", "Noto Sans", sans-serif',
+    prose: '"Source Han Serif SC", "Noto Serif SC", "Songti SC", "SimSun", Georgia, serif',
+    literary: '"Source Han Serif SC", "Noto Serif SC", "Songti SC", "SimSun", Georgia, serif',
   },
   modern: {
     body: '"Inter", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif',
     serif: '"Noto Serif SC", "Source Han Serif SC", "Songti SC", Georgia, serif',
     display: '"Inter", "Noto Sans SC", "PingFang SC", sans-serif',
     mono: '"JetBrains Mono", "Cascadia Code", Consolas, monospace',
+    ui: '"Inter", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif',
+    prose: '"Inter", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif',
+    literary: '"Inter", "Noto Sans SC", "PingFang SC", sans-serif',
   },
   system: {
     body: 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif',
     serif: 'ui-serif, Georgia, "Times New Roman", "Songti SC", serif',
     display: 'ui-serif, Georgia, "Times New Roman", "Songti SC", serif',
     mono: 'ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace',
+    ui: 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif',
+    prose: 'ui-serif, Georgia, "Times New Roman", "Songti SC", serif',
+    literary: 'ui-serif, Georgia, "Times New Roman", "Songti SC", serif',
   },
 };
 
@@ -63,6 +75,9 @@ function applyFontPreset(preset: FontPreset) {
   root.style.setProperty("--font-body", tokens.body);
   root.style.setProperty("--font-serif", tokens.serif);
   root.style.setProperty("--font-display", tokens.display);
+  root.style.setProperty("--font-ui", tokens.ui);
+  root.style.setProperty("--font-prose", tokens.prose);
+  root.style.setProperty("--font-literary", tokens.literary);
   root.style.setProperty("--font-mono", tokens.mono);
 }
 
