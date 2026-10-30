@@ -1,0 +1,127 @@
+@layer components {
+.prose ul { list-style-type: disc !important; padding-left: 1.5em !important; }
+.prose ol { list-style-type: decimal !important; padding-left: 1.5em !important; }
+.prose ul[data-type="taskList"] { list-style-type: none !important; padding-left: 0 !important; }
+.prose ul[data-type="taskList"] li { display: flex; align-items: flex-start; gap: 0.5rem; }
+.prose ul[data-type="taskList"] input[type="checkbox"] {
+  margin-top: 0.5rem;
+  cursor: pointer;
+  accent-color: #3157b7;
+}
+/* 闁煎浜滈悾鐐▕婢跺娉婇柛鏂诲妽濞碱垳绱樻惔鈥愁嚙 */
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(100, 116, 139, 0.2); border-radius: 10px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(49, 87, 183, 0.4); }
+/* ========================================================
+   7. 闁哄倸娲ㄩ悵宄邦潰閿濆棙鐎柨娑樼墕閹绮╅婵堢闁搞儳鍋熷▓?sanitized HTML闁?
+   ======================================================== */
+.article-prose {
+  font-size: var(--prose-body);
+  line-height: var(--prose-line-height);
+  /* 婵繐绲鹃弸鍐╂媴鐠恒劍鏆忛悽顖涚摃椤鈧稒顨婇崳鎼佹晬瀹€鍕級闁稿繐绉堕幋鐑藉箥閹稿海鍨煎Λ?闁稿繈鍔岄惇顒傚垝濡炲墽绉奸柨娑欑☉婵偟鍒掑Δ浣哄灱閻犱焦婢樺畷鐔兼偑椤掍礁绲瑰Δ鍌浢悺褔鏌?*/
+  font-family: "Noto Serif SC", "Songti SC", SimSun, Georgia, serif;
+  font-weight: 400;
+  font-synthesis: none;
+}
+.article-prose p,
+.article-prose li,
+.article-prose td {
+  font-weight: 400;
+}
+.article-prose strong,
+.article-prose b {
+  font-weight: 800;
+}
+.article-prose strong{
+  margin: 0 0.0625rem;
+}
+.article-prose h1 { font-size: 1.9rem; font-weight: 900; margin: 2rem 0 1.2rem; line-height: 1.3; }
+.article-prose h2 { font-size: 1.55rem; font-weight: 800; margin: 1.8rem 0 1rem; }
+.article-prose h3 { font-size: 1.25rem; font-weight: 700; margin: 1.4rem 0 0.8rem; }
+.article-prose p { margin: 0.9rem 0; }
+.article-prose a {
+  color: #3157b7;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px dashed #3157b7;
+  transition: all 0.3s ease;
+}
+.article-prose a:hover {
+  color: #24458f;
+  border-bottom-style: solid;
+  background-color: rgba(49, 87, 183, 0.1);
+  border-radius: 0.2rem;
+}
+.dark .article-prose a { color: #7aa8ff; border-bottom-color: #7aa8ff; }
+.article-prose ul { list-style: disc; padding-left: 1.6rem; margin: 0.9rem 0; }
+.article-prose ol { list-style: decimal; padding-left: 1.6rem; margin: 0.9rem 0; }
+.article-prose li { margin: 0.35rem 0; }
+.article-prose blockquote {
+  border-left: 4px solid #3157b7;
+  background: rgba(49, 87, 183, 0.05);
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  border-radius: 0 1.25rem 1.25rem 0;
+  font-style: italic;
+  color: #64748b;
+}
+.dark .article-prose blockquote {
+  border-left-color: #7aa8ff;
+  background: rgba(122, 168, 255, 0.1);
+  color: #94a3b8;
+}
+.article-prose pre {
+  background: #282c34 !important;
+  color: #abb2bf !important;
+  padding: 1.1rem !important;
+  border-radius: 0.85rem !important;
+  overflow-x: auto;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+  margin: 1.3rem 0;
+}
+.article-prose pre code {
+  background: transparent !important;
+  padding: 0 !important;
+  color: inherit !important;
+  font-size: 0.86em;
+  font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", Consolas, ui-monospace, monospace !important;
+}
+.article-prose p code,
+.article-prose li code {
+  background: rgba(49, 87, 183, 0.1);
+  color: #3157b7;
+  padding: 0.15rem 0.35rem;
+  border-radius: 0.3rem;
+  font-size: 0.86em;
+  font-family: "JetBrains Mono", "Fira Code", Consolas, ui-monospace, monospace !important;
+}
+.dark .article-prose p code,
+.dark .article-prose li code {
+  background: rgba(49, 87, 183, 0.2);
+  color: #7aa8ff;
+}
+.article-prose img {
+  display: block;
+  margin: 1.6rem auto;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+  height: auto;
+}
+.article-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.2rem 0;
+  font-size: 0.92rem;
+}
+.article-prose th,
+.article-prose td {
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  padding: 0.55rem 0.75rem;
+  text-align: left;
+}
+.article-prose th { background: rgba(49, 87, 183, 0.08); font-weight: 700; }
+.article-prose hr { border: none; border-top: 1px dashed rgba(148, 163, 184, 0.45); margin: 2rem 0; }
+.article-prose .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.5rem 0; }
+
+}

@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./styles/01-foundation.css";
+@import "./styles/components/prose.css";
 @import "./styles/02-home.css";
 @import "./styles/03-navigation.css";
 @import "./styles/04-article.css";
