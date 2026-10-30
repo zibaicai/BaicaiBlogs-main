@@ -147,7 +147,7 @@
 .music-pane-empty { display: flex; min-height: 220px; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--ui-text-muted); font-size: var(--type-control); text-align: center; }
 .music-pane-empty a { color: var(--ui-accent); font-weight: 800; }
 .music-side-empty { padding: 22px 8px; color: var(--ui-text-faint); font-size: var(--type-meta); text-align: center; }
-.music-comments-side { padding: 12px; }
+.music-comments-side { padding: 16px 14px 18px; }
 .music-comments-side .comment-section { margin: 0; padding: 0; border: 0; background: transparent; backdrop-filter: none; }
 .music-comments-side .comment-section .comment-head { padding-bottom: 10px; }
 .music-player-bar {
@@ -156,6 +156,7 @@
   bottom: 0;
   left: 0;
   z-index: 90;
+  height: 68px;
   border-top: 1px solid var(--ui-border);
   background: color-mix(in srgb, var(--ui-bg) 82%, transparent);
   backdrop-filter: blur(22px);
@@ -221,6 +222,7 @@
   overflow: hidden;
   padding-top: 8px;
   padding-bottom: 8px;
+  margin-top: 0;
 }
 .music-main .music-topbar { flex: 0 0 auto; margin-bottom: 12px; }
 .music-main .music-workspace {
@@ -260,11 +262,9 @@
   backdrop-filter: none;
 }
 .music-main .music-comments-side {
-  padding: 12px;
   overflow-y: auto;
 }
 .music-main .music-lyrics { max-height: none; overflow-x: hidden; }
-.music-player-bar { height: 68px; }
 .music-app-page .music-player-inner { height: 100%; box-sizing: border-box; }
 @media (max-width: 1023px) {
   .music-app-page {
@@ -369,20 +369,7 @@
 .music-comment-section .comment-login-hint {
   padding: 12px 0 !important;
 }
-.music-comments-side {
-  padding: 16px 14px 18px;
-}
 /* Animation wrapper, not the player bar, owns the full content height. */
-.music-app-page > div:first-of-type {
-  height: 100%;
-  min-height: 0;
-}
-.music-main {
-  margin-top: 0 !important;
-}
-.music-app-page > .music-player-bar {
-  height: 68px;
-}
 @media (min-width: 1024px) {
   body.music-route { overflow: hidden; }
   body.music-route footer { display: none; }
