@@ -1,3 +1,4 @@
+@layer components {
 /* C-side typography contract. Page titles, section titles and resource titles
    are intentionally separate scales; resource variants cover grid/list/overlay. */
 .page-title {
@@ -116,4 +117,6 @@
 .moment-card {
   content-visibility: auto;
   contain-intrinsic-size: auto 320px;
+}
+
 }

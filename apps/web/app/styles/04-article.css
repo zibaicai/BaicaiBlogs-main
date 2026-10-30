@@ -1,3 +1,4 @@
+@layer components {
 /* Article reading layout */
 .article-reading-grid {
   display: grid;
@@ -415,4 +416,6 @@ html[data-custom-theme="true"] .btn-secondary {
   background-color: var(--ui-surface-alt) !important;
   color: var(--ui-text) !important;
   border-color: var(--ui-border) !important;
+}
+
 }

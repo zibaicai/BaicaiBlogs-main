@@ -1,3 +1,4 @@
+@layer components {
 /* Full-SVG moment bubble. The transparent border is the card's safe area;
    the SVG body is one shape, so there is no seam and no pseudo-element tail. */
 .moment-card {
@@ -295,3 +296,5 @@
   .comment-head h2 { font-size: var(--type-section-title); }
 }
 .article-comments { grid-column: 1 / -1; width: 100%; }
+
+}

@@ -1,3 +1,4 @@
+@layer components {
 /* Editorial directory grid + compact alternating timeline */
 .directory-grid {
   grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -371,4 +372,6 @@ html:not(.dark) .hv-empty {
   .directory-grid.directory-grid-compact > * .directory-card:not(.archive-card) .directory-card-body {
     padding: 12px;
   }
+}
+
 }

@@ -1,3 +1,4 @@
+@layer components {
 /* Homepage album accordion */
 .album-accordion {
   display: flex;
@@ -432,4 +433,6 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .music-ripple { animation: none; opacity: 0; }
+}
+
 }

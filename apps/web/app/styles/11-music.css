@@ -1,3 +1,4 @@
+@layer components {
 /* Music application workspace */
 .music-topbar {
   display: flex;
@@ -378,4 +379,6 @@
 @media (min-width: 1024px) {
   body.music-route { overflow: hidden; }
   body.music-route footer { display: none; }
+}
+
 }

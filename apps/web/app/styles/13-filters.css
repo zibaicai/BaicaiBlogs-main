@@ -1,3 +1,4 @@
+@layer components {
 /* Shared archive filters: keep the default toolbar quiet and reveal secondary filters on demand. */
 .directory-tab-scroll {
   min-width: 0;
@@ -407,4 +408,6 @@
   padding: 8px 0 0;
   box-shadow: none;
   backdrop-filter: none;
+}
+
 }
