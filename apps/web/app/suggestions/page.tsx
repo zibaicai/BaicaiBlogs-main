@@ -130,6 +130,8 @@ export default function SuggestionsPage() {
                         value={category}
                         onChange={setCategory}
                         ariaLabel="建议分类"
+                        size="lg"
+                        width="full"
                         options={[
                           { value: "功能建议", label: "功能建议" },
                           { value: "UI / 视觉", label: "UI / 视觉" },
