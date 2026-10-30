@@ -23,14 +23,15 @@ export default function ProjectsBoard({ projects }: { projects: Project[] }) {
       key: project.projectId,
       node: (
         <ArchiveItemCard
+          layout="profile"
           external
           href={project.githubUrl || "#"}
           title={project.name}
           description={project.description}
+          label={project.createdAt ? `收录于 ${formatDay(project.createdAt)}` : undefined}
           category="PROJECT"
           tags={project.tags || []}
           cornerBadge={repoProviderLabel(project.githubUrl)}
-          footnote={project.createdAt ? `收录于 ${formatDay(project.createdAt)}` : undefined}
           media={{ kind: "icon", content: project.icon || "🚀" }}
         />
       ),
@@ -53,8 +54,7 @@ export default function ProjectsBoard({ projects }: { projects: Project[] }) {
         items={items}
         filters={filters}
         views={["grid", "timeline", "masonry"]}
-        compact
-        gridVariant="row"
+        gridVariant="profile"
         searchPlaceholder="搜索项目、代号或技术栈..."
         empty="还没有公开的项目。"
       />

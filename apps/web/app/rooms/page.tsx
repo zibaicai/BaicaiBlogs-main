@@ -16,9 +16,11 @@ export default async function RoomsPage() {
   const roomCards = rooms.map((room) => (
     <ArchiveItemCard
       key={room.username}
+      layout="profile"
       href={`/u/${encodeURIComponent(room.username)}`}
       title={room.roomName}
       description={room.roomBio || "还没有写下小屋简介。"}
+      label={room.nickname}
       category="ROOM"
       meta={`${room.postCount} 笔记 · ${room.momentCount} 说说 · ${room.photoCount} 照片`}
       media={
@@ -45,7 +47,7 @@ export default async function RoomsPage() {
               </p>
             </header>
 
-            <ArchiveGridShell items={roomCards} compact />
+            <ArchiveGridShell items={roomCards} gridVariant="profile" />
             {rooms.length === 0 && <p className="py-20 text-center text-sm text-slate-500">还没有小屋。</p>}
 
             <div className="mt-8 flex items-center gap-2 text-xs text-slate-500">

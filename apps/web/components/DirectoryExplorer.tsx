@@ -57,7 +57,7 @@ export default function DirectoryExplorer({
   views = ["grid", "timeline"],
   featuredFirst = false,
   compact = false,
-  gridVariant = "row",
+  gridVariant = "profile",
   surface,
   gridStyle,
   gridClassName = "",

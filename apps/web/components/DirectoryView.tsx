@@ -6,7 +6,7 @@ import { Columns3, LayoutGrid, ListTree, MessageCircle, type LucideIcon } from "
 import { motion } from "framer-motion";
 
 export type ArchiveViewMode = "grid" | "timeline" | "masonry" | "thread";
-export type ArchiveGridVariant = "row" | "cover";
+export type ArchiveGridVariant = "profile" | "cover" | "row";
 export type ArchiveGridSurface = "glass" | "solid" | "ghost";
 
 export interface ArchiveViewDefinition {
@@ -56,7 +56,7 @@ export function ArchiveGrid({
   items,
   featuredFirst = false,
   compact = false,
-  gridVariant = "row",
+  gridVariant = "profile",
   surface,
   gridStyle,
   gridClassName = "",
@@ -64,7 +64,11 @@ export function ArchiveGrid({
   return (
     <div
       className={`directory-grid ${compact ? "directory-grid-compact" : ""} ${
-        gridVariant === "cover" ? "cover-grid" : "row-grid"
+        gridVariant === "cover"
+          ? "cover-grid"
+          : gridVariant === "row"
+            ? "row-grid"
+            : "profile-grid"
       } ${surface ? `archive-grid-surface--${surface}` : ""} ${gridClassName}`}
       data-grid-variant={gridVariant}
       data-grid-surface={surface}
@@ -155,7 +159,7 @@ export default function DirectoryView({
   mode,
   featuredFirst = false,
   compact = false,
-  gridVariant = "row",
+  gridVariant = "profile",
   surface,
   gridStyle,
   gridClassName = "",

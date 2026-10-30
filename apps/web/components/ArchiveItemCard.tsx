@@ -3,6 +3,8 @@ import type { ReactNode } from "react";
 import { ResourceTitle, type ResourceTitleVariant } from "./ui/Typography";
 import { OptimizedImage } from "./ui/OptimizedImage";
 
+export type ArchiveCardLayout = "auto" | "profile";
+
 export type ArchiveMedia =
   | { kind: "cover"; src: string; alt?: string; fit?: "cover" | "contain" }
   | { kind: "avatar"; src: string; alt?: string }
@@ -21,6 +23,7 @@ export interface ArchiveItemCardProps {
   footnote?: ReactNode;
   media?: ArchiveMedia;
   variant?: ResourceTitleVariant;
+  layout?: ArchiveCardLayout;
 }
 
 export default function ArchiveItemCard({
@@ -36,7 +39,67 @@ export default function ArchiveItemCard({
   footnote,
   media,
   variant,
+  layout = "auto",
 }: ArchiveItemCardProps) {
+  if (layout === "profile") {
+    const avatar =
+      media?.kind === "icon" ? (
+        media.content
+      ) : media ? (
+        <OptimizedImage
+          className="archive-profile-avatar-image"
+          src={media.src}
+          alt={media.alt || title}
+        />
+      ) : (
+        <span aria-hidden="true">✦</span>
+      );
+
+    const body = (
+      <>
+        <div className="archive-profile-head">
+          <span className="archive-profile-avatar">{avatar}</span>
+          <div className="archive-profile-heading">
+            <ResourceTitle className="archive-profile-title" variant="compact">
+              {title}
+            </ResourceTitle>
+            {label && <time className="archive-profile-time">{label}</time>}
+          </div>
+          {cornerBadge && <span className="archive-profile-corner">{cornerBadge}</span>}
+        </div>
+
+        {description && <p className="archive-profile-description">{description}</p>}
+        {footnote && <p className="archive-profile-footnote">{footnote}</p>}
+
+        {(category || tags.length > 0 || meta) && (
+          <div className="archive-profile-foot">
+            {category && <span className="directory-card-category text-meta">{category}</span>}
+            {tags.map((tag) => (
+              <span key={tag} className="directory-tag text-meta">
+                #{tag}
+              </span>
+            ))}
+            {meta && <span className="archive-item-meta">{meta}</span>}
+          </div>
+        )}
+      </>
+    );
+
+    const profileClassName = "archive-profile-card group";
+    if (external) {
+      return (
+        <a href={href} target="_blank" rel="noopener noreferrer" className={profileClassName}>
+          {body}
+        </a>
+      );
+    }
+    return (
+      <Link href={href} className={profileClassName}>
+        {body}
+      </Link>
+    );
+  }
+
   const content = (
     <>
       <div className="directory-card-media">
