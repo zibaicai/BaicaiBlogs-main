@@ -199,7 +199,6 @@
   .music-sidebar-list { max-height: 250px; }
   .music-player-inner { grid-template-columns: 1fr auto; }
   .music-player-progress { grid-column: 1 / -1; }
-  .music-player-bar { position: sticky; bottom: 0; }
 }
 @media (max-width: 640px) {
   .music-topbar { align-items: center; }
