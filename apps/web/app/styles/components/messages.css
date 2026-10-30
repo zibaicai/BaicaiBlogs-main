@@ -330,6 +330,29 @@
     font-weight: 600;
   }
 
+  /* The friends page sits over the photographic backdrop. Its guestbook is
+     intentionally surface-less, so switch the local text tokens to light
+     instead of adding back an outer card. */
+  .friend-guestbook {
+    --ui-text: #f8fafc;
+    --ui-text-muted: rgba(248, 250, 252, 0.8);
+    --ui-text-faint: rgba(248, 250, 252, 0.56);
+    --ui-border: rgba(255, 255, 255, 0.16);
+    --ui-accent: #c7d2fe;
+    --ui-accent-soft: rgba(129, 140, 248, 0.2);
+    --ui-accent-strong: #e0e7ff;
+  }
+
+  html[data-visual-mode="plain"] .friend-guestbook {
+    --ui-text: #0f172a;
+    --ui-text-muted: #475569;
+    --ui-text-faint: #94a3b8;
+    --ui-border: #e2e8f0;
+    --ui-accent: #4f46e5;
+    --ui-accent-soft: #eef2ff;
+    --ui-accent-strong: #4338ca;
+  }
+
   @media (max-width: 767px) {
     .message-list {
       margin-top: 28px;
