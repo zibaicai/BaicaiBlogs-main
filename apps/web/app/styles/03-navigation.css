@@ -256,3 +256,25 @@
 .hv-toolbar-meta-only .hv-toolbar-meta {
   margin-left: 0;
 }
+
+
+.nav-search-result-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.nav-search-result-kind {
+  flex: 0 0 auto;
+  border-radius: 5px;
+  padding: 2px 5px;
+  color: #3157b7;
+  background: rgba(49, 87, 183, 0.1);
+  font-family: Consolas, monospace;
+  font-size: var(--type-caption);
+  font-weight: 800;
+  line-height: 1.2;
+}
+.dark .nav-search-result-kind {
+  color: #a9c8ff;
+  background: rgba(49, 87, 183, 0.16);
+}
