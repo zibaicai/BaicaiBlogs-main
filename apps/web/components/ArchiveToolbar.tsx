@@ -1,6 +1,7 @@
 "use client";
 
 import { SlidersHorizontal } from "lucide-react";
+import type { ReactNode } from "react";
 import type { DirectoryFilter } from "./DirectoryExplorer";
 import { ARCHIVE_VIEWS, type ArchiveViewMode } from "./DirectoryView";
 import Select from "./ui/Select";
@@ -23,6 +24,7 @@ export default function ArchiveToolbar({
   onOpenFilters,
   activeFilterCount,
   showFilters = true,
+  extra,
 }: {
   filters: DirectoryFilter[];
   activeFilter: string;
@@ -36,6 +38,7 @@ export default function ArchiveToolbar({
   onOpenFilters: () => void;
   activeFilterCount: number;
   showFilters?: boolean;
+  extra?: ReactNode;
 }) {
   return (
     <div className="directory-toolbar">
@@ -56,6 +59,7 @@ export default function ArchiveToolbar({
       </div>
 
       <div className="directory-toolbar-actions">
+        {extra}
         <Select
           value={sort}
           onChange={onSort}

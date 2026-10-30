@@ -1,12 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Lock, ShieldCheck } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import PageTransition from "../../components/PageTransition";
 import DirectoryExplorer from "../../components/DirectoryExplorer";
-import ArchiveCard from "../../components/ArchiveCard";
-import { DEFAULT_MISC } from "../../lib/site-config";
+import AlbumCard, { type AlbumCardVariant } from "../../components/photowall/AlbumCard";
 import { useAuth } from "../../lib/auth";
 import { withContentScope } from "../../lib/content-scope";
 
@@ -32,6 +30,7 @@ export default function PhotoWallPage() {
   const [albums, setAlbums] = useState<GalleryAlbum[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [albumVariant, setAlbumVariant] = useState<AlbumCardVariant>("stack");
 
   const fetchAlbums = useCallback(async () => {
     setLoading(true);
@@ -68,40 +67,14 @@ export default function PhotoWallPage() {
     ...(user ? [{ value: "private", label: "私密", count: counts.private }] : []),
   ];
 
-  const items = albums.map((album) => {
-    const cover = album.locked ? album.coverBlurUrl : album.coverThumbUrl;
-    return {
-      key: album.albumId,
-      node: (
-        <ArchiveCard
-          href={`/photowall/${encodeURIComponent(album.albumId)}`}
-          image={cover || DEFAULT_MISC.photoWallImage}
-          alt={album.title}
-          imageClassName={album.locked ? "blur-[3px] scale-105" : ""}
-          eyebrow={album.visibility === "PUBLIC" ? "公开" : album.visibility === "PASSWORD" ? "密码" : "私密"}
-          title={album.title}
-          description={album.description}
-          meta={album.photoCount == null ? "照片数已隐藏" : `${album.photoCount} 张照片`}
-          badges={
-            <>
-              {album.visibility === "PASSWORD" && (
-                <span className="archive-badge archive-badge-amber"><Lock size={9} /> {album.locked ? "密码相册" : "我的密码相册"}</span>
-              )}
-              {album.visibility === "PRIVATE" && (
-                <span className="archive-badge archive-badge-sky"><ShieldCheck size={9} /> {album.isOwner ? "我的私密" : "私密"}</span>
-              )}
-              {album.visibility === "PUBLIC" && <span className="archive-badge archive-badge-emerald">公开</span>}
-              {album.ownerLabel && <span className="archive-badge">{album.ownerLabel}</span>}
-            </>
-          }
-        />
-      ),
-      searchText: [album.title, album.description, album.ownerLabel].filter(Boolean).join(" "),
-      filterValues: [album.visibility.toLowerCase()],
-      title: album.title,
-      date: album.date,
-    };
-  });
+  const items = albums.map((album, index) => ({
+    key: album.albumId,
+    node: <AlbumCard album={album} variant={albumVariant} index={index} />,
+    searchText: [album.title, album.description, album.ownerLabel].filter(Boolean).join(" "),
+    filterValues: [album.visibility?.toLowerCase() || "public"],
+    title: album.title,
+    date: album.date,
+  }));
 
   return (
     <div className="min-h-screen relative pb-20">
@@ -122,10 +95,30 @@ export default function PhotoWallPage() {
               count={`${albums.length} 个可见相册`}
               items={items}
               filters={filters}
-              compact
-              gridVariant="cover"
-              columns={{ base: 1, sm: 2, lg: 3, xl: 4 }}
+              gridVariant="album"
+              columns={{ base: 1, sm: 2, lg: 3 }}
+              gap="lg"
               views={["grid"]}
+              toolbarExtra={
+                <div className="directory-view-toggle" role="group" aria-label="相册展示模式">
+                  <button
+                    type="button"
+                    onClick={() => setAlbumVariant("stack")}
+                    aria-pressed={albumVariant === "stack"}
+                    className={`directory-view-toggle-button ${albumVariant === "stack" ? "directory-view-toggle-active" : ""}`}
+                  >
+                    堆叠
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAlbumVariant("collage")}
+                    aria-pressed={albumVariant === "collage"}
+                    className={`directory-view-toggle-button ${albumVariant === "collage" ? "directory-view-toggle-active" : ""}`}
+                  >
+                    拼贴
+                  </button>
+                </div>
+              }
               pageSize={12}
               defaultSort="newest"
               searchPlaceholder="搜索相册标题或简介..."

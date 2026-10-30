@@ -6,7 +6,7 @@ import { Columns3, LayoutGrid, ListTree, MessageCircle, type LucideIcon } from "
 import { motion } from "framer-motion";
 
 export type ArchiveViewMode = "grid" | "timeline" | "masonry" | "thread";
-export type ArchiveGridVariant = "profile" | "cover" | "row";
+export type ArchiveGridVariant = "profile" | "cover" | "row" | "album";
 export type ArchiveGridSurface = "glass" | "solid" | "ghost";
 export type ArchiveGridGap = "sm" | "md" | "lg";
 export type ArchiveCardSize = "sm" | "md" | "lg";
@@ -109,7 +109,9 @@ export function ArchiveGrid({
           ? "cover-grid"
           : gridVariant === "row"
             ? "row-grid"
-            : "profile-grid"
+            : gridVariant === "album"
+              ? "album-grid"
+              : "profile-grid"
       } ${surface ? `archive-grid-surface--${surface}` : ""} ${gridClassName}`}
       data-grid-variant={gridVariant}
       data-grid-columns={columns ? (columns === "auto" ? "auto" : "custom") : undefined}

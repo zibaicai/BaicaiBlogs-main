@@ -1,0 +1,279 @@
+@layer components {
+  .media-stack-link {
+    display: block;
+    min-width: 0;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .media-stack-card {
+    position: relative;
+    min-width: 0;
+    isolation: isolate;
+    color: var(--ui-text);
+  }
+
+  .media-stack-visual {
+    position: relative;
+    z-index: 2;
+    overflow: hidden;
+    aspect-ratio: 3 / 4;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: var(--radius-panel);
+    background: var(--ui-secondary-bg);
+    box-shadow: 0 24px 54px rgba(0, 0, 0, 0.26);
+  }
+
+  .media-stack-cover {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .media-stack-link:hover .media-stack-cover {
+    transform: scale(1.035);
+  }
+
+  .media-stack-shade {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+      180deg,
+      rgba(2, 6, 23, 0.02) 28%,
+      rgba(3, 8, 18, 0.82) 100%
+    );
+    pointer-events: none;
+  }
+
+  .media-stack-body {
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
+    left: 16px;
+    z-index: 3;
+    min-width: 0;
+  }
+
+  .media-stack-eyebrow {
+    overflow: hidden;
+    color: rgba(255, 255, 255, 0.68);
+    font-family: var(--font-mono);
+    font-size: var(--type-meta);
+    letter-spacing: 0.1em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .media-stack-title {
+    overflow: hidden;
+    margin: 6px 0 0;
+    color: #fff;
+    font-family: var(--font-literary);
+    font-size: var(--type-card-title);
+    font-weight: 700;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .media-stack-description {
+    display: -webkit-box;
+    overflow: hidden;
+    margin: 7px 0 0;
+    color: rgba(255, 255, 255, 0.74);
+    font-size: var(--type-list-description);
+    line-height: 1.55;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .media-stack-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    color: rgba(255, 255, 255, 0.66);
+    font-size: var(--type-meta);
+  }
+
+  .media-stack-footer {
+    margin-top: 8px;
+  }
+
+  .media-stack-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 4;
+  }
+
+  .media-stack-visual-slot {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .album-privacy-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+    padding: 4px 8px;
+    color: rgba(255, 255, 255, 0.84);
+    background: rgba(2, 6, 23, 0.42);
+    font-size: var(--type-caption);
+    backdrop-filter: blur(10px);
+  }
+
+  .album-meta-dot {
+    display: inline-block;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.45;
+  }
+
+  .directory-grid.album-grid {
+    padding: 4px 24px 24px 2px;
+    overflow: visible;
+  }
+
+  /* Stacked poster presentation. The rear layers reuse the cover, so no
+     additional image requests are made. */
+  .media-stack-card--stack {
+    padding: 0 14px 18px 0;
+  }
+
+  .media-stack-card--stack::before,
+  .media-stack-card--stack::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: var(--radius-panel);
+    background-image: var(--media-stack-cover);
+    background-position: center;
+    background-size: cover;
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.22);
+    transition:
+      transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.38s ease;
+  }
+
+  .media-stack-card--stack::before {
+    opacity: 0.68;
+    filter: brightness(0.82) saturate(0.82);
+    transform: translate(8px, 9px) rotate(2.2deg);
+  }
+
+  .media-stack-card--stack::after {
+    opacity: 0.4;
+    filter: brightness(0.62) saturate(0.7);
+    transform: translate(16px, 17px) rotate(4.4deg);
+  }
+
+  .media-stack-link:hover .media-stack-card--stack::before {
+    opacity: 0.86;
+    transform: translate(16px, 10px) rotate(4deg);
+  }
+
+  .media-stack-link:hover .media-stack-card--stack::after {
+    opacity: 0.58;
+    transform: translate(28px, 22px) rotate(7deg);
+  }
+
+  /* Collage presentation. */
+  .media-stack-card--collage .media-stack-visual {
+    aspect-ratio: 1 / 1;
+  }
+
+  .media-stack-collage {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: 3px;
+  }
+
+  .media-stack-collage-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .media-stack-card--collage .media-stack-body {
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+  }
+
+  .media-stack-card--collage .media-stack-title {
+    font-size: var(--type-overlay-title);
+  }
+
+  /* Optional content below the media, for non-album reuse. */
+  .media-stack-card--content-below {
+    padding: 0;
+  }
+
+  .media-stack-card--content-below .media-stack-body {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    padding: 14px 4px 0;
+  }
+
+  .media-stack-card--content-below .media-stack-eyebrow {
+    color: var(--ui-text-faint);
+  }
+
+  .media-stack-card--content-below .media-stack-title {
+    color: var(--ui-text);
+    font-family: var(--font-ui);
+    font-size: var(--type-list-title);
+  }
+
+  .media-stack-card--content-below .media-stack-description {
+    color: var(--ui-text-muted);
+  }
+
+  .media-stack-card--content-below .media-stack-meta {
+    color: var(--ui-text-faint);
+  }
+
+  @media (max-width: 767px) {
+    .media-stack-card--stack {
+      padding: 0 9px 12px 0;
+    }
+
+    .media-stack-card--stack::before {
+      transform: translate(5px, 7px) rotate(1.6deg);
+    }
+
+    .media-stack-card--stack::after {
+      transform: translate(10px, 13px) rotate(3.2deg);
+    }
+
+    .media-stack-title {
+      font-size: var(--type-list-title);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .media-stack-cover,
+    .media-stack-card--stack::before,
+    .media-stack-card--stack::after {
+      transition: none;
+    }
+  }
+}

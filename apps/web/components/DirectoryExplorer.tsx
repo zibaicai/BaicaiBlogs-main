@@ -76,6 +76,7 @@ export default function DirectoryExplorer({
   surface,
   gridStyle,
   gridClassName = "",
+  toolbarExtra,
   pageSize = 0,
   initialPage = 1,
   empty = "暂无内容",
@@ -105,6 +106,7 @@ export default function DirectoryExplorer({
   surface?: ArchiveGridSurface;
   gridStyle?: CSSProperties;
   gridClassName?: string;
+  toolbarExtra?: ReactNode;
   pageSize?: number;
   initialPage?: number;
   empty?: ReactNode;
@@ -234,6 +236,7 @@ export default function DirectoryExplorer({
         onOpenFilters={() => setFilterOpen(true)}
         activeFilterCount={activeFilterCount}
         showFilters={hasDates || hasTags}
+        extra={toolbarExtra}
       />
 
       {activeFilterCount > 0 && (
