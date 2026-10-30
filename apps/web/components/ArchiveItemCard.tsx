@@ -60,9 +60,7 @@ export default function ArchiveItemCard({
         <div className="archive-profile-head">
           <span className="archive-profile-avatar">{avatar}</span>
           <div className="archive-profile-heading">
-            <ResourceTitle className="archive-profile-title" variant="compact">
-              {title}
-            </ResourceTitle>
+            <ResourceTitle className="archive-profile-title">{title}</ResourceTitle>
             {label && <time className="archive-profile-time">{label}</time>}
           </div>
           {cornerBadge && <span className="archive-profile-corner">{cornerBadge}</span>}
