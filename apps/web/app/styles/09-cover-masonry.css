@@ -12,7 +12,7 @@
   display: none;
 }
 .directory-grid.cover-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
   align-items: start;
 }
@@ -184,7 +184,7 @@
   position: relative;
   width: 100%;
   height: auto;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 10;
   min-height: 0;
   flex: 0 0 auto;
   overflow: hidden;
@@ -235,7 +235,14 @@
   min-height: 0;
   max-height: none;
 }
-@media (max-width: 1024px) {
+/* Four-column desktop grid: keep the cover square while giving the text
+   a little more breathing room. */
+@media (max-width: 1200px) {
+  .directory-grid.cover-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 900px) {
   .directory-grid.cover-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -251,10 +258,6 @@
 
   .cover-grid .directory-card-title {
     --resource-title-size: 0.9375rem;
-  }
-
-  .cover-grid .directory-card-description {
-    font-size: var(--type-list-description);
   }
 
   .archive-masonry {
@@ -293,7 +296,6 @@
 }
 .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-copy {
   position: absolute;
-  top: 54%;
   right: 14px;
   left: 14px;
   display: flex;
@@ -320,45 +322,14 @@
   max-height: 42px;
   margin: 0;
   padding: 0;
-  align-items: flex-start;
-  align-content: flex-start;
+  align-items: center;
+  align-content: flex-end;
   overflow: hidden;
 }
-@media (max-width: 640px) {
-  .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-copy {
-    top: 48%;
-  }
-}
 /* Final spacing / proportion tuning for the new post views. */
-.directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-copy {
-  top: 50%;
-}
-.archive-masonry .directory-card:not(.archive-card) .directory-card-media {
-  aspect-ratio: 16 / 10;
-}
 @media (max-width: 640px) {
   .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-copy {
     top: 46%;
-  }
-}
-/* Four-column desktop grid: keep the cover square while giving the text
-   a little more breathing room. */
-.directory-grid.cover-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-@media (max-width: 1200px) {
-  .directory-grid.cover-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-@media (max-width: 900px) {
-  .directory-grid.cover-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-@media (max-width: 640px) {
-  .directory-grid.cover-grid {
-    grid-template-columns: minmax(0, 1fr);
   }
 }
 @media (min-width: 1201px) {
@@ -398,17 +369,6 @@
   .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-copy {
     top: 47%;
   }
-}
-/* Keep the reserved two-line meta block, but pin its visible rows to the
-   bottom edge so left/bottom breathing room stays equal. */
-.directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-foot {
-  align-content: flex-end;
-  align-items: flex-end;
-}
-/* Keep the meta row pinned to the bottom, but center the plain category
-   label with the tag pills inside that row. */
-.directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-foot {
-  align-items: center;
 }
 .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-category {
   display: inline-flex;
