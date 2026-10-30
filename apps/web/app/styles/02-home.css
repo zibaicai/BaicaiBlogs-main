@@ -236,23 +236,6 @@
   --hv-accent: var(--ui-accent);
   --hv-accent-soft: var(--ui-accent-soft);
 }
-.home-v2::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at 12% 12%, rgba(255, 255, 255, 0.78), transparent 30%),
-    radial-gradient(circle at 88% 8%, rgba(169, 194, 227, 0.36), transparent 34%),
-    linear-gradient(180deg, rgba(246, 242, 234, 0.92) 0%, rgba(241, 245, 249, 0.88) 58%, rgba(238, 243, 249, 0.96) 100%);
-}
-.dark .home-v2::before {
-  background:
-    radial-gradient(circle at 12% 8%, rgba(91, 119, 178, 0.26), transparent 34%),
-    radial-gradient(circle at 88% 22%, rgba(157, 91, 72, 0.18), transparent 38%),
-    linear-gradient(180deg, rgba(5, 10, 18, 0.9) 0%, rgba(7, 13, 23, 0.93) 56%, rgba(5, 9, 16, 0.97) 100%);
-}
 .home-v2-inner {
   position: relative;
   z-index: 1;
@@ -284,7 +267,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.68fr);
   gap: 6vw;
-  align-items: end;
+  align-items: stretch;
   padding: 18px 0 42px;
 }
 .hv-display {
@@ -859,19 +842,6 @@
     display: none;
   }
 }
-.home-v2::before { content: none; display: none; }
-.home-v2 {
-  background:
-    radial-gradient(circle at 12% 12%, rgba(255,255,255,0.78), transparent 30%),
-    radial-gradient(circle at 88% 8%, rgba(169,194,227,0.36), transparent 34%),
-    linear-gradient(180deg, rgba(246,242,234,0.98) 0%, rgba(241,245,249,0.96) 58%, rgba(238,243,249,1) 100%);
-}
-.dark .home-v2 {
-  background:
-    radial-gradient(circle at 12% 8%, rgba(91,119,178,0.26), transparent 34%),
-    radial-gradient(circle at 88% 22%, rgba(157,91,72,0.18), transparent 38%),
-    linear-gradient(180deg, rgba(5,10,18,0.98) 0%, rgba(7,13,23,0.98) 56%, rgba(5,9,16,1) 100%);
-}
 @media (max-width: 1023px) {
   body:has(.home-v2) .danmaku-composer {
     display: none;
@@ -891,13 +861,6 @@ body.tool-pet-off .whale-pet {
 .home-v2,
 .dark .home-v2 {
   background: transparent;
-}
-.home-v2::before {
-  content: none;
-  display: none;
-}
-.hv-hero {
-  align-items: stretch;
 }
 .hv-hero-copy {
   display: flex;
