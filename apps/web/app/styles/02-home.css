@@ -270,24 +270,6 @@
   align-items: stretch;
   padding: 18px 0 42px;
 }
-.hv-display {
-  margin: 18px 0 18px;
-  font-family: "Songti SC", "Noto Serif SC", Georgia, serif;
-  font-size: clamp(64px, 8.2vw, 112px);
-  font-weight: 600;
-  line-height: 0.85;
-  letter-spacing: -0.085em;
-}
-.hv-display em {
-  color: var(--hv-accent);
-  font-style: normal;
-}
-.hv-hero-lede {
-  margin: 0;
-  color: var(--hv-muted);
-  font-size: var(--type-body);
-  line-height: 1.9;
-}
 .hv-hero-actions {
   display: flex;
   flex-wrap: wrap;
@@ -326,37 +308,6 @@
   color: var(--ui-action-contrast);
   border-color: transparent;
 }
-.hv-hero-foot {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 34px;
-  font-family: Consolas, monospace;
-  font-size: var(--type-meta);
-  letter-spacing: 0.14em;
-  color: var(--hv-muted);
-}
-.hv-hero-line {
-  width: 44px;
-  height: 1px;
-  background: var(--hv-line);
-}
-.hv-profile {
-  border: 1px solid var(--hv-panel-border);
-  border-radius: 24px;
-  background: var(--hv-panel);
-  box-shadow: 0 24px 80px rgba(18, 31, 48, 0.12);
-  backdrop-filter: blur(22px);
-  padding: 22px;
-}
-.dark .hv-profile {
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.34);
-}
-.hv-profile-top {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
 .hv-avatar {
   width: 62px;
   height: 62px;
@@ -377,18 +328,6 @@
   height: 100%;
   object-fit: cover;
 }
-.hv-profile-id {
-  min-width: 0;
-  flex: 1;
-}
-.hv-profile-id h2 {
-  margin: 4px 0 0;
-  font-family: "Songti SC", Georgia, serif;
-  font-size: var(--type-section-title);
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: -0.03em;
-}
 .hv-online {
   display: inline-flex;
   align-items: center;
@@ -402,12 +341,6 @@
   font-size: var(--type-caption);
   letter-spacing: 0.05em;
   white-space: nowrap;
-}
-.hv-profile-bio {
-  margin: 16px 0 0;
-  color: var(--hv-muted);
-  font-size: var(--type-control);
-  line-height: 1.75;
 }
 .hv-stats {
   display: grid;
@@ -432,14 +365,6 @@
   color: var(--hv-muted);
   font-size: var(--type-meta);
 }
-.hv-profile-bottom {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 18px;
-  padding-top: 14px;
-  border-top: 1px solid var(--hv-line);
-}
 .hv-socials {
   display: flex;
   gap: 7px;
@@ -459,33 +384,6 @@
   color: var(--hv-accent);
   border-color: var(--hv-accent);
   background: var(--hv-accent-soft);
-}
-.hv-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 22px;
-  padding: 0 0 18px;
-  border-bottom: 1px solid var(--hv-line);
-}
-.hv-search {
-  width: min(420px, 100%);
-}
-.hv-toolbar-meta {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: Consolas, monospace;
-  font-size: var(--type-meta);
-  letter-spacing: 0.12em;
-  color: var(--hv-muted);
-  white-space: nowrap;
-}
-.hv-toolbar-dot {
-  width: 3px;
-  height: 3px;
-  border-radius: 999px;
-  background: var(--hv-accent);
 }
 .hv-layout {
   display: grid;
@@ -515,10 +413,6 @@
 }
 .hv-moments {
   grid-column: span 7;
-}
-.hv-side-bottom {
-  grid-column: span 5;
-  display: flex;
 }
 .hv-panel-head {
   display: flex;
@@ -600,75 +494,6 @@
   color: var(--hv-accent);
   font-size: var(--type-body);
 }
-.hv-player {
-  padding: 10px;
-  overflow: hidden;
-}
-.hv-player > div {
-  border: 0 !important;
-  border-radius: 16px !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  padding: 14px !important;
-}
-.hv-player > div:hover {
-  transform: none !important;
-}
-.hv-photo-card {
-  position: relative;
-  display: block;
-  min-height: 190px;
-  flex: 1;
-  overflow: hidden;
-  border-radius: 22px;
-  border: 1px solid var(--hv-panel-border);
-  box-shadow: 0 20px 60px rgba(24, 38, 55, 0.14);
-}
-.hv-photo-card img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.8s ease;
-}
-.hv-photo-card:hover img {
-  transform: scale(1.04);
-}
-.hv-photo-shade {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.02), rgba(3, 8, 16, 0.78));
-}
-.hv-photo-copy {
-  position: absolute;
-  left: 18px;
-  right: 46px;
-  bottom: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  color: #fff;
-}
-.hv-photo-copy strong {
-  font-family: "Songti SC", Georgia, serif;
-  font-size: var(--type-section-title);
-  font-weight: 600;
-}
-.hv-photo-copy > span:last-child {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: rgba(255, 255, 255, 0.72);
-  font-size: var(--type-meta);
-}
-.hv-photo-arrow {
-  position: absolute;
-  right: 16px;
-  bottom: 18px;
-  color: #fff;
-  font-size: var(--type-section-title);
-}
 .hv-moment-list {
   display: flex;
   flex-direction: column;
@@ -736,17 +561,6 @@
   color: var(--hv-accent);
   background: var(--hv-accent-soft);
 }
-.hv-theme-copy {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 4px;
-}
-.hv-theme-copy strong {
-  font-family: "Songti SC", Georgia, serif;
-  font-size: 19px;
-  font-weight: 600;
-}
 .hv-theme-switch {
   width: 38px;
   height: 21px;
@@ -790,34 +604,16 @@
     padding-bottom: 32px;
   }
 
-  .hv-profile {
-    max-width: 480px;
-  }
-
   .hv-posts,
   .hv-side,
   .hv-moments,
   .hv-side-bottom {
     grid-column: 1 / -1;
   }
-
-  .hv-toolbar {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .hv-toolbar-meta {
-    margin-left: 0;
-  }
 }
 @media (max-width: 640px) {
   .home-v2-inner {
     padding-top: 92px;
-  }
-
-  .hv-display {
-    font-size: 64px;
   }
 
   .hv-panel {
@@ -832,14 +628,6 @@
     grid-column: 2;
     justify-content: space-between;
     margin-top: 2px;
-  }
-
-  .hv-hero-foot {
-    display: none;
-  }
-
-  .hv-toolbar-meta {
-    display: none;
   }
 }
 @media (max-width: 1023px) {
@@ -915,29 +703,7 @@ body.tool-pet-off .whale-pet {
 .hv-stats-inline strong {
   font-size: 21px;
 }
-.hv-hero-music {
-  padding: 10px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.hv-hero-music > div {
-  border: 0 !important;
-  border-radius: 16px !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  height: 100% !important;
-  padding: 14px !important;
-}
-.hv-hero-music > div:hover {
-  transform: none !important;
-}
 .hv-side {
-  min-height: 100%;
-}
-.hv-side .hv-photo-card {
-  flex: 1;
   min-height: 100%;
 }
 @media (max-width: 1023px) {
@@ -945,16 +711,8 @@ body.tool-pet-off .whale-pet {
     min-height: 0;
   }
 
-  .hv-hero-music {
-    padding: 8px;
-  }
-
   .hv-hero-meta {
     align-items: center;
-  }
-
-  .hv-side .hv-photo-card {
-    min-height: 220px;
   }
 }
 @media (max-width: 640px) {
