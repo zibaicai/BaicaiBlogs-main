@@ -18,6 +18,7 @@ function isMarkdownTheme(value: string | null): value is MarkdownTheme {
 
 export default function MarkdownReader({ html }: { html: string }) {
   const [theme, setTheme] = useState<MarkdownTheme>("classic");
+  const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
     try {
@@ -26,6 +27,15 @@ export default function MarkdownReader({ html }: { html: string }) {
     } catch {
       // ignore storage errors
     }
+  }, []);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const update = () => setIsDark(root.classList.contains("dark"));
+    update();
+    const observer = new MutationObserver(update);
+    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
   }, []);
 
   const changeTheme = (next: MarkdownTheme) => {
@@ -37,13 +47,16 @@ export default function MarkdownReader({ html }: { html: string }) {
     }
   };
 
-  const contentClass =
+  const contentClass = "markdown-content markdown-body";
+  const effectiveTheme =
     theme === "classic"
-      ? "markdown-content article-prose prose prose-slate dark:prose-invert prose-base md:prose-lg max-w-none"
-      : "markdown-content markdown-body";
+      ? isDark
+        ? "github-dark"
+        : "github-light"
+      : theme;
 
   return (
-    <section className="markdown-reader" data-md-theme={theme}>
+    <section className="markdown-reader" data-md-theme={effectiveTheme} data-site-theme={theme}>
       <div className="markdown-theme-bar">
         <span className="markdown-theme-label">阅读主题</span>
         <div className="markdown-theme-options" role="group" aria-label="Markdown 阅读主题">
@@ -63,7 +76,7 @@ export default function MarkdownReader({ html }: { html: string }) {
       </div>
 
       <div
-        className={`${contentClass} transition-colors duration-300`}
+        className={`${contentClass} ${theme === "classic" ? "markdown-body--site" : ""} transition-colors duration-300`}
         dangerouslySetInnerHTML={{ __html: html }}
       />
     </section>
