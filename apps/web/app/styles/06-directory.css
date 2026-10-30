@@ -1508,6 +1508,7 @@ html:not(.dark) .hv-empty {
 
 .profile-grid > * {
   min-width: 0;
+  grid-column: auto;
 }
 
 .archive-profile-card {
