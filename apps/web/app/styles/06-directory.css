@@ -1615,6 +1615,16 @@ html:not(.dark) .hv-empty {
   gap: 6px;
   margin-top: auto;
   padding-top: 14px;
+  font-size: var(--type-meta);
+}
+
+.archive-profile-foot .archive-item-meta {
+  margin-left: auto;
+  color: var(--ui-text-faint);
+  font-family: var(--font-mono);
+  font-size: var(--type-meta);
+  font-weight: 500;
+  letter-spacing: 0.02em;
 }
 
 .archive-grid-surface--solid .archive-profile-card {

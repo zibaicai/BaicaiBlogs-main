@@ -79,7 +79,7 @@ export default function ArchiveItemCard({
                 #{tag}
               </span>
             ))}
-            {meta && <span className="archive-item-meta">{meta}</span>}
+            {meta && <span className="archive-item-meta text-meta">{meta}</span>}
           </div>
         )}
       </>
@@ -148,7 +148,7 @@ export default function ArchiveItemCard({
               ))}
             </div>
           )}
-          {meta && <span className="archive-item-meta">{meta}</span>}
+          {meta && <span className="archive-item-meta text-meta">{meta}</span>}
         </div>
       </div>
     </>

@@ -21,7 +21,6 @@ export default async function RoomsPage() {
       title={room.roomName}
       description={room.roomBio || "还没有写下小屋简介。"}
       label={room.nickname}
-      category="ROOM"
       meta={`${room.postCount} 笔记 · ${room.momentCount} 说说 · ${room.photoCount} 照片`}
       media={
         room.avatar

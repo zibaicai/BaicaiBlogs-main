@@ -29,7 +29,6 @@ export default function ProjectsBoard({ projects }: { projects: Project[] }) {
           title={project.name}
           description={project.description}
           label={project.createdAt ? `收录于 ${formatDay(project.createdAt)}` : undefined}
-          category="PROJECT"
           tags={project.tags || []}
           cornerBadge={repoProviderLabel(project.githubUrl)}
           media={{ kind: "icon", content: project.icon || "🚀" }}
