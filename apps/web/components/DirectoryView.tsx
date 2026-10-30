@@ -8,6 +8,21 @@ import { motion } from "framer-motion";
 export type ArchiveViewMode = "grid" | "timeline" | "masonry" | "thread";
 export type ArchiveGridVariant = "profile" | "cover" | "row";
 export type ArchiveGridSurface = "glass" | "solid" | "ghost";
+export type ArchiveGridGap = "sm" | "md" | "lg";
+export type ArchiveCardSize = "sm" | "md" | "lg";
+export type ArchiveGridDensity = "compact" | "comfortable";
+export type ArchiveCardRatio = "auto" | "square" | "4/3" | "16/9";
+
+export type ArchiveGridColumns =
+  | "auto"
+  | number
+  | {
+      base?: number;
+      sm?: number;
+      md?: number;
+      lg?: number;
+      xl?: number;
+    };
 
 export interface ArchiveViewDefinition {
   label: string;
@@ -20,6 +35,11 @@ export interface ArchiveLayoutProps {
   featuredFirst?: boolean;
   compact?: boolean;
   gridVariant?: ArchiveGridVariant;
+  columns?: ArchiveGridColumns;
+  gap?: ArchiveGridGap;
+  cardSize?: ArchiveCardSize;
+  density?: ArchiveGridDensity;
+  cardRatio?: ArchiveCardRatio;
   surface?: ArchiveGridSurface;
   gridStyle?: CSSProperties;
   gridClassName?: string;
@@ -57,10 +77,28 @@ export function ArchiveGrid({
   featuredFirst = false,
   compact = false,
   gridVariant = "profile",
+  columns,
+  gap,
+  cardSize,
+  density,
+  cardRatio,
   surface,
   gridStyle,
   gridClassName = "",
 }: ArchiveLayoutProps) {
+  const columnStyle: CSSProperties = {};
+  if (columns === "auto") {
+    columnStyle["--grid-columns-mode" as string] = "auto";
+  } else if (typeof columns === "number") {
+    columnStyle["--grid-cols-base" as string] = String(columns);
+  } else if (columns) {
+    if (columns.base !== undefined) columnStyle["--grid-cols-base" as string] = String(columns.base);
+    if (columns.sm !== undefined) columnStyle["--grid-cols-sm" as string] = String(columns.sm);
+    if (columns.md !== undefined) columnStyle["--grid-cols-md" as string] = String(columns.md);
+    if (columns.lg !== undefined) columnStyle["--grid-cols-lg" as string] = String(columns.lg);
+    if (columns.xl !== undefined) columnStyle["--grid-cols-xl" as string] = String(columns.xl);
+  }
+
   return (
     <div
       className={`directory-grid ${compact ? "directory-grid-compact" : ""} ${
@@ -71,8 +109,13 @@ export function ArchiveGrid({
             : "profile-grid"
       } ${surface ? `archive-grid-surface--${surface}` : ""} ${gridClassName}`}
       data-grid-variant={gridVariant}
+      data-grid-columns={columns ? (columns === "auto" ? "auto" : "custom") : undefined}
+      data-grid-gap={gap}
+      data-card-size={cardSize}
+      data-grid-density={density}
+      data-card-ratio={cardRatio}
       data-grid-surface={surface}
-      style={gridStyle}
+      style={{ ...columnStyle, ...gridStyle }}
     >
       {items.map((item, index) => (
         <motion.div
@@ -160,6 +203,11 @@ export default function DirectoryView({
   featuredFirst = false,
   compact = false,
   gridVariant = "profile",
+  columns,
+  gap,
+  cardSize,
+  density,
+  cardRatio,
   surface,
   gridStyle,
   gridClassName = "",
@@ -173,6 +221,11 @@ export default function DirectoryView({
       featuredFirst={featuredFirst}
       compact={compact}
       gridVariant={gridVariant}
+      columns={columns}
+      gap={gap}
+      cardSize={cardSize}
+      density={density}
+      cardRatio={cardRatio}
       surface={surface}
       gridStyle={gridStyle}
       gridClassName={gridClassName}

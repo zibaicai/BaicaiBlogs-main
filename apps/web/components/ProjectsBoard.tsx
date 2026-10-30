@@ -54,6 +54,10 @@ export default function ProjectsBoard({ projects }: { projects: Project[] }) {
         filters={filters}
         views={["grid", "timeline", "masonry"]}
         gridVariant="profile"
+        columns={{ base: 1, lg: 2 }}
+        gap="md"
+        cardSize="md"
+        density="comfortable"
         searchPlaceholder="搜索项目、代号或技术栈..."
         empty="还没有公开的项目。"
       />

@@ -65,6 +65,7 @@ export default async function PostsPage({
             featuredFirst
             compact
             gridVariant="cover"
+            columns={{ base: 1, sm: 2, lg: 3, xl: 4 }}
             pageSize={12}
             initialPage={initialPage}
             defaultSort="newest"

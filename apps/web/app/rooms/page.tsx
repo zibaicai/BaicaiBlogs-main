@@ -46,7 +46,14 @@ export default async function RoomsPage() {
               </p>
             </header>
 
-            <ArchiveGridShell items={roomCards} gridVariant="profile" />
+            <ArchiveGridShell
+              items={roomCards}
+              gridVariant="profile"
+              columns={{ base: 1, md: 2, lg: 3 }}
+              gap="md"
+              cardSize="sm"
+              density="compact"
+            />
             {rooms.length === 0 && <p className="py-20 text-center text-sm text-slate-500">还没有小屋。</p>}
 
             <div className="mt-8 flex items-center gap-2 text-xs text-slate-500">

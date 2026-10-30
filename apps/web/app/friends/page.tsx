@@ -71,6 +71,7 @@ export default async function FriendsPage() {
             views={["grid", "timeline", "masonry"]}
             compact
             gridVariant="cover"
+            columns={{ base: 1, sm: 2, lg: 3, xl: 4 }}
             searchPlaceholder="搜索朋友、简介或链接..."
             empty={empty}
           />

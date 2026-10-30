@@ -40,6 +40,7 @@ export default function TimelineClient({
         views={["grid", "timeline", "masonry"]}
         compact
         gridVariant="cover"
+        columns={{ base: 1, sm: 2, lg: 3, xl: 4 }}
         pageSize={12}
         searchPlaceholder="搜索标题、标签或关键词..."
         initialMode="timeline"

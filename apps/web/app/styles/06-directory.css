@@ -1645,4 +1645,92 @@ html:not(.dark) .hv-empty {
   }
 }
 
+/* Grid column / density API. Data attributes keep the cascade explicit while
+   the caller chooses responsive column counts through CSS variables. */
+.directory-grid[data-grid-columns="custom"] {
+  grid-template-columns: repeat(var(--grid-cols-base, 1), minmax(0, 1fr));
+}
+
+.directory-grid[data-grid-columns="custom"] > * {
+  grid-column: auto;
+}
+
+.directory-grid[data-grid-columns="auto"] {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+}
+
+.directory-grid[data-grid-columns="auto"] > * {
+  grid-column: auto;
+}
+
+@media (min-width: 640px) {
+  .directory-grid[data-grid-columns="custom"] {
+    grid-template-columns: repeat(var(--grid-cols-sm, var(--grid-cols-base, 1)), minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 768px) {
+  .directory-grid[data-grid-columns="custom"] {
+    grid-template-columns: repeat(var(--grid-cols-md, var(--grid-cols-sm, var(--grid-cols-base, 1))), minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .directory-grid[data-grid-columns="custom"] {
+    grid-template-columns: repeat(var(--grid-cols-lg, var(--grid-cols-md, var(--grid-cols-sm, var(--grid-cols-base, 1)))), minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .directory-grid[data-grid-columns="custom"] {
+    grid-template-columns: repeat(var(--grid-cols-xl, var(--grid-cols-lg, var(--grid-cols-md, var(--grid-cols-sm, var(--grid-cols-base, 1))))), minmax(0, 1fr));
+  }
+}
+
+.directory-grid[data-grid-gap="sm"] { gap: 12px; }
+.directory-grid[data-grid-gap="md"] { gap: 16px; }
+.directory-grid[data-grid-gap="lg"] { gap: 24px; }
+
+.directory-grid[data-card-ratio="square"] .directory-card { aspect-ratio: 1 / 1; }
+.directory-grid[data-card-ratio="4/3"] .directory-card { aspect-ratio: 4 / 3; }
+.directory-grid[data-card-ratio="16/9"] .directory-card { aspect-ratio: 16 / 9; }
+
+.directory-grid[data-card-size="sm"] .archive-profile-card {
+  padding: 15px;
+}
+
+.directory-grid[data-card-size="sm"] .archive-profile-avatar {
+  width: 38px;
+  height: 38px;
+  flex-basis: 38px;
+  font-size: 16px;
+}
+
+.directory-grid[data-card-size="sm"] .archive-profile-title {
+  font-size: var(--type-list-title);
+}
+
+.directory-grid[data-card-size="sm"] .archive-profile-description {
+  margin-top: 10px;
+  font-size: var(--type-list-description);
+  -webkit-line-clamp: 2;
+}
+
+.directory-grid[data-card-size="lg"] .archive-profile-card {
+  padding: 22px;
+}
+
+.directory-grid[data-grid-density="compact"] .archive-profile-card {
+  height: auto;
+}
+
+.directory-grid[data-grid-density="compact"] .archive-profile-description {
+  margin-top: 10px;
+}
+
+.directory-grid[data-grid-density="compact"] .archive-profile-foot {
+  margin-top: 12px;
+  padding-top: 10px;
+}
+
 }

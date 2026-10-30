@@ -77,6 +77,7 @@ export default function ArticlesPage() {
               featuredFirst
               compact
               gridVariant="cover"
+              columns={{ base: 1, sm: 2, lg: 3, xl: 4 }}
               pageSize={12}
               defaultSort="newest"
               searchPlaceholder="搜索标题、摘要、分类或标签..."

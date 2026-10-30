@@ -124,6 +124,7 @@ export default function PhotoWallPage() {
               filters={filters}
               compact
               gridVariant="cover"
+              columns={{ base: 1, sm: 2, lg: 3, xl: 4 }}
               views={["grid"]}
               pageSize={12}
               defaultSort="newest"

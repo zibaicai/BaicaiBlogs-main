@@ -6,7 +6,16 @@ import { usePathname } from "next/navigation";
 import { Check, SlidersHorizontal, X } from "lucide-react";
 import ArchiveHeader from "./ArchiveHeader";
 import ArchiveToolbar, { type SortOption } from "./ArchiveToolbar";
-import DirectoryView, { type ArchiveGridSurface, type ArchiveGridVariant, type ArchiveViewMode } from "./DirectoryView";
+import DirectoryView, {
+  type ArchiveCardRatio,
+  type ArchiveCardSize,
+  type ArchiveGridColumns,
+  type ArchiveGridDensity,
+  type ArchiveGridGap,
+  type ArchiveGridSurface,
+  type ArchiveGridVariant,
+  type ArchiveViewMode,
+} from "./DirectoryView";
 
 export interface DirectoryItem {
   key: string;
@@ -58,6 +67,11 @@ export default function DirectoryExplorer({
   featuredFirst = false,
   compact = false,
   gridVariant = "profile",
+  columns,
+  gap,
+  cardSize,
+  density,
+  cardRatio,
   surface,
   gridStyle,
   gridClassName = "",
@@ -81,6 +95,11 @@ export default function DirectoryExplorer({
   featuredFirst?: boolean;
   compact?: boolean;
   gridVariant?: ArchiveGridVariant;
+  columns?: ArchiveGridColumns;
+  gap?: ArchiveGridGap;
+  cardSize?: ArchiveCardSize;
+  density?: ArchiveGridDensity;
+  cardRatio?: ArchiveCardRatio;
   surface?: ArchiveGridSurface;
   gridStyle?: CSSProperties;
   gridClassName?: string;
@@ -247,6 +266,11 @@ export default function DirectoryExplorer({
           featuredFirst={featuredFirst}
           compact={compact}
           gridVariant={gridVariant}
+          columns={columns}
+          gap={gap}
+          cardSize={cardSize}
+          density={density}
+          cardRatio={cardRatio}
           surface={surface}
           gridStyle={gridStyle}
           gridClassName={gridClassName}
