@@ -1,3 +1,4 @@
+@layer components {
 /* Top navigation search */
 .nav-links {
   max-width: none;
@@ -277,4 +278,6 @@
 .dark .nav-search-result-kind {
   color: #a9c8ff;
   background: rgba(49, 87, 183, 0.16);
+}
+
 }

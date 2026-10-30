@@ -1,3 +1,4 @@
+@layer components {
 /* Circular music orb */
 .music-orb {
   -webkit-tap-highlight-color: transparent;
@@ -61,4 +62,6 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .music-ripple { animation: none; opacity: 0; }
+}
+
 }
