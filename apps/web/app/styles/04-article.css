@@ -50,6 +50,8 @@
 .article-content {
   grid-column: 2;
   grid-row: 2;
+  --article-gutter-x: 1.25rem;
+  --article-gutter-y: 1.25rem;
 }
 .article-summary {
   max-width: 52rem;
@@ -224,6 +226,8 @@ body[data-nav-hidden="true"] .article-toc {
   gap: 0.5rem;
   flex-wrap: wrap;
   margin: 0.1rem 0 0.8rem;
+  padding-left: var(--article-gutter-x);
+  padding-right: var(--article-gutter-x);
 }
 .markdown-theme-label {
   font-family: Consolas, monospace;
@@ -284,10 +288,6 @@ body[data-nav-hidden="true"] .article-toc {
   border-color: #3d444d;
 }
 /* Shared gutter: header, theme bar and every markdown theme align to the same edges. */
-.article-content {
-  --article-gutter-x: 1.25rem;
-  --article-gutter-y: 1.25rem;
-}
 @media (min-width: 768px) {
   .article-content {
     --article-gutter-x: 2rem;
@@ -299,10 +299,6 @@ body[data-nav-hidden="true"] .article-toc {
 }
 .markdown-reader .markdown-content {
   padding: var(--article-gutter-y) var(--article-gutter-x);
-}
-.markdown-theme-bar {
-  padding-left: var(--article-gutter-x);
-  padding-right: var(--article-gutter-x);
 }
 /* Keep the existing site typography preference for every markdown theme:
    normal text is 1px smaller, inline bold remains at the original size. */
