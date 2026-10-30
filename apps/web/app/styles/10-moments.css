@@ -32,6 +32,12 @@
   border-image-source: url("/moments/bubble-right-light.svg");
 }
 
+/* The old even-column radius is a higher-specificity override; keep it so
+   the merged base rule does not flatten the right-hand bubble. */
+.archive-masonry-column:nth-child(2) .moment-card {
+  border-radius: var(--radius-panel) var(--radius-panel) var(--radius-xs) var(--radius-panel);
+}
+
 .dark .archive-masonry-column:nth-child(even) .moment-card {
   border-image-source: url("/moments/bubble-right-dark.svg");
 }
@@ -40,6 +46,7 @@
   .moment-card {
     border-width: 24px;
     border-image-width: 24px;
+    padding: 15px 15px 12px;
   }
 }
 /* /moments is a conversation thread, not a two-column masonry grid. */

@@ -267,6 +267,7 @@
   backdrop-filter: none;
 }
 .music-main .music-comments-side {
+  padding: 12px;
   overflow-y: auto;
 }
 .music-main .music-lyrics { max-height: none; overflow-x: hidden; }
