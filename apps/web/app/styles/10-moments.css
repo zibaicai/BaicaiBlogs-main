@@ -1,0 +1,319 @@
+/* Moment bubble: a real vector tail outside the clipped card surface. */
+.moment-card {
+  overflow: visible;
+  isolation: isolate;
+}
+.moment-card > *:not(.moment-tail) {
+  position: relative;
+  z-index: 1;
+}
+.moment-card::after {
+  display: none;
+}
+.moment-tail {
+  position: absolute;
+  bottom: 16px;
+  left: -13px;
+  z-index: 0;
+  width: 16px;
+  height: 28px;
+  pointer-events: none;
+  overflow: visible;
+}
+.moment-tail path {
+  fill: var(--ui-secondary-bg);
+  stroke: var(--ui-border);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.archive-masonry-column:nth-child(even) .moment-tail {
+  right: -13px;
+  left: auto;
+  transform: scaleX(-1);
+}
+@media (max-width: 767px) {
+  .moment-tail {
+    display: none;
+  }
+}
+/* Full-SVG moment bubble. The transparent canvas margin is the card's
+   safe area; the SVG body and tail are one shape, so there is no seam. */
+.moment-card {
+  border: 30px solid transparent;
+  border-image-source: url("/moments/bubble-left-light.svg");
+  border-image-slice: 60 60 80 60 fill;
+  border-image-width: 30px;
+  border-image-repeat: stretch;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  overflow: visible;
+  filter: drop-shadow(0 16px 32px rgba(24, 38, 55, 0.12));
+}
+.dark .moment-card {
+  border-image-source: url("/moments/bubble-left-dark.svg");
+  filter: drop-shadow(0 16px 32px rgba(0, 0, 0, 0.32));
+}
+.archive-masonry-column:nth-child(even) .moment-card {
+  border-image-source: url("/moments/bubble-right-light.svg");
+}
+.dark .archive-masonry-column:nth-child(even) .moment-card {
+  border-image-source: url("/moments/bubble-right-dark.svg");
+}
+.moment-card::after,
+.moment-tail {
+  display: none;
+}
+@media (max-width: 767px) {
+  .moment-card {
+    border-width: 24px;
+    border-image-width: 24px;
+  }
+}
+/* /moments is a conversation thread, not a two-column masonry grid. */
+.moment-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.moment-row {
+  display: flex;
+  width: 100%;
+}
+.moment-row[data-side="left"] {
+  justify-content: flex-start;
+}
+.moment-row[data-side="right"] {
+  justify-content: flex-end;
+}
+.moment-row .moment-card {
+  width: fit-content;
+  min-width: min(280px, 100%);
+  max-width: min(620px, 72%);
+}
+.moment-row[data-side="right"] .moment-card {
+  border-image-source: url("/moments/bubble-right-light.svg");
+}
+.dark .moment-row[data-side="right"] .moment-card {
+  border-image-source: url("/moments/bubble-right-dark.svg");
+}
+@media (max-width: 767px) {
+  .moment-row .moment-card {
+    max-width: 88%;
+  }
+}
+/* Unified comments */
+.comment-section {
+  margin: 48px auto 0;
+  padding: 22px;
+  /* 只要上下边框不要左右 */
+  border-top: 1px solid var(--ui-border);  
+  border-bottom: 1px solid var(--ui-border);  
+
+  border-radius: var(--radius-panel);
+  background: color-mix(in srgb, var(--ui-secondary-bg) 88%, transparent);
+  backdrop-filter: blur(18px);
+}
+.comment-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--ui-border);
+}
+.comment-eyebrow {
+  color: var(--ui-accent);
+  font-family: Consolas, monospace;
+  font-size: var(--type-meta);
+  font-weight: 800;
+  letter-spacing: .16em;
+}
+.comment-head h2 {
+  margin: 4px 0 0;
+  color: var(--ui-text);
+  font-size: var(--type-section-title);
+  font-weight: 800;
+}
+.comment-head h2 span {
+  margin-left: 7px;
+  color: var(--ui-text-muted);
+  font-size: var(--type-control);
+  font-weight: 700;
+}
+.comment-head > svg { color: var(--ui-text-muted); }
+.comment-composer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--radius-control);
+  background: color-mix(in srgb, var(--ui-bg) 42%, transparent);
+  cursor: text;
+}
+.comment-composer.is-expanded { align-items: flex-start; }
+.comment-composer .comment-avatar { flex: 0 0 32px; }
+.comment-composer-body { flex: 1; min-width: 0; }
+.comment-composer textarea {
+  display: block;
+  width: 100%;
+  height: 22px;
+  resize: none;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ui-text);
+  font: inherit;
+  font-size: var(--type-description);
+  line-height: 1.7;
+  transition: height .28s cubic-bezier(.34, 1.28, .64, 1);
+}
+.comment-composer.is-expanded textarea { height: 66px; }
+.comment-composer-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  margin-top: 0;
+  transform: translateY(-4px);
+  transition:
+    max-height .28s cubic-bezier(.34, 1.28, .64, 1),
+    opacity .2s ease,
+    transform .28s cubic-bezier(.34, 1.28, .64, 1),
+    margin-top .28s cubic-bezier(.34, 1.28, .64, 1);
+  color: var(--ui-text-faint);
+  font-size: var(--type-meta);
+}
+.comment-composer.is-expanded .comment-composer-foot {
+  max-height: 60px;
+  opacity: 1;
+  margin-top: 6px;
+  transform: none;
+}
+.comment-composer-foot button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 999px;
+  background: var(--ui-accent);
+  color: var(--ui-accent-contrast);
+  padding: 7px 14px;
+  font-size: var(--type-meta);
+  font-weight: 800;
+}
+.comment-composer-foot button:disabled { opacity: .45; }
+/* 移动端：字号低于 16px 时 iOS Safari 会在聚焦输入框时自动放大页面 */
+@media (max-width: 640px) {
+  .comment-composer textarea { font-size: var(--type-resource-title); }
+}
+/* 尊重系统的"减少动态效果" */
+@media (prefers-reduced-motion: reduce) {
+  .comment-composer textarea,
+  .comment-composer-foot {
+    transition-duration: .01ms;
+  }
+}
+.comment-login-hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding: 14px 16px;
+  border: 1px dashed var(--ui-border);
+  border-radius: var(--radius-control);
+  color: var(--ui-text-muted);
+  font-size: var(--type-control);
+}
+.comment-login-hint a {
+  color: var(--ui-accent);
+  font-weight: 800;
+}
+.comment-message {
+  margin-top: 12px;
+  color: var(--ui-success);
+  font-size: var(--type-meta);
+  font-weight: 700;
+}
+.comment-message.is-error { color: var(--ui-danger); }
+.comment-loading,
+.comment-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 88px;
+  color: var(--ui-text-faint);
+  font-size: var(--type-control);
+}
+.comment-list {
+  display: flex;
+  flex-direction: column;
+  margin-top: 8px;
+}
+.comment-item {
+  display: flex;
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--ui-border) 70%, transparent);
+}
+.comment-item:last-child { border-bottom: 0; }
+.comment-avatar {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--ui-accent-soft);
+  color: var(--ui-accent-strong);
+  font-size: var(--type-control);
+  font-weight: 800;
+}
+.comment-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.comment-main { min-width: 0; flex: 1; }
+.comment-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.comment-meta strong { color: var(--ui-text); font-size: var(--type-control); }
+.comment-meta time { color: var(--ui-text-faint); font-size: var(--type-meta); }
+.comment-content {
+  margin: 6px 0 10px;
+  color: var(--ui-text);
+  font-size: var(--type-description);
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.comment-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--ui-text-faint);
+}
+.comment-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: var(--type-meta);
+  font-weight: 700;
+  transition: color .2s;
+}
+.comment-actions button:hover:not(:disabled),
+.comment-actions button.is-active { color: var(--ui-accent); }
+.comment-actions button:disabled { cursor: default; opacity: .5; }
+@media (max-width: 640px) {
+  .comment-section { margin-top: 28px; padding: 16px; }
+  .comment-head h2 { font-size: var(--type-section-title); }
+}
+.article-comments { grid-column: 1 / -1; width: 100%; }

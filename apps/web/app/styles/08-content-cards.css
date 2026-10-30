@@ -1,0 +1,180 @@
+/* One content rail for all public pages. */
+.directory-shell {
+  width: 100%;
+  max-width: 1180px;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+@media (min-width: 640px) {
+  .directory-shell {
+    padding-inline: 2rem;
+  }
+}
+/* Horizontal archive cards: media and content share one inner height.
+   The card owns the padding; the image no longer bleeds to the border. */
+.archive-card,
+.directory-grid.directory-grid-compact > * .directory-card:not(.archive-card),
+.archive-timeline .directory-card:not(.archive-card),
+.archive-timeline .archive-card,
+.archive-masonry .directory-card:not(.archive-card) {
+  --archive-card-pad: 10px;
+  --archive-card-gap: 12px;
+  padding: var(--archive-card-pad);
+  gap: var(--archive-card-gap);
+  min-height: 0;
+  align-items: stretch;
+  overflow: hidden;
+}
+.archive-card-media,
+.directory-grid.directory-grid-compact > * .directory-card:not(.archive-card) .directory-card-media,
+.archive-timeline .directory-card:not(.archive-card) .directory-card-media,
+.archive-timeline .archive-card-media,
+.archive-masonry .directory-card:not(.archive-card) .directory-card-media {
+  height: 100%;
+  min-height: 0;
+  align-self: stretch;
+  overflow: hidden;
+  border-radius: calc(1.25rem - var(--archive-card-pad));
+}
+.archive-card-body,
+.directory-grid.directory-grid-compact > * .directory-card:not(.archive-card) .directory-card-body,
+.archive-timeline .directory-card:not(.archive-card) .directory-card-body,
+.archive-timeline .archive-card-body,
+.archive-masonry .directory-card:not(.archive-card) .directory-card-body {
+  min-height: 0;
+  padding: 0;
+  justify-content: center;
+}
+.archive-card .archive-card-media,
+.directory-grid.directory-grid-compact > * .directory-card:not(.archive-card) .directory-card-media,
+.archive-timeline .directory-card:not(.archive-card) .directory-card-media,
+.archive-masonry .directory-card:not(.archive-card) .directory-card-media {
+  background: rgba(15, 23, 42, 0.2);
+}
+@media (max-width: 767px) {
+  .archive-card,
+  .directory-grid.directory-grid-compact > * .directory-card:not(.archive-card),
+  .archive-timeline .directory-card:not(.archive-card),
+  .archive-timeline .archive-card,
+  .archive-masonry .directory-card:not(.archive-card) {
+    --archive-card-pad: 8px;
+    --archive-card-gap: 10px;
+  }
+}
+/* Content-driven horizontal rows: the media is an absolute fill layer so its
+   intrinsic aspect ratio cannot decide the card height. */
+.directory-grid.directory-grid-compact {
+  align-items: start;
+}
+.directory-grid.directory-grid-compact > * {
+  align-self: start;
+}
+.archive-card-media,
+.directory-grid.directory-grid-compact > * .directory-card:not(.archive-card) .directory-card-media,
+.archive-timeline .directory-card:not(.archive-card) .directory-card-media,
+.archive-timeline .archive-card-media,
+.archive-masonry .directory-card:not(.archive-card) .directory-card-media {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+}
+.archive-card-media img,
+.directory-grid.directory-grid-compact > * .directory-card:not(.archive-card) .directory-card-media img,
+.archive-timeline .directory-card:not(.archive-card) .directory-card-media img,
+.archive-timeline .archive-card-media img,
+.archive-masonry .directory-card:not(.archive-card) .directory-card-media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.archive-card-body,
+.directory-grid.directory-grid-compact > * .directory-card:not(.archive-card) .directory-card-body,
+.archive-timeline .directory-card:not(.archive-card) .directory-card-body,
+.archive-timeline .archive-card-body,
+.archive-masonry .directory-card:not(.archive-card) .directory-card-body {
+  justify-content: flex-start;
+}
+.directory-card-title,
+.archive-card-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.directory-card-description {
+  flex: 0 0 auto;
+  margin-top: 0;
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.archive-card-description {
+  flex: 0 0 auto;
+  margin-top: 0;
+  -webkit-line-clamp: 2;
+}
+.directory-card-foot,
+.archive-card-foot {
+  margin-top: 2px;
+  padding-top: 0;
+}
+.directory-card-tags {
+  margin-top: 0;
+}
+.directory-card-body,
+.archive-card-body {
+  min-height: 0;
+  gap: 6px;
+}
+/* Keep media children that are not images (project icon, fallback) inside
+   the row without creating a second intrinsic height source. */
+.archive-card-media > * {
+  min-height: 0;
+}
+@media (max-width: 767px) {
+  .directory-grid.directory-grid-compact {
+    align-items: start;
+  }
+
+  .archive-card-description,
+  .directory-card-description {
+    -webkit-line-clamp: 2;
+  }
+}
+/* Radius migration: semantic surfaces. */
+.hv-panel,
+.directory-card,
+.moment-card {
+  border-radius: var(--radius-panel);
+}
+.archive-card,
+.directory-grid.directory-grid-compact > * .directory-card:not(.archive-card),
+.archive-timeline .directory-card:not(.archive-card),
+.archive-masonry .directory-card:not(.archive-card) {
+  border-radius: var(--radius-card);
+}
+.archive-card-media,
+.directory-grid.directory-grid-compact > * .directory-card:not(.archive-card) .directory-card-media,
+.archive-timeline .directory-card:not(.archive-card) .directory-card-media,
+.archive-timeline .archive-card-media,
+.archive-masonry .directory-card:not(.archive-card) .directory-card-media {
+  border-radius: var(--radius-media);
+}
+.moment-card {
+  border-radius: var(--radius-panel) var(--radius-panel) var(--radius-panel) var(--radius-xs);
+}
+.archive-masonry-column:nth-child(2) .moment-card {
+  border-radius: var(--radius-panel) var(--radius-panel) var(--radius-xs) var(--radius-panel);
+}
+.hv-toolbar-meta-only .hv-toolbar-meta {
+  border-radius: var(--radius-pill);
+}
+/* Compact surfaces stay on the smaller step without changing component code. */
+@media (max-width: 767px) {
+  :root {
+    --radius-card: 12px;
+    --radius-panel: 16px;
+    --radius-media: 6px;
+  }
+}

@@ -1,0 +1,463 @@
+/* =========================================================
+   Post view modes
+   grid    : square cover card with a progressive bottom blur
+   masonry : top image + bottom reading area
+   timeline: keep the existing horizontal timeline row
+   ========================================================= */
+.directory-card-copy {
+  display: contents;
+}
+.directory-card-time,
+.directory-card-blur {
+  display: none;
+}
+.directory-grid.cover-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+.cover-grid > * {
+  align-self: start;
+}
+.cover-grid .directory-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  overflow: hidden;
+  border-radius: var(--radius-card);
+}
+.cover-grid .directory-card-media {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  min-height: 0;
+  border-radius: 0;
+  overflow: hidden;
+  background: rgba(15, 23, 42, 0.4);
+}
+.cover-grid .directory-card-media-image {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cover-grid .directory-card-blur {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(12px) saturate(1.05);
+  transform: scale(1.08);
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.12) 32%,
+    rgba(0, 0, 0, 0.72) 68%,
+    #000 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.12) 32%,
+    rgba(0, 0, 0, 0.72) 68%,
+    #000 100%
+  );
+}
+.cover-grid .directory-card-media > .absolute.inset-0 {
+  z-index: 2;
+  background-image: linear-gradient(
+    180deg,
+    rgba(2, 6, 23, 0.02) 0%,
+    rgba(2, 6, 23, 0.18) 38%,
+    rgba(2, 6, 23, 0.78) 100%
+  );
+}
+.cover-grid .directory-date-badge {
+  display: none;
+}
+.cover-grid .directory-card-body {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: block;
+  padding: 14px;
+  min-height: 0;
+}
+.cover-grid .directory-card-copy {
+  position: absolute;
+  top: 54%;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.cover-grid .directory-card-time {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  height: 22px;
+  margin-bottom: 8px;
+  padding: 0 8px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--radius-pill);
+  background: rgba(2, 6, 23, 0.74);
+  color: rgba(255, 255, 255, 0.92);
+  font-family: Consolas, monospace;
+  font-size: var(--type-meta);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  backdrop-filter: blur(8px);
+}
+.cover-grid .directory-card-title {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #fff;
+  font-family: var(--font-ui);
+  --resource-title-size: var(--type-overlay-title);
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: normal;
+  text-overflow: clip;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.cover-grid .directory-card-description {
+  display: -webkit-box;
+  overflow: hidden;
+  margin-top: 6px;
+  color: rgba(255, 255, 255, 0.74);
+  font-size: var(--type-list-description);
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.cover-grid .directory-card-foot {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  left: 14px;
+  display: flex;
+  min-height: 42px;
+  max-height: 42px;
+  margin: 0;
+  padding: 0;
+  align-content: flex-start;
+  align-items: flex-start;
+  gap: 4px;
+  overflow: hidden;
+}
+.cover-grid .directory-card-category {
+  color: rgba(255, 255, 255, 0.78);
+  letter-spacing: 0.06em;
+}
+.cover-grid .directory-card-tags {
+  gap: 4px;
+}
+.cover-grid .directory-tag {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(2, 6, 23, 0.46);
+  color: rgba(255, 255, 255, 0.82);
+  padding: 2px 6px;
+}
+/* Masonry becomes an editorial image-on-top card, not another row card. */
+.archive-masonry .directory-card:not(.archive-card) {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+  border-radius: var(--radius-card);
+}
+.archive-masonry .directory-card:not(.archive-card) .directory-card-media {
+  position: relative;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  min-height: 0;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border-radius: 0;
+}
+.archive-masonry .directory-card:not(.archive-card) .directory-card-media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.archive-masonry .directory-card:not(.archive-card) .directory-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+  padding: 14px;
+  justify-content: flex-start;
+}
+.archive-masonry .directory-card:not(.archive-card) .directory-card-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.archive-masonry .directory-card:not(.archive-card) .directory-card-time {
+  display: none;
+}
+.archive-masonry .directory-card:not(.archive-card) .directory-card-title {
+  --resource-title-size: var(--type-overlay-title);
+  line-height: 1.35;
+  white-space: normal;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.archive-masonry .directory-card:not(.archive-card) .directory-card-description {
+  margin: 0;
+  font-size: var(--type-list-description);
+  line-height: 1.55;
+  -webkit-line-clamp: 2;
+}
+.archive-masonry .directory-card:not(.archive-card) .directory-card-foot {
+  position: static;
+  margin: 8px 0 0;
+  padding: 0;
+  min-height: 0;
+  max-height: none;
+}
+@media (max-width: 1024px) {
+  .directory-grid.cover-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .directory-grid.cover-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cover-grid .directory-card-copy {
+    top: 48%;
+  }
+
+  .cover-grid .directory-card-title {
+    --resource-title-size: 0.9375rem;
+  }
+
+  .cover-grid .directory-card-description {
+    font-size: var(--type-list-description);
+  }
+
+  .archive-masonry {
+    flex-direction: column;
+  }
+
+  .archive-masonry-column {
+    width: 100%;
+  }
+}
+/* The compact-row rules are intentionally more specific than the legacy
+   horizontal layout, so the grid variant needs an equally explicit scope. */
+.directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) {
+  display: block;
+  grid-template-columns: none;
+  padding: 0;
+  gap: 0;
+  min-height: 0;
+  aspect-ratio: 1 / 1;
+  align-items: stretch;
+}
+.directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-media {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: 100%;
+  min-height: 0;
+  border-radius: 0;
+}
+.directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-body {
+  position: absolute;
+  inset: 0;
+  display: block;
+  min-height: 0;
+  padding: 14px;
+}
+.directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-copy {
+  position: absolute;
+  top: 54%;
+  right: 14px;
+  left: 14px;
+  display: flex;
+  flex-direction: column;
+}
+.directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-title {
+  --resource-title-size: var(--type-overlay-title);
+  line-height: 1.3;
+  white-space: normal;
+  color: #fff;
+}
+.directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-description {
+  margin-top: 6px;
+  color: rgba(255, 255, 255, 0.74);
+  font-size: var(--type-list-description);
+  line-height: 1.55;
+}
+.directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-foot {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  left: 14px;
+  min-height: 42px;
+  max-height: 42px;
+  margin: 0;
+  padding: 0;
+  align-items: flex-start;
+  align-content: flex-start;
+  overflow: hidden;
+}
+@media (max-width: 640px) {
+  .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-copy {
+    top: 48%;
+  }
+}
+/* Final spacing / proportion tuning for the new post views. */
+.directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-copy {
+  top: 50%;
+}
+.archive-masonry .directory-card:not(.archive-card) .directory-card-media {
+  aspect-ratio: 16 / 10;
+}
+@media (max-width: 640px) {
+  .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-copy {
+    top: 46%;
+  }
+}
+/* Four-column desktop grid: keep the cover square while giving the text
+   a little more breathing room. */
+.directory-grid.cover-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+@media (max-width: 1200px) {
+  .directory-grid.cover-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 900px) {
+  .directory-grid.cover-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .directory-grid.cover-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (min-width: 1201px) {
+  .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-copy {
+    top: 40%;
+  }
+
+  .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-title {
+    --resource-title-size: 0.9375rem;
+    line-height: 1.45;
+    letter-spacing: 0.025em;
+  }
+
+  .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-description {
+    margin-top: 7px;
+    font-size: var(--type-caption);
+    line-height: 1.6;
+    letter-spacing: 0.01em;
+  }
+
+  .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-time {
+    height: 21px;
+    margin-bottom: 7px;
+  }
+
+  .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-foot {
+    min-height: 38px;
+    max-height: 38px;
+  }
+}
+@media (max-width: 1200px) {
+  .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-copy {
+    top: 45%;
+  }
+}
+@media (max-width: 900px) {
+  .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-copy {
+    top: 47%;
+  }
+}
+/* Keep the reserved two-line meta block, but pin its visible rows to the
+   bottom edge so left/bottom breathing room stays equal. */
+.directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-foot {
+  align-content: flex-end;
+  align-items: flex-end;
+}
+/* Keep the meta row pinned to the bottom, but center the plain category
+   label with the tag pills inside that row. */
+.directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-foot {
+  align-items: center;
+}
+.directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-category {
+  display: inline-flex;
+  height: 19px;
+  align-items: center;
+  line-height: 1;
+}
+/* Shared generic card media for project icons and friend avatars. */
+.archive-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(140deg, rgba(49, 87, 183, 0.38), rgba(15, 23, 42, 0.72));
+  color: #fff;
+  font-size: 52px;
+  line-height: 1;
+  text-shadow: 0 8px 24px rgba(2, 6, 23, 0.3);
+}
+.cover-grid .archive-item-icon {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.archive-masonry .directory-card .archive-item-icon {
+  position: absolute;
+  inset: 0;
+  font-size: 48px;
+}
+.archive-timeline .directory-card .archive-item-icon {
+  font-size: var(--type-page-title);
+}
+.cover-grid .archive-item-meta,
+.archive-masonry .archive-item-meta {
+  color: rgba(255, 255, 255, 0.66);
+  font-family: Consolas, monospace;
+  font-size: var(--type-meta);
+  letter-spacing: 0.04em;
+  margin-left: auto;
+}
+.archive-timeline .archive-item-meta {
+  color: var(--hv-muted);
+  font-family: Consolas, monospace;
+  font-size: var(--type-meta);
+  margin-left: auto;
+}
+@media (max-width: 640px) {
+  .cover-grid .archive-item-icon {
+    font-size: 42px;
+  }
+}
