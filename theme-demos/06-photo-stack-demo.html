@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>相册堆叠样式 Demo</title>
+  <style>
+    :root {
+      --ink: #eef4ff;
+      --muted: #a8b7cf;
+      --line: rgba(255, 255, 255, 0.14);
+      --panel: rgba(11, 20, 36, 0.58);
+      --accent: #8fb5ff;
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(circle at 14% 16%, rgba(90, 146, 214, 0.35), transparent 34%),
+        radial-gradient(circle at 86% 12%, rgba(151, 110, 190, 0.22), transparent 30%),
+        radial-gradient(circle at 76% 86%, rgba(80, 147, 155, 0.18), transparent 32%),
+        #09111f;
+    }
+
+    .demo-shell {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 54px 0 90px;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--accent);
+      font-family: Consolas, monospace;
+      font-size: 12px;
+      letter-spacing: 0.18em;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Noto Serif SC", "Songti SC", serif;
+      font-size: clamp(32px, 4.4vw, 54px);
+      line-height: 1.1;
+      letter-spacing: -0.04em;
+    }
+
+    .lede {
+      max-width: 660px;
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.8;
+    }
+
+    .demo-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin: 30px 0 34px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(18px);
+    }
+
+    .demo-hint {
+      padding-left: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .demo-tabs {
+      display: flex;
+      gap: 4px;
+      padding: 3px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .demo-tabs button {
+      border: 0;
+      border-radius: 999px;
+      padding: 8px 14px;
+      color: var(--muted);
+      background: transparent;
+      font: inherit;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .demo-tabs button.is-active {
+      color: #0b1220;
+      background: #dbe8ff;
+      font-weight: 700;
+    }
+
+    .album-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 30px;
+      align-items: start;
+      padding: 0 12px 16px 0;
+    }
+
+    .album-card {
+      position: relative;
+      min-width: 0;
+      color: inherit;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .album-cover {
+      position: relative;
+      z-index: 2;
+      overflow: hidden;
+      aspect-ratio: 3 / 4;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: var(--radius);
+      background: #152238;
+      box-shadow: 0 24px 54px rgba(0, 0, 0, 0.3);
+    }
+
+    .album-cover img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .album-card:hover .album-cover img {
+      transform: scale(1.035);
+    }
+
+    .album-shade {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(2, 6, 23, 0.02) 28%, rgba(3, 8, 18, 0.82) 100%);
+      pointer-events: none;
+    }
+
+    .album-copy {
+      position: absolute;
+      right: 16px;
+      bottom: 16px;
+      left: 16px;
+      z-index: 2;
+    }
+
+    .album-index {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+      color: rgba(255, 255, 255, 0.7);
+      font-family: Consolas, monospace;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+    }
+
+    .album-title {
+      overflow: hidden;
+      margin: 0;
+      color: #fff;
+      font-family: "Noto Serif SC", "Songti SC", serif;
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1.2;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .album-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      color: rgba(255, 255, 255, 0.68);
+      font-size: 12px;
+    }
+
+    .album-dot {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.45);
+    }
+
+    .album-lock {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 999px;
+      padding: 3px 7px;
+      color: rgba(255, 255, 255, 0.82);
+      background: rgba(2, 6, 23, 0.38);
+      font-size: 10px;
+      backdrop-filter: blur(10px);
+    }
+
+    /* Stacked poster mode */
+    .album-grid[data-view="stack"] .album-card {
+      padding: 0 14px 18px 0;
+    }
+
+    .album-grid[data-view="stack"] .album-card::before,
+    .album-grid[data-view="stack"] .album-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: var(--radius);
+      background-image: var(--cover);
+      background-position: center;
+      background-size: cover;
+      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.24);
+      transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.38s ease;
+    }
+
+    .album-grid[data-view="stack"] .album-card::before {
+      transform: translate(8px, 9px) rotate(2.2deg);
+      opacity: 0.68;
+      filter: brightness(0.82) saturate(0.82);
+    }
+
+    .album-grid[data-view="stack"] .album-card::after {
+      transform: translate(16px, 17px) rotate(4.4deg);
+      opacity: 0.4;
+      filter: brightness(0.62) saturate(0.7);
+    }
+
+    .album-grid[data-view="stack"] .album-card:hover::before {
+      transform: translate(16px, 10px) rotate(4deg);
+      opacity: 0.86;
+    }
+
+    .album-grid[data-view="stack"] .album-card:hover::after {
+      transform: translate(28px, 22px) rotate(7deg);
+      opacity: 0.58;
+    }
+
+    /* Collage mode */
+    .album-grid[data-view="collage"] .album-cover {
+      aspect-ratio: 1 / 1;
+    }
+
+    .album-grid[data-view="collage"] .album-cover img {
+      position: absolute;
+      width: 50%;
+      height: 50%;
+      object-fit: cover;
+    }
+
+    .album-grid[data-view="collage"] .album-cover img:nth-child(1) { left: 0; top: 0; }
+    .album-grid[data-view="collage"] .album-cover img:nth-child(2) { right: 0; top: 0; }
+    .album-grid[data-view="collage"] .album-cover img:nth-child(3) { left: 0; bottom: 0; }
+    .album-grid[data-view="collage"] .album-cover img:nth-child(4) { right: 0; bottom: 0; }
+
+    .album-grid[data-view="collage"] .album-copy {
+      inset: auto 12px 12px;
+    }
+
+    .album-grid[data-view="collage"] .album-title {
+      font-size: 19px;
+    }
+
+    /* Row mode */
+    .album-grid[data-view="row"] {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 14px;
+      padding-right: 0;
+    }
+
+    .album-grid[data-view="row"] .album-card {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel);
+      backdrop-filter: blur(18px);
+    }
+
+    .album-grid[data-view="row"] .album-cover {
+      width: 156px;
+      flex: 0 0 156px;
+      aspect-ratio: 4 / 3;
+      border-radius: 13px;
+      box-shadow: none;
+    }
+
+    .album-grid[data-view="row"] .album-shade {
+      display: none;
+    }
+
+    .album-grid[data-view="row"] .album-copy {
+      position: static;
+      padding: 0 6px;
+    }
+
+    .album-grid[data-view="row"] .album-title {
+      color: var(--ink);
+      font-family: inherit;
+      font-size: 17px;
+    }
+
+    .album-grid[data-view="row"] .album-index {
+      margin: 0 0 5px;
+      color: var(--accent);
+    }
+
+    .album-grid[data-view="row"] .album-meta {
+      margin-top: 9px;
+      color: var(--muted);
+    }
+
+    .album-grid[data-view="row"] .album-lock {
+      color: var(--muted);
+      border-color: var(--line);
+    }
+
+    @media (max-width: 1000px) {
+      .album-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .demo-shell {
+        width: min(100% - 28px, 520px);
+        padding-top: 34px;
+      }
+
+      .album-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 24px;
+      }
+
+      .album-grid[data-view="row"] .album-cover {
+        width: 118px;
+        flex-basis: 118px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="demo-shell">
+    <p class="eyebrow">BAICAI / PHOTO ARCHIVE</p>
+    <h1>相册堆叠样式</h1>
+    <p class="lede">同一套相册数据，对比堆叠、拼贴、列表三种展示。默认堆叠模式使用背后的两层卡片制造海报式层次，悬停时轻微展开。</p>
+
+    <div class="demo-bar">
+      <span class="demo-hint">相册 · 堆叠 / 拼贴 / 列表</span>
+      <div class="demo-tabs" role="tablist" aria-label="相册展示模式">
+        <button type="button" class="is-active" data-mode="stack">堆叠</button>
+        <button type="button" data-mode="collage">拼贴</button>
+        <button type="button" data-mode="row">列表</button>
+      </div>
+    </div>
+
+    <section id="album-grid" class="album-grid" data-view="stack" aria-label="相册列表"></section>
+  </main>
+
+  <script>
+    const albums = [
+      {
+        title: "旅行日记",
+        date: "2026-07-01",
+        count: 2,
+        cover: "https://www.zibaicai.cn/bg-1.webp",
+        images: ["https://www.zibaicai.cn/bg-1.webp", "https://www.zibaicai.cn/bg-2.webp"]
+      },
+      {
+        title: "动漫",
+        date: "2026-10-25",
+        count: 5,
+        cover: "https://www.zibaicai.cn/bg-2.webp",
+        images: [
+          "https://www.zibaicai.cn/bg-3.webp",
+          "https://www.zibaicai.cn/bg-4.webp",
+          "https://www.zibaicai.cn/bg-5.webp",
+          "https://www.zibaicai.cn/bg-1.webp"
+        ]
+      },
+      {
+        title: "666",
+        date: "2026-10-23",
+        count: 10,
+        cover: "https://www.zibaicai.cn/bg-2.webp",
+        images: [
+          "https://www.zibaicai.cn/bg-3.webp",
+          "https://www.zibaicai.cn/bg-4.webp",
+          "https://www.zibaicai.cn/bg-5.webp",
+          "https://www.zibaicai.cn/bg-1.webp"
+        ]
+      },
+      {
+        title: "随意相册",
+        date: "2026-10-25",
+        count: 4,
+        cover: "https://www.zibaicai.cn/bg-2.webp",
+        images: [
+          "https://www.zibaicai.cn/bg-3.webp",
+          "https://www.zibaicai.cn/bg-4.webp",
+          "https://www.zibaicai.cn/bg-5.webp",
+          "https://www.zibaicai.cn/bg-1.webp"
+        ]
+      },
+      {
+        title: "密码相册",
+        date: "2026-10-29",
+        count: 0,
+        locked: true,
+        cover: "https://www.zibaicai.cn/bg-3.webp",
+        images: ["https://www.zibaicai.cn/bg-3.webp"]
+      }
+    ];
+
+    const grid = document.querySelector("#album-grid");
+    const tabs = [...document.querySelectorAll(".demo-tabs button")];
+
+    function render(mode) {
+      grid.dataset.view = mode;
+      grid.innerHTML = albums.map((album, index) => {
+        const images = mode === "collage"
+          ? [0, 1, 2, 3].map((i) => `<img src="${album.images[i % album.images.length]}" alt="" loading="lazy" decoding="async" />`).join("")
+          : `<img src="${album.cover}" alt="${album.title}" loading="${index < 3 ? "eager" : "lazy"}" decoding="async" />`;
+
+        return `
+          <a class="album-card" href="#" aria-label="打开相册 ${album.title}" style="--cover: url('${album.cover}')" onclick="return false">
+            <div class="album-cover">
+              ${images}
+              <span class="album-shade"></span>
+              <div class="album-copy">
+                <span class="album-index">0${index + 1} / VISUAL ARCHIVE</span>
+                <h2 class="album-title">${album.title}</h2>
+                <div class="album-meta">
+                  <span>${album.count} 张照片</span>
+                  <span class="album-dot"></span>
+                  <span>${album.date}</span>
+                  ${album.locked ? '<span class="album-lock">密码</span>' : ""}
+                </div>
+              </div>
+            </div>
+          </a>
+        `;
+      }).join("");
+    }
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        tabs.forEach((item) => item.classList.toggle("is-active", item === tab));
+        render(tab.dataset.mode);
+      });
+    });
+
+    render("stack");
+  </script>
+</body>
+</html>
