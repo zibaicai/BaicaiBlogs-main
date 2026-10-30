@@ -73,13 +73,18 @@ export default function ClickEffect() {
 
       for (let index = ripples.length - 1; index >= 0; index -= 1) {
         const ripple = ripples[index];
-        const progress = Math.min(1, (now - ripple.startedAt) / ripple.duration);
+        const elapsed = now - ripple.startedAt;
+        const progress = Math.min(1, Math.max(0, elapsed / Math.max(1, ripple.duration)));
         if (progress >= 1) {
           ripples.splice(index, 1);
           continue;
         }
 
-        const radius = ripple.from + (ripple.to - ripple.from) * easeOut(progress);
+        const radius = Math.max(
+          0.01,
+          ripple.from + (ripple.to - ripple.from) * easeOut(progress)
+        );
+        if (!Number.isFinite(radius)) continue;
         const alpha = Math.pow(1 - progress, 1.8);
 
         context.globalAlpha = alpha * 0.75;
@@ -89,7 +94,7 @@ export default function ClickEffect() {
 
         context.globalAlpha = alpha * 0.16;
         context.beginPath();
-        context.arc(ripple.x, ripple.y, radius * 0.48, 0, Math.PI * 2);
+        context.arc(ripple.x, ripple.y, Math.max(0.01, radius * 0.48), 0, Math.PI * 2);
         context.fillStyle = context.strokeStyle;
         context.fill();
       }
