@@ -125,9 +125,18 @@
     backdrop-filter: blur(40px);
   }
 
+  .ui-select-menu--glass {
+    background: rgba(255, 255, 255, 0.78);
+    backdrop-filter: blur(22px);
+  }
+
   .dark .ui-select-menu {
     border-color: rgba(255, 255, 255, 0.1);
     background: rgba(15, 23, 42, 0.96);
+  }
+
+  .dark .ui-select-menu--glass {
+    background: rgba(15, 23, 42, 0.78);
   }
 
   .ui-select-option {

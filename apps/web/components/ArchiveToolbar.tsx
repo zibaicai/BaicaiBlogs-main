@@ -63,6 +63,7 @@ export default function ArchiveToolbar({
           size="sm"
           width="compact"
           tone="subtle"
+          menuTone="glass"
           options={sortOptions}
         />
         {showFilters && (

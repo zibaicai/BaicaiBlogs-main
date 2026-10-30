@@ -14,6 +14,7 @@ export interface SelectOption {
 export type SelectSize = "sm" | "md" | "lg";
 export type SelectWidth = "auto" | "full" | "compact";
 export type SelectTone = "default" | "subtle" | "ghost";
+export type SelectMenuTone = "solid" | "glass";
 export type SelectMenuWidth = "trigger" | "content" | number;
 
 export interface SelectOptionState {
@@ -33,6 +34,7 @@ export interface SelectProps {
   size?: SelectSize;
   width?: SelectWidth;
   tone?: SelectTone;
+  menuTone?: SelectMenuTone;
   menuWidth?: SelectMenuWidth;
 
   open?: boolean;
@@ -42,6 +44,7 @@ export interface SelectProps {
   className?: string;
   triggerClassName?: string;
   menuClassName?: string;
+  menuStyle?: CSSProperties;
   portalContainer?: HTMLElement | null;
 
   renderValue?: (option?: SelectOption) => ReactNode;
@@ -67,6 +70,7 @@ export default function Select({
   size = "lg",
   width = "full",
   tone = "default",
+  menuTone = "solid",
   menuWidth = "trigger",
   open: controlledOpen,
   defaultOpen = false,
@@ -74,6 +78,7 @@ export default function Select({
   className = "",
   triggerClassName = "",
   menuClassName = "",
+  menuStyle,
   portalContainer,
   renderValue,
   renderOption,
@@ -167,7 +172,7 @@ export default function Select({
     setActiveIndex(enabledIndexes[nextPosition].index);
   };
 
-  const menuStyle: CSSProperties = {
+  const baseMenuStyle: CSSProperties = {
     position: "fixed",
     left: rect?.left ?? 0,
     top: rect?.top ?? 0,
@@ -179,6 +184,7 @@ export default function Select({
         ? {}
         : { width: menuWidth }),
   };
+  const resolvedMenuStyle: CSSProperties = { ...baseMenuStyle, ...menuStyle };
   const portalTarget = portalContainer ?? (typeof document !== "undefined" ? document.body : null);
 
   return (
@@ -239,8 +245,8 @@ export default function Select({
             id={listId}
             role="listbox"
             aria-label={ariaLabel}
-            style={menuStyle}
-            className={`ui-select-menu admin-scrollbar ${menuClassName}`}
+            style={resolvedMenuStyle}
+            className={`ui-select-menu ${menuTone === "glass" ? "ui-select-menu--glass" : ""} admin-scrollbar ${menuClassName}`}
           >
             {options.length === 0 ? (
               <div className="ui-select-empty">{empty ?? "暂无可选项"}</div>
