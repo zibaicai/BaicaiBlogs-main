@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Flag, Heart, Loader2, MessageCircle, Send, ThumbsDown, Trash2 } from "lucide-react";
 import { formatDate } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
+import MessageListShell from "../messages/MessageListShell";
+import MessageItemShell from "../messages/MessageItemShell";
 
 export interface CommentItem {
   id: number;
@@ -169,66 +171,70 @@ export default function CommentSection({
   };
 
   return (
-    <section className="comment-section">
-      <div className="comment-head">
-        <div>
-          <span className="comment-eyebrow">DISCUSSION</span>
-          <h2>{title}<span>{count}</span></h2>
-        </div>
-        <MessageCircle size={18} />
-      </div>
-
-      {readOnly ? (
-        <div className="comment-login-hint">该歌曲当前不可播放，评论暂时只读</div>
-      ) : canComment ? (
-        <div
-          ref={composerRef}
-          className={`comment-composer ${expanded ? "is-expanded" : ""}`}
-          // 收起状态下整条框都可以点：否则用户点边框/padding 没反应（移动端尤其明显）
-          onClick={(event) => {
-            if ((event.target as HTMLElement).closest("button")) return;
-            if (!expanded) textareaRef.current?.focus();
-          }}
-        >
-          <div className="comment-avatar">
-            {user?.avatar ? <img src={user.avatar} alt="" /> : (user?.nickname || user?.username || "我").slice(0, 1)}
+    <MessageListShell
+      className="comment-section"
+      header={
+        <div className="comment-head">
+          <div>
+            <span className="comment-eyebrow">DISCUSSION</span>
+            <h2>{title}<span>{count}</span></h2>
           </div>
-          <div className="comment-composer-body">
-            <textarea
-              ref={textareaRef}
-              value={content}
-              onChange={(event) => setContent(event.target.value)}
-              onFocus={() => setExpanded(true)}
-              onKeyDown={onKeyDown}
-              placeholder="写下你的想法..."
-              maxLength={1000}
-              rows={1}
-            />
-            <div className="comment-composer-foot">
-              <span>{content.length} / 1000</span>
-              <button type="button" onClick={() => void submit()} disabled={sending || !content.trim()}>
-                {sending ? <Loader2 className="animate-spin" size={14} /> : <Send size={14} />}
-                发布
-              </button>
+          <MessageCircle size={18} />
+        </div>
+      }
+      beforeList={
+        <>
+          {readOnly ? (
+            <div className="comment-login-hint">该歌曲当前不可播放，评论暂时只读</div>
+          ) : canComment ? (
+            <div
+              ref={composerRef}
+              className={`comment-composer ${expanded ? "is-expanded" : ""}`}
+              // 收起状态下整条框都可以点：否则用户点边框/padding 没反应（移动端尤其明显）
+              onClick={(event) => {
+                if ((event.target as HTMLElement).closest("button")) return;
+                if (!expanded) textareaRef.current?.focus();
+              }}
+            >
+              <div className="comment-avatar">
+                {user?.avatar ? <img src={user.avatar} alt="" /> : (user?.nickname || user?.username || "我").slice(0, 1)}
+              </div>
+              <div className="comment-composer-body">
+                <textarea
+                  ref={textareaRef}
+                  value={content}
+                  onChange={(event) => setContent(event.target.value)}
+                  onFocus={() => setExpanded(true)}
+                  onKeyDown={onKeyDown}
+                  placeholder="写下你的想法..."
+                  maxLength={1000}
+                  rows={1}
+                />
+                <div className="comment-composer-foot">
+                  <span>{content.length} / 1000</span>
+                  <button type="button" onClick={() => void submit()} disabled={sending || !content.trim()}>
+                    {sending ? <Loader2 className="animate-spin" size={14} /> : <Send size={14} />}
+                    发布
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      ) : (
-        <div className="comment-login-hint">
-          登录后参与评论
-          <a href="/login">去登录</a>
-        </div>
-      )}
+          ) : (
+            <div className="comment-login-hint">
+              登录后参与评论
+              <a href="/login">去登录</a>
+            </div>
+          )}
 
-      {(error || notice) && (
-        <div className={`comment-message ${error ? "is-error" : ""}`}>
-          {error || notice}
-        </div>
-      )}
-
-      {loading ? (
-        <div className="comment-loading"><Loader2 className="animate-spin" size={16} /> 正在加载评论…</div>
-      ) : comments.length === 0 ? (
+          {(error || notice) && (
+            <div className={`comment-message ${error ? "is-error" : ""}`}>
+              {error || notice}
+            </div>
+          )}
+        </>
+      }
+      loading={loading ? <div className="comment-loading"><Loader2 className="animate-spin" size={16} /> 正在加载评论…</div> : undefined}
+      empty={
         emptyTitle || emptyDescription ? (
           <div className="comment-empty">
             {emptyTitle && <strong>{emptyTitle}</strong>}
@@ -251,54 +257,52 @@ export default function CommentSection({
         ) : (
           <div className="comment-empty">还没有评论，来写第一条吧。</div>
         )
-      ) : (
-        <div className="comment-list">
-          {comments.map((comment) => (
-            <article className="comment-item" key={comment.id}>
-              <div className="comment-avatar">
-                {comment.avatar ? <img src={comment.avatar} alt="" /> : (comment.author || "匿").slice(0, 1)}
-              </div>
-              <div className="comment-main">
-                <div className="comment-meta">
-                  <strong>{comment.author}</strong>
-                  <time>{formatDate(comment.createdAt)}</time>
-                </div>
-                <p className="comment-content">{comment.content}</p>
-                <div className="comment-actions" style={readOnly ? { pointerEvents: "none", opacity: 0.45 } : undefined}>
-                  <button
-                    type="button"
-                    onClick={() => void react(comment, "LIKE")}
-                    disabled={!user || comment.userId === user.id}
-                    className={comment.myReaction === "LIKE" ? "is-active" : ""}
-                    aria-label="点赞"
-                  >
-                    <Heart size={13} /> {comment.likeCount}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => void react(comment, "DISLIKE")}
-                    disabled={!user || comment.userId === user.id}
-                    className={comment.myReaction === "DISLIKE" ? "is-active" : ""}
-                    aria-label="踩"
-                  >
-                    <ThumbsDown size={13} /> {comment.dislikeCount}
-                  </button>
-                  {comment.canDelete && (
-                    <button type="button" onClick={() => void remove(comment.id)} aria-label="删除">
-                      <Trash2 size={13} /> 删除
-                    </button>
-                  )}
-                  {comment.canReport && (
-                    <button type="button" onClick={() => void report(comment)} aria-label="举报">
-                      <Flag size={13} /> 举报
-                    </button>
-                  )}
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
-      )}
-    </section>
+      }
+    >
+      {comments.map((comment) => (
+        <MessageItemShell
+          key={comment.id}
+          avatar={comment.avatar}
+          fallback={(comment.author || "匿").slice(0, 1)}
+          name={comment.author}
+          time={formatDate(comment.createdAt)}
+          density="comfortable"
+          actions={
+            <div className="comment-actions" style={readOnly ? { pointerEvents: "none", opacity: 0.45 } : undefined}>
+              <button
+                type="button"
+                onClick={() => void react(comment, "LIKE")}
+                disabled={!user || comment.userId === user.id}
+                className={comment.myReaction === "LIKE" ? "is-active" : ""}
+                aria-label="点赞"
+              >
+                <Heart size={13} /> {comment.likeCount}
+              </button>
+              <button
+                type="button"
+                onClick={() => void react(comment, "DISLIKE")}
+                disabled={!user || comment.userId === user.id}
+                className={comment.myReaction === "DISLIKE" ? "is-active" : ""}
+                aria-label="踩"
+              >
+                <ThumbsDown size={13} /> {comment.dislikeCount}
+              </button>
+              {comment.canDelete && (
+                <button type="button" onClick={() => void remove(comment.id)} aria-label="删除">
+                  <Trash2 size={13} /> 删除
+                </button>
+              )}
+              {comment.canReport && (
+                <button type="button" onClick={() => void report(comment)} aria-label="举报">
+                  <Flag size={13} /> 举报
+                </button>
+              )}
+            </div>
+          }
+        >
+          {comment.content}
+        </MessageItemShell>
+      ))}
+    </MessageListShell>
   );
 }

@@ -4,11 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import { Loader2, MessageCircle, Send } from "lucide-react";
 
 import Textarea from "./ui/Textarea";
-import { OptimizedImage } from "./ui/OptimizedImage";
 import { formatDate, type FriendMessage } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { useFeedback } from "./FeedbackProvider";
 import { useToast } from "./ToastProvider";
+import MessageListShell from "./messages/MessageListShell";
+import MessageItemShell from "./messages/MessageItemShell";
 
 export default function FriendGuestbook({ initialMessages }: { initialMessages: FriendMessage[] }) {
   const { user } = useAuth();
@@ -146,67 +147,74 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
   };
 
   return (
-    <section className="mt-10 rounded-3xl border border-white/50 bg-white/55 p-6 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/45 md:p-8">
-      <div className="flex items-center gap-3">
-        <MessageCircle size={20} className="text-indigo-400" />
-        <div>
-          <h2 className="text-2xl font-black text-slate-900 dark:text-white">留言</h2>
-          <p className="mt-1 text-xs text-slate-500">可以随便聊聊，也可以留下你的网站。</p>
-        </div>
-      </div>
-
-      <div className="mt-6 space-y-3">
-        {messages.length === 0 ? (
-          <p className="py-6 text-center text-xs text-slate-500">还没有留言，来坐第一排。</p>
-        ) : messages.map((message) => (
-          <article key={message.id} className="rounded-2xl border border-white/40 bg-white/50 p-4 dark:border-white/10 dark:bg-slate-900/40">
-            <div className="flex items-center gap-3">
-              {message.avatar ? (
-                <OptimizedImage src={message.avatar} alt={message.name} className="h-9 w-9 rounded-full object-cover" />
-              ) : (
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-500/15 text-xs font-black text-indigo-500">
-                  {message.name.slice(0, 1)}
-                </div>
-              )}
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <strong className="truncate text-xs text-slate-800 dark:text-slate-100">{message.name}</strong>
-                  {message.website && (
-                    <a href={message.website} target="_blank" rel="nofollow ugc noopener noreferrer" className="truncate text-meta text-indigo-500 hover:underline">
-                      {message.website.replace(/^https?:\/\//, "").replace(/\/$/, "")}
-                    </a>
-                  )}
-                </div>
-                <span className="text-meta text-slate-400">{formatDate(message.createdAt || "")}</span>
-              </div>
+    <MessageListShell
+      className="friend-guestbook"
+      title="留言"
+      description="可以随便聊聊，也可以留下你的网站。"
+      count={messages.length > 0 ? `${messages.length} 条` : undefined}
+      icon={<MessageCircle size={20} />}
+      surface="plain"
+      density="compact"
+      empty="还没有留言，来坐第一排。"
+      footer={
+        <div className="guestbook-composer">
+          <p className="guestbook-composer-hint">
+            {user ? `以 ${user.nickname || user.username} 的身份留言` : "当前为匿名留言"}
+          </p>
+          <Textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            rows={4}
+            className="mt-1"
+            placeholder="说点什么，或者留下你的网站。"
+          />
+          {turnstileConfig?.enabled && (
+            <div className={turnstilePassed ? "h-0 overflow-hidden" : "mt-3 min-h-[65px]"}>
+              <div ref={turnstileRef} />
             </div>
-            <p className="mt-3 whitespace-pre-wrap text-xs leading-6 text-slate-600 dark:text-slate-300">{message.content}</p>
-            {user && message.userId === user.id && (
-              <button type="button" onClick={() => void remove(message.id)} className="mt-2 text-meta font-bold text-slate-400 hover:text-red-500">
+          )}
+          {turnstileConfig?.enabled && turnstilePassed && (
+            <p className="mt-2 text-meta font-bold text-emerald-500">人机验证已通过</p>
+          )}
+          <div className="mt-3 flex justify-end">
+            <button
+              type="button"
+              onClick={() => void submit()}
+              disabled={busy}
+              className="hv-button hv-button-primary inline-flex items-center gap-2 disabled:opacity-50"
+            >
+              {busy ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />} 发表留言
+            </button>
+          </div>
+        </div>
+      }
+    >
+      {messages.map((message) => (
+        <MessageItemShell
+          key={message.id}
+          avatar={message.avatar}
+          fallback={message.name.slice(0, 1)}
+          name={message.name}
+          time={formatDate(message.createdAt || "")}
+          meta={
+            message.website ? (
+              <a href={message.website} target="_blank" rel="nofollow ugc noopener noreferrer">
+                {message.website.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+              </a>
+            ) : undefined
+          }
+          actions={
+            user && message.userId === user.id ? (
+              <button type="button" onClick={() => void remove(message.id)}>
                 删除
               </button>
-            )}
-          </article>
-        ))}
-      </div>
-
-      <div className="mt-6 rounded-2xl border border-indigo-400/20 bg-slate-950/20 p-4">
-        <p className="mb-2 text-meta font-bold text-slate-400">
-          {user ? `以 ${user.nickname || user.username} 的身份留言` : "当前为匿名留言"}
-        </p>
-        <Textarea value={content} onChange={(e) => setContent(e.target.value)} rows={4} className="mt-1" placeholder="说点什么，或者留下你的网站。" />
-        {turnstileConfig?.enabled && (
-          <div className={turnstilePassed ? "h-0 overflow-hidden" : "mt-3 min-h-[65px]"}>
-            <div ref={turnstileRef} />
-          </div>
-        )}
-        {turnstileConfig?.enabled && turnstilePassed && <p className="mt-2 text-meta font-bold text-emerald-500">人机验证已通过</p>}
-        <div className="mt-3 flex justify-end">
-          <button type="button" onClick={() => void submit()} disabled={busy} className="hv-button hv-button-primary inline-flex items-center gap-2 disabled:opacity-50">
-            {busy ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />} 发表留言
-          </button>
-        </div>
-      </div>
-    </section>
+            ) : undefined
+          }
+          density="compact"
+        >
+          {message.content}
+        </MessageItemShell>
+      ))}
+    </MessageListShell>
   );
 }
