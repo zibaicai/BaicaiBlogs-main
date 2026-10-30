@@ -79,7 +79,7 @@ export default function SuggestionDetailPage({ params }: { params: Promise<{ id:
                 <span className="rounded-full bg-indigo-500/10 px-3 py-1.5 text-[10px] font-black text-indigo-500">{STATUS_LABEL[item.status] || item.status}</span>
                 <span className="text-[10px] text-slate-400">{item.category || "其他"} · {new Date(item.createdAt).toLocaleString("zh-CN")}</span>
               </div>
-              <h1 className="mt-4 text-3xl font-black text-slate-900 dark:text-white">{item.title}</h1>
+              <h1 className="detail-title mt-4 text-slate-900 dark:text-white">{item.title}</h1>
               <div className="mt-6"><SuggestionContent item={item} /></div>
 
               {item.reviewNote && (

@@ -17,7 +17,7 @@ export default async function AboutPage() {
           <div className="max-w-4xl mx-auto">
             <header className="text-center mb-12">
               <p className="text-[10px] font-black uppercase tracking-[0.24em] text-indigo-400">ABOUT THE COMMUNITY</p>
-              <h1 className="mt-3 text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter">
+              <h1 className="display-title mt-3 text-slate-900 dark:text-white">
                 关于 {communityName}
               </h1>
               <p className="mt-4 text-slate-500 dark:text-slate-400 font-medium">

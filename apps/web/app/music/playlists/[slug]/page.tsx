@@ -96,7 +96,7 @@ export default function MusicPlaylistPage({ params }: { params: Promise<{ slug: 
                 </div>
                 <div className="flex flex-col justify-center">
                   <span className="font-mono text-[9px] font-black tracking-[0.2em] text-indigo-400">CURATED PLAYLIST</span>
-                  <h1 className="mt-2 text-4xl font-black text-slate-900 dark:text-white">{playlist.title}</h1>
+                  <h1 className="detail-title mt-2 text-slate-900 dark:text-white">{playlist.title}</h1>
                   <p className="mt-3 max-w-xl text-sm leading-relaxed text-slate-500 dark:text-slate-400">
                     {playlist.description || "暂无简介"}
                   </p>

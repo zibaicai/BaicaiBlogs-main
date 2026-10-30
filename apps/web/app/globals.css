@@ -42,7 +42,10 @@
   /* Shared C-side typography scale. Fluid tokens keep 4K readable while
      retaining rem-based browser zoom. */
   --type-page-title: clamp(1.75rem, 1.3rem + 1.1vw, 2.75rem);
+  --type-display: clamp(2.5rem, 1.8rem + 2.8vw, 4rem);
+  --type-detail-title: clamp(2rem, 1.55rem + 1.4vw, 2.75rem);
   --type-page-subtitle: clamp(0.875rem, 0.82rem + 0.2vw, 1.0625rem);
+  --type-subtitle: clamp(0.9375rem, 0.86rem + 0.2vw, 1.125rem);
   --type-section-title: clamp(1.125rem, 0.95rem + 0.7vw, 1.5rem);
   --type-section-subtitle: clamp(0.8125rem, 0.78rem + 0.12vw, 0.9375rem);
   --type-card-title: clamp(1rem, 0.92rem + 0.25vw, 1.25rem);
@@ -51,6 +54,7 @@
   --type-card-description: clamp(0.8125rem, 0.78rem + 0.12vw, 0.9375rem);
   --type-list-description: clamp(0.75rem, 0.72rem + 0.1vw, 0.875rem);
   --type-body: clamp(0.875rem, 0.84rem + 0.12vw, 1rem);
+  --type-control: clamp(0.75rem, 0.72rem + 0.1vw, 0.875rem);
   --type-meta: clamp(0.6875rem, 0.66rem + 0.1vw, 0.8125rem);
   --type-caption: clamp(0.6875rem, 0.66rem + 0.08vw, 0.8125rem);
   --prose-body: clamp(1rem, 0.95rem + 0.18vw, 1.0625rem);
@@ -763,7 +767,7 @@ input[type="number"] {
   border-radius: 999px;
   padding: 10px 16px;
   color: var(--hv-text);
-  font-size: 12px;
+  font-size: var(--type-control);
   font-weight: 700;
   transition: all 0.25s ease;
 }
@@ -6346,6 +6350,50 @@ html.dark[data-theme-preset="violet"] .site-gradient {
 .ui-caption {
   font-size: var(--type-caption);
   line-height: 1.5;
+}
+
+.display-title {
+  font-size: var(--type-display);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+.detail-title {
+  font-size: var(--type-detail-title);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+}
+
+.subtitle {
+  font-size: var(--type-subtitle);
+  line-height: 1.6;
+}
+
+.description {
+  font-size: var(--type-card-description);
+  line-height: 1.65;
+}
+
+.body-text {
+  font-size: var(--type-body);
+  line-height: 1.7;
+}
+
+.control-text {
+  font-size: var(--type-control);
+  line-height: 1.5;
+}
+
+.caption-text {
+  font-size: var(--type-caption);
+  line-height: 1.5;
+}
+
+.article-summary {
+  font-size: var(--type-subtitle);
+  line-height: 1.65;
 }
 
 /* Keep off-screen resource cards out of layout/paint until they approach the

@@ -78,7 +78,7 @@ export default async function PostDetail({ params }: { params: Promise<{ slug: s
               <div className="article-header relative">
                 <BackButton fallbackHref="/posts" />
                 <header className="border-b border-slate-300/50 dark:border-slate-700 pb-5 md:pb-6 relative">
-                  <h1 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-white mb-3 tracking-tight transition-colors duration-700 pr-16 md:pr-24 leading-snug">
+                  <h1 className="detail-title mb-3 pr-16 text-slate-900 transition-colors duration-700 dark:text-white md:pr-24">
                     {post.title}
                   </h1>
 

@@ -266,7 +266,7 @@ export default function AlbumPage() {
           {!loading && album && !album.locked && (
             <>
               <header className="mb-10 text-center">
-                <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-3">
+                <h1 className="detail-title mb-3 text-slate-900 dark:text-white">
                   {album.title}
                 </h1>
                 <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">

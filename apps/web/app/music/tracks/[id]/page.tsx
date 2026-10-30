@@ -50,7 +50,7 @@ export default function MusicTrackPage({ params }: { params: Promise<{ id: strin
                 </div>
                 <div className="min-w-0">
                   <span className="font-mono text-[9px] font-black tracking-[0.2em] text-indigo-400">TRACK / {track.platform}</span>
-                  <h1 className="mt-2 text-4xl font-black text-slate-900 dark:text-white">{track.title}</h1>
+                  <h1 className="detail-title mt-2 text-slate-900 dark:text-white">{track.title}</h1>
                   <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{track.artist || "未知歌手"}</p>
                   {track.externalUrl && (
                     <a href={track.externalUrl} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex items-center gap-2 rounded-full bg-indigo-500 px-4 py-2 text-xs font-black text-white">

@@ -10,6 +10,14 @@ export function PageTitle({ children, className = "", as: Tag = "h1" }: TitlePro
   return <Tag className={`page-title ${className}`}>{children}</Tag>;
 }
 
+export function DisplayTitle({ children, className = "", as: Tag = "h1" }: TitleProps) {
+  return <Tag className={`display-title ${className}`}>{children}</Tag>;
+}
+
+export function DetailTitle({ children, className = "", as: Tag = "h1" }: TitleProps) {
+  return <Tag className={`detail-title ${className}`}>{children}</Tag>;
+}
+
 export function SectionTitle({ children, className = "", as: Tag = "h2" }: TitleProps) {
   return <Tag className={`section-title ${className}`}>{children}</Tag>;
 }

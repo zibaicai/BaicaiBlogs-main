@@ -91,7 +91,7 @@ export default function ArticleDetailPage() {
                       <span>{article.publishedAt ? new Date(article.publishedAt).toLocaleDateString("zh-CN") : ""}</span>
                       {article.readingTime ? <><span>·</span><span>{article.readingTime} 分钟阅读</span></> : null}
                     </div>
-                    <h1 className="mt-3 text-4xl font-black leading-tight text-slate-900 dark:text-white md:text-5xl">{article.title}</h1>
+                    <h1 className="detail-title mt-3 text-slate-900 dark:text-white">{article.title}</h1>
                     {article.subtitle && <p className="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">{article.subtitle}</p>}
                     <div
                       className="wechat-article mt-8"

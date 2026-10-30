@@ -39,7 +39,7 @@ export default function LegalPage({ title, subtitle, current, children }: LegalP
                   </Link>
                 ))}
               </div>
-              <h1 className="text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">
+              <h1 className="display-title text-slate-900 dark:text-white">
                 {title}
               </h1>
               <p className="mt-3 text-sm font-medium leading-relaxed text-slate-600 dark:text-slate-300">
