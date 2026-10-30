@@ -1,0 +1,87 @@
+@layer components {
+  .control-field {
+    width: 100%;
+    min-height: var(--control-height);
+    padding: 0.65rem 1rem;
+    border: 1px solid var(--control-border);
+    border-radius: var(--control-radius);
+    background: var(--control-bg);
+    color: var(--control-text);
+    box-shadow: var(--control-shadow);
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.6;
+    outline: none;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .control-field::placeholder {
+    color: var(--control-placeholder);
+  }
+
+  .control-field:focus {
+    border-color: var(--ui-accent);
+    box-shadow: var(--control-shadow), 0 0 0 3px var(--control-focus);
+  }
+
+  .control-field:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  .control-field--sm {
+    min-height: 36px;
+    padding: 0.4rem 0.7rem;
+    border-radius: var(--radius-control);
+    font-size: var(--type-control);
+  }
+
+  .control-field--md {
+    min-height: 42px;
+    padding: 0.65rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .control-field--lg {
+    min-height: 48px;
+    padding: 0.8rem 1.1rem;
+    font-size: var(--type-description);
+  }
+
+  .control-field--auto {
+    width: auto;
+  }
+
+  .control-field--ghost {
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .control-field--invalid,
+  .control-field[aria-invalid="true"] {
+    border-color: var(--ui-danger);
+    box-shadow: var(--control-shadow), 0 0 0 3px color-mix(in srgb, var(--ui-danger) 18%, transparent);
+  }
+
+  .control-textarea {
+    min-height: 110px;
+    resize: vertical;
+    line-height: 1.75;
+  }
+
+  .control-textarea--sm {
+    min-height: 80px;
+  }
+
+  .control-textarea--lg {
+    min-height: 160px;
+  }
+
+  .control-textarea--no-resize {
+    resize: none;
+  }
+}

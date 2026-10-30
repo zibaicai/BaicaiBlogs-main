@@ -1,9 +1,48 @@
 "use client";
 
-import type { InputHTMLAttributes } from "react";
+import { forwardRef, type InputHTMLAttributes } from "react";
 
-const BASE = "control-field";
+export type ControlSize = "sm" | "md" | "lg";
+export type ControlTone = "default" | "ghost";
 
-export default function Input({ className = "", ...props }: InputHTMLAttributes<HTMLInputElement>) {
-  return <input {...props} className={`${BASE} ${className}`.trim()} />;
+export interface InputProps
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
+  size?: ControlSize;
+  tone?: ControlTone;
+  invalid?: boolean;
+  fullWidth?: boolean;
 }
+
+const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
+  {
+    size = "md",
+    tone = "default",
+    invalid = false,
+    fullWidth = true,
+    className = "",
+    ...props
+  },
+  ref
+) {
+  return (
+    <input
+      {...props}
+      ref={ref}
+      aria-invalid={invalid || props["aria-invalid"]}
+      className={[
+        "control-field",
+        `control-field--${size}`,
+        tone === "ghost" ? "control-field--ghost" : "",
+        invalid ? "control-field--invalid" : "",
+        fullWidth ? "" : "control-field--auto",
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    />
+  );
+});
+
+Input.displayName = "Input";
+
+export default Input;

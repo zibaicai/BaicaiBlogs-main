@@ -148,7 +148,7 @@ export default function LoginPage() {
             value={username}
             onChange={(event) => setUsername(event.target.value)}
             autoComplete="username"
-            className="mt-2 mb-4 !rounded-2xl !py-3.5"
+            className="mt-2 mb-4 rounded-2xl py-3.5"
             placeholder="至少 3 个字符"
           />
 
@@ -158,7 +158,7 @@ export default function LoginPage() {
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             autoComplete={mode === "login" ? "current-password" : "new-password"}
-            className="mt-2 !rounded-2xl !py-3.5"
+            className="mt-2 rounded-2xl py-3.5"
             placeholder="至少 6 个字符"
           />
 

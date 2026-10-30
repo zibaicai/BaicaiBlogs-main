@@ -61,14 +61,14 @@ export default function TagRequestPage() {
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 placeholder="标签名称，例如：性能优化"
-                className="!rounded-2xl !py-3"
+                className="rounded-2xl py-3"
               />
               <Textarea
                 value={reason}
                 onChange={(event) => setReason(event.target.value)}
                 rows={3}
                 placeholder="申请理由 / 使用场景（可选）"
-                className="!rounded-2xl !py-3"
+                className="rounded-2xl py-3"
               />
               <button type="submit" disabled={busy} className="btn btn-primary rounded-2xl px-5 py-3 text-sm font-black disabled:opacity-50">
                 {busy ? "提交中…" : "提交申请"}
