@@ -93,7 +93,7 @@ export default function SplashScreen() {
         <h1 className="mb-2 text-2xl font-black uppercase tracking-[0.2em] text-slate-800 dark:text-white">
           {communityName}
         </h1>
-        <p className="mb-12 text-[10px] font-black uppercase tracking-[0.35em] text-slate-400">
+        <p className="mb-12 text-meta font-black uppercase tracking-[0.35em] text-slate-400">
           CLOUD CABIN IS LOADING...
         </p>
 

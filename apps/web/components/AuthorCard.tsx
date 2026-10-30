@@ -22,7 +22,7 @@ export default function AuthorCard() {
           <h3 className="truncate text-lg font-bold leading-tight text-slate-900 dark:text-white">
             {siteInfo.authorName}
           </h3>
-          <p className="mt-1.5 line-clamp-3 text-[11px] font-medium leading-relaxed text-slate-700 dark:text-slate-300">
+          <p className="mt-1.5 line-clamp-3 text-meta font-medium leading-relaxed text-slate-700 dark:text-slate-300">
             {siteInfo.bio}
           </p>
         </div>

@@ -76,8 +76,8 @@ export default function SuggestionDetailPage({ params }: { params: Promise<{ id:
           ) : (
             <article className="suggestion-surface mx-auto max-w-3xl rounded-[2rem] border border-white/20 bg-white/35 p-6 backdrop-blur-xl dark:bg-slate-800/35 md:p-8">
               <div className="flex flex-wrap items-center gap-3">
-                <span className="rounded-full bg-indigo-500/10 px-3 py-1.5 text-[10px] font-black text-indigo-500">{STATUS_LABEL[item.status] || item.status}</span>
-                <span className="text-[10px] text-slate-400">{item.category || "其他"} · {new Date(item.createdAt).toLocaleString("zh-CN")}</span>
+                <span className="rounded-full bg-indigo-500/10 px-3 py-1.5 text-meta font-black text-indigo-500">{STATUS_LABEL[item.status] || item.status}</span>
+                <span className="text-meta text-slate-400">{item.category || "其他"} · {new Date(item.createdAt).toLocaleString("zh-CN")}</span>
               </div>
               <h1 className="detail-title mt-4 text-slate-900 dark:text-white">{item.title}</h1>
               <div className="mt-6"><SuggestionContent item={item} /></div>
@@ -91,15 +91,15 @@ export default function SuggestionDetailPage({ params }: { params: Promise<{ id:
 
               <div className="mt-8 grid gap-3 sm:grid-cols-3">
                 <div className="rounded-2xl bg-white/20 p-4">
-                  <div className="text-[10px] text-slate-400">评分</div>
+                  <div className="text-meta text-slate-400">评分</div>
                   <div className="mt-1 text-lg font-black text-slate-800 dark:text-slate-100">{item.score ? `${item.score} / 5` : "待评估"}</div>
                 </div>
                 <div className="rounded-2xl bg-white/20 p-4">
-                  <div className="text-[10px] text-slate-400">奖励</div>
+                  <div className="text-meta text-slate-400">奖励</div>
                   <div className="mt-1 text-lg font-black text-slate-800 dark:text-slate-100">{item.rewardAmount ? `¥${Number(item.rewardAmount).toFixed(2)}` : "暂无"}</div>
                 </div>
                 <div className="rounded-2xl bg-white/20 p-4">
-                  <div className="text-[10px] text-slate-400">奖励状态</div>
+                  <div className="text-meta text-slate-400">奖励状态</div>
                   <div className="mt-1 text-lg font-black text-slate-800 dark:text-slate-100">{item.rewardStatus || "NONE"}</div>
                 </div>
               </div>

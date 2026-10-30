@@ -32,7 +32,7 @@ export default function ArticleImageLightbox({ src, alt, onClose }: ArticleImage
       onClick={onClose}
     >
       <div className="flex items-center justify-between gap-3 px-4 py-3 text-white/80">
-        <div className="flex items-center gap-2 text-[11px] font-bold">
+        <div className="flex items-center gap-2 text-meta font-bold">
           <ZoomIn size={15} /> 点击图片可关闭 · 查看原图
         </div>
         <div className="flex items-center gap-2">
@@ -41,7 +41,7 @@ export default function ArticleImageLightbox({ src, alt, onClose }: ArticleImage
             target="_blank"
             rel="noreferrer"
             onClick={(event) => event.stopPropagation()}
-            className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-2 text-[10px] font-black text-white hover:bg-white/20"
+            className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-2 text-meta font-black text-white hover:bg-white/20"
           >
             <ExternalLink size={13} /> 查看原图
           </a>

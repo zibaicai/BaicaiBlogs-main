@@ -223,7 +223,7 @@ export default function MyPhotosPage() {
                       type="password"
                       placeholder="相册密码"
                     />
-                    <label className="flex items-center gap-2 text-[11px] text-slate-500 font-bold">
+                    <label className="flex items-center gap-2 text-meta text-slate-500 font-bold">
                       <input type="checkbox" checked={hideCount} onChange={(e) => setHideCount(e.target.checked)} className="accent-indigo-500" />
                       未解锁时隐藏照片数量
                     </label>
@@ -250,7 +250,7 @@ export default function MyPhotosPage() {
                     </div>
                     <div className="min-w-0">
                       <div className="text-sm font-bold truncate">{album.title}</div>
-                      <div className="text-[10px] text-slate-400">{album.photoCount} 张 · {album.visibility}</div>
+                      <div className="text-meta text-slate-400">{album.photoCount} 张 · {album.visibility}</div>
                     </div>
                   </button>
                 ))}
@@ -267,7 +267,7 @@ export default function MyPhotosPage() {
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <h2 className="text-xl font-black">{selected.title}</h2>
-                      <div className="text-[10px] text-slate-400">{selected.photoCount} 张 · {selected.status}</div>
+                      <div className="text-meta text-slate-400">{selected.photoCount} 张 · {selected.status}</div>
                     </div>
                     <div className="flex items-center gap-2">
                       {selected.visibility === "PASSWORD" && (
@@ -284,15 +284,15 @@ export default function MyPhotosPage() {
                   {accessLogs && (
                     <div className="mb-4 rounded-2xl bg-white/50 dark:bg-slate-900/40 border border-white/40 dark:border-white/10 p-3">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-[11px] font-black text-slate-500">管理员查看记录（仅授权访问）</span>
-                        <button onClick={() => setAccessLogs(null)} className="text-[10px] text-slate-400">收起</button>
+                        <span className="text-meta font-black text-slate-500">管理员查看记录（仅授权访问）</span>
+                        <button onClick={() => setAccessLogs(null)} className="text-meta text-slate-400">收起</button>
                       </div>
                       {accessLogs.length === 0 ? (
-                        <div className="text-[11px] text-slate-400">暂无记录</div>
+                        <div className="text-meta text-slate-400">暂无记录</div>
                       ) : (
                         <div className="space-y-1 max-h-40 overflow-y-auto">
                           {accessLogs.map((log) => (
-                            <div key={log.id} className="text-[10px] text-slate-500">
+                            <div key={log.id} className="text-meta text-slate-500">
                               {log.adminLabel} · {log.action} · {log.viewedAt}
                             </div>
                           ))}
@@ -317,7 +317,7 @@ export default function MyPhotosPage() {
                       <div className="flex flex-col items-center gap-2">
                         <Loader2 className="animate-spin text-indigo-400" />
                         {Object.entries(progress).map(([name, p]) => (
-                          <div key={name} className="w-full max-w-sm text-left text-[10px] text-slate-400">
+                          <div key={name} className="w-full max-w-sm text-left text-meta text-slate-400">
                             <div className="truncate">{name}</div>
                             <div className="h-1 bg-slate-200 dark:bg-slate-700 rounded-full mt-1">
                               <div className="h-1 bg-indigo-500 rounded-full" style={{ width: `${p}%` }} />
@@ -338,15 +338,15 @@ export default function MyPhotosPage() {
                       <div key={photo.id} className="relative rounded-2xl overflow-hidden bg-slate-900 border border-white/10 group">
                         <img src={photo.thumbUrl} alt={photo.caption} className="w-full aspect-square object-cover" loading="lazy" />
                         {photo.status !== "VISIBLE" && (
-                          <span className="absolute top-2 left-2 px-2 py-1 rounded-md bg-amber-500 text-black text-[9px] font-black">
+                          <span className="absolute top-2 left-2 px-2 py-1 rounded-md bg-amber-500 text-black text-meta font-black">
                             审核中
                           </span>
                         )}
                         <div className="absolute bottom-0 inset-x-0 bg-black/60 p-2 flex items-center justify-between">
-                          <span className="text-[9px] text-white/80">权重 {photo.weight}</span>
+                          <span className="text-meta text-white/80">权重 {photo.weight}</span>
                           <div className="flex gap-1">
                             {photo.status !== "VISIBLE" && (
-                              <button onClick={() => void appealPhoto(photo)} className="text-amber-300 text-[9px] px-1">申诉</button>
+                              <button onClick={() => void appealPhoto(photo)} className="text-amber-300 text-meta px-1">申诉</button>
                             )}
                             <button onClick={() => void move(index, -1)} className="text-white/70 hover:text-white"><ChevronUp size={13} /></button>
                             <button onClick={() => void move(index, 1)} className="text-white/70 hover:text-white"><ChevronDown size={13} /></button>

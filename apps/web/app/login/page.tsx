@@ -143,7 +143,7 @@ export default function LoginPage() {
             {mode === "login" ? "登录后可评论、点赞、查看原图" : "注册满 7 天后解锁上传与下载"}
           </p>
 
-          <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">用户名</label>
+          <label className="text-meta font-black uppercase tracking-widest text-slate-400 ml-1">用户名</label>
           <Input
             value={username}
             onChange={(event) => setUsername(event.target.value)}
@@ -152,7 +152,7 @@ export default function LoginPage() {
             placeholder="至少 3 个字符"
           />
 
-          <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">密码</label>
+          <label className="text-meta font-black uppercase tracking-widest text-slate-400 ml-1">密码</label>
           <Input
             type="password"
             value={password}
@@ -177,7 +177,7 @@ export default function LoginPage() {
           )}
 
           {mode === "register" && (
-            <label className="mt-5 flex items-start gap-2.5 rounded-2xl border border-white/30 bg-white/20 px-3.5 py-3 text-[11px] font-medium leading-relaxed text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
+            <label className="mt-5 flex items-start gap-2.5 rounded-2xl border border-white/30 bg-white/20 px-3.5 py-3 text-meta font-medium leading-relaxed text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
               <input
                 type="checkbox"
                 checked={agreed}
@@ -205,7 +205,7 @@ export default function LoginPage() {
           <div className="mt-4 text-xs text-red-400 min-h-[18px] font-bold text-center">{message}</div>
 
           {mode === "login" && (
-            <p className="text-center text-[11px] font-medium leading-relaxed text-slate-500 dark:text-slate-400">
+            <p className="text-center text-meta font-medium leading-relaxed text-slate-500 dark:text-slate-400">
               继续即表示你已阅读并同意
               <Link href="/terms" target="_blank" rel="noreferrer" className="mx-1 font-bold text-indigo-500 hover:underline">
                 用户协议

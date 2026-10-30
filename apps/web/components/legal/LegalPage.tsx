@@ -29,7 +29,7 @@ export default function LegalPage({ title, subtitle, current, children }: LegalP
                   <Link
                     key={link.key}
                     href={link.href}
-                    className={`rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest transition ${
+                    className={`rounded-full px-4 py-2 text-meta font-black uppercase tracking-widest transition ${
                       current === link.key
                         ? "bg-[var(--ui-accent)] text-[var(--ui-accent-contrast)]"
                         : "border border-white/30 bg-white/20 text-slate-500 hover:text-indigo-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-400"
@@ -45,7 +45,7 @@ export default function LegalPage({ title, subtitle, current, children }: LegalP
               <p className="mt-3 text-sm font-medium leading-relaxed text-slate-600 dark:text-slate-300">
                 {subtitle}
               </p>
-              <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-slate-400">
+              <p className="mt-2 font-mono text-meta uppercase tracking-[0.16em] text-slate-400">
                 最后更新：2026-10-28
               </p>
             </header>

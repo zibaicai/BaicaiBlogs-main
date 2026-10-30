@@ -97,7 +97,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             className={`toast-card pointer-events-auto flex max-w-[min(30rem,calc(100vw-2rem))] items-center gap-2.5 rounded-xl border px-4 py-2.5 shadow-lg backdrop-blur-md ${KIND_CLASS[item.kind]}`}
           >
             <Icon size={15} className="shrink-0" />
-            <span className="text-[13px] font-bold leading-5">{item.message}</span>
+            <span className="text-description font-bold leading-5">{item.message}</span>
             <button
               type="button"
               onClick={() => remove(item.id)}

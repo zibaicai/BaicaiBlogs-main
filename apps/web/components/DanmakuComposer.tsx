@@ -58,7 +58,7 @@ export default function DanmakuComposer() {
       ) : (
         <div className="w-[min(320px,calc(100vw-2rem))] rounded-2xl border border-white/40 bg-white/80 p-3 shadow-2xl backdrop-blur-2xl dark:border-white/10 dark:bg-slate-900/90">
           <div className="mb-2 flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+            <span className="text-meta font-black uppercase tracking-widest text-slate-400">
               发一条弹幕
             </span>
             <button
@@ -101,7 +101,7 @@ export default function DanmakuComposer() {
                   <Send size={15} />
                 </button>
               </div>
-              <div className="mt-1 text-right text-[10px] text-slate-400">{text.length}/100</div>
+              <div className="mt-1 text-right text-meta text-slate-400">{text.length}/100</div>
             </>
           )}
         </div>

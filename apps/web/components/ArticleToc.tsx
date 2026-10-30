@@ -111,7 +111,7 @@ export default function ArticleToc() {
               {group.heading && (
                 <button
                   type="button"
-                  className={`article-toc-group-title ${activeId === group.heading.id ? "is-active" : ""}`}
+                  className={`article-toc-group-title text-toc ${activeId === group.heading.id ? "is-active" : ""}`}
                   onClick={() => setCollapsed((value) => ({ ...value, [group.key]: !isCollapsed }))}
                   aria-expanded={!isCollapsed}
                 >
@@ -126,7 +126,7 @@ export default function ArticleToc() {
                       key={item.id}
                       href={`#${item.id}`}
                       onClick={(event) => jump(event, item.id)}
-                      className={`article-toc-item level-${item.level} ${activeId === item.id ? "is-active" : ""}`}
+                      className={`article-toc-item text-toc level-${item.level} ${activeId === item.id ? "is-active" : ""}`}
                     >
                       {item.text}
                     </a>

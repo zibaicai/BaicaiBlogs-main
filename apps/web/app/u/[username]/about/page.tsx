@@ -37,7 +37,7 @@ export default async function RoomAboutPage({ params }: { params: Promise<{ user
                   </div>
                 )}
               </div>
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-indigo-400">ROOM / OWNER</p>
+              <p className="text-meta font-black uppercase tracking-[0.22em] text-indigo-400">ROOM / OWNER</p>
               <PageTitle className="mt-2 text-slate-900 dark:text-white">
                 {room.nickname}
               </PageTitle>
@@ -57,7 +57,7 @@ export default async function RoomAboutPage({ params }: { params: Promise<{ user
                   ["照片", room.photoCount],
                 ].map(([label, value]) => (
                   <div key={String(label)} className="rounded-2xl bg-white/50 p-4 dark:bg-slate-900/40">
-                    <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">{label}</div>
+                    <div className="text-meta font-black uppercase tracking-widest text-slate-400">{label}</div>
                     <div className="mt-1 text-xl font-black text-slate-800 dark:text-white">{value}</div>
                   </div>
                 ))}

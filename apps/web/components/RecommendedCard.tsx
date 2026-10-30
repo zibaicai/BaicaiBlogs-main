@@ -25,7 +25,7 @@ export default function RecommendedCard({
               {item.title}
             </h4>
             {item.date && (
-              <p className="mt-1 text-[10px] font-bold uppercase text-slate-400 dark:text-slate-500">
+              <p className="mt-1 text-meta font-bold uppercase text-slate-400 dark:text-slate-500">
                 {item.date}
               </p>
             )}

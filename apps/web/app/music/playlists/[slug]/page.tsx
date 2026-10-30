@@ -95,16 +95,16 @@ export default function MusicPlaylistPage({ params }: { params: Promise<{ slug: 
                   )}
                 </div>
                 <div className="flex flex-col justify-center">
-                  <span className="font-mono text-[9px] font-black tracking-[0.2em] text-indigo-400">CURATED PLAYLIST</span>
+                  <span className="font-mono text-meta font-black tracking-[0.2em] text-indigo-400">CURATED PLAYLIST</span>
                   <h1 className="detail-title mt-2 text-slate-900 dark:text-white">{playlist.title}</h1>
                   <p className="mt-3 max-w-xl text-sm leading-relaxed text-slate-500 dark:text-slate-400">
                     {playlist.description || "暂无简介"}
                   </p>
                   <div className="mt-6 flex flex-wrap items-center gap-3">
-                    <span className="rounded-full bg-emerald-500/10 px-3 py-1.5 text-[10px] font-black text-emerald-500">可播放 {playlist.playableCount ?? playlist.tracks?.length ?? 0}</span>
-                    {(playlist.removedCount ?? 0) > 0 && <span className="rounded-full bg-rose-500/10 px-3 py-1.5 text-[10px] font-black text-rose-500">下架 {playlist.removedCount}</span>}
-                    {(playlist.vipOnlyCount ?? 0) > 0 && <span className="rounded-full bg-amber-500/10 px-3 py-1.5 text-[10px] font-black text-amber-500">升 VIP {playlist.vipOnlyCount}</span>}
-                    {(playlist.regionBlockedCount ?? 0) > 0 && <span className="rounded-full bg-slate-500/10 px-3 py-1.5 text-[10px] font-black text-slate-400">地区限制 {playlist.regionBlockedCount}</span>}
+                    <span className="rounded-full bg-emerald-500/10 px-3 py-1.5 text-meta font-black text-emerald-500">可播放 {playlist.playableCount ?? playlist.tracks?.length ?? 0}</span>
+                    {(playlist.removedCount ?? 0) > 0 && <span className="rounded-full bg-rose-500/10 px-3 py-1.5 text-meta font-black text-rose-500">下架 {playlist.removedCount}</span>}
+                    {(playlist.vipOnlyCount ?? 0) > 0 && <span className="rounded-full bg-amber-500/10 px-3 py-1.5 text-meta font-black text-amber-500">升 VIP {playlist.vipOnlyCount}</span>}
+                    {(playlist.regionBlockedCount ?? 0) > 0 && <span className="rounded-full bg-slate-500/10 px-3 py-1.5 text-meta font-black text-slate-400">地区限制 {playlist.regionBlockedCount}</span>}
                   </div>
                   <div className="mt-6 flex flex-wrap items-center gap-3">
                     <button onClick={() => void act("LIKE")} className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-black ${playlist.myReaction === "LIKE" ? "bg-indigo-500 text-white" : "bg-white/15 text-slate-600 dark:text-slate-300"}`}>
@@ -119,7 +119,7 @@ export default function MusicPlaylistPage({ params }: { params: Promise<{ slug: 
                     <button onClick={() => void savePersonal()} className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-4 py-2 text-xs font-black text-slate-600 dark:text-slate-300">
                       保存为私人歌单
                     </button>
-                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-slate-400">
+                    <span className="inline-flex items-center gap-1 text-meta font-bold text-slate-400">
                       <Flame size={12} /> 热度 {playlist.heatScore}
                     </span>
                   </div>
@@ -132,15 +132,15 @@ export default function MusicPlaylistPage({ params }: { params: Promise<{ slug: 
                 <div className="overflow-hidden rounded-3xl border border-white/20 bg-white/35 backdrop-blur-xl dark:bg-slate-800/35">
                   {(playlist.tracks || []).map((track, index) => (
                     <Link key={track.id} href={`/music/tracks/${track.id}`} className="flex items-center gap-4 border-b border-white/10 p-4 last:border-0 hover:bg-white/20">
-                      <span className="w-6 text-center font-mono text-[10px] text-slate-400">{index + 1}</span>
+                      <span className="w-6 text-center font-mono text-meta text-slate-400">{index + 1}</span>
                       <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-slate-900/30">
                         {track.cover ? <img src={track.cover} alt="" className="h-full w-full object-cover" /> : null}
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="truncate text-sm font-bold text-slate-800 dark:text-slate-100">{track.title}</div>
-                        <div className="truncate text-[10px] text-slate-400">{track.artist || "未知歌手"}</div>
+                        <div className="truncate text-meta text-slate-400">{track.artist || "未知歌手"}</div>
                       </div>
-                      <span className="text-[10px] font-bold text-slate-400">查看评论 →</span>
+                      <span className="text-meta font-bold text-slate-400">查看评论 →</span>
                     </Link>
                   ))}
                   {(playlist.tracks || []).length === 0 && (
@@ -163,9 +163,9 @@ export default function MusicPlaylistPage({ params }: { params: Promise<{ slug: 
                           <div key={issue.id} className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3 last:border-0">
                             <div className="min-w-0">
                               <div className="truncate text-sm font-bold text-slate-700 dark:text-slate-200">{issue.title}</div>
-                              <div className="truncate text-[10px] text-slate-400">{issue.artist || "未知歌手"}</div>
+                              <div className="truncate text-meta text-slate-400">{issue.artist || "未知歌手"}</div>
                             </div>
-                            <time className="shrink-0 text-[10px] text-slate-400">{new Date(issue.firstSeenAt).toLocaleDateString("zh-CN")}</time>
+                            <time className="shrink-0 text-meta text-slate-400">{new Date(issue.firstSeenAt).toLocaleDateString("zh-CN")}</time>
                           </div>
                         ))}
                       </div>

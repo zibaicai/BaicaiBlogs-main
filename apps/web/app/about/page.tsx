@@ -16,7 +16,7 @@ export default async function AboutPage() {
         <main className="directory-shell">
           <div className="max-w-4xl mx-auto">
             <header className="text-center mb-12">
-              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-indigo-400">ABOUT THE COMMUNITY</p>
+              <p className="text-meta font-black uppercase tracking-[0.24em] text-indigo-400">ABOUT THE COMMUNITY</p>
               <h1 className="display-title mt-3 text-slate-900 dark:text-white">
                 关于 {communityName}
               </h1>
@@ -37,13 +37,13 @@ export default async function AboutPage() {
 
               <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div className="rounded-2xl border border-white/40 bg-white/50 p-5 dark:border-white/10 dark:bg-slate-900/40">
-                  <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">建站时间</div>
+                  <div className="text-meta font-black uppercase tracking-widest text-slate-400">建站时间</div>
                   <div className="mt-2 text-sm font-bold text-slate-700 dark:text-slate-200">
                     {String(siteInfo.buildDate || "").slice(0, 10) || "未知"}
                   </div>
                 </div>
                 <div className="rounded-2xl border border-white/40 bg-white/50 p-5 dark:border-white/10 dark:bg-slate-900/40">
-                  <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">备案</div>
+                  <div className="text-meta font-black uppercase tracking-widest text-slate-400">备案</div>
                   {siteInfo.icpConfig?.link ? (
                     <a href={siteInfo.icpConfig.link} target="_blank" rel="noopener noreferrer" className="mt-2 block text-sm font-bold text-indigo-500 hover:underline">
                       {siteInfo.icpConfig.name}
@@ -53,7 +53,7 @@ export default async function AboutPage() {
                   )}
                 </div>
                 <div className="rounded-2xl border border-white/40 bg-white/50 p-5 dark:border-white/10 dark:bg-slate-900/40">
-                  <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">社区维护者</div>
+                  <div className="text-meta font-black uppercase tracking-widest text-slate-400">社区维护者</div>
                   <div className="mt-2 text-sm font-bold text-slate-700 dark:text-slate-200">{siteInfo.authorName || "站长"}</div>
                 </div>
               </div>

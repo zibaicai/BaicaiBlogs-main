@@ -355,7 +355,7 @@ export default function AlbumPage() {
               </button>
               {!user && <span className="text-xs text-white/60">登录后可查看原图</span>}
             </div>
-            <div className="text-[10px] text-white/40">
+            <div className="text-meta text-white/40">
               当前为 800px 标清图；原图查看/下载每天限 10 张不同图片
             </div>
           </div>

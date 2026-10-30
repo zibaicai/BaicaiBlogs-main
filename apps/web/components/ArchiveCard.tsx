@@ -44,7 +44,7 @@ export default function ArchiveCard({
             className={`h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04] ${imageClassName}`}
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-indigo-500/25 to-slate-900/40 text-[10px] font-black uppercase tracking-widest text-white/55">
+          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-indigo-500/25 to-slate-900/40 text-meta font-black uppercase tracking-widest text-white/55">
             No Cover
           </div>
         )}

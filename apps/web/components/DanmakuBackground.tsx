@@ -122,7 +122,7 @@ export default function DanmakuBackground() {
       {lanes.map((lane) => (
         <div
           key={lane.id}
-          className="danmaku-item absolute left-0 whitespace-nowrap font-medium text-[12px] tracking-[0.06em] text-white/35 dark:text-white/25 md:text-[14px]"
+          className="danmaku-item absolute left-0 whitespace-nowrap font-medium text-control tracking-[0.06em] text-white/35 dark:text-white/25 md:text-body"
           style={{
             top: `${lane.top}%`,
             animation: `danmaku-flow ${lane.duration}s linear ${lane.delay}s infinite`,

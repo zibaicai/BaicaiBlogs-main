@@ -59,7 +59,7 @@ export default function RoomSettingsPage() {
               <ArrowLeft size={14} /> 返回社区
             </Link>
             <header className="mb-8">
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-indigo-400">MY ROOM</p>
+              <p className="text-meta font-black uppercase tracking-[0.22em] text-indigo-400">MY ROOM</p>
               <PageTitle className="mt-2 text-slate-900 dark:text-white">我的小屋</PageTitle>
               <p className="mt-2 text-sm text-slate-500">修改后，导航和首页会显示你的小屋名与昵称。</p>
             </header>
@@ -80,7 +80,7 @@ export default function RoomSettingsPage() {
                 <label className="block text-xs font-bold text-slate-500">
                   小屋名
                   <Input value={roomName} onChange={(event) => setRoomName(event.target.value)} className="mt-2" placeholder="例如：叶洛" />
-                  <span className="mt-1 block text-[10px] font-normal text-slate-400">留空时显示昵称，不会自动添加其他文字。</span>
+                  <span className="mt-1 block text-meta font-normal text-slate-400">留空时显示昵称，不会自动添加其他文字。</span>
                 </label>
                 <label className="block text-xs font-bold text-slate-500">
                   小屋简介

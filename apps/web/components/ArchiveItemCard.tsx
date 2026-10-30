@@ -64,24 +64,24 @@ export default function ArchiveItemCard({
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-        {label && <span className="directory-date-badge">{label}</span>}
+        {label && <span className="directory-date-badge text-meta">{label}</span>}
         {cornerBadge && <span className="directory-card-corner-badge">{cornerBadge}</span>}
       </div>
 
       <div className="directory-card-body">
         <div className="directory-card-copy">
-          {label && <time className="directory-card-time">{label}</time>}
+          {label && <time className="directory-card-time text-meta">{label}</time>}
           <ResourceTitle className="directory-card-title" variant={variant}>{title}</ResourceTitle>
           {description && <p className="directory-card-description">{description}</p>}
           {footnote && <p className="directory-card-footnote">{footnote}</p>}
         </div>
 
         <div className="directory-card-foot">
-          {category && <span className="directory-card-category">{category}</span>}
+          {category && <span className="directory-card-category text-meta">{category}</span>}
           {tags.length > 0 && (
             <div className="directory-card-tags">
               {tags.map((tag) => (
-                <span key={tag} className="directory-tag">#{tag}</span>
+                <span key={tag} className="directory-tag text-meta">#{tag}</span>
               ))}
             </div>
           )}

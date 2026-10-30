@@ -172,17 +172,17 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
                 <div className="flex items-center gap-2">
                   <strong className="truncate text-xs text-slate-800 dark:text-slate-100">{message.name}</strong>
                   {message.website && (
-                    <a href={message.website} target="_blank" rel="nofollow ugc noopener noreferrer" className="truncate text-[10px] text-indigo-500 hover:underline">
+                    <a href={message.website} target="_blank" rel="nofollow ugc noopener noreferrer" className="truncate text-meta text-indigo-500 hover:underline">
                       {message.website.replace(/^https?:\/\//, "").replace(/\/$/, "")}
                     </a>
                   )}
                 </div>
-                <span className="text-[9px] text-slate-400">{formatDate(message.createdAt || "")}</span>
+                <span className="text-meta text-slate-400">{formatDate(message.createdAt || "")}</span>
               </div>
             </div>
             <p className="mt-3 whitespace-pre-wrap text-xs leading-6 text-slate-600 dark:text-slate-300">{message.content}</p>
             {user && message.userId === user.id && (
-              <button type="button" onClick={() => void remove(message.id)} className="mt-2 text-[10px] font-bold text-slate-400 hover:text-red-500">
+              <button type="button" onClick={() => void remove(message.id)} className="mt-2 text-meta font-bold text-slate-400 hover:text-red-500">
                 删除
               </button>
             )}
@@ -191,7 +191,7 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
       </div>
 
       <div className="mt-6 rounded-2xl border border-indigo-400/20 bg-slate-950/20 p-4">
-        <p className="mb-2 text-[10px] font-bold text-slate-400">
+        <p className="mb-2 text-meta font-bold text-slate-400">
           {user ? `以 ${user.nickname || user.username} 的身份留言` : "当前为匿名留言"}
         </p>
         <Textarea value={content} onChange={(e) => setContent(e.target.value)} rows={4} className="mt-1" placeholder="说点什么，或者留下你的网站。" />
@@ -200,7 +200,7 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
             <div ref={turnstileRef} />
           </div>
         )}
-        {turnstileConfig?.enabled && turnstilePassed && <p className="mt-2 text-[10px] font-bold text-emerald-500">人机验证已通过</p>}
+        {turnstileConfig?.enabled && turnstilePassed && <p className="mt-2 text-meta font-bold text-emerald-500">人机验证已通过</p>}
         <div className="mt-3 flex justify-end">
           <button type="button" onClick={() => void submit()} disabled={busy} className="hv-button hv-button-primary inline-flex items-center gap-2 disabled:opacity-50">
             {busy ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />} 发表留言

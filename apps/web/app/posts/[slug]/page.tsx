@@ -114,7 +114,7 @@ export default async function PostDetail({ params }: { params: Promise<{ slug: s
                         key={tag}
                         className="flex items-center gap-1 text-[var(--ui-accent-strong)] dark:text-[var(--ui-accent)] font-bold bg-[var(--ui-accent-soft)] px-2.5 md:px-3 py-1.5 md:py-2 rounded-full text-xs md:text-sm shadow-sm border border-white/20 dark:border-white/5"
                       >
-                        <span className="text-[10px] md:text-xs opacity-70">#</span> {tag}
+                        <span className="text-meta md:text-xs opacity-70">#</span> {tag}
                       </div>
                     ))}
                   </div>

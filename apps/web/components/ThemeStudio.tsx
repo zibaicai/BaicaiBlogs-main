@@ -163,7 +163,7 @@ export default function ThemeStudio({ open, onClose }: ThemeStudioProps) {
       <div className="theme-studio max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-[28px] border border-white/40 bg-white/95 p-5 text-slate-900 shadow-2xl dark:border-white/10 dark:bg-slate-900/95 dark:text-slate-100 sm:p-7">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500">
+            <div className="flex items-center gap-2 text-meta font-black uppercase tracking-[0.2em] text-indigo-500">
               <Palette size={14} /> Reading appearance
             </div>
             <h2 className="mt-2 text-2xl font-black">配色工作台</h2>
@@ -192,7 +192,7 @@ export default function ThemeStudio({ open, onClose }: ThemeStudioProps) {
               }`}
             >
               <span className="block text-xs font-black">{item.name}</span>
-              <span className="mt-1 block text-[10px] font-medium opacity-60">{item.hint}</span>
+              <span className="mt-1 block text-meta font-medium opacity-60">{item.hint}</span>
             </button>
           ))}
         </div>
@@ -213,13 +213,13 @@ export default function ThemeStudio({ open, onClose }: ThemeStudioProps) {
             ))}
           </div>
           <div className="flex flex-wrap gap-2">
-            <button onClick={recommend} disabled={recommending} className="flex items-center gap-1.5 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-[10px] font-black text-indigo-600 disabled:opacity-50 dark:border-indigo-500/20 dark:bg-indigo-500/10 dark:text-indigo-300">
+            <button onClick={recommend} disabled={recommending} className="flex items-center gap-1.5 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-meta font-black text-indigo-600 disabled:opacity-50 dark:border-indigo-500/20 dark:bg-indigo-500/10 dark:text-indigo-300">
               <Sparkles size={12} /> {recommending ? "取色中…" : "从背景推荐"}
             </button>
-            <button onClick={copy} disabled={!customThemes[tab]} className="flex items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-2 text-[10px] font-black text-slate-500 disabled:opacity-40 dark:border-white/10 dark:text-slate-300">
+            <button onClick={copy} disabled={!customThemes[tab]} className="flex items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-2 text-meta font-black text-slate-500 disabled:opacity-40 dark:border-white/10 dark:text-slate-300">
               <Copy size={12} /> 复制到另一模式
             </button>
-            <button onClick={() => resetCurrentTheme(tab)} className="flex items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-2 text-[10px] font-black text-slate-500 dark:border-white/10 dark:text-slate-300">
+            <button onClick={() => resetCurrentTheme(tab)} className="flex items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-2 text-meta font-black text-slate-500 dark:border-white/10 dark:text-slate-300">
               <RotateCcw size={12} /> 恢复当前
             </button>
           </div>
@@ -227,7 +227,7 @@ export default function ThemeStudio({ open, onClose }: ThemeStudioProps) {
 
         {recommended.length > 0 && (
           <div className="mt-4 flex items-center gap-2">
-            <span className="text-[10px] font-black text-slate-400">背景推荐</span>
+            <span className="text-meta font-black text-slate-400">背景推荐</span>
             {recommended.map((color) => (
               <button
                 key={color}
@@ -243,9 +243,9 @@ export default function ThemeStudio({ open, onClose }: ThemeStudioProps) {
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
           {FIELDS.map((field) => (
             <label key={field.key} className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5 dark:border-white/10 dark:bg-white/5">
-              <span className="text-[11px] font-black text-slate-500 dark:text-slate-300">{field.label}</span>
+              <span className="text-meta font-black text-slate-500 dark:text-slate-300">{field.label}</span>
               <span className="flex items-center gap-2">
-                <code className="text-[10px] text-slate-400">{palette[field.key]}</code>
+                <code className="text-meta text-slate-400">{palette[field.key]}</code>
                 <input
                   type="color"
                   value={palette[field.key]}
@@ -269,7 +269,7 @@ export default function ThemeStudio({ open, onClose }: ThemeStudioProps) {
         </div>
 
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-          <button onClick={resetAllThemes} className="text-[10px] font-black text-red-500 hover:underline">
+          <button onClick={resetAllThemes} className="text-meta font-black text-red-500 hover:underline">
             一键初始化全部主题
           </button>
           <button onClick={onClose} className="btn btn-primary rounded-xl px-5 py-2.5 text-xs font-black">

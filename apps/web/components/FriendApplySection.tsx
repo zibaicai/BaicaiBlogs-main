@@ -167,24 +167,24 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
       <section className="mt-8 rounded-3xl border border-white/50 bg-white/60 p-4 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/50 lg:fixed lg:right-6 lg:top-20 lg:z-30 lg:mt-0 lg:w-72">
         <div className="flex items-center justify-between gap-3">
           <h2 className="text-sm font-black text-slate-900 dark:text-white">本站友链</h2>
-          <button type="button" onClick={() => void copy()} className="inline-flex items-center gap-1 rounded-lg bg-indigo-500/10 px-2 py-1 text-[10px] font-bold text-indigo-500 hover:bg-indigo-500/15">
+          <button type="button" onClick={() => void copy()} className="inline-flex items-center gap-1 rounded-lg bg-indigo-500/10 px-2 py-1 text-meta font-bold text-indigo-500 hover:bg-indigo-500/15">
             <Clipboard size={11} /> 复制全部
           </button>
         </div>
-        <pre className="mt-3 whitespace-pre-wrap break-all rounded-xl bg-slate-100/70 p-3 text-[10px] leading-5 text-slate-600 dark:bg-slate-950/40 dark:text-slate-300">{copyAll}</pre>
+        <pre className="mt-3 whitespace-pre-wrap break-all rounded-xl bg-slate-100/70 p-3 text-meta leading-5 text-slate-600 dark:bg-slate-950/40 dark:text-slate-300">{copyAll}</pre>
         <button type="button" onClick={() => { setEditing(false); setOpen(true); }} className="mt-3 w-full rounded-xl bg-indigo-500 px-3 py-2 text-xs font-black text-white hover:bg-indigo-400">
           申请友链
         </button>
-        {message && <p className="mt-2 text-[10px] font-bold text-indigo-500">{message}</p>}
+        {message && <p className="mt-2 text-meta font-bold text-indigo-500">{message}</p>}
         {user && (
           <div className="mt-3 border-t border-slate-200/60 pt-3 dark:border-slate-700/50">
             {application ? (
-              <div className="text-[10px] leading-5 text-slate-500">
+              <div className="text-meta leading-5 text-slate-500">
                 {application.name} · {application.status === "APPROVED" ? "已通过" : application.status === "REJECTED" ? "未通过" : "审核中"}
                 <button type="button" onClick={startEdit} className="ml-2 font-bold text-indigo-500 hover:underline">编辑</button>
               </div>
             ) : (
-              <button type="button" onClick={() => void bind()} disabled={busy} className="text-[10px] font-bold text-indigo-500 hover:underline">绑定之前提交的申请</button>
+              <button type="button" onClick={() => void bind()} disabled={busy} className="text-meta font-bold text-indigo-500 hover:underline">绑定之前提交的申请</button>
             )}
           </div>
         )}
@@ -198,14 +198,14 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
               <button type="button" onClick={() => setOpen(false)} className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"><X size={16} /></button>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
-              <label className="text-[10px] font-bold text-slate-400">称谓<Input value={name} onChange={(e) => setName(e.target.value)} className="mt-1" /></label>
-              <label className="text-[10px] font-bold text-slate-400">网站地址<Input value={url} onChange={(e) => setUrl(e.target.value)} disabled={application?.status === "APPROVED"} className="mt-1" /></label>
-              <label className="text-[10px] font-bold text-slate-400">头像地址<Input value={avatar} onChange={(e) => setAvatar(e.target.value)} className="mt-1" /></label>
-              <label className="text-[10px] font-bold text-slate-400">联系方式（仅管理员可见）<Input value={contact} onChange={(e) => setContact(e.target.value)} className="mt-1" /></label>
-              <label className="text-[10px] font-bold text-slate-400 sm:col-span-2">简介<Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="mt-1" /></label>
+              <label className="text-meta font-bold text-slate-400">称谓<Input value={name} onChange={(e) => setName(e.target.value)} className="mt-1" /></label>
+              <label className="text-meta font-bold text-slate-400">网站地址<Input value={url} onChange={(e) => setUrl(e.target.value)} disabled={application?.status === "APPROVED"} className="mt-1" /></label>
+              <label className="text-meta font-bold text-slate-400">头像地址<Input value={avatar} onChange={(e) => setAvatar(e.target.value)} className="mt-1" /></label>
+              <label className="text-meta font-bold text-slate-400">联系方式（仅管理员可见）<Input value={contact} onChange={(e) => setContact(e.target.value)} className="mt-1" /></label>
+              <label className="text-meta font-bold text-slate-400 sm:col-span-2">简介<Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="mt-1" /></label>
             </div>
             <label className="mt-3 flex items-center gap-2 text-xs text-slate-500"><input type="checkbox" checked={hasBacklink} onChange={(e) => setHasBacklink(e.target.checked)} /> 我已在本站添加贵站友链</label>
-            <div className="mt-3 rounded-xl border border-amber-400/20 bg-amber-500/10 p-3 text-[10px] leading-5 text-amber-700 dark:text-amber-300">
+            <div className="mt-3 rounded-xl border border-amber-400/20 bg-amber-500/10 p-3 text-meta leading-5 text-amber-700 dark:text-amber-300">
               提交前请确认网站可访问、信息准确。提交后进入人工审核，审核期间请勿重复提交。
             </div>
             <label className="mt-3 flex items-center gap-2 text-xs text-slate-500"><input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} /> 我已确认以上信息无误</label>

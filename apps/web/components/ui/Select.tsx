@@ -204,7 +204,7 @@ export default function Select({
                   >
                     <span className="min-w-0">
                       <span className="block truncate text-xs font-bold">{option.label}</span>
-                      {option.description && <span className="mt-0.5 block truncate text-[10px] text-slate-400">{option.description}</span>}
+                      {option.description && <span className="mt-0.5 block truncate text-meta text-slate-400">{option.description}</span>}
                     </span>
                     {isSelected && <Check size={14} className="shrink-0 text-indigo-500" />}
                   </div>

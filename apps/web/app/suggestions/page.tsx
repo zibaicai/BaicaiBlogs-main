@@ -100,7 +100,7 @@ export default function SuggestionsPage() {
       <PageTransition>
         <main className="directory-shell suggestions-shell">
           <header className="mb-8">
-            <span className="font-mono text-[9px] font-black tracking-[0.2em] text-indigo-400">SUGGESTIONS</span>
+            <span className="font-mono text-meta font-black tracking-[0.2em] text-indigo-400">SUGGESTIONS</span>
             <PageTitle className="mt-2 text-slate-900 dark:text-white">建议与想法</PageTitle>
             <p className="page-subtitle mt-3 max-w-2xl text-slate-500 dark:text-slate-400">
               对博客的功能、界面和体验提出建议。可以附截图或草图，超级管理员会审核并回复，采纳后会有 1-5 元奖励。
@@ -121,11 +121,11 @@ export default function SuggestionsPage() {
                 <div className="space-y-4">
                   <div className="grid gap-3 sm:grid-cols-[1fr_180px]">
                     <label className="block">
-                      <span className="mb-2 ml-1 block text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">标题</span>
+                      <span className="mb-2 ml-1 block text-meta font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">标题</span>
                       <Input value={title} onChange={(event) => setTitle(event.target.value)} maxLength={160} placeholder="用一句话概括你的建议" />
                     </label>
                     <label className="block">
-                      <span className="mb-2 ml-1 block text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">分类</span>
+                      <span className="mb-2 ml-1 block text-meta font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">分类</span>
                       <Select
                         value={category}
                         onChange={setCategory}
@@ -142,7 +142,7 @@ export default function SuggestionsPage() {
                     </label>
                   </div>
                   <label className="block">
-                    <span className="mb-2 ml-1 block text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">方案描述</span>
+                    <span className="mb-2 ml-1 block text-meta font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">方案描述</span>
                   <Textarea
                     value={content}
                     onChange={(event) => setContent(event.target.value)}
@@ -156,7 +156,7 @@ export default function SuggestionsPage() {
                     <button type="button" onClick={() => fileRef.current?.click()} disabled={uploading || images.length >= 5} className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-xs font-black text-slate-600 disabled:opacity-40 dark:text-slate-300">
                       {uploading ? <Loader2 size={14} className="animate-spin" /> : <ImagePlus size={14} />} 插入图片
                     </button>
-                    <span className="text-[10px] text-slate-400">JPG / PNG / WebP · 单张 10MB · 最多 5 张</span>
+                    <span className="text-meta text-slate-400">JPG / PNG / WebP · 单张 10MB · 最多 5 张</span>
                   </div>
                   {images.length > 0 && (
                     <div className="flex flex-wrap gap-3">
@@ -169,7 +169,7 @@ export default function SuggestionsPage() {
                     </div>
                   )}
                   <div className="flex items-center justify-between gap-4">
-                    <span className="text-[10px] text-slate-400">{content.length} / 20000</span>
+                    <span className="text-meta text-slate-400">{content.length} / 20000</span>
                     <button type="button" onClick={() => void submit()} disabled={sending} className="inline-flex items-center gap-2 rounded-full bg-indigo-500 px-5 py-2.5 text-xs font-black text-white disabled:opacity-50">
                       {sending ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />} 提交建议
                     </button>
@@ -181,7 +181,7 @@ export default function SuggestionsPage() {
 
             <aside className="suggestion-surface h-fit rounded-[2rem] border border-white/30 bg-white/55 p-6 backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/55">
               <h2 className="text-lg font-black text-slate-900 dark:text-white">我的建议</h2>
-              <p className="mt-1 text-[11px] text-slate-400">提交后可在详情中查看管理员回复。</p>
+              <p className="mt-1 text-meta text-slate-400">提交后可在详情中查看管理员回复。</p>
               <div className="mt-4 space-y-3">
                 {mine.length === 0 ? (
                   <p className="py-8 text-center text-xs text-slate-400">还没有提交过建议。</p>
@@ -189,10 +189,10 @@ export default function SuggestionsPage() {
                   <Link key={item.id} href={`/suggestions/${item.id}`} className="block rounded-2xl border border-white/20 bg-white/20 p-4 transition hover:bg-white/35">
                     <div className="flex items-start justify-between gap-3">
                       <strong className="line-clamp-2 text-sm text-slate-800 dark:text-slate-100">{item.title}</strong>
-                      <span className="shrink-0 rounded-full bg-indigo-500/10 px-2 py-1 text-[9px] font-black text-indigo-500">{STATUS_LABEL[item.status] || item.status}</span>
+                      <span className="shrink-0 rounded-full bg-indigo-500/10 px-2 py-1 text-meta font-black text-indigo-500">{STATUS_LABEL[item.status] || item.status}</span>
                     </div>
-                    <div className="mt-2 text-[10px] text-slate-400">{item.category || "其他"} · {new Date(item.createdAt).toLocaleDateString("zh-CN")}</div>
-                    {item.rewardAmount ? <div className="mt-2 text-[10px] font-bold text-amber-500">奖励 ¥{Number(item.rewardAmount).toFixed(2)} · {item.rewardStatus}</div> : null}
+                    <div className="mt-2 text-meta text-slate-400">{item.category || "其他"} · {new Date(item.createdAt).toLocaleDateString("zh-CN")}</div>
+                    {item.rewardAmount ? <div className="mt-2 text-meta font-bold text-amber-500">奖励 ¥{Number(item.rewardAmount).toFixed(2)} · {item.rewardStatus}</div> : null}
                   </Link>
                 ))}
               </div>

@@ -21,7 +21,7 @@ export default async function RoomsPage() {
         <main className="directory-shell">
           <div className="max-w-6xl mx-auto">
             <header className="mb-10">
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-indigo-400">ROOM DIRECTORY</p>
+              <p className="text-meta font-black uppercase tracking-[0.22em] text-indigo-400">ROOM DIRECTORY</p>
               <PageTitle className="mt-2 text-slate-900 dark:text-white">
                 {communityName}目录
               </PageTitle>
@@ -47,14 +47,14 @@ export default async function RoomsPage() {
                     )}
                     <div className="min-w-0">
                       <h2 className="truncate text-sm font-black text-slate-900 group-hover:text-indigo-500 dark:text-white">{room.roomName}</h2>
-                      <p className="truncate text-[10px] text-slate-500">{room.nickname}</p>
+                      <p className="truncate text-meta text-slate-500">{room.nickname}</p>
                     </div>
                     <ArrowUpRight size={14} className="ml-auto text-slate-400 transition group-hover:text-indigo-500" />
                   </div>
                   <p className="mt-4 line-clamp-2 min-h-[2.5rem] text-xs leading-5 text-slate-500 dark:text-slate-400">
                     {room.roomBio || "还没有写下小屋简介。"}
                   </p>
-                  <div className="mt-4 flex gap-4 text-[10px] text-slate-400">
+                  <div className="mt-4 flex gap-4 text-meta text-slate-400">
                     <span>{room.postCount} 笔记</span>
                     <span>{room.momentCount} 说说</span>
                     <span>{room.photoCount} 照片</span>

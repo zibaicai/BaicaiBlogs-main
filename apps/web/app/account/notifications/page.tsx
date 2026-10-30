@@ -63,10 +63,10 @@ export default function NotificationsPage() {
                   <div>
                     <div className="text-sm font-black text-slate-800 dark:text-slate-100">{n.title}</div>
                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-6">{n.body}</p>
-                    <div className="text-[10px] text-slate-400 mt-2">{n.createdAt}</div>
+                    <div className="text-meta text-slate-400 mt-2">{n.createdAt}</div>
                   </div>
                   {!n.read && (
-                    <button onClick={() => void markRead(n.id)} className="shrink-0 text-[10px] font-black text-indigo-500 flex items-center gap-1">
+                    <button onClick={() => void markRead(n.id)} className="shrink-0 text-meta font-black text-indigo-500 flex items-center gap-1">
                       <Check size={12} /> 已读
                     </button>
                   )}

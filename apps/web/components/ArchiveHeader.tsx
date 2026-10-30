@@ -17,12 +17,12 @@ export default function ArchiveHeader({
 }) {
   return (
     <header className="directory-header">
-      <p className="directory-eyebrow">{eyebrow}</p>
+      <p className="directory-eyebrow text-eyebrow">{eyebrow}</p>
       <PageTitle className="directory-title">{title}</PageTitle>
       <div className="directory-subtitle">
         <Sparkles size={15} className="text-indigo-500" />
         {subtitle && <span>{subtitle}</span>}
-        {count !== undefined && <span className="directory-count">{count}</span>}
+        {count !== undefined && <span className="directory-count text-meta">{count}</span>}
       </div>
       {children}
     </header>

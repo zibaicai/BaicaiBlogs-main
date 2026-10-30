@@ -83,7 +83,7 @@ export default function ArticleDetailPage() {
                   )}
                   <div className="rounded-[2rem] border border-white/30 bg-white/60 p-6 backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/60 md:p-10">
                     <BackButton fallbackHref="/articles" label="返回文章列表" />
-                    <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold text-slate-400">
+                    <div className="flex flex-wrap items-center gap-2 text-meta font-bold text-slate-400">
                       <span>{article.category || "文章"}</span>
                       <span>·</span>
                       <span>{article.author}</span>
@@ -100,7 +100,7 @@ export default function ArticleDetailPage() {
                     />
                     {article.tags && article.tags.length > 0 && (
                       <div className="mt-8 flex flex-wrap gap-2">
-                        {article.tags.map((tag) => <span key={tag} className="rounded-full bg-indigo-500/10 px-3 py-1 text-[10px] font-bold text-indigo-500">#{tag}</span>)}
+                        {article.tags.map((tag) => <span key={tag} className="rounded-full bg-indigo-500/10 px-3 py-1 text-meta font-bold text-indigo-500">#{tag}</span>)}
                       </div>
                     )}
                   </div>

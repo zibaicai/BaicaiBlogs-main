@@ -138,7 +138,7 @@ export default function GlobalToolbox() {
           >
             <div className="flex items-start justify-between border-b border-slate-200/70 px-5 py-4 dark:border-white/10">
               <div>
-                <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-slate-400">TOOLS</span>
+                <span className="font-mono text-meta uppercase tracking-[0.2em] text-slate-400">TOOLS</span>
                 <h3 className="mt-1 text-base font-black text-slate-800 dark:text-white">工具目录</h3>
               </div>
               <button
@@ -159,7 +159,7 @@ export default function GlobalToolbox() {
                   </span>
                   <div className="min-w-0">
                     <div className="text-sm font-bold text-slate-800 dark:text-slate-100">背景特效</div>
-                    <div className="mt-0.5 truncate text-[10px] text-slate-400">关闭背景图、渐变与粒子动画</div>
+                    <div className="mt-0.5 truncate text-meta text-slate-400">关闭背景图、渐变与粒子动画</div>
                   </div>
                 </div>
                 <button
@@ -188,7 +188,7 @@ export default function GlobalToolbox() {
                   >
                     <div className="min-w-0">
                       <div className="text-sm font-bold text-slate-800 dark:text-slate-100">{tool.name}</div>
-                      <div className="mt-0.5 truncate text-[10px] text-slate-400">{tool.description}</div>
+                      <div className="mt-0.5 truncate text-meta text-slate-400">{tool.description}</div>
                     </div>
                     <button
                       type="button"
@@ -218,7 +218,7 @@ export default function GlobalToolbox() {
                     </span>
                     <div className="min-w-0">
                       <div className="text-sm font-bold text-slate-800 dark:text-slate-100">音乐</div>
-                      <div className="truncate text-[10px] text-slate-400">
+                      <div className="truncate text-meta text-slate-400">
                         {currentSong ? `${currentSong.title} · ${currentSong.artist}` : "暂无播放歌曲"}
                       </div>
                     </div>
@@ -247,7 +247,7 @@ export default function GlobalToolbox() {
               </div>
 
               <div className="mt-1 border-t border-slate-200/70 px-3 py-3 dark:border-white/10">
-                <div className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">主题风格</div>
+                <div className="text-meta font-black uppercase tracking-[0.16em] text-slate-400">主题风格</div>
                 <div className="mt-2 grid grid-cols-2 gap-2">
                   <button
                     type="button"
@@ -258,8 +258,8 @@ export default function GlobalToolbox() {
                         : "border-slate-200 text-slate-500 hover:border-[var(--ui-accent)]/40 dark:border-white/10 dark:text-slate-400"
                     }`}
                   >
-                    <span className="block text-[11px] font-black">深海鲸歌</span>
-                    <span className="mt-0.5 block text-[9px] opacity-60">蓝调 / 海雾</span>
+                    <span className="block text-meta font-black">深海鲸歌</span>
+                    <span className="mt-0.5 block text-meta opacity-60">蓝调 / 海雾</span>
                   </button>
                   <button
                     type="button"
@@ -270,8 +270,8 @@ export default function GlobalToolbox() {
                         : "border-slate-200 text-slate-500 hover:border-[var(--ui-accent)]/40 dark:border-white/10 dark:text-slate-400"
                     }`}
                   >
-                    <span className="block text-[11px] font-black">旧日紫夜</span>
-                    <span className="mt-0.5 block text-[9px] opacity-60">紫调 / 樱花</span>
+                    <span className="block text-meta font-black">旧日紫夜</span>
+                    <span className="mt-0.5 block text-meta opacity-60">紫调 / 樱花</span>
                   </button>
                 </div>
               </div>
@@ -284,7 +284,7 @@ export default function GlobalToolbox() {
                     </span>
                     <div className="min-w-0">
                       <div className="text-sm font-bold text-slate-800 dark:text-slate-100">配色工作台</div>
-                      <div className="truncate text-[10px] text-slate-400">日间 / 夜间独立自定义</div>
+                      <div className="truncate text-meta text-slate-400">日间 / 夜间独立自定义</div>
                     </div>
                   </div>
                   <button
@@ -293,7 +293,7 @@ export default function GlobalToolbox() {
                       setIsOpen(false);
                       setThemeOpen(true);
                     }}
-                    className="rounded-full bg-[var(--ui-accent)] px-3 py-2 text-[10px] font-black text-[var(--ui-accent-contrast)]"
+                    className="rounded-full bg-[var(--ui-accent)] px-3 py-2 text-meta font-black text-[var(--ui-accent-contrast)]"
                   >
                     调整
                   </button>
@@ -301,7 +301,7 @@ export default function GlobalToolbox() {
               </div>
             </div>
 
-            <p className="border-t border-slate-200/70 px-5 py-3 text-[10px] text-slate-400 dark:border-white/10">
+            <p className="border-t border-slate-200/70 px-5 py-3 text-meta text-slate-400 dark:border-white/10">
               开关会保存在当前浏览器。
             </p>
           </motion.div>

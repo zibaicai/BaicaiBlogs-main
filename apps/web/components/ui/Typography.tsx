@@ -7,19 +7,19 @@ type TitleProps = {
 };
 
 export function PageTitle({ children, className = "", as: Tag = "h1" }: TitleProps) {
-  return <Tag className={`page-title ${className}`}>{children}</Tag>;
+  return <Tag className={`text-page-title ${className}`}>{children}</Tag>;
 }
 
 export function DisplayTitle({ children, className = "", as: Tag = "h1" }: TitleProps) {
-  return <Tag className={`display-title ${className}`}>{children}</Tag>;
+  return <Tag className={`text-display ${className}`}>{children}</Tag>;
 }
 
 export function DetailTitle({ children, className = "", as: Tag = "h1" }: TitleProps) {
-  return <Tag className={`detail-title ${className}`}>{children}</Tag>;
+  return <Tag className={`text-detail-title ${className}`}>{children}</Tag>;
 }
 
 export function SectionTitle({ children, className = "", as: Tag = "h2" }: TitleProps) {
-  return <Tag className={`section-title ${className}`}>{children}</Tag>;
+  return <Tag className={`text-section-title ${className}`}>{children}</Tag>;
 }
 
 export type ResourceTitleVariant = "card" | "compact" | "overlay" | "featured";

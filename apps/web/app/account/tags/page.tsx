@@ -46,7 +46,7 @@ export default function TagRequestPage() {
       <Navbar />
       <main className="directory-shell">
         <div className="account-surface max-w-2xl mx-auto rounded-3xl border border-white/40 bg-white/60 p-8 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/50">
-          <div className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--ui-accent)]">BAICAI / TAGS</div>
+          <div className="text-meta font-black uppercase tracking-[0.2em] text-[var(--ui-accent)]">BAICAI / TAGS</div>
           <PageTitle className="mt-2">申请新标签</PageTitle>
           <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
             标签由管理员维护。申请通过后会进入公共标签库，并发送站内信；不会自动绑定到任何资源。

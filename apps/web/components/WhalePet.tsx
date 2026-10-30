@@ -262,7 +262,7 @@ export default function WhalePet() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute right-1 top-0 z-30 rounded-full bg-emerald-500 px-2.5 py-1 text-[9px] font-black tracking-widest text-white shadow-lg"
+            className="absolute right-1 top-0 z-30 rounded-full bg-emerald-500 px-2.5 py-1 text-meta font-black tracking-widest text-white shadow-lg"
           >
             200 OK
           </motion.span>
@@ -338,7 +338,7 @@ export default function WhalePet() {
             <span className="pointer-events-none absolute inset-0 z-20">
               <span className="whale-star absolute left-2 top-3 text-lg" style={{ animationDelay: "0ms" }}>✦</span>
               <span className="whale-star absolute right-3 top-7 text-sm" style={{ animationDelay: "120ms" }}>✦</span>
-              <span className="whale-star absolute left-8 top-12 text-[10px]" style={{ animationDelay: "220ms" }}>✦</span>
+              <span className="whale-star absolute left-8 top-12 text-meta" style={{ animationDelay: "220ms" }}>✦</span>
             </span>
           )}
           {showDrool && (
@@ -346,7 +346,7 @@ export default function WhalePet() {
           )}
           {state === "sleep" && (
             <span className="pointer-events-none absolute -right-1 -top-2 text-xs font-black text-indigo-300/90">
-              z <span className="text-[10px]">z</span> <span className="text-[8px]">z</span>
+              z <span className="text-meta">z</span> <span className="text-meta">z</span>
             </span>
           )}
         </button>
@@ -359,7 +359,7 @@ export default function WhalePet() {
         <time className="font-mono text-[19px] font-black tracking-[0.12em] text-slate-800 dark:text-slate-100" dateTime={clock}>
           {clock}
         </time>
-        <span className="mt-0.5 font-mono text-[8px] font-bold tracking-[0.16em] text-slate-500 dark:text-slate-400">
+        <span className="mt-0.5 font-mono text-meta font-bold tracking-[0.16em] text-slate-500 dark:text-slate-400">
           {clockDate}
         </span>
       </div>
@@ -384,7 +384,7 @@ export default function WhalePet() {
             <button
               type="submit"
               disabled={state === "thinking" || !inputValue.trim()}
-              className="btn btn-primary rounded-full px-3 py-1.5 text-[10px] font-black disabled:opacity-40"
+              className="btn btn-primary rounded-full px-3 py-1.5 text-meta font-black disabled:opacity-40"
             >
               发送
             </button>
