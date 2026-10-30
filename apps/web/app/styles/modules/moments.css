@@ -1,0 +1,85 @@
+@layer components {
+/* Full-SVG moment bubble. The transparent border is the card's safe area;
+   the SVG body is one shape, so there is no seam and no pseudo-element tail. */
+.moment-card {
+  position: relative;
+  width: 100%;
+  overflow: visible;
+  isolation: isolate;
+  border: 30px solid transparent;
+  border-image-source: url("/moments/bubble-left-light.svg");
+  border-image-slice: 60 60 80 60 fill;
+  border-image-width: 30px;
+  border-image-repeat: stretch;
+  border-radius: 0;
+  background: transparent;
+  padding: 18px 20px 14px;
+  box-shadow: none;
+  backdrop-filter: none;
+  filter: drop-shadow(0 16px 32px rgba(24, 38, 55, 0.12));
+}
+
+.moment-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.dark .moment-card {
+  border-image-source: url("/moments/bubble-left-dark.svg");
+  filter: drop-shadow(0 16px 32px rgba(0, 0, 0, 0.32));
+}
+
+.archive-masonry-column:nth-child(even) .moment-card {
+  border-image-source: url("/moments/bubble-right-light.svg");
+}
+
+/* The old even-column radius is a higher-specificity override; keep it so
+   the merged base rule does not flatten the right-hand bubble. */
+.archive-masonry-column:nth-child(2) .moment-card {
+  border-radius: var(--radius-panel) var(--radius-panel) var(--radius-xs) var(--radius-panel);
+}
+
+.dark .archive-masonry-column:nth-child(even) .moment-card {
+  border-image-source: url("/moments/bubble-right-dark.svg");
+}
+
+@media (max-width: 767px) {
+  .moment-card {
+    border-width: 24px;
+    border-image-width: 24px;
+    padding: 15px 15px 12px;
+  }
+}
+/* /moments is a conversation thread, not a two-column masonry grid. */
+.moment-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.moment-row {
+  display: flex;
+  width: 100%;
+}
+.moment-row[data-side="left"] {
+  justify-content: flex-start;
+}
+.moment-row[data-side="right"] {
+  justify-content: flex-end;
+}
+.moment-row .moment-card {
+  width: fit-content;
+  min-width: min(280px, 100%);
+  max-width: min(620px, 72%);
+}
+.moment-row[data-side="right"] .moment-card {
+  border-image-source: url("/moments/bubble-right-light.svg");
+}
+.dark .moment-row[data-side="right"] .moment-card {
+  border-image-source: url("/moments/bubble-right-dark.svg");
+}
+@media (max-width: 767px) {
+  .moment-row .moment-card {
+    max-width: 88%;
+  }
+}
+}
