@@ -1,3 +1,4 @@
+@layer components {
 /* Editorial directory grid + compact alternating timeline */
 .directory-grid {
   grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -371,4 +372,901 @@ html:not(.dark) .hv-empty {
   .directory-grid.directory-grid-compact > * .directory-card:not(.archive-card) .directory-card-body {
     padding: 12px;
   }
+}
+
+/* Archive pages live outside .home-v2, so give the shared card its own tokens. */
+.archive-card {
+  --hv-text: var(--ui-text);
+  --hv-muted: var(--ui-text-muted);
+  --hv-panel: rgba(255, 255, 255, 0.52);
+  --hv-panel-border: rgba(255, 255, 255, 0.62);
+}
+.dark .archive-card {
+  --hv-text: var(--ui-text);
+  --hv-muted: var(--ui-text-muted);
+  --hv-panel: rgba(8, 15, 26, 0.5);
+  --hv-panel-border: rgba(255, 255, 255, 0.12);
+}
+/* Outline controls: hover highlights the edge and label, never fills with white. */
+.danmaku-trigger {
+  border-color: var(--ui-border);
+  background: var(--ui-secondary-bg);
+  color: var(--ui-text);
+}
+.danmaku-trigger:hover {
+  border-color: var(--ui-accent);
+  background: var(--ui-accent-soft);
+  color: var(--ui-accent-strong);
+}
+.danmaku-trigger:focus-visible {
+  outline: 2px solid var(--ui-accent);
+  outline-offset: 2px;
+}
+/* Health status uses one semantic color for dot and text. */
+.hv-health {
+  --status-color: var(--ui-text-muted);
+  color: var(--status-color);
+}
+.hv-health .hv-metric-dot {
+  width: 7px;
+  height: 7px;
+  background: var(--status-color);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--status-color) 16%, transparent);
+}
+.hv-health.is-ok { --status-color: var(--ui-success); }
+.hv-health.is-degraded { --status-color: var(--ui-warning); }
+.hv-health.is-error { --status-color: var(--ui-danger); }
+/* Timeline rows reuse the same horizontal archive card as the grid. */
+.archive-timeline .directory-card:not(.archive-card) {
+  display: grid;
+  grid-template-columns: 138px minmax(0, 1fr);
+  min-height: 132px;
+}
+.archive-timeline .directory-card:not(.archive-card) .directory-card-media {
+  height: 100%;
+  min-height: 132px;
+}
+.archive-timeline .directory-card:not(.archive-card) .directory-card-body {
+  justify-content: center;
+  padding: 13px 15px;
+}
+.archive-timeline .archive-card {
+  grid-template-columns: 138px minmax(0, 1fr);
+  min-height: 132px;
+}
+.archive-timeline .archive-card-media {
+  min-height: 132px;
+}
+/* Moment feed: text first, images below; desktop one strip, mobile 1/2/3 grid. */
+.moment-grid {
+  grid-template-columns: minmax(0, 760px) !important;
+  justify-content: center;
+}
+.moment-grid > * {
+  grid-column: auto !important;
+}
+.moment-head,
+.moment-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--ui-text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--type-meta);
+  font-weight: 600;
+}
+.moment-text {
+  max-width: 62ch;
+  margin-top: 12px;
+  color: var(--ui-text);
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  line-height: 1.75;
+}
+.moment-text > :first-child { margin-top: 0; }
+.moment-text > :last-child { margin-bottom: 0; }
+.moment-text p { margin: 0.35em 0; }
+.moment-image-wrap {
+  position: relative;
+  margin-top: 14px;
+}
+.moment-images {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+.moment-images[data-count="1"] { grid-template-columns: minmax(0, 280px); }
+.moment-images[data-count="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.moment-images[data-count="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.moment-image {
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  border-radius: 0.85rem;
+  background: rgba(15, 23, 42, 0.15);
+}
+.moment-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+.moment-image:hover img { transform: scale(1.04); }
+.moment-images .moment-image:nth-child(n + 5) { display: none; }
+.moment-more-mobile { display: none; }
+.moment-more {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  border-radius: 999px;
+  background: rgba(8, 15, 26, 0.68);
+  padding: 3px 8px;
+  color: #fff;
+  font-size: var(--type-meta);
+  font-weight: 800;
+  backdrop-filter: blur(10px);
+}
+.moment-foot {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid var(--ui-border);
+}
+.moment-permalink {
+  color: var(--ui-accent-strong);
+  font-family: var(--font-body);
+  font-weight: 700;
+}
+@media (max-width: 767px) {
+  .moment-card { padding: 15px 15px 12px; border-radius: 1.15rem; }
+  .moment-text { font-size: 0.9rem; }
+  .moment-images { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .moment-images[data-count="1"] { grid-template-columns: minmax(0, 1fr); }
+  .moment-images[data-count="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .moment-images .moment-image:nth-child(n + 5) { display: block; }
+  .moment-images .moment-image:nth-child(n + 10) { display: none; }
+  .moment-more-desktop { display: none; }
+  .moment-more-mobile { display: inline-flex; }
+}
+/* Crawlable archive pagination with a generous hit target. */
+.archive-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 28px;
+  font-family: var(--font-body);
+  font-size: var(--type-control);
+  font-weight: 700;
+}
+.archive-pagination a,
+.archive-pagination .is-disabled {
+  display: inline-flex;
+  min-width: 74px;
+  justify-content: center;
+  border: 1px solid var(--ui-border);
+  border-radius: 999px;
+  padding: 8px 14px;
+  color: var(--ui-text);
+  background: var(--ui-secondary-bg);
+}
+.archive-pagination a:hover {
+  border-color: var(--ui-accent);
+  color: var(--ui-accent-strong);
+  background: var(--ui-accent-soft);
+}
+.archive-pagination .is-disabled { opacity: 0.4; }
+.archive-pagination-current { color: var(--ui-text-muted); font-family: var(--font-mono); }
+/* Two-column alternating masonry used by the paginated archive. */
+.archive-masonry {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+.archive-masonry-column {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 16px;
+}
+.archive-masonry .directory-card:not(.archive-card) {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  min-height: 142px;
+}
+.archive-masonry .directory-card:not(.archive-card) .directory-card-media {
+  height: 100%;
+  min-height: 142px;
+}
+.archive-masonry .directory-card:not(.archive-card) .directory-card-body {
+  justify-content: center;
+  padding: 13px 15px;
+}
+@media (max-width: 767px) {
+  .archive-masonry {
+    display: block;
+  }
+
+  .archive-masonry-column + .archive-masonry-column {
+    margin-top: 16px;
+  }
+
+  .archive-masonry .directory-card:not(.archive-card) {
+    grid-template-columns: 108px minmax(0, 1fr);
+    min-height: 128px;
+  }
+
+  .archive-masonry .directory-card:not(.archive-card) .directory-card-media {
+    min-height: 128px;
+  }
+}
+/* Multi-author moment bubbles. */
+.moment-author {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+}
+.moment-avatar {
+  display: inline-flex;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--ui-accent-soft);
+  color: var(--ui-accent-strong);
+  font-family: var(--font-body);
+  font-size: var(--type-meta);
+  font-weight: 800;
+}
+.moment-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.moment-author strong {
+  overflow: hidden;
+  color: var(--ui-text);
+  font-family: var(--font-body);
+  font-size: var(--type-meta);
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.moment-head time {
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+.directory-card-foot {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 8px;
+}
+.directory-card-category {
+  color: var(--ui-accent-strong);
+  font-family: var(--font-body);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+.directory-card-tags {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.directory-card-tags .directory-tag {
+  padding: 2px 6px;
+}
+.archive-card-foot .archive-card-eyebrow {
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+/* One content rail for all public pages. */
+.directory-shell {
+  width: 100%;
+  max-width: 1180px;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+@media (min-width: 640px) {
+  .directory-shell {
+    padding-inline: 2rem;
+  }
+}
+/* Horizontal archive cards: media and content share one inner height.
+   The card owns the padding; the image no longer bleeds to the border. */
+.archive-card,
+.directory-grid.directory-grid-compact > * .directory-card:not(.archive-card),
+.archive-timeline .directory-card:not(.archive-card),
+.archive-timeline .archive-card,
+.archive-masonry .directory-card:not(.archive-card) {
+  --archive-card-pad: 10px;
+  --archive-card-gap: 12px;
+  padding: var(--archive-card-pad);
+  gap: var(--archive-card-gap);
+  min-height: 0;
+  align-items: stretch;
+  overflow: hidden;
+}
+.archive-card-media,
+.directory-grid.directory-grid-compact > * .directory-card:not(.archive-card) .directory-card-media,
+.archive-timeline .directory-card:not(.archive-card) .directory-card-media,
+.archive-timeline .archive-card-media,
+.archive-masonry .directory-card:not(.archive-card) .directory-card-media {
+  height: 100%;
+  min-height: 0;
+  align-self: stretch;
+  overflow: hidden;
+  border-radius: calc(1.25rem - var(--archive-card-pad));
+}
+.archive-card-body,
+.directory-grid.directory-grid-compact > * .directory-card:not(.archive-card) .directory-card-body,
+.archive-timeline .directory-card:not(.archive-card) .directory-card-body,
+.archive-timeline .archive-card-body,
+.archive-masonry .directory-card:not(.archive-card) .directory-card-body {
+  min-height: 0;
+  padding: 0;
+  justify-content: center;
+}
+.archive-card .archive-card-media,
+.directory-grid.directory-grid-compact > * .directory-card:not(.archive-card) .directory-card-media,
+.archive-timeline .directory-card:not(.archive-card) .directory-card-media,
+.archive-masonry .directory-card:not(.archive-card) .directory-card-media {
+  background: rgba(15, 23, 42, 0.2);
+}
+@media (max-width: 767px) {
+  .archive-card,
+  .directory-grid.directory-grid-compact > * .directory-card:not(.archive-card),
+  .archive-timeline .directory-card:not(.archive-card),
+  .archive-timeline .archive-card,
+  .archive-masonry .directory-card:not(.archive-card) {
+    --archive-card-pad: 8px;
+    --archive-card-gap: 10px;
+  }
+}
+/* Content-driven horizontal rows: the media is an absolute fill layer so its
+   intrinsic aspect ratio cannot decide the card height. */
+.directory-grid.directory-grid-compact {
+  align-items: start;
+}
+.directory-grid.directory-grid-compact > * {
+  align-self: start;
+}
+.archive-card-media,
+.directory-grid.directory-grid-compact > * .directory-card:not(.archive-card) .directory-card-media,
+.archive-timeline .directory-card:not(.archive-card) .directory-card-media,
+.archive-timeline .archive-card-media,
+.archive-masonry .directory-card:not(.archive-card) .directory-card-media {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+}
+.archive-card-media img,
+.directory-grid.directory-grid-compact > * .directory-card:not(.archive-card) .directory-card-media img,
+.archive-timeline .directory-card:not(.archive-card) .directory-card-media img,
+.archive-timeline .archive-card-media img,
+.archive-masonry .directory-card:not(.archive-card) .directory-card-media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.archive-card-body,
+.directory-grid.directory-grid-compact > * .directory-card:not(.archive-card) .directory-card-body,
+.archive-timeline .directory-card:not(.archive-card) .directory-card-body,
+.archive-timeline .archive-card-body,
+.archive-masonry .directory-card:not(.archive-card) .directory-card-body {
+  justify-content: flex-start;
+}
+.directory-card-title,
+.archive-card-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.directory-card-description {
+  flex: 0 0 auto;
+  margin-top: 0;
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.archive-card-description {
+  flex: 0 0 auto;
+  margin-top: 0;
+  -webkit-line-clamp: 2;
+}
+.directory-card-foot,
+.archive-card-foot {
+  margin-top: 2px;
+  padding-top: 0;
+}
+.directory-card-tags {
+  margin-top: 0;
+}
+.directory-card-body,
+.archive-card-body {
+  min-height: 0;
+  gap: 6px;
+}
+/* Keep media children that are not images (project icon, fallback) inside
+   the row without creating a second intrinsic height source. */
+.archive-card-media > * {
+  min-height: 0;
+}
+@media (max-width: 767px) {
+  .directory-grid.directory-grid-compact {
+    align-items: start;
+  }
+
+  .archive-card-description,
+  .directory-card-description {
+    -webkit-line-clamp: 2;
+  }
+}
+/* Radius migration: semantic surfaces. */
+.hv-panel,
+.directory-card {
+  border-radius: var(--radius-panel);
+}
+.archive-card,
+.directory-grid.directory-grid-compact > * .directory-card:not(.archive-card),
+.archive-timeline .directory-card:not(.archive-card),
+.archive-masonry .directory-card:not(.archive-card) {
+  border-radius: var(--radius-card);
+}
+.archive-card-media,
+.directory-grid.directory-grid-compact > * .directory-card:not(.archive-card) .directory-card-media,
+.archive-timeline .directory-card:not(.archive-card) .directory-card-media,
+.archive-timeline .archive-card-media,
+.archive-masonry .directory-card:not(.archive-card) .directory-card-media {
+  border-radius: var(--radius-media);
+}
+.hv-toolbar-meta-only .hv-toolbar-meta {
+  border-radius: var(--radius-pill);
+}
+/* Compact surfaces stay on the smaller step without changing component code. */
+@media (max-width: 767px) {
+  :root {
+    --radius-card: 12px;
+    --radius-panel: 16px;
+    --radius-media: 6px;
+  }
+}
+
+/* =========================================================
+   Post view modes
+   grid    : square cover card with a progressive bottom blur
+   masonry : top image + bottom reading area
+   timeline: keep the existing horizontal timeline row
+   ========================================================= */
+.directory-card-copy {
+  display: contents;
+}
+.directory-card-time,
+.directory-card-blur {
+  display: none;
+}
+.directory-grid.cover-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+.cover-grid > * {
+  align-self: start;
+}
+.cover-grid .directory-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  overflow: hidden;
+  border-radius: var(--radius-card);
+}
+.cover-grid .directory-card-media {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  min-height: 0;
+  border-radius: 0;
+  overflow: hidden;
+  background: rgba(15, 23, 42, 0.4);
+}
+.cover-grid .directory-card-media-image {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cover-grid .directory-card-blur {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(12px) saturate(1.05);
+  transform: scale(1.08);
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.12) 32%,
+    rgba(0, 0, 0, 0.72) 68%,
+    #000 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.12) 32%,
+    rgba(0, 0, 0, 0.72) 68%,
+    #000 100%
+  );
+}
+.cover-grid .directory-card-media > .absolute.inset-0 {
+  z-index: 2;
+  background-image: linear-gradient(
+    180deg,
+    rgba(2, 6, 23, 0.02) 0%,
+    rgba(2, 6, 23, 0.18) 38%,
+    rgba(2, 6, 23, 0.78) 100%
+  );
+}
+.cover-grid .directory-date-badge {
+  display: none;
+}
+.cover-grid .directory-card-body {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: block;
+  padding: 14px;
+  min-height: 0;
+}
+.cover-grid .directory-card-copy {
+  position: absolute;
+  top: 54%;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.cover-grid .directory-card-time {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  height: 22px;
+  margin-bottom: 8px;
+  padding: 0 8px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--radius-pill);
+  background: rgba(2, 6, 23, 0.74);
+  color: rgba(255, 255, 255, 0.92);
+  font-family: Consolas, monospace;
+  font-size: var(--type-meta);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  backdrop-filter: blur(8px);
+}
+.cover-grid .directory-card-title {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #fff;
+  font-family: var(--font-ui);
+  --resource-title-size: var(--type-overlay-title);
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: normal;
+  text-overflow: clip;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.cover-grid .directory-card-description {
+  display: -webkit-box;
+  overflow: hidden;
+  margin-top: 6px;
+  color: rgba(255, 255, 255, 0.74);
+  font-size: var(--type-list-description);
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.cover-grid .directory-card-foot {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  left: 14px;
+  display: flex;
+  min-height: 42px;
+  max-height: 42px;
+  margin: 0;
+  padding: 0;
+  align-content: flex-start;
+  align-items: flex-start;
+  gap: 4px;
+  overflow: hidden;
+}
+.cover-grid .directory-card-category {
+  color: rgba(255, 255, 255, 0.78);
+  letter-spacing: 0.06em;
+}
+.cover-grid .directory-card-tags {
+  gap: 4px;
+}
+.cover-grid .directory-tag {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(2, 6, 23, 0.46);
+  color: rgba(255, 255, 255, 0.82);
+  padding: 2px 6px;
+}
+/* Masonry becomes an editorial image-on-top card, not another row card. */
+.archive-masonry .directory-card:not(.archive-card) {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+  border-radius: var(--radius-card);
+}
+.archive-masonry .directory-card:not(.archive-card) .directory-card-media {
+  position: relative;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  min-height: 0;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border-radius: 0;
+}
+.archive-masonry .directory-card:not(.archive-card) .directory-card-media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.archive-masonry .directory-card:not(.archive-card) .directory-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+  padding: 14px;
+  justify-content: flex-start;
+}
+.archive-masonry .directory-card:not(.archive-card) .directory-card-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.archive-masonry .directory-card:not(.archive-card) .directory-card-time {
+  display: none;
+}
+.archive-masonry .directory-card:not(.archive-card) .directory-card-title {
+  --resource-title-size: var(--type-overlay-title);
+  line-height: 1.35;
+  white-space: normal;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.archive-masonry .directory-card:not(.archive-card) .directory-card-description {
+  margin: 0;
+  font-size: var(--type-list-description);
+  line-height: 1.55;
+  -webkit-line-clamp: 2;
+}
+.archive-masonry .directory-card:not(.archive-card) .directory-card-foot {
+  position: static;
+  margin: 8px 0 0;
+  padding: 0;
+  min-height: 0;
+  max-height: none;
+}
+/* Four-column desktop grid: keep the cover square while giving the text
+   a little more breathing room. */
+@media (max-width: 1200px) {
+  .directory-grid.cover-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 900px) {
+  .directory-grid.cover-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .directory-grid.cover-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cover-grid .directory-card-copy {
+    top: 48%;
+  }
+
+  .cover-grid .directory-card-title {
+    --resource-title-size: 0.9375rem;
+  }
+
+  .archive-masonry {
+    flex-direction: column;
+  }
+
+  .archive-masonry-column {
+    width: 100%;
+  }
+}
+/* The compact-row rules are intentionally more specific than the legacy
+   horizontal layout, so the grid variant needs an equally explicit scope. */
+.directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) {
+  display: block;
+  grid-template-columns: none;
+  padding: 0;
+  gap: 0;
+  min-height: 0;
+  aspect-ratio: 1 / 1;
+  align-items: stretch;
+}
+.directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-media {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: 100%;
+  min-height: 0;
+  border-radius: 0;
+}
+.directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-body {
+  position: absolute;
+  inset: 0;
+  display: block;
+  min-height: 0;
+  padding: 14px;
+}
+.directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-copy {
+  position: absolute;
+  right: 14px;
+  left: 14px;
+  display: flex;
+  flex-direction: column;
+}
+.directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-title {
+  --resource-title-size: var(--type-overlay-title);
+  line-height: 1.3;
+  white-space: normal;
+  color: #fff;
+}
+.directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-description {
+  margin-top: 6px;
+  color: rgba(255, 255, 255, 0.74);
+  font-size: var(--type-list-description);
+  line-height: 1.55;
+}
+.directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-foot {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  left: 14px;
+  min-height: 42px;
+  max-height: 42px;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+  align-content: flex-end;
+  overflow: hidden;
+}
+/* Final spacing / proportion tuning for the new post views. */
+@media (max-width: 640px) {
+  .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-copy {
+    top: 46%;
+  }
+}
+@media (min-width: 1201px) {
+  .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-copy {
+    top: 40%;
+  }
+
+  .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-title {
+    --resource-title-size: 0.9375rem;
+    line-height: 1.45;
+    letter-spacing: 0.025em;
+  }
+
+  .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-description {
+    margin-top: 7px;
+    font-size: var(--type-caption);
+    line-height: 1.6;
+    letter-spacing: 0.01em;
+  }
+
+  .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-time {
+    height: 21px;
+    margin-bottom: 7px;
+  }
+
+  .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-foot {
+    min-height: 38px;
+    max-height: 38px;
+  }
+}
+@media (max-width: 1200px) {
+  .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-copy {
+    top: 45%;
+  }
+}
+@media (max-width: 900px) {
+  .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-copy {
+    top: 47%;
+  }
+}
+.directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-category {
+  display: inline-flex;
+  height: 19px;
+  align-items: center;
+  line-height: 1;
+}
+/* Shared generic card media for project icons and friend avatars. */
+.archive-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(140deg, rgba(49, 87, 183, 0.38), rgba(15, 23, 42, 0.72));
+  color: #fff;
+  font-size: 52px;
+  line-height: 1;
+  text-shadow: 0 8px 24px rgba(2, 6, 23, 0.3);
+}
+.cover-grid .archive-item-icon {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.archive-masonry .directory-card .archive-item-icon {
+  position: absolute;
+  inset: 0;
+  font-size: 48px;
+}
+.archive-timeline .directory-card .archive-item-icon {
+  font-size: var(--type-page-title);
+}
+.cover-grid .archive-item-meta,
+.archive-masonry .archive-item-meta {
+  color: rgba(255, 255, 255, 0.66);
+  font-family: Consolas, monospace;
+  font-size: var(--type-meta);
+  letter-spacing: 0.04em;
+  margin-left: auto;
+}
+.archive-timeline .archive-item-meta {
+  color: var(--hv-muted);
+  font-family: Consolas, monospace;
+  font-size: var(--type-meta);
+  margin-left: auto;
+}
+@media (max-width: 640px) {
+  .cover-grid .archive-item-icon {
+    font-size: 42px;
+  }
+}
+
 }
