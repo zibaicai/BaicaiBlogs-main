@@ -560,7 +560,7 @@
 .music-main .music-pane-body .comment-section,.music-main .music-comments-side .comment-section  {
   margin: 0;
   padding: 0;
-  border: 0 !important;
+  border: 0;
   background: transparent;
   backdrop-filter: none;
 }
@@ -637,29 +637,29 @@
 .music-comment-section .comment-empty,
 .music-comment-section .comment-empty-actions,
 .music-comment-section .comment-login-hint {
-  margin: 0 !important;
-  padding: 0 !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
 }
 .music-comment-section .comment-head {
-  padding-bottom: 10px !important;
+  padding-bottom: 10px;
 }
 .music-comment-section .comment-composer {
   margin-top: 14px;
   padding: 10px 12px;
-  border: 1px solid var(--control-border) !important;
-  border-radius: var(--control-radius) !important;
-  background: var(--control-bg) !important;
-  box-shadow: var(--control-shadow) !important;
+  border: 1px solid var(--control-border);
+  border-radius: var(--control-radius);
+  background: var(--control-bg);
+  box-shadow: var(--control-shadow);
   transition: border-color .2s ease, box-shadow .2s ease;
 }
 .music-comment-section .comment-composer:focus-within {
-  border-color: var(--ui-accent) !important;
-  box-shadow: var(--control-shadow), 0 0 0 3px var(--control-focus) !important;
+  border-color: var(--ui-accent);
+  box-shadow: var(--control-shadow), 0 0 0 3px var(--control-focus);
 }
 .music-comment-section .comment-composer.is-expanded {
   padding-bottom: 10px;
@@ -667,11 +667,11 @@
 .music-comment-section .comment-empty {
   min-height: 0;
   margin-top: 18px;
-  padding: 18px 8px 12px !important;
-  border: 0 !important;
+  padding: 18px 8px 12px;
+  border: 0;
 }
 .music-comment-section .comment-login-hint {
-  padding: 12px 0 !important;
+  padding: 12px 0;
 }
 /* Animation wrapper, not the player bar, owns the full content height. */
 @media (min-width: 1024px) {
