@@ -294,7 +294,7 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
 
       {panelOpen && (
         <>
-          <div className="friend-link-overlay" aria-hidden="true" onClick={() => setPanelOpen(false)} />
+          <div className="friend-link-overlay" aria-hidden="true" onClick={() => { setPanelOpen(false); fabRef.current?.focus(); }} />
           <div
             ref={panelRef}
             id="friend-link-panel"
@@ -311,7 +311,7 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
       )}
 
       {open && (
-        <div className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto bg-slate-950/50 p-4 pt-24 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[10010] flex items-start justify-center overflow-y-auto bg-slate-950/50 p-4 pt-24 backdrop-blur-sm">
           <div className="w-full max-w-lg rounded-3xl border border-white/40 bg-white p-5 shadow-2xl dark:border-white/10 dark:bg-slate-900">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-sm font-black text-slate-900 dark:text-white">{editing ? "编辑友链资料" : "申请友链"}</h3>

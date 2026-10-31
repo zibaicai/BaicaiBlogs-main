@@ -197,14 +197,14 @@
   .friend-link-overlay {
     position: fixed;
     inset: 0;
-    z-index: 80;
+    z-index: 9998;
     background: rgba(2, 6, 23, 0.22);
     backdrop-filter: blur(3px);
   }
 
   .friend-link-panel {
     position: fixed;
-    z-index: 90;
+    z-index: 10000;
     outline: none;
   }
 
