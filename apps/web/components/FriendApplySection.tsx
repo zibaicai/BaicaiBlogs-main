@@ -164,7 +164,7 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
 
   return (
     <>
-      <section className="mt-8 rounded-3xl border border-white/50 bg-white/60 p-4 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/50 lg:fixed lg:right-6 lg:top-20 lg:z-30 lg:mt-0 lg:w-72">
+      <section className="mt-8 rounded-3xl border border-white/50 bg-white/60 p-4 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/50 lg:mt-0 lg:w-full">
         <div className="flex items-center justify-between gap-3">
           <h2 className="text-sm font-black text-slate-900 dark:text-white">本站友链</h2>
           <button type="button" onClick={() => void copy()} className="inline-flex items-center gap-1 rounded-lg bg-indigo-500/10 px-2 py-1 text-meta font-bold text-indigo-500 hover:bg-indigo-500/15">

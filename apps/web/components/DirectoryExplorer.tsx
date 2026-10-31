@@ -29,6 +29,14 @@ export interface DirectoryItem<T = unknown> {
   updatedAt?: string;
 }
 
+export type DirectoryListMinHeight = "sm" | "md" | "lg" | number;
+
+const LIST_MIN_HEIGHT: Record<Exclude<DirectoryListMinHeight, number>, string> = {
+  sm: "220px",
+  md: "320px",
+  lg: "420px",
+};
+
 export interface DirectoryFilter {
   value: string;
   label: string;
@@ -79,6 +87,7 @@ export default function DirectoryExplorer({
   gridStyle,
   gridClassName = "",
   toolbarExtra,
+  listMinHeight,
   pageSize = 0,
   initialPage = 1,
   empty = "暂无内容",
@@ -110,6 +119,7 @@ export default function DirectoryExplorer({
   gridStyle?: CSSProperties;
   gridClassName?: string;
   toolbarExtra?: ReactNode;
+  listMinHeight?: DirectoryListMinHeight;
   pageSize?: number;
   initialPage?: number;
   empty?: ReactNode;
@@ -265,27 +275,36 @@ export default function DirectoryExplorer({
         </div>
       )}
 
-      {visible.length === 0 ? (
-        <div className="directory-empty">{empty}</div>
-      ) : (
-        <DirectoryView
-          items={visible.map((item, index) => item.node ?? renderItem?.(item, index))}
-          mode={mode}
-          featuredFirst={featuredFirst}
-          compact={compact}
-          gridVariant={gridVariant}
-          columns={columns}
-          minCardWidth={minCardWidth}
-          gap={gap}
-          cardSize={cardSize}
-          density={density}
-          cardRatio={cardRatio}
-          surface={surface}
-          gridStyle={gridStyle}
-          gridClassName={gridClassName}
-          masonryColumns={masonryColumns}
-        />
-      )}
+      <div
+        className="directory-results"
+        style={
+          listMinHeight !== undefined
+            ? { minHeight: typeof listMinHeight === "number" ? `${listMinHeight}px` : LIST_MIN_HEIGHT[listMinHeight] }
+            : undefined
+        }
+      >
+        {visible.length === 0 ? (
+          <div className="directory-empty">{empty}</div>
+        ) : (
+          <DirectoryView
+            items={visible.map((item, index) => item.node ?? renderItem?.(item, index))}
+            mode={mode}
+            featuredFirst={featuredFirst}
+            compact={compact}
+            gridVariant={gridVariant}
+            columns={columns}
+            minCardWidth={minCardWidth}
+            gap={gap}
+            cardSize={cardSize}
+            density={density}
+            cardRatio={cardRatio}
+            surface={surface}
+            gridStyle={gridStyle}
+            gridClassName={gridClassName}
+            masonryColumns={masonryColumns}
+          />
+        )}
+      </div>
 
       {pageSize > 0 && totalPages > 1 && (
         <nav className="archive-pagination" aria-label="分页">

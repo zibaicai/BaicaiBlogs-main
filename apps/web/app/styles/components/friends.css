@@ -1,0 +1,42 @@
+@layer components {
+  .friends-layout {
+    display: grid;
+    min-width: 0;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "directory"
+      "aside"
+      "guestbook";
+    align-items: start;
+  }
+
+  .friends-directory {
+    grid-area: directory;
+    min-width: 0;
+  }
+
+  .friends-guestbook {
+    grid-area: guestbook;
+    min-width: 0;
+  }
+
+  .friends-aside {
+    grid-area: aside;
+    min-width: 0;
+  }
+
+  @media (min-width: 1280px) {
+    .friends-layout {
+      grid-template-columns: minmax(0, 1fr) 278px;
+      grid-template-areas:
+        "directory aside"
+        "guestbook aside";
+      column-gap: 24px;
+    }
+
+    .friends-aside {
+      position: sticky;
+      top: 88px;
+    }
+  }
+}

@@ -61,24 +61,33 @@ export default async function FriendsPage() {
       <Navbar />
       <PageTransition>
         <main className="directory-shell">
-          <DirectoryExplorer
-            eyebrow="BAICAI / NEIGHBORS"
-            title="友链"
-            subtitle="海面很宽，认识一些同样在记录的人。"
-            count={`${friends.length} 位朋友`}
-            items={items}
-            filters={[{ value: "all", label: "全部朋友", count: friends.length }]}
-            views={["grid", "timeline", "masonry"]}
-            gridVariant="profile"
-            columns={{ base: 1, sm: 2, lg: 3 }}
-            masonryColumns={3}
-            cardSize="sm"
-            density="compact"
-            searchPlaceholder="搜索朋友、简介或链接..."
-            empty={empty}
-          />
-          <FriendApplySection siteInfo={siteInfo} />
-          <FriendGuestbook initialMessages={messages} />
+          <div className="friends-layout">
+            <div className="friends-directory">
+              <DirectoryExplorer
+                eyebrow="BAICAI / NEIGHBORS"
+                title="友链"
+                subtitle="海面很宽，认识一些同样在记录的人。"
+                count={`${friends.length} 位朋友`}
+                items={items}
+                filters={[{ value: "all", label: "全部朋友", count: friends.length }]}
+                views={["grid", "timeline", "masonry"]}
+                gridVariant="profile"
+                columns={{ base: 1, sm: 2, lg: 3 }}
+                masonryColumns={3}
+                cardSize="sm"
+                density="compact"
+                listMinHeight="md"
+                searchPlaceholder="搜索朋友、简介或链接..."
+                empty={empty}
+              />
+            </div>
+            <div className="friends-guestbook">
+              <FriendGuestbook initialMessages={messages} />
+            </div>
+            <aside className="friends-aside">
+              <FriendApplySection siteInfo={siteInfo} />
+            </aside>
+          </div>
         </main>
       </PageTransition>
     </div>

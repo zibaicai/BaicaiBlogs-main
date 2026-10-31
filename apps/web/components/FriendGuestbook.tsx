@@ -156,7 +156,7 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
       surface="plain"
       density="compact"
       empty="还没有留言，来坐第一排。"
-      footer={
+      beforeList={
         <div className="guestbook-composer">
           <p className="guestbook-composer-hint">
             {user ? `以 ${user.nickname || user.username} 的身份留言` : "当前为匿名留言"}
