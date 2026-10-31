@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Clipboard, Link2, Loader2, Send, X } from "lucide-react";
 
 import Input from "./ui/Input";
@@ -292,7 +293,7 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
         <Link2 size={19} />
       </button>
 
-      {panelOpen && (
+      {panelOpen && typeof document !== "undefined" && createPortal(
         <>
           <div className="friend-link-overlay" aria-hidden="true" onClick={() => { setPanelOpen(false); fabRef.current?.focus(); }} />
           <div
@@ -307,10 +308,11 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
             <span id="friend-link-panel-title" className="sr-only">本站友链</span>
             {panel(true, true)}
           </div>
-        </>
+        </>,
+        document.body
       )}
 
-      {open && (
+      {open && typeof document !== "undefined" && createPortal(
         <div className="fixed inset-0 z-[10010] flex items-start justify-center overflow-y-auto bg-slate-950/50 p-4 pt-24 backdrop-blur-sm">
           <div className="w-full max-w-lg rounded-3xl border border-white/40 bg-white p-5 shadow-2xl dark:border-white/10 dark:bg-slate-900">
             <div className="mb-4 flex items-center justify-between">
@@ -337,7 +339,8 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
