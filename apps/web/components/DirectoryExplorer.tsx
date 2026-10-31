@@ -17,9 +17,10 @@ import DirectoryView, {
   type ArchiveViewMode,
 } from "./DirectoryView";
 
-export interface DirectoryItem {
+export interface DirectoryItem<T = unknown> {
   key: string;
-  node: ReactNode;
+  node?: ReactNode;
+  data?: T;
   searchText: string;
   filterValues?: string[];
   title?: string;
@@ -61,6 +62,7 @@ export default function DirectoryExplorer({
   subtitle,
   count,
   items,
+  renderItem,
   filters = [{ value: "all", label: "全部" }],
   initialMode = "grid",
   views = ["grid", "timeline"],
@@ -90,6 +92,7 @@ export default function DirectoryExplorer({
   subtitle?: string;
   count?: string | number;
   items: DirectoryItem[];
+  renderItem?: (item: DirectoryItem, index: number) => ReactNode;
   filters?: DirectoryFilter[];
   searchPlaceholder?: string;
   initialMode?: ArchiveViewMode;
@@ -266,7 +269,7 @@ export default function DirectoryExplorer({
         <div className="directory-empty">{empty}</div>
       ) : (
         <DirectoryView
-          items={visible.map((item) => item.node)}
+          items={visible.map((item, index) => item.node ?? renderItem?.(item, index))}
           mode={mode}
           featuredFirst={featuredFirst}
           compact={compact}

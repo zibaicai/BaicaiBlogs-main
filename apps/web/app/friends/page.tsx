@@ -26,12 +26,12 @@ export default async function FriendsPage() {
     key: String(friend.friendId || friend.id),
     node: (
       <ArchiveItemCard
+        layout="profile"
         external
         href={friend.url}
         title={friend.name}
         description={friend.description || "一位也在认真记录的人。"}
         label={friend.createdAt ? formatDay(friend.createdAt) : undefined}
-        category="NEIGHBOR"
         meta={hostOf(friend.url)}
         media={{ kind: "avatar", src: friend.avatar || DEFAULT_SITE_INFO.avatarUrl, alt: friend.name }}
       />
@@ -69,9 +69,11 @@ export default async function FriendsPage() {
             items={items}
             filters={[{ value: "all", label: "全部朋友", count: friends.length }]}
             views={["grid", "timeline", "masonry"]}
-            compact
-            gridVariant="cover"
-            columns={{ base: 1, sm: 2, lg: 3, xl: 4 }}
+            gridVariant="profile"
+            columns={{ base: 1, sm: 2, lg: 3 }}
+            masonryColumns={3}
+            cardSize="sm"
+            density="compact"
             searchPlaceholder="搜索朋友、简介或链接..."
             empty={empty}
           />
