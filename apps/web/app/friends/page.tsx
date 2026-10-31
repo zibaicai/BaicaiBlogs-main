@@ -60,34 +60,26 @@ export default async function FriendsPage() {
     <div className="min-h-screen relative pb-20">
       <Navbar />
       <PageTransition>
-        <main className="directory-shell">
-          <div className="friends-layout">
-            <div className="friends-directory">
-              <DirectoryExplorer
-                eyebrow="BAICAI / NEIGHBORS"
-                title="友链"
-                subtitle="海面很宽，认识一些同样在记录的人。"
-                count={`${friends.length} 位朋友`}
-                items={items}
-                filters={[{ value: "all", label: "全部朋友", count: friends.length }]}
-                views={["grid", "timeline", "masonry"]}
-                gridVariant="profile"
-                columns={{ base: 1, sm: 2, lg: 3 }}
-                masonryColumns={3}
-                cardSize="sm"
-                density="compact"
-                listMinHeight="md"
-                searchPlaceholder="搜索朋友、简介或链接..."
-                empty={empty}
-              />
-            </div>
-            <div className="friends-guestbook">
-              <FriendGuestbook initialMessages={messages} />
-            </div>
-            <aside className="friends-aside">
-              <FriendApplySection siteInfo={siteInfo} />
-            </aside>
-          </div>
+        <main className="directory-shell friends-page">
+          <DirectoryExplorer
+            eyebrow="BAICAI / NEIGHBORS"
+            title="友链"
+            subtitle="海面很宽，认识一些同样在记录的人。"
+            count={`${friends.length} 位朋友`}
+            items={items}
+            filters={[{ value: "all", label: "全部朋友", count: friends.length }]}
+            views={["grid", "timeline", "masonry"]}
+            gridVariant="profile"
+            columns={{ base: 1, sm: 2, lg: 3 }}
+            masonryColumns={3}
+            cardSize="sm"
+            density="compact"
+            listMinHeight="md"
+            searchPlaceholder="搜索朋友、简介或链接..."
+            empty={empty}
+          />
+          <FriendGuestbook initialMessages={messages} />
+          <FriendApplySection siteInfo={siteInfo} />
         </main>
       </PageTransition>
     </div>

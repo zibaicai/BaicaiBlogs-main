@@ -1,42 +1,269 @@
 @layer components {
-  .friends-layout {
-    display: grid;
-    min-width: 0;
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas:
-      "directory"
-      "aside"
-      "guestbook";
-    align-items: start;
-  }
-
-  .friends-directory {
-    grid-area: directory;
-    min-width: 0;
-  }
-
-  .friends-guestbook {
-    grid-area: guestbook;
-    min-width: 0;
-  }
-
-  .friends-aside {
-    grid-area: aside;
+  .friends-page {
     min-width: 0;
   }
 
   @media (min-width: 1280px) {
-    .friends-layout {
-      grid-template-columns: minmax(0, 1fr) 278px;
-      grid-template-areas:
-        "directory aside"
-        "guestbook aside";
-      column-gap: 24px;
+    .friends-page {
+      padding-right: 302px;
+    }
+  }
+
+  /* Desktop rail: the panel's right edge is the viewport's right edge. */
+  .friend-link-rail {
+    display: none;
+  }
+
+  @media (min-width: 1280px) {
+    .friend-link-rail {
+      position: fixed;
+      top: 80px;
+      right: 0;
+      z-index: 30;
+      display: block;
+      width: 278px;
     }
 
-    .friends-aside {
-      position: sticky;
-      top: 88px;
+    .friend-link-rail .friend-link-card {
+      max-height: calc(100vh - 112px);
+      overflow-y: auto;
+      border-radius: 22px 0 0 22px;
+      border-right: 0;
+    }
+
+    .friend-link-fab,
+    .friend-link-overlay,
+    .friend-link-panel {
+      display: none !important;
+    }
+  }
+
+  .friend-link-card {
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.66);
+    box-shadow: 0 18px 48px rgba(15, 23, 42, 0.14);
+    backdrop-filter: blur(22px);
+  }
+
+  .dark .friend-link-card {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(15, 23, 42, 0.72);
+  }
+
+  .friend-link-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .friend-link-card-head h2 {
+    margin: 0;
+    color: var(--ui-text);
+    font-size: var(--type-control);
+    font-weight: 800;
+  }
+
+  .friend-link-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .friend-link-copy,
+  .friend-link-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    border-radius: 8px;
+    color: var(--ui-accent);
+    background: var(--ui-accent-soft);
+    font-size: var(--type-meta);
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .friend-link-copy {
+    padding: 6px 8px;
+  }
+
+  .friend-link-close {
+    width: 26px;
+    height: 26px;
+    color: var(--ui-text-faint);
+    background: transparent;
+  }
+
+  .friend-link-close:hover {
+    background: color-mix(in srgb, var(--ui-secondary-bg) 60%, transparent);
+  }
+
+  .friend-link-pre {
+    max-height: 180px;
+    overflow: auto;
+    margin: 12px 0 0;
+    padding: 10px;
+    border-radius: 12px;
+    color: var(--ui-text-muted);
+    background: color-mix(in srgb, var(--ui-secondary-bg) 72%, transparent);
+    font-family: var(--font-mono);
+    font-size: var(--type-meta);
+    line-height: 1.55;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .friend-link-summary {
+    overflow: hidden;
+    margin: 12px 0 0;
+    color: var(--ui-text-muted);
+    font-size: var(--type-list-description);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .friend-link-apply {
+    width: 100%;
+    margin-top: 12px;
+    border-radius: 10px;
+    padding: 9px 12px;
+    color: #fff;
+    background: var(--ui-accent);
+    font-size: var(--type-meta);
+    font-weight: 800;
+  }
+
+  .friend-link-apply:hover {
+    filter: brightness(1.06);
+  }
+
+  .friend-link-message {
+    margin: 8px 0 0;
+    color: var(--ui-accent);
+    font-size: var(--type-meta);
+    font-weight: 700;
+  }
+
+  .friend-link-status {
+    margin-top: 10px;
+    border-top: 1px solid color-mix(in srgb, var(--ui-border) 65%, transparent);
+    padding-top: 10px;
+    color: var(--ui-text-faint);
+    font-size: var(--type-meta);
+    line-height: 1.5;
+  }
+
+  .friend-link-status button {
+    margin-left: 6px;
+    color: var(--ui-accent);
+    font-size: var(--type-meta);
+    font-weight: 700;
+  }
+
+  .friend-link-fab {
+    position: fixed;
+    top: 50%;
+    right: 16px;
+    z-index: 40;
+    display: flex;
+    width: 48px;
+    height: 48px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    color: var(--ui-accent);
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.18);
+    backdrop-filter: blur(18px);
+    transform: translateY(-50%);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+  }
+
+  .friend-link-fab:hover {
+    background: #fff;
+    transform: translateY(-50%) scale(1.05);
+  }
+
+  .dark .friend-link-fab {
+    border-color: rgba(255, 255, 255, 0.14);
+    background: rgba(15, 23, 42, 0.8);
+  }
+
+  .friend-link-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    background: rgba(2, 6, 23, 0.22);
+    backdrop-filter: blur(3px);
+  }
+
+  .friend-link-panel {
+    position: fixed;
+    z-index: 90;
+    outline: none;
+  }
+
+  .friend-link-panel.is-popover {
+    top: 50%;
+    right: 80px;
+    width: 320px;
+    max-height: 70vh;
+    overflow-y: auto;
+    transform: translateY(-50%);
+  }
+
+  .friend-link-panel.is-popover::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: -7px;
+    width: 14px;
+    height: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.5);
+    border-right: 1px solid rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.66);
+    transform: translateY(-50%) rotate(45deg);
+  }
+
+  .dark .friend-link-panel.is-popover::after {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(15, 23, 42, 0.72);
+  }
+
+  .friend-link-panel.is-sheet {
+    right: 0;
+    bottom: 0;
+    left: 0;
+    max-height: min(80vh, 560px);
+    overflow-y: auto;
+    border-radius: 24px 24px 0 0;
+  }
+
+  .friend-link-panel.is-sheet .friend-link-card {
+    border-radius: 24px 24px 0 0;
+    border-bottom: 0;
+    padding-bottom: calc(18px + env(safe-area-inset-bottom));
+  }
+
+  @media (max-width: 639px) {
+    .friend-link-fab {
+      top: auto;
+      bottom: calc(96px + env(safe-area-inset-bottom));
+      right: 14px;
+      transform: none;
+    }
+
+    .friend-link-fab:hover {
+      transform: scale(1.05);
+    }
+
+    .friend-link-overlay {
+      background: rgba(2, 6, 23, 0.42);
     }
   }
 }

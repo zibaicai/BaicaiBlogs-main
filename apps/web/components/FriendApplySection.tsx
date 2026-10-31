@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Clipboard, Loader2, Send, X } from "lucide-react";
+import { Clipboard, Link2, Loader2, Send, X } from "lucide-react";
 
 import Input from "./ui/Input";
 import Textarea from "./ui/Textarea";
@@ -29,6 +29,10 @@ type Application = { id: number; name: string; url: string; avatar?: string; des
 
 export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo }) {
   const { user } = useAuth();
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [isSheet, setIsSheet] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const fabRef = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");
@@ -46,6 +50,39 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
   const [turnstileReady, setTurnstileReady] = useState(false);
   const turnstileRef = useRef<HTMLDivElement>(null);
   const widgetRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 639px)");
+    const update = () => setIsSheet(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
+    if (!panelOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setPanelOpen(false);
+        fabRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [panelOpen]);
+
+  useEffect(() => {
+    if (!panelOpen || !isSheet) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [panelOpen, isSheet]);
+
+  useEffect(() => {
+    if (panelOpen) panelRef.current?.focus();
+  }, [panelOpen]);
 
   useEffect(() => {
     fetch("/api/auth/config", { credentials: "include" })
@@ -162,33 +199,116 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
     }
   };
 
-  return (
-    <>
-      <section className="mt-8 rounded-3xl border border-white/50 bg-white/60 p-4 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/50 lg:mt-0 lg:w-full">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="text-sm font-black text-slate-900 dark:text-white">本站友链</h2>
-          <button type="button" onClick={() => void copy()} className="inline-flex items-center gap-1 rounded-lg bg-indigo-500/10 px-2 py-1 text-meta font-bold text-indigo-500 hover:bg-indigo-500/15">
+  const openApplication = () => {
+    setEditing(false);
+    setPanelOpen(false);
+    setOpen(true);
+  };
+
+  const panel = (compact: boolean, withClose: boolean) => (
+    <div className={`friend-link-card ${compact ? "friend-link-card--compact" : ""}`}>
+      <div className="friend-link-card-head">
+        <h2>本站友链</h2>
+        <div className="friend-link-card-actions">
+          {withClose && (
+            <button
+              type="button"
+              className="friend-link-close"
+              aria-label="关闭本站友链"
+              onClick={() => {
+                setPanelOpen(false);
+                fabRef.current?.focus();
+              }}
+            >
+              <X size={15} />
+            </button>
+          )}
+          <button type="button" onClick={() => void copy()} className="friend-link-copy">
             <Clipboard size={11} /> 复制全部
           </button>
         </div>
-        <pre className="mt-3 whitespace-pre-wrap break-all rounded-xl bg-slate-100/70 p-3 text-meta leading-5 text-slate-600 dark:bg-slate-950/40 dark:text-slate-300">{copyAll}</pre>
-        <button type="button" onClick={() => { setEditing(false); setOpen(true); }} className="mt-3 w-full rounded-xl bg-indigo-500 px-3 py-2 text-xs font-black text-white hover:bg-indigo-400">
-          申请友链
-        </button>
-        {message && <p className="mt-2 text-meta font-bold text-indigo-500">{message}</p>}
-        {user && (
-          <div className="mt-3 border-t border-slate-200/60 pt-3 dark:border-slate-700/50">
-            {application ? (
-              <div className="text-meta leading-5 text-slate-500">
-                {application.name} · {application.status === "APPROVED" ? "已通过" : application.status === "REJECTED" ? "未通过" : "审核中"}
-                <button type="button" onClick={startEdit} className="ml-2 font-bold text-indigo-500 hover:underline">编辑</button>
-              </div>
-            ) : (
-              <button type="button" onClick={() => void bind()} disabled={busy} className="text-meta font-bold text-indigo-500 hover:underline">绑定之前提交的申请</button>
-            )}
+      </div>
+
+      {compact ? (
+        <p className="friend-link-summary">
+          {siteName} · {siteUrl.replace(/^https?:\/\//, "")}
+        </p>
+      ) : (
+        <pre className="friend-link-pre">{copyAll}</pre>
+      )}
+
+      <button type="button" onClick={openApplication} className="friend-link-apply">
+        申请友链
+      </button>
+
+      {message && <p className="friend-link-message">{message}</p>}
+
+      {user && (
+        <div className="friend-link-status">
+          {application ? (
+            <div>
+              {application.name} ·{" "}
+              {application.status === "APPROVED"
+                ? "已通过"
+                : application.status === "REJECTED"
+                  ? "未通过"
+                  : "审核中"}
+              <button
+                type="button"
+                onClick={() => {
+                  startEdit();
+                  setPanelOpen(false);
+                }}
+              >
+                编辑
+              </button>
+            </div>
+          ) : (
+            <button type="button" onClick={() => void bind()} disabled={busy}>
+              绑定之前提交的申请
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <>
+      <div className="friend-link-rail" aria-label="本站友链">
+        {panel(false, false)}
+      </div>
+
+      <button
+        ref={fabRef}
+        type="button"
+        className="friend-link-fab"
+        aria-label="打开本站友链"
+        aria-haspopup="dialog"
+        aria-expanded={panelOpen}
+        aria-controls="friend-link-panel"
+        onClick={() => setPanelOpen((current) => !current)}
+      >
+        <Link2 size={19} />
+      </button>
+
+      {panelOpen && (
+        <>
+          <div className="friend-link-overlay" aria-hidden="true" onClick={() => setPanelOpen(false)} />
+          <div
+            ref={panelRef}
+            id="friend-link-panel"
+            className={`friend-link-panel ${isSheet ? "is-sheet" : "is-popover"}`}
+            role="dialog"
+            aria-modal={isSheet || undefined}
+            aria-labelledby="friend-link-panel-title"
+            tabIndex={-1}
+          >
+            <span id="friend-link-panel-title" className="sr-only">本站友链</span>
+            {panel(true, true)}
           </div>
-        )}
-      </section>
+        </>
+      )}
 
       {open && (
         <div className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto bg-slate-950/50 p-4 pt-24 backdrop-blur-sm">
