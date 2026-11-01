@@ -4,10 +4,11 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Eye, EyeOff, Menu, X } from "lucide-react";
 import { useSiteConfigContext } from "../context/SiteConfigProvider";
 import { apiClient } from "../lib/api";
 import { useAuth } from "../lib/auth";
+import { usePersonalView } from "../lib/personal-view";
 import UserMenu from "./UserMenu";
 import NavSearch from "./NavSearch";
 
@@ -40,6 +41,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const { siteInfo } = useSiteConfigContext();
   const { user } = useAuth();
+  const { enabled: personalView, toggle: togglePersonalView } = usePersonalView();
   const communityName = siteInfo?.navAfter || siteInfo?.title || "云端小屋";
   const leftName = roomName || myRoomName || siteInfo?.authorName || "YeLuo";
   const leftRoomName = truncateRoomName(leftName, 4);
@@ -185,12 +187,31 @@ export default function Navbar() {
                   </Link>
                 ))}
                 {user ? (
-                  <Link
-                    href={`/u/${encodeURIComponent(user.username)}`}
-                    className="col-span-full px-4 py-2.5 rounded-xl text-sm font-bold text-center text-[var(--ui-accent)] bg-[var(--ui-accent-soft)]"
-                  >
-                    我的小屋
-                  </Link>
+                  <>
+                    <Link
+                      href={`/u/${encodeURIComponent(user.username)}`}
+                      className="col-span-full px-4 py-2.5 rounded-xl text-sm font-bold text-center text-[var(--ui-accent)] bg-[var(--ui-accent-soft)]"
+                    >
+                      我的小屋
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMobileOpen(false);
+                        togglePersonalView();
+                        window.setTimeout(() => window.location.reload(), 0);
+                      }}
+                      aria-pressed={personalView}
+                      className={`col-span-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-center ${
+                        personalView
+                          ? "text-emerald-600 bg-emerald-500/10 dark:text-emerald-400"
+                          : "text-slate-600 bg-white/30 dark:text-slate-300 dark:bg-white/5"
+                      }`}
+                    >
+                      {personalView ? <EyeOff size={15} /> : <Eye size={15} />}
+                      {personalView ? "查看全部内容" : "仅看我的内容"}
+                    </button>
+                  </>
                 ) : (
                   <Link
                     href="/login"

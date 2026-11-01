@@ -3,11 +3,9 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { AppIcon } from "./ui/AppIcon";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useMusic } from "./MusicProvider";
 import { useTheme } from "./ThemeProvider";
-import { useAuth } from "../lib/auth";
-import { usePersonalView } from "../lib/personal-view";
 import ThemeStudio from "./ThemeStudio";
 import Tabs, { type TabItem } from "./ui/Tabs";
 
@@ -58,19 +56,8 @@ export default function GlobalToolbox() {
   const [musicVisible, setMusicVisible] = useState(false);
   const [themeOpen, setThemeOpen] = useState(false);
   const pathname = usePathname();
-  const router = useRouter();
-  const { user } = useAuth();
   const { currentSong, isPlaying, togglePlay } = useMusic();
   const { preset, setPreset } = useTheme();
-  const { enabled: personalView, toggle: togglePersonalView } = usePersonalView();
-
-  useEffect(() => {
-    if (!user || personalView) return;
-    if (sessionStorage.getItem("personal-view-pending") !== "1") return;
-    sessionStorage.removeItem("personal-view-pending");
-    togglePersonalView();
-    window.setTimeout(() => window.location.reload(), 0);
-  }, [user, personalView, togglePersonalView]);
 
   useEffect(() => {
     try {
@@ -358,30 +345,6 @@ export default function GlobalToolbox() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      <button
-        type="button"
-        onClick={() => {
-          setIsOpen(false);
-          if (!personalView && !user) {
-            sessionStorage.setItem("personal-view-pending", "1");
-            router.push(`/login?next=${encodeURIComponent(pathname)}`);
-            return;
-          }
-          togglePersonalView();
-          window.setTimeout(() => window.location.reload(), 0);
-        }}
-        aria-label={personalView ? "查看全部内容" : "仅看我的内容"}
-        aria-pressed={personalView}
-        title={personalView ? "查看全部内容" : "仅看我的内容"}
-        className={`mb-1 flex h-10 w-10 items-center justify-center rounded-full border border-white/50 shadow-xl backdrop-blur-xl transition-all duration-300 hover:scale-105 active:scale-95 dark:border-white/10 ${
-          personalView
-            ? "bg-emerald-500 text-emerald-950"
-            : "bg-white/80 text-slate-600 dark:bg-slate-900/80 dark:text-slate-200"
-        }`}
-      >
-        <AppIcon name={personalView ? "unlock" : "lock"} size={17} />
-      </button>
 
       <button
         type="button"

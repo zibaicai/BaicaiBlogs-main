@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Bell, LogOut, User as UserIcon } from "lucide-react";
+import { Bell, Eye, EyeOff, LogOut, User as UserIcon } from "lucide-react";
 import { useAuth } from "../lib/auth";
+import { usePersonalView } from "../lib/personal-view";
 
 export default function UserMenu() {
   const { user, loading, logout } = useAuth();
+  const { enabled: personalView, toggle: togglePersonalView } = usePersonalView();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -60,6 +62,23 @@ export default function UserMenu() {
           >
             <UserIcon size={13} /> 我的小屋
           </Link>
+          <button
+            type="button"
+            onClick={() => {
+              setOpen(false);
+              togglePersonalView();
+              window.setTimeout(() => window.location.reload(), 0);
+            }}
+            aria-pressed={personalView}
+            className={`flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-xs font-bold transition-colors ${
+              personalView
+                ? "text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-500/10"
+                : "text-slate-600 hover:bg-indigo-50 dark:text-slate-300 dark:hover:bg-slate-800"
+            }`}
+          >
+            {personalView ? <EyeOff size={13} /> : <Eye size={13} />}
+            {personalView ? "查看全部内容" : "仅看我的内容"}
+          </button>
           <Link
             href="/account/room"
             onClick={() => setOpen(false)}
