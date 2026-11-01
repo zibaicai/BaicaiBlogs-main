@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import type { CSSProperties } from "react";
 import { motion } from "framer-motion";
@@ -60,7 +60,7 @@ export default function ArchiveGrid({
       {items.map((item, index) => (
         <motion.div
           key={index}
-          initial={{ opacity: 0, y: 16 }}
+          initial={false}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, delay: Math.min(index, 7) * 0.035, ease: [0.22, 1, 0.36, 1] }}
           className={`${compact ? "self-start" : "h-full"} ${featuredFirst && !compact && index === 0 ? "directory-featured" : ""}`}
@@ -73,3 +73,4 @@ export default function ArchiveGrid({
 }
 
 export const ArchiveGridShell = ArchiveGrid;
+

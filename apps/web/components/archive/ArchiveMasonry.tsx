@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -28,7 +28,7 @@ export default function ArchiveMasonry({ items, masonryColumns = 4 }: ArchiveMas
           {column.map((item, index) => (
             <motion.div
               key={`${columnIndex}-${index}`}
-              initial={{ opacity: 0, y: 14 }}
+              initial={false}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.15 }}
               transition={{ duration: 0.3, delay: Math.min(index, 5) * 0.04, ease: [0.22, 1, 0.36, 1] }}
@@ -41,3 +41,4 @@ export default function ArchiveMasonry({ items, masonryColumns = 4 }: ArchiveMas
     </div>
   );
 }
+

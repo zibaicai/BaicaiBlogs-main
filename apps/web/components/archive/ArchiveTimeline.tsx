@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { motion } from "framer-motion";
 import type { ArchiveTimelineProps } from "./types";
@@ -11,7 +11,7 @@ export default function ArchiveTimeline({ items, alternating = true }: ArchiveTi
         {items.map((item, index) => (
           <motion.div
             key={index}
-            initial={{ opacity: 0, y: 24 }}
+            initial={false}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.45, delay: Math.min(index, 6) * 0.04, ease: [0.22, 1, 0.36, 1] }}
@@ -28,3 +28,4 @@ export default function ArchiveTimeline({ items, alternating = true }: ArchiveTi
     </div>
   );
 }
+
