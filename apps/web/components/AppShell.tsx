@@ -16,7 +16,6 @@ import ThemeBackdrop from "./ThemeBackdrop";
 import Footer from "./Footer";
 import GlobalToolbox from "./GlobalToolbox";
 import DeferredEffects from "./DeferredEffects";
-import ScrollActivity from "./ScrollActivity";
 
 interface AppShellProps {
   config: any;
@@ -36,7 +35,6 @@ export default function AppShell({ config, children }: AppShellProps) {
               <PageViewTracker />
               <PresenceHeartbeat />
               <SplashScreen />
-              <ScrollActivity />
 
               <MusicProvider>
                 <div id="app-mount-root" className="flex flex-1 flex-col transition-opacity duration-1000">
