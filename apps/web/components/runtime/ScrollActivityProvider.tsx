@@ -15,6 +15,7 @@ function publish(scrolling: boolean) {
   document.documentElement.dataset.scrolling = scrolling ? "true" : "";
   if (!scrolling) delete document.documentElement.dataset.scrolling;
   listeners.forEach((listener) => listener(scrolling));
+  window.dispatchEvent(new CustomEvent("scroll-activity", { detail: { scrolling } }));
 }
 
 /**

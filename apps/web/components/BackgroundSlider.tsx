@@ -15,11 +15,38 @@ export default function BackgroundSlider({ images: provided }: { images?: string
     setActive(0);
     if (images.length < 2) return;
 
-    const timer = window.setInterval(() => {
-      setActive((current) => (current + 1) % images.length);
-    }, ROTATE_MS);
+    let timer: number | null = null;
+    let paused = false;
+    const start = () => {
+      if (timer !== null) return;
+      timer = window.setInterval(() => {
+        setActive((current) => (current + 1) % images.length);
+      }, ROTATE_MS);
+    };
+    const stop = () => {
+      if (timer === null) return;
+      window.clearInterval(timer);
+      timer = null;
+    };
+    const onScrollActivity = (event: Event) => {
+      const scrolling = (event as CustomEvent<{ scrolling?: boolean }>).detail?.scrolling === true;
+      if (scrolling) {
+        paused = true;
+        stop();
+        return;
+      }
+      if (paused) {
+        paused = false;
+        start();
+      }
+    };
 
-    return () => window.clearInterval(timer);
+    start();
+    window.addEventListener("scroll-activity", onScrollActivity);
+    return () => {
+      stop();
+      window.removeEventListener("scroll-activity", onScrollActivity);
+    };
     // imageKey intentionally represents the image list; the array may be recreated by context.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imageKey]);

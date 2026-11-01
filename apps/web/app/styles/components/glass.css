@@ -104,11 +104,6 @@ html.dark .glass {
   box-shadow: none;
 }
 
-html[data-scrolling="true"] .glass[data-glass-scroll="suspend"] {
-  backdrop-filter: none;
-  transition: none !important;
-}
-
 [data-glass][data-glass-disabled="true"],
 .glass-blur[data-glass-disabled="true"] {
   backdrop-filter: none;
@@ -147,11 +142,6 @@ html[data-visual-mode="plain"] .glass {
 .glass-blur--xl { --glass-blur: 24px; }
 .glass-blur--2xl { --glass-blur: 40px; }
 .glass-blur--60 { --glass-blur: 60px; }
-
-html[data-scrolling="true"] .glass-blur:not(.glass-blur--keep) {
-  backdrop-filter: none;
-  transition: none !important;
-}
 
 html[data-visual-mode="plain"] .glass-blur {
   backdrop-filter: none;
