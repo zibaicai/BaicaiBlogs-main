@@ -96,7 +96,6 @@ export default function Fireflies() {
     let dpr = 1;
     let frameHandle = 0;
     let running = !document.hidden;
-    let pausedByScroll = false;
     let lastTime = performance.now();
     let particles: Firefly[] = [];
 
@@ -263,28 +262,10 @@ export default function Fireflies() {
         cancelAnimationFrame(frameHandle);
         return;
       }
-      if (!running && !pausedByScroll) {
+      if (!running) {
         running = true;
         lastTime = performance.now();
         frameHandle = requestAnimationFrame(draw);
-      }
-    };
-
-    const onScrollActivity = (event: Event) => {
-      const scrolling = (event as CustomEvent<{ scrolling?: boolean }>).detail?.scrolling === true;
-      if (scrolling) {
-        pausedByScroll = true;
-        running = false;
-        cancelAnimationFrame(frameHandle);
-        return;
-      }
-      if (pausedByScroll) {
-        pausedByScroll = false;
-        if (!document.hidden) {
-          running = true;
-          lastTime = performance.now();
-          frameHandle = requestAnimationFrame(draw);
-        }
       }
     };
 
@@ -293,14 +274,12 @@ export default function Fireflies() {
     frameHandle = requestAnimationFrame(draw);
 
     window.addEventListener("resize", resize);
-    window.addEventListener("scroll-activity", onScrollActivity);
     document.addEventListener("visibilitychange", onVisibilityChange);
 
     return () => {
       running = false;
       cancelAnimationFrame(frameHandle);
       window.removeEventListener("resize", resize);
-      window.removeEventListener("scroll-activity", onScrollActivity);
       document.removeEventListener("visibilitychange", onVisibilityChange);
     };
   }, []);

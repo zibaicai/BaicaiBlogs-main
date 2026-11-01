@@ -309,7 +309,6 @@ export default function SakuraGL({ color }: { color?: { inner: number[]; outer: 
     let disposed = false;
     let started = false;
     let raf = 0;
-    let pausedByScroll = false;
     let gl: WebGLRenderingContext | null = null;
     let idleHandle = 0;
     let timeoutHandle = 0;
@@ -551,10 +550,6 @@ export default function SakuraGL({ color }: { color?: { inner: number[]; outer: 
 
       const frame = () => {
         if (disposed) return;
-        if (pausedByScroll) {
-          raf = 0;
-          return;
-        }
 
         const now = performance.now();
         let dt = (now - prev) / 1000;
@@ -706,31 +701,13 @@ export default function SakuraGL({ color }: { color?: { inner: number[]; outer: 
         if (document.hidden) {
           if (raf) cancelAnimationFrame(raf);
           raf = 0;
-        } else if (!raf && !pausedByScroll) {
+        } else if (!raf) {
           prev = performance.now();
           raf = requestAnimationFrame(frame);
         }
       };
-      const onScrollActivity = (event: Event) => {
-        const scrolling = (event as CustomEvent<{ scrolling?: boolean }>).detail?.scrolling === true;
-        if (scrolling) {
-          pausedByScroll = true;
-          if (raf) cancelAnimationFrame(raf);
-          raf = 0;
-          return;
-        }
-        if (pausedByScroll) {
-          pausedByScroll = false;
-          if (!document.hidden && !raf) {
-            prev = performance.now();
-            raf = requestAnimationFrame(frame);
-          }
-        }
-      };
       document.addEventListener("visibilitychange", onVisibility);
-      window.addEventListener("scroll-activity", onScrollActivity);
       cleanup.push(() => document.removeEventListener("visibilitychange", onVisibility));
-      cleanup.push(() => window.removeEventListener("scroll-activity", onScrollActivity));
 
       cleanup.push(() => {
         if (raf) cancelAnimationFrame(raf);
