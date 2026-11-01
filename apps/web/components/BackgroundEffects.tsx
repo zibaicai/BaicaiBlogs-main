@@ -23,9 +23,11 @@ const SAKURA_COLORS: Record<"ocean" | "violet", { inner: number[]; outer: number
  */
 export default function BackgroundEffects() {
   const { isDark, preset } = useTheme();
-  const { sakuraCount, fireflyCount } = useGlassSettings();
+  const { sakuraCount, fireflyCount, backgroundAnimationEnabled } = useGlassSettings();
   const tone = preset === "violet" ? "violet" : "ocean";
   const sakuraColor = SAKURA_COLORS[tone];
+
+  if (!backgroundAnimationEnabled) return null;
 
   return (
     <>

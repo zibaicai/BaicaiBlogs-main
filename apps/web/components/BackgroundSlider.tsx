@@ -2,18 +2,20 @@
 
 import { useEffect, useState } from "react";
 import { useSiteConfigContext } from "../context/SiteConfigProvider";
+import { useGlassSettings } from "./glass/GlassSettingsProvider";
 
 const ROTATE_MS = 10_000;
 
 export default function BackgroundSlider({ images: provided }: { images?: string[] }) {
   const { background } = useSiteConfigContext();
+  const { backgroundAnimationEnabled } = useGlassSettings();
   const images = provided?.length ? provided : background?.bgImages || [];
   const imageKey = images.join("|");
   const [active, setActive] = useState(0);
 
   useEffect(() => {
     setActive(0);
-    if (images.length < 2) return;
+    if (!backgroundAnimationEnabled || images.length < 2) return;
 
     const timer = window.setInterval(() => {
       setActive((current) => (current + 1) % images.length);
@@ -22,7 +24,7 @@ export default function BackgroundSlider({ images: provided }: { images?: string
     return () => window.clearInterval(timer);
     // imageKey intentionally represents the image list; the array may be recreated by context.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imageKey]);
+  }, [imageKey, backgroundAnimationEnabled]);
 
   if (images.length === 0) return null;
 

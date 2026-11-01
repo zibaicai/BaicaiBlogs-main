@@ -10,11 +10,13 @@ interface GlassSettingsValue {
   scrollPauseMode: GlassScrollPauseMode;
   sakuraCount: number;
   fireflyCount: number;
+  backgroundAnimationEnabled: boolean;
   setBackgroundEnabled: (enabled: boolean) => void;
   setContentEnabled: (enabled: boolean) => void;
   setScrollPauseMode: (mode: GlassScrollPauseMode) => void;
   setSakuraCount: (count: number) => void;
   setFireflyCount: (count: number) => void;
+  setBackgroundAnimationEnabled: (enabled: boolean) => void;
 }
 
 const STORAGE_KEY = "baicai:glass-settings";
@@ -25,6 +27,7 @@ const DEFAULT_SETTINGS = {
   scrollPauseMode: "off" as GlassScrollPauseMode,
   sakuraCount: 1200,
   fireflyCount: 42,
+  backgroundAnimationEnabled: true,
 };
 
 const clampCount = (value: unknown, fallback: number, min: number, max: number) => {
@@ -48,6 +51,7 @@ function readStoredSettings(): typeof DEFAULT_SETTINGS {
       scrollPauseMode,
       sakuraCount: clampCount(stored.sakuraCount, DEFAULT_SETTINGS.sakuraCount, 100, 2000),
       fireflyCount: clampCount(stored.fireflyCount, DEFAULT_SETTINGS.fireflyCount, 0, 120),
+      backgroundAnimationEnabled: stored.backgroundAnimationEnabled ?? true,
     };
   } catch {
     return DEFAULT_SETTINGS;
@@ -72,6 +76,8 @@ export function GlassSettingsProvider({ children }: { children: ReactNode }) {
     else root.dataset.glassContent = "off";
     if (settings.scrollPauseMode === "off") delete root.dataset.glassPauseMode;
     else root.dataset.glassPauseMode = settings.scrollPauseMode;
+    if (settings.backgroundAnimationEnabled) delete root.dataset.backgroundAnimation;
+    else root.dataset.backgroundAnimation = "off";
 
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
   }, [settings, loaded]);
@@ -146,6 +152,9 @@ export function GlassSettingsProvider({ children }: { children: ReactNode }) {
   const setFireflyCount = useCallback((fireflyCount: number) => {
     setSettings((current) => ({ ...current, fireflyCount: clampCount(fireflyCount, current.fireflyCount, 0, 120) }));
   }, []);
+  const setBackgroundAnimationEnabled = useCallback((backgroundAnimationEnabled: boolean) => {
+    setSettings((current) => ({ ...current, backgroundAnimationEnabled }));
+  }, []);
 
   const value = useMemo(
     () => ({
@@ -155,8 +164,17 @@ export function GlassSettingsProvider({ children }: { children: ReactNode }) {
       setScrollPauseMode,
       setSakuraCount,
       setFireflyCount,
+      setBackgroundAnimationEnabled,
     }),
-    [settings, setBackgroundEnabled, setContentEnabled, setScrollPauseMode, setSakuraCount, setFireflyCount]
+    [
+      settings,
+      setBackgroundEnabled,
+      setContentEnabled,
+      setScrollPauseMode,
+      setSakuraCount,
+      setFireflyCount,
+      setBackgroundAnimationEnabled,
+    ]
   );
 
   return <GlassSettingsContext.Provider value={value}>{children}</GlassSettingsContext.Provider>;

@@ -1025,4 +1025,8 @@ body.tool-pet-off .whale-pet {
   box-shadow: none;
   backdrop-filter: none;
 }
+
+html[data-background-animation="off"] .site-gradient {
+  animation-play-state: paused !important;
+}
 }
