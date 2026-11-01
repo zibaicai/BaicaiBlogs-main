@@ -184,12 +184,21 @@ export default function Navbar() {
                     {link.name}
                   </Link>
                 ))}
-                <Link
-                  href="/login"
-                  className="col-span-full px-4 py-2.5 rounded-xl text-sm font-bold text-center text-[var(--ui-accent)] bg-[var(--ui-accent-soft)]"
-                >
-                  登录 / 账号
-                </Link>
+                {user ? (
+                  <Link
+                    href={`/u/${encodeURIComponent(user.username)}`}
+                    className="col-span-full px-4 py-2.5 rounded-xl text-sm font-bold text-center text-[var(--ui-accent)] bg-[var(--ui-accent-soft)]"
+                  >
+                    我的小屋
+                  </Link>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="col-span-full px-4 py-2.5 rounded-xl text-sm font-bold text-center text-[var(--ui-accent)] bg-[var(--ui-accent-soft)]"
+                  >
+                    登录 / 账号
+                  </Link>
+                )}
               </div>
             </motion.nav>
           )}

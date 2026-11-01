@@ -300,6 +300,27 @@
     margin-top: 0;
   }
 }
+
+@media (max-width: 767px) {
+  .archive-timeline {
+    padding: 0;
+  }
+
+  .archive-timeline-line,
+  .timeline-spacer,
+  .timeline-dot {
+    display: none !important;
+  }
+
+  .timeline-row {
+    display: block !important;
+    margin-top: 0 !important;
+  }
+
+  .timeline-content {
+    width: 100%;
+  }
+}
 /* Daytime readability without blurring text strokes. */
 html:not(.dark) .hv-hero-copy {
   position: relative;

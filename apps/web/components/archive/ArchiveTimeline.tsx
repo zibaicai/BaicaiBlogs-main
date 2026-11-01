@@ -6,7 +6,7 @@ import type { ArchiveTimelineProps } from "./types";
 export default function ArchiveTimeline({ items, alternating = true }: ArchiveTimelineProps) {
   return (
     <div className="archive-timeline relative overflow-hidden p-2 md:p-10">
-      <div className="absolute left-1/2 h-full -translate-x-1/2 rounded-full border-2 border-indigo-500/20" />
+      <div className="archive-timeline-line absolute left-1/2 h-full -translate-x-1/2 rounded-full border-2 border-indigo-500/20" />
       <div className="relative z-10 flex flex-col gap-6">
         {items.map((item, index) => (
           <motion.div
@@ -19,9 +19,9 @@ export default function ArchiveTimeline({ items, alternating = true }: ArchiveTi
               alternating && index % 2 === 0 ? "md:flex-row-reverse" : "flex-row"
             }`}
           >
-            <div className="order-1 hidden w-5/12 md:block" />
-            <div className="z-20 order-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-4 border-indigo-400 bg-white shadow-xl ring-4 ring-indigo-200/50 dark:bg-slate-900 dark:ring-indigo-900/30" />
-            <div className="order-1 w-full md:w-5/12">{item}</div>
+            <div className="timeline-spacer order-1 hidden w-5/12 md:block" />
+            <div className="timeline-dot z-20 order-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-4 border-indigo-400 bg-white shadow-xl ring-4 ring-indigo-200/50 dark:bg-slate-900 dark:ring-indigo-900/30" />
+            <div className="timeline-content order-1 w-full md:w-5/12">{item}</div>
           </motion.div>
         ))}
       </div>

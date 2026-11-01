@@ -194,6 +194,11 @@ body[data-nav-hidden="true"] .article-toc {
     border-top: 1px solid rgba(255, 255, 255, 0.4);
   }
 
+  .article-comments {
+    order: 5;
+    width: 100%;
+  }
+
   .article-toc {
     position: static;
     max-height: 360px;
