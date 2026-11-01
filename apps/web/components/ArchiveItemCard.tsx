@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import GlassSurface from "./ui/glass/GlassSurface";
 import { glassProps } from "./ui/glass/GlassSurface";
