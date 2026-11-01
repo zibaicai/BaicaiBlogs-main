@@ -9,6 +9,15 @@ import { useTheme } from "./ThemeProvider";
 import { useAuth } from "../lib/auth";
 import { usePersonalView } from "../lib/personal-view";
 import ThemeStudio from "./ThemeStudio";
+import Tabs, { type TabItem } from "./ui/Tabs";
+
+type ToolboxTab = "appearance" | "atmosphere" | "music";
+
+const TOOLBOX_TABS: TabItem[] = [
+  { value: "appearance", label: "外观", icon: <AppIcon name="palette" size={13} /> },
+  { value: "atmosphere", label: "氛围", icon: <AppIcon name="sparkles" size={13} /> },
+  { value: "music", label: "音乐", icon: <AppIcon name="music" size={13} /> },
+];
 
 type ToolId = "danmaku" | "click" | "pet";
 
@@ -43,6 +52,7 @@ function applyVisualEffects(enabled: boolean) {
 
 export default function GlobalToolbox() {
   const [isOpen, setIsOpen] = useState(false);
+  const [tab, setTab] = useState<ToolboxTab>("appearance");
   const [prefs, setPrefs] = useState<Record<ToolId, boolean>>(DEFAULT_PREFS);
   const [visualEffects, setVisualEffects] = useState(true);
   const [musicVisible, setMusicVisible] = useState(false);
@@ -134,171 +144,212 @@ export default function GlobalToolbox() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.96 }}
             transition={{ duration: 0.22, ease: "easeOut" }}
-            className="tool-directory mb-1 w-[min(320px,calc(100vw-2rem))] overflow-hidden rounded-3xl border border-white/60 bg-white/90 shadow-2xl backdrop-blur-2xl dark:border-white/10 dark:bg-slate-900/95"
+            className="tool-directory mb-1 flex max-h-[min(78vh,560px)] w-[min(320px,calc(100vw-2rem))] flex-col overflow-hidden rounded-3xl border border-white/60 bg-white/90 shadow-2xl backdrop-blur-2xl dark:border-white/10 dark:bg-slate-900/95"
           >
             <div className="flex items-start justify-between border-b border-slate-200/70 px-5 py-4 dark:border-white/10">
               <div>
-                <span className="font-mono text-meta uppercase tracking-[0.2em] text-slate-400">TOOLS</span>
-                <h3 className="mt-1 text-base font-black text-slate-800 dark:text-white">工具目录</h3>
+                <span className="font-mono text-meta uppercase tracking-[0.2em] text-slate-400">PREFERENCES</span>
+                <h3 className="mt-1 text-base font-black text-slate-800 dark:text-white">站点设置</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
                 className="rounded-full p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-white"
-                aria-label="关闭工具目录"
+                aria-label="关闭站点设置"
               >
                 <AppIcon name="close" size={16} />
               </button>
             </div>
 
-            <div className="p-2">
-              <div className="flex items-center justify-between gap-4 rounded-2xl px-3 py-3 transition-colors hover:bg-slate-100/70 dark:hover:bg-white/5">
-                <div className="flex min-w-0 items-center gap-2.5">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
-                    <AppIcon name="sparkles" size={15} />
-                  </span>
-                  <div className="min-w-0">
-                    <div className="text-sm font-bold text-slate-800 dark:text-slate-100">背景特效</div>
-                    <div className="mt-0.5 truncate text-meta text-slate-400">关闭背景图、渐变与粒子动画</div>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={visualEffects}
-                  aria-label={`背景特效${visualEffects ? "已开启" : "已关闭"}`}
-                  onClick={toggleVisualEffects}
-                  className={`tool-switch relative h-6 w-11 shrink-0 rounded-full transition-colors ${
-                    visualEffects ? "bg-[var(--ui-accent)]" : "bg-slate-300 dark:bg-slate-700"
-                  }`}
+            <div className="px-3 pb-2 pt-3">
+              <Tabs
+                items={TOOLBOX_TABS}
+                value={tab}
+                onValueChange={(value) => setTab(value as ToolboxTab)}
+                id="toolbox-tabs"
+                ariaLabel="站点设置分类"
+                size="sm"
+              />
+            </div>
+
+            <div className="min-h-0 flex-1 overflow-y-auto p-2">
+              {tab === "appearance" && (
+                <div
+                  role="tabpanel"
+                  id="toolbox-tabs-panel-appearance"
+                  aria-labelledby="toolbox-tabs-tab-appearance"
                 >
-                  <span
-                    className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-all ${
-                      visualEffects ? "left-6" : "left-1"
-                    }`}
-                  />
-                </button>
-              </div>
-              {TOOLS.map((tool) => {
-                const enabled = prefs[tool.id];
-                return (
-                  <div
-                    key={tool.id}
-                    className="flex items-center justify-between gap-4 rounded-2xl px-3 py-3 transition-colors hover:bg-slate-100/70 dark:hover:bg-white/5"
-                  >
-                    <div className="min-w-0">
-                      <div className="text-sm font-bold text-slate-800 dark:text-slate-100">{tool.name}</div>
-                      <div className="mt-0.5 truncate text-meta text-slate-400">{tool.description}</div>
+                  <div className="flex items-center justify-between gap-4 rounded-2xl px-3 py-3 transition-colors hover:bg-slate-100/70 dark:hover:bg-white/5">
+                    <div className="flex min-w-0 items-center gap-2.5">
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
+                        <AppIcon name="sparkles" size={15} />
+                      </span>
+                      <div className="min-w-0">
+                        <div className="text-sm font-bold text-slate-800 dark:text-slate-100">博客模式</div>
+                        <div className="mt-0.5 truncate text-meta text-slate-400">关闭背景、粒子与动效</div>
+                      </div>
                     </div>
                     <button
                       type="button"
                       role="switch"
-                      aria-checked={enabled}
-                      aria-label={`${tool.name}${enabled ? "已开启" : "已关闭"}`}
-                      onClick={() => toggle(tool.id)}
+                      aria-checked={!visualEffects}
+                      aria-label={`博客模式${!visualEffects ? "已开启" : "已关闭"}`}
+                      onClick={toggleVisualEffects}
                       className={`tool-switch relative h-6 w-11 shrink-0 rounded-full transition-colors ${
-                        enabled ? "bg-[var(--ui-accent)]" : "bg-slate-300 dark:bg-slate-700"
+                        !visualEffects ? "bg-[var(--ui-accent)]" : "bg-slate-300 dark:bg-slate-700"
                       }`}
                     >
                       <span
                         className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-all ${
-                          enabled ? "left-6" : "left-1"
+                          !visualEffects ? "left-6" : "left-1"
                         }`}
                       />
                     </button>
                   </div>
-                );
-              })}
 
-              <div className="mt-1 border-t border-slate-200/70 px-3 py-3 dark:border-white/10">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex min-w-0 items-center gap-2.5">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
-                      <AppIcon name="music" size={15} />
-                    </span>
-                    <div className="min-w-0">
-                      <div className="text-sm font-bold text-slate-800 dark:text-slate-100">音乐</div>
-                      <div className="truncate text-meta text-slate-400">
-                        {currentSong ? `${currentSong.title} · ${currentSong.artist}` : "暂无播放歌曲"}
+                  <div className="mt-1 border-t border-slate-200/70 px-3 py-3 dark:border-white/10">
+                    <div className="text-meta font-black uppercase tracking-[0.16em] text-slate-400">主题风格</div>
+                    <div className="mt-2 grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setPreset("ocean")}
+                        className={`rounded-xl border px-3 py-2 text-left transition ${
+                          preset === "ocean"
+                            ? "border-[var(--ui-accent)] bg-[var(--ui-accent-soft)] text-[var(--ui-accent)]"
+                            : "border-slate-200 text-slate-500 hover:border-[var(--ui-accent)]/40 dark:border-white/10 dark:text-slate-400"
+                        }`}
+                      >
+                        <span className="block text-meta font-black">深海鲸歌</span>
+                        <span className="mt-0.5 block text-meta opacity-60">蓝调 / 海雾</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPreset("violet")}
+                        className={`rounded-xl border px-3 py-2 text-left transition ${
+                          preset === "violet"
+                            ? "border-[var(--ui-accent)] bg-[var(--ui-accent-soft)] text-[var(--ui-accent)]"
+                            : "border-slate-200 text-slate-500 hover:border-[var(--ui-accent)]/40 dark:border-white/10 dark:text-slate-400"
+                        }`}
+                      >
+                        <span className="block text-meta font-black">旧日紫夜</span>
+                        <span className="mt-0.5 block text-meta opacity-60">紫调 / 樱花</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="mt-1 border-t border-slate-200/70 px-3 py-3 dark:border-white/10">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex min-w-0 items-center gap-2.5">
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[var(--ui-accent-soft)] text-[var(--ui-accent)]">
+                          <AppIcon name="palette" size={15} />
+                        </span>
+                        <div className="min-w-0">
+                          <div className="text-sm font-bold text-slate-800 dark:text-slate-100">配色工作台</div>
+                          <div className="truncate text-meta text-slate-400">日间 / 夜间独立自定义</div>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsOpen(false);
+                          setThemeOpen(true);
+                        }}
+                        className="rounded-full bg-[var(--ui-accent)] px-3 py-2 text-meta font-black text-[var(--ui-accent-contrast)]"
+                      >
+                        调整
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {tab === "atmosphere" && (
+                <div
+                  role="tabpanel"
+                  id="toolbox-tabs-panel-atmosphere"
+                  aria-labelledby="toolbox-tabs-tab-atmosphere"
+                >
+                  <div className="px-3 pb-1 text-meta font-black uppercase tracking-[0.16em] text-slate-400">
+                    氛围效果
+                  </div>
+                  {TOOLS.map((tool) => {
+                    const enabled = prefs[tool.id];
+                    return (
+                      <div
+                        key={tool.id}
+                        className="flex items-center justify-between gap-4 rounded-2xl px-3 py-3 transition-colors hover:bg-slate-100/70 dark:hover:bg-white/5"
+                      >
+                        <div className="min-w-0">
+                          <div className="text-sm font-bold text-slate-800 dark:text-slate-100">{tool.name}</div>
+                          <div className="mt-0.5 truncate text-meta text-slate-400">{tool.description}</div>
+                        </div>
+                        <button
+                          type="button"
+                          role="switch"
+                          aria-checked={enabled}
+                          aria-label={`${tool.name}${enabled ? "已开启" : "已关闭"}`}
+                          disabled={!visualEffects}
+                          onClick={() => toggle(tool.id)}
+                          className={`tool-switch relative h-6 w-11 shrink-0 rounded-full transition-colors disabled:opacity-40 ${
+                            enabled && visualEffects ? "bg-[var(--ui-accent)]" : "bg-slate-300 dark:bg-slate-700"
+                          }`}
+                        >
+                          <span
+                            className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-all ${
+                              enabled && visualEffects ? "left-6" : "left-1"
+                            }`}
+                          />
+                        </button>
+                      </div>
+                    );
+                  })}
+                  <p className="px-3 pt-2 text-meta text-slate-400">
+                    开启博客模式后，氛围效果会暂时停用。
+                  </p>
+                </div>
+              )}
+
+              {tab === "music" && (
+                <div
+                  role="tabpanel"
+                  id="toolbox-tabs-panel-music"
+                  aria-labelledby="toolbox-tabs-tab-music"
+                >
+                  <div className="flex items-center justify-between gap-3 rounded-2xl px-3 py-3 transition-colors hover:bg-slate-100/70 dark:hover:bg-white/5">
+                    <div className="flex min-w-0 items-center gap-2.5">
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
+                        <AppIcon name="music" size={15} />
+                      </span>
+                      <div className="min-w-0">
+                        <div className="text-sm font-bold text-slate-800 dark:text-slate-100">音乐</div>
+                        <div className="truncate text-meta text-slate-400">
+                          {currentSong ? `${currentSong.title} · ${currentSong.artist}` : "暂无播放歌曲"}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="flex shrink-0 items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={togglePlay}
-                      disabled={!currentSong}
-                      aria-label={isPlaying ? "暂停音乐" : "播放音乐"}
-                      className="btn btn-primary flex h-8 w-8 items-center justify-center rounded-full disabled:opacity-40"
-                    >
-                      {isPlaying ? <AppIcon name="pause" size={13} /> : <AppIcon name="play" size={13} />}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={toggleMusicVisible}
-                      disabled={!currentSong}
-                      aria-label={musicVisible ? "隐藏迷你播放器" : "显示迷你播放器"}
-                      className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 text-slate-500 disabled:opacity-30 dark:border-white/10 dark:text-slate-300"
-                    >
-                      {musicVisible ? <AppIcon name="eyeOff" size={13} /> : <AppIcon name="eye" size={13} />}
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-1 border-t border-slate-200/70 px-3 py-3 dark:border-white/10">
-                <div className="text-meta font-black uppercase tracking-[0.16em] text-slate-400">主题风格</div>
-                <div className="mt-2 grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setPreset("ocean")}
-                    className={`rounded-xl border px-3 py-2 text-left transition ${
-                      preset === "ocean"
-                        ? "border-[var(--ui-accent)] bg-[var(--ui-accent-soft)] text-[var(--ui-accent)]"
-                        : "border-slate-200 text-slate-500 hover:border-[var(--ui-accent)]/40 dark:border-white/10 dark:text-slate-400"
-                    }`}
-                  >
-                    <span className="block text-meta font-black">深海鲸歌</span>
-                    <span className="mt-0.5 block text-meta opacity-60">蓝调 / 海雾</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setPreset("violet")}
-                    className={`rounded-xl border px-3 py-2 text-left transition ${
-                      preset === "violet"
-                        ? "border-[var(--ui-accent)] bg-[var(--ui-accent-soft)] text-[var(--ui-accent)]"
-                        : "border-slate-200 text-slate-500 hover:border-[var(--ui-accent)]/40 dark:border-white/10 dark:text-slate-400"
-                    }`}
-                  >
-                    <span className="block text-meta font-black">旧日紫夜</span>
-                    <span className="mt-0.5 block text-meta opacity-60">紫调 / 樱花</span>
-                  </button>
-                </div>
-              </div>
-
-              <div className="mt-1 border-t border-slate-200/70 px-3 py-3 dark:border-white/10">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex min-w-0 items-center gap-2.5">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[var(--ui-accent-soft)] text-[var(--ui-accent)]">
-                      <AppIcon name="palette" size={15} />
-                    </span>
-                    <div className="min-w-0">
-                      <div className="text-sm font-bold text-slate-800 dark:text-slate-100">配色工作台</div>
-                      <div className="truncate text-meta text-slate-400">日间 / 夜间独立自定义</div>
+                    <div className="flex shrink-0 items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={togglePlay}
+                        disabled={!currentSong}
+                        aria-label={isPlaying ? "暂停音乐" : "播放音乐"}
+                        className="btn btn-primary flex h-8 w-8 items-center justify-center rounded-full disabled:opacity-40"
+                      >
+                        {isPlaying ? <AppIcon name="pause" size={13} /> : <AppIcon name="play" size={13} />}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={toggleMusicVisible}
+                        disabled={!currentSong}
+                        aria-label={musicVisible ? "隐藏迷你播放器" : "显示迷你播放器"}
+                        className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 text-slate-500 disabled:opacity-30 dark:border-white/10 dark:text-slate-300"
+                      >
+                        {musicVisible ? <AppIcon name="eyeOff" size={13} /> : <AppIcon name="eye" size={13} />}
+                      </button>
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsOpen(false);
-                      setThemeOpen(true);
-                    }}
-                    className="rounded-full bg-[var(--ui-accent)] px-3 py-2 text-meta font-black text-[var(--ui-accent-contrast)]"
-                  >
-                    调整
-                  </button>
                 </div>
-              </div>
+              )}
             </div>
 
             <p className="border-t border-slate-200/70 px-5 py-3 text-meta text-slate-400 dark:border-white/10">

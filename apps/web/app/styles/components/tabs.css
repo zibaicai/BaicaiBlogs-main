@@ -1,0 +1,51 @@
+@layer components {
+  .ui-tabs {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 3px;
+    border: 1px solid color-mix(in srgb, var(--ui-border) 70%, transparent);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--ui-secondary-bg) 55%, transparent);
+  }
+
+  .ui-tabs-button {
+    display: inline-flex;
+    min-width: 0;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    border-radius: 9px;
+    padding: 7px 10px;
+    color: var(--ui-text-muted);
+    font-size: var(--type-meta);
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+    transition: color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .ui-tabs-button:hover {
+    color: var(--ui-text);
+    background: color-mix(in srgb, var(--ui-surface) 55%, transparent);
+  }
+
+  .ui-tabs-button.is-selected {
+    color: var(--ui-accent-strong);
+    background: var(--ui-surface);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+    font-weight: 700;
+  }
+
+  .ui-tabs-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.8;
+  }
+
+  .ui-tabs--sm .ui-tabs-button {
+    padding: 6px 8px;
+  }
+}
