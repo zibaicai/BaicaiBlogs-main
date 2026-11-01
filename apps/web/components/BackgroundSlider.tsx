@@ -15,6 +15,9 @@ export default function BackgroundSlider({ images: provided }: { images?: string
 
   useEffect(() => {
     setActive(0);
+  }, [imageKey]);
+
+  useEffect(() => {
     if (!backgroundAnimationEnabled || images.length < 2) return;
 
     const timer = window.setInterval(() => {
@@ -24,7 +27,7 @@ export default function BackgroundSlider({ images: provided }: { images?: string
     return () => window.clearInterval(timer);
     // imageKey intentionally represents the image list; the array may be recreated by context.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imageKey, backgroundAnimationEnabled]);
+  }, [imageKey, backgroundAnimationEnabled, images.length]);
 
   if (images.length === 0) return null;
 
