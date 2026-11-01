@@ -27,7 +27,18 @@ export function ScrollActivityProvider({ children }: { children?: ReactNode }) {
   useEffect(() => {
     let active = false;
     let ticking = false;
-    let timer: number | null = null;
+    let fallbackTimer: number | null = null;
+    const supportsScrollEnd = "onscrollend" in window;
+
+    const stop = () => {
+      if (fallbackTimer !== null) {
+        window.clearTimeout(fallbackTimer);
+        fallbackTimer = null;
+      }
+      if (!active) return;
+      active = false;
+      publish(false);
+    };
 
     const start = () => {
       ticking = false;
@@ -35,13 +46,13 @@ export function ScrollActivityProvider({ children }: { children?: ReactNode }) {
         active = true;
         publish(true);
       }
-      if (timer !== null) window.clearTimeout(timer);
-      timer = window.setTimeout(() => {
-        timer = null;
-        if (!active) return;
-        active = false;
-        publish(false);
-      }, 500);
+      if (fallbackTimer !== null) {
+        window.clearTimeout(fallbackTimer);
+        fallbackTimer = null;
+      }
+      if (!supportsScrollEnd) {
+        fallbackTimer = window.setTimeout(stop, 60);
+      }
     };
 
     const onScroll = () => {
@@ -51,9 +62,11 @@ export function ScrollActivityProvider({ children }: { children?: ReactNode }) {
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("scrollend", stop);
     return () => {
       window.removeEventListener("scroll", onScroll);
-      if (timer !== null) window.clearTimeout(timer);
+      window.removeEventListener("scrollend", stop);
+      if (fallbackTimer !== null) window.clearTimeout(fallbackTimer);
       if (active) publish(false);
     };
   }, []);
