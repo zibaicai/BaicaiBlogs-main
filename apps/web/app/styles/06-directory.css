@@ -386,7 +386,11 @@ html:not(.dark) .hv-empty {
 .hv-metric-note {
   font-size: var(--type-meta);
 }
-.hv-post-main span,
+.hv-post-main span {
+  color: var(--hv-muted);
+  font-weight: 400;
+}
+
 .hv-empty {
   color: var(--hv-muted);
   font-weight: 600;

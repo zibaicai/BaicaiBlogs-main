@@ -823,7 +823,7 @@ body.tool-pet-off .whale-pet {
   overflow: hidden;
   color: var(--hv-muted);
   font-size: var(--type-meta);
-  font-weight: 600;
+  font-weight: 400;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
