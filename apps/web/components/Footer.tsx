@@ -13,6 +13,7 @@ export default function Footer() {
         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
           <span>© {year} {siteInfo.authorName}</span>
           <Link href="/about" className="hover:text-indigo-500 transition-colors">关于</Link>
+          <Link href="/rooms" className="hover:text-indigo-500 transition-colors">小屋</Link>
           <Link href="/friends" className="hover:text-indigo-500 transition-colors">友链</Link>
           <Link href="/moments" className="hover:text-indigo-500 transition-colors">说说</Link>
           <Link href="/terms" className="hover:text-indigo-500 transition-colors">用户协议</Link>

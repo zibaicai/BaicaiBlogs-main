@@ -13,7 +13,6 @@ import NavSearch from "./NavSearch";
 
 const NAV_LINKS = [
   { name: "首页", href: "/" },
-  { name: "小屋", href: "/rooms" },
   { name: "笔记", href: "/posts" },
   { name: "文章", href: "/articles" },
   { name: "项目", href: "/projects" },
@@ -25,6 +24,11 @@ const NAV_LINKS = [
   { name: "友链", href: "/friends" },
   { name: "关于", href: "/about" },
 ];
+
+function truncateRoomName(value: string, max = 4): string {
+  const characters = Array.from(value);
+  return characters.length > max ? characters.slice(0, max).join("") : value;
+}
 
 export default function Navbar() {
   const [showNav, setShowNav] = useState(true);
@@ -38,6 +42,7 @@ export default function Navbar() {
   const { user } = useAuth();
   const communityName = siteInfo?.navAfter || siteInfo?.title || "云端小屋";
   const leftName = roomName || myRoomName || siteInfo?.authorName || "YeLuo";
+  const leftRoomName = truncateRoomName(leftName, 4);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -106,7 +111,7 @@ export default function Navbar() {
           >
             {leftName ? (
               <>
-                {leftName}
+                <span title={leftName}>{leftRoomName}</span>
                 <span className="text-indigo-500 mx-1">/</span>
                 {communityName}
               </>

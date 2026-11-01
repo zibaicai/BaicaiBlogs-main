@@ -34,13 +34,21 @@ export default function UserMenu() {
   return (
     <div className="relative" ref={ref}>
       <button
+        type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 px-2 py-1.5 rounded-xl bg-white/50 dark:bg-slate-800/60 border border-white/40 dark:border-white/10 text-xs font-bold text-slate-700 dark:text-slate-200"
+        aria-label={`打开 ${user.nickname || user.username} 的用户菜单`}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        title={user.nickname || user.username}
+        className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-gradient-to-tr from-[var(--ui-accent)] to-[var(--ui-accent-hover)] text-[var(--ui-accent-contrast)] ring-1 ring-white/30 transition-shadow hover:ring-indigo-400/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
       >
-        <span className="w-7 h-7 rounded-full bg-gradient-to-tr from-[var(--ui-accent)] to-[var(--ui-accent-hover)] text-[var(--ui-accent-contrast)] flex items-center justify-center">
-          {user.nickname?.slice(0, 1) || <UserIcon size={13} />}
-        </span>
-        <span className="hidden md:inline max-w-[90px] truncate">{user.nickname}</span>
+        {user.avatar ? (
+          <img src={user.avatar} alt="" className="h-full w-full object-cover" />
+        ) : (
+          <span className="text-xs font-black">
+            {user.nickname?.slice(0, 1) || <UserIcon size={14} />}
+          </span>
+        )}
       </button>
 
       {open && (
