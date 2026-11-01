@@ -70,29 +70,50 @@ export function GlassSettingsProvider({ children }: { children: ReactNode }) {
     }
 
     let paused = false;
-    let timer: number | null = null;
+    let frame = 0;
+    let lastY = window.scrollY;
+    let lastActivity = performance.now();
     const root = document.documentElement;
 
     const resume = () => {
-      timer = null;
+      if (frame) {
+        cancelAnimationFrame(frame);
+        frame = 0;
+      }
       if (!paused) return;
       paused = false;
       delete root.dataset.glassScrollPaused;
     };
 
+    const watch = () => {
+      frame = 0;
+      if (!paused) return;
+      const y = window.scrollY;
+      if (y !== lastY) {
+        lastY = y;
+        lastActivity = performance.now();
+      }
+      if (performance.now() - lastActivity >= 300) {
+        resume();
+        return;
+      }
+      frame = requestAnimationFrame(watch);
+    };
+
     const onScroll = () => {
+      lastActivity = performance.now();
       if (!paused) {
         paused = true;
+        lastY = window.scrollY;
         root.dataset.glassScrollPaused = "true";
+        frame = requestAnimationFrame(watch);
       }
-      if (timer !== null) window.clearTimeout(timer);
-      timer = window.setTimeout(resume, 300);
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", onScroll);
-      if (timer !== null) window.clearTimeout(timer);
+      if (frame) cancelAnimationFrame(frame);
       delete root.dataset.glassScrollPaused;
     };
   }, [settings.scrollPauseMode]);
