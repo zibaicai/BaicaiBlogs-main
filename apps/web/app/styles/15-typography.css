@@ -73,7 +73,8 @@
   font-weight: 700;
   line-height: 1.2;
   letter-spacing: -0.025em;
-  text-wrap: balance;
+  text-wrap: pretty;
+  width: 100%;
 }
 .subtitle {
   font-size: var(--type-subtitle);
