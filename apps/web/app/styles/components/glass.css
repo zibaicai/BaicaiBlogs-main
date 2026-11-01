@@ -105,10 +105,20 @@ html.dark .glass {
 }
 
 /* Blur must never be animated: a transition-all would turn pause/restore into
-   a visible multi-frame blur interpolation and defeat the optimization. */
+   a visible multi-frame blur interpolation and defeat the optimization.
+   Keep Tailwind 4's individual transform properties animatable. */
 .glass,
 .glass-blur {
-  transition-property: color, background-color, border-color, box-shadow, opacity, transform !important;
+  transition-property:
+    color,
+    background-color,
+    border-color,
+    box-shadow,
+    opacity,
+    transform,
+    translate,
+    scale,
+    rotate !important;
 }
 
 [data-glass][data-glass-disabled="true"],
