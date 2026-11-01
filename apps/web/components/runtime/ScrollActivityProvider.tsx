@@ -25,6 +25,10 @@ function publish(scrolling: boolean) {
  */
 export function ScrollActivityProvider({ children }: { children?: ReactNode }) {
   useEffect(() => {
+    // Temporary A/B switch: compare the current build with and without
+    // scroll-driven animation pausing before changing the permanent policy.
+    if (new URLSearchParams(window.location.search).has("no-bg-pause")) return;
+
     let active = false;
     let ticking = false;
     let fallbackTimer: number | null = null;
