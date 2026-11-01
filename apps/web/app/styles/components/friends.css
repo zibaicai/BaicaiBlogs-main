@@ -3,22 +3,13 @@
     min-width: 0;
   }
 
-  @media (min-width: 1280px) {
-    .directory-shell.friends-page {
-      width: auto;
-      max-width: none;
-      margin-inline: 32px;
-      padding-right: 296px;
-      padding-left: 0;
-    }
-  }
-
-  /* Desktop rail: align with the whale's right-side resting position. */
+  /* The rail must sit outside the normal 1180px content shell. Below this
+     width the shell would be overlapped, so the floating launcher takes over. */
   .friend-link-rail {
     display: none;
   }
 
-  @media (min-width: 1280px) {
+  @media (min-width: 1760px) {
     .friend-link-rail {
       position: fixed;
       top: 80px;
