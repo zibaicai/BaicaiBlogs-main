@@ -68,6 +68,7 @@ html.dark .glass {
 html[data-scrolling="true"] .glass[data-glass-scroll="suspend"] {
   background: var(--glass-bg-scroll);
   backdrop-filter: none;
+  transition: none !important;
 }
 
 html.dark[data-scrolling="true"] .glass[data-glass-scroll="suspend"] {
