@@ -173,6 +173,7 @@ export default function CommentSection({
   return (
     <MessageListShell
       className="comment-section"
+      glass="card"
       header={
         <div className="comment-head">
           <div>

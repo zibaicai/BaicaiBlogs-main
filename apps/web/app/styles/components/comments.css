@@ -3,13 +3,6 @@
 .comment-section {
   margin: 48px auto 0;
   padding: 22px;
-  /* 只要上下边框不要左右 */
-  border-top: 1px solid var(--ui-border);  
-  border-bottom: 1px solid var(--ui-border);  
-
-  border-radius: var(--radius-panel);
-  background: color-mix(in srgb, var(--ui-secondary-bg) 88%, transparent);
-  backdrop-filter: blur(18px);
 }
 .comment-head {
   display: flex;

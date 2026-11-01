@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Glass is a visual primitive, not a card layout.
  * Consumers opt in with <GlassSurface /> or the glassProps() helper.
  * All blur, background, border, shadow and scroll fallback values live here.
@@ -55,6 +55,7 @@ html.dark .glass {
   --glass-bg-dark: rgba(15, 23, 42, 0.6);
   --glass-blur: 24px;
   --glass-radius: 0;
+  border-width: 0 0 1px;
 }
 
 .glass--subtle {

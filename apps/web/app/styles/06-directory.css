@@ -11,11 +11,7 @@
   }
 
   .directory-card {
-    @apply relative flex h-full flex-col overflow-hidden rounded-3xl border border-white/50 bg-white/60 shadow-lg backdrop-blur-xl transition-all duration-500;
-  }
-
-  .dark .directory-card {
-    @apply border-slate-700/50 bg-slate-800/70;
+    @apply relative flex h-full flex-col overflow-hidden transition-all duration-500;
   }
 
   .directory-card:hover {
@@ -457,11 +453,6 @@ html:not(.dark) .hv-empty {
   grid-template-columns: 182px minmax(0, 1fr);
   min-height: 154px;
   overflow: hidden;
-  border: 1px solid var(--hv-panel-border);
-  border-radius: 1.25rem;
-  background: var(--hv-panel);
-  box-shadow: 0 14px 40px rgba(24, 38, 55, 0.08);
-  backdrop-filter: blur(24px) saturate(135%);
   transition: border-color 0.25s ease, transform 0.25s ease, background 0.25s ease;
 }
 .archive-card:hover {
@@ -1542,12 +1533,9 @@ html:not(.dark) .hv-empty {
   min-width: 0;
   flex-direction: column;
   padding: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: var(--radius-panel);
-  background: rgba(255, 255, 255, 0.56);
+  border: 0;
+  background: transparent;
   color: var(--ui-text);
-  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
-  backdrop-filter: blur(20px);
   transition: border-color 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
 }
 
@@ -1557,8 +1545,8 @@ html:not(.dark) .hv-empty {
 }
 
 .dark .archive-profile-card {
-  border-color: rgba(255, 255, 255, 0.1);
-  background: rgba(15, 23, 42, 0.5);
+  border-color: transparent;
+  background: transparent;
 }
 
 .archive-profile-head {

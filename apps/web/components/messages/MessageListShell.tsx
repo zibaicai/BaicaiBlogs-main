@@ -1,6 +1,7 @@
 "use client";
 
 import { Children, type ReactNode } from "react";
+import { glassProps, type GlassVariant } from "../ui/glass/GlassSurface";
 
 export type MessageSurface = "plain" | "panel" | "ghost";
 export type MessageDensity = "compact" | "comfortable";
@@ -23,6 +24,7 @@ export interface MessageListShellProps {
   loading?: ReactNode;
 
   surface?: MessageSurface;
+  glass?: GlassVariant;
   density?: MessageDensity;
   divider?: boolean;
   className?: string;
@@ -51,19 +53,22 @@ export default function MessageListShell({
   empty,
   loading,
   surface = "plain",
+  glass,
   density = "compact",
   divider = true,
   className = "",
   listClassName = "",
 }: MessageListShellProps) {
   const hasChildren = Children.count(children) > 0;
+  const classNameValue = `message-list message-list--${surface} message-list--${density} ${
+    divider ? "message-list--divided" : ""
+  } ${className}`;
+  const sectionProps = glass
+    ? glassProps(glass, "suspend", classNameValue)
+    : { className: classNameValue };
 
   return (
-    <section
-      className={`message-list message-list--${surface} message-list--${density} ${
-        divider ? "message-list--divided" : ""
-      } ${className}`}
-    >
+    <section {...sectionProps}>
       {header ? (
         header
       ) : (

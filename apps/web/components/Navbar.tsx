@@ -8,6 +8,7 @@ import { Menu, X } from "lucide-react";
 import { useSiteConfigContext } from "../context/SiteConfigProvider";
 import { apiClient } from "../lib/api";
 import { useAuth } from "../lib/auth";
+import GlassSurface from "./ui/glass/GlassSurface";
 import UserMenu from "./UserMenu";
 import NavSearch from "./NavSearch";
 
@@ -99,10 +100,13 @@ export default function Navbar() {
 
   return (
     <>
-      <header
-        className={`site-navbar w-full fixed top-0 left-0 right-0 z-[100] transition-all duration-500 border-b ${
+      <GlassSurface
+        as="header"
+        variant="nav"
+        scroll="keep"
+        className={`site-navbar w-full fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${
           showNav ? "translate-y-0" : "-translate-y-full"
-        } bg-white/40 dark:bg-slate-900/50 backdrop-blur-xl border-white/20 dark:border-white/5 shadow-sm`}
+        }`}
       >
         <div className="w-full max-w-[1180px] mx-auto h-16 flex items-center justify-between px-4 sm:px-8 box-border">
           <Link
@@ -186,7 +190,7 @@ export default function Navbar() {
             </motion.nav>
           )}
         </AnimatePresence>
-      </header>
+      </GlassSurface>
     </>
   );
 }
