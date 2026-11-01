@@ -281,6 +281,10 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
 
   return (
     <>
+      <div className="friend-link-inline" aria-label="本站友链">
+        {panel(false, false)}
+      </div>
+
       <div className="friend-link-rail" aria-label="本站友链">
         {panel(false, false)}
       </div>

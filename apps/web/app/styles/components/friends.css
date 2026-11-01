@@ -3,20 +3,23 @@
     min-width: 0;
   }
 
-  /* The rail must sit outside the normal 1180px content shell. Below this
-     width the shell would be overlapped, so the floating launcher takes over. */
+  .friend-link-inline {
+    display: none;
+  }
+
+  /* The rail sits outside the normal 1180px content shell. */
   .friend-link-rail {
     display: none;
   }
 
-  @media (min-width: 1760px) {
+  @media (min-width: 1680px) {
     .friend-link-rail {
       position: fixed;
       top: 80px;
       right: 32px;
       z-index: 30;
       display: block;
-      width: 240px;
+      width: 220px;
     }
 
     .friend-link-rail .friend-link-card {
@@ -260,19 +263,15 @@
   }
 
   @media (max-width: 639px) {
-    .friend-link-fab {
-      top: auto;
-      bottom: calc(96px + env(safe-area-inset-bottom));
-      right: 14px;
-      transform: none;
+    .friend-link-inline {
+      display: block;
+      margin-top: 24px;
     }
 
-    .friend-link-fab:hover {
-      transform: scale(1.05);
-    }
-
-    .friend-link-overlay {
-      background: rgba(2, 6, 23, 0.42);
+    .friend-link-fab,
+    .friend-link-overlay,
+    .friend-link-panel {
+      display: none !important;
     }
   }
 }

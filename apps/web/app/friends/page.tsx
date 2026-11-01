@@ -78,8 +78,8 @@ export default async function FriendsPage() {
             searchPlaceholder="搜索朋友、简介或链接..."
             empty={empty}
           />
-          <FriendGuestbook initialMessages={messages} />
           <FriendApplySection siteInfo={siteInfo} />
+          <FriendGuestbook initialMessages={messages} />
         </main>
       </PageTransition>
     </div>
