@@ -106,20 +106,24 @@ html.dark .glass {
 
 html[data-scrolling="true"] .glass[data-glass-scroll="suspend"] {
   backdrop-filter: none;
+  transition: none !important;
 }
 
 [data-glass][data-glass-disabled="true"],
 .glass-blur[data-glass-disabled="true"] {
   backdrop-filter: none;
+  transition: none !important;
 }
 
 html[data-glass-content="off"] .glass,
 html[data-glass-content="off"] .glass-blur:not([data-glass-scope="background"]) {
   backdrop-filter: none;
+  transition: none !important;
 }
 
 html[data-glass-background="off"] [data-glass-scope="background"] {
   backdrop-filter: none;
+  transition: none !important;
 }
 
 html[data-visual-mode="plain"] .glass {
@@ -146,6 +150,7 @@ html[data-visual-mode="plain"] .glass {
 
 html[data-scrolling="true"] .glass-blur:not(.glass-blur--keep) {
   backdrop-filter: none;
+  transition: none !important;
 }
 
 html[data-visual-mode="plain"] .glass-blur {
