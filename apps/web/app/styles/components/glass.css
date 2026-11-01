@@ -8,8 +8,6 @@
   --glass-saturate: 140%;
   --glass-bg: rgba(255, 255, 255, 0.56);
   --glass-bg-dark: rgba(15, 23, 42, 0.5);
-  --glass-bg-scroll: rgba(255, 255, 255, 0.92);
-  --glass-bg-scroll-dark: rgba(15, 23, 42, 0.92);
   --glass-border: rgba(255, 255, 255, 0.5);
   --glass-border-dark: rgba(255, 255, 255, 0.1);
   --glass-shadow: 0 16px 44px rgba(15, 23, 42, 0.1);
@@ -66,13 +64,7 @@ html.dark .glass {
 }
 
 html[data-scrolling="true"] .glass[data-glass-scroll="suspend"] {
-  background: var(--glass-bg-scroll);
   backdrop-filter: none;
-  transition: none !important;
-}
-
-html.dark[data-scrolling="true"] .glass[data-glass-scroll="suspend"] {
-  background: var(--glass-bg-scroll-dark);
 }
 
 html[data-visual-mode="plain"] .glass {
