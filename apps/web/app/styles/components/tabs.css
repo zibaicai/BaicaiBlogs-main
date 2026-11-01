@@ -48,4 +48,17 @@
   .ui-tabs--sm .ui-tabs-button {
     padding: 6px 8px;
   }
+
+  .tool-tab-viewport {
+    height: min(46vh, 340px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+  }
+
+  @media (max-width: 640px) {
+    .tool-tab-viewport {
+      height: min(42vh, 300px);
+    }
+  }
 }

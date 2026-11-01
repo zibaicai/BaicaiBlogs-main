@@ -5,11 +5,15 @@
 
   @media (min-width: 1280px) {
     .directory-shell.friends-page {
-      padding-right: 302px;
+      width: auto;
+      max-width: none;
+      margin-inline: 32px;
+      padding-right: 296px;
+      padding-left: 0;
     }
   }
 
-  /* Desktop rail: the panel's right edge is the viewport's right edge. */
+  /* Desktop rail: align with the whale's right-side resting position. */
   .friend-link-rail {
     display: none;
   }
@@ -18,17 +22,15 @@
     .friend-link-rail {
       position: fixed;
       top: 80px;
-      right: 0;
+      right: 32px;
       z-index: 30;
       display: block;
-      width: 278px;
+      width: 240px;
     }
 
     .friend-link-rail .friend-link-card {
       max-height: calc(100vh - 112px);
       overflow-y: auto;
-      border-radius: 22px 0 0 22px;
-      border-right: 0;
     }
 
     .friend-link-fab,
@@ -102,19 +104,35 @@
     background: color-mix(in srgb, var(--ui-secondary-bg) 60%, transparent);
   }
 
-  .friend-link-pre {
-    max-height: 180px;
-    overflow: auto;
-    margin: 12px 0 0;
-    padding: 10px;
-    border-radius: 12px;
-    color: var(--ui-text-muted);
-    background: color-mix(in srgb, var(--ui-secondary-bg) 72%, transparent);
-    font-family: var(--font-mono);
+  .friend-link-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-top: 12px;
+  }
+
+  .friend-link-lines p {
+    display: grid;
+    min-width: 0;
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: 8px;
+    margin: 0;
+    color: var(--ui-text-faint);
     font-size: var(--type-meta);
-    line-height: 1.55;
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
+    line-height: 1.5;
+  }
+
+  .friend-link-lines span {
+    color: var(--ui-text-faint);
+  }
+
+  .friend-link-lines b {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--ui-text-muted);
+    font-weight: 400;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .friend-link-summary {

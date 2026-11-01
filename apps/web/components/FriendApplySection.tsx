@@ -235,7 +235,12 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
           {siteName} · {siteUrl.replace(/^https?:\/\//, "")}
         </p>
       ) : (
-        <pre className="friend-link-pre">{copyAll}</pre>
+        <div className="friend-link-lines">
+          <p><span>名称</span><b title={siteName}>{siteName}</b></p>
+          <p><span>网址</span><b title={siteUrl}>{siteUrl}</b></p>
+          <p><span>头像</span><b title={siteAvatar}>{siteAvatar}</b></p>
+          <p><span>简介</span><b title={siteInfo.bio || ""}>{siteInfo.bio || ""}</b></p>
+        </div>
       )}
 
       <button type="button" onClick={openApplication} className="friend-link-apply">

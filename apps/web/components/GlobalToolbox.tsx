@@ -159,7 +159,7 @@ export default function GlobalToolbox() {
               />
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto p-2">
+            <div className="tool-tab-viewport min-h-0 p-2">
               {tab === "appearance" && (
                 <div
                   role="tabpanel"
