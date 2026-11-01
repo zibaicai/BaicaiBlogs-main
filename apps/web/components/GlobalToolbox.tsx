@@ -60,7 +60,7 @@ export default function GlobalToolbox() {
   const [themeOpen, setThemeOpen] = useState(false);
   const pathname = usePathname();
   const { currentSong, isPlaying, togglePlay } = useMusic();
-  const { preset, setPreset } = useTheme();
+  const { preset, setPreset, isDark, toggleTheme } = useTheme();
   const {
     backgroundEnabled,
     contentEnabled,
@@ -206,6 +206,34 @@ export default function GlobalToolbox() {
                       <span
                         className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-all ${
                           !visualEffects ? "left-6" : "left-1"
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  <div className="mt-1 flex items-center justify-between gap-4 border-t border-slate-200/70 px-3 py-3 dark:border-white/10">
+                    <div className="flex min-w-0 items-center gap-2.5">
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
+                        <AppIcon name="sparkles" size={15} />
+                      </span>
+                      <div className="min-w-0">
+                        <div className="text-sm font-bold text-slate-800 dark:text-slate-100">{isDark ? "夜间模式" : "日间模式"}</div>
+                        <div className="mt-0.5 text-meta text-slate-400">全局切换明暗主题</div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={isDark}
+                      aria-label={`${isDark ? "夜间模式" : "日间模式"}切换`}
+                      onClick={toggleTheme}
+                      className={`tool-switch relative h-6 w-11 shrink-0 rounded-full transition-colors ${
+                        isDark ? "bg-[var(--ui-accent)]" : "bg-slate-300 dark:bg-slate-700"
+                      }`}
+                    >
+                      <span
+                        className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-all ${
+                          isDark ? "left-6" : "left-1"
                         }`}
                       />
                     </button>
