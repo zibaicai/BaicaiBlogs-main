@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Lock } from "lucide-react";
 import { formatDate } from "../lib/api";
+import { glassProps } from "./ui/glass/GlassSurface";
 
 export interface MomentStory {
   id?: number;
@@ -63,8 +64,8 @@ export default function MomentCard({
               </a>
             ))}
           </div>
-          {total > 4 && <span className="moment-more moment-more-desktop">+{total - 4}</span>}
-          {total > 9 && <span className="moment-more moment-more-mobile">+{total - 9}</span>}
+          {total > 4 && <span {...glassProps("badge", "suspend", "moment-more moment-more-desktop")}>+{total - 4}</span>}
+          {total > 9 && <span {...glassProps("badge", "suspend", "moment-more moment-more-mobile")}>+{total - 9}</span>}
         </div>
       )}
 

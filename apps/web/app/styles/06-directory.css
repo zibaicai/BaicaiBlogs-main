@@ -368,7 +368,6 @@ html:not(.dark) .hv-empty {
   border-radius: 999px;
   padding: 5px 10px;
   background: var(--hv-panel);
-  backdrop-filter: blur(14px);
 }
 .hv-toolbar-meta {
   font-size: var(--type-meta);
@@ -736,7 +735,6 @@ html:not(.dark) .hv-empty {
   color: #fff;
   font-size: var(--type-meta);
   font-weight: 800;
-  backdrop-filter: blur(10px);
 }
 .moment-foot {
   margin-top: 14px;
@@ -1195,7 +1193,6 @@ html:not(.dark) .hv-empty {
   font-size: var(--type-meta);
   font-weight: 800;
   letter-spacing: 0.08em;
-  backdrop-filter: blur(8px);
 }
 .cover-grid .directory-card-title {
   display: -webkit-box;

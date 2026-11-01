@@ -69,7 +69,6 @@
   font-size: var(--type-meta);
   font-weight: 800;
   letter-spacing: .04em;
-  backdrop-filter: blur(8px);
 }
 .directory-card-footnote {
   margin-top: 6px;

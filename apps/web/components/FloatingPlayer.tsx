@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
+import { glassProps } from "./ui/glass/GlassSurface";
 import { Music2, VolumeX } from "lucide-react";
 import { useMusic } from "./MusicProvider";
 
@@ -57,7 +58,7 @@ export default function FloatingPlayer() {
           </>
         )}
         {isPlaying ? <Music2 size={19} /> : <VolumeX size={19} />}
-        <span className="music-orb-tip">{currentSong.title}</span>
+        <span {...glassProps("control", "keep", "music-orb-tip")}>{currentSong.title}</span>
       </motion.button>
     </div>
   );

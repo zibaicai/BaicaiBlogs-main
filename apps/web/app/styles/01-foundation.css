@@ -276,7 +276,6 @@
 
   [class*="backdrop-blur-"] {
     will-change: backdrop-filter;
-    -webkit-backdrop-filter: blur(12px);
   }
 
   .group:hover img {
@@ -300,7 +299,6 @@ input[type=range]::-webkit-slider-thumb {
 
   @-moz-document url-prefix() {
     [class*="backdrop-blur-md"] {
-      backdrop-filter: blur(8px) !important;
     }
   }
 

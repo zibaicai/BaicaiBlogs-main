@@ -128,7 +128,6 @@
     color: rgba(255, 255, 255, 0.84);
     background: rgba(2, 6, 23, 0.42);
     font-size: var(--type-caption);
-    backdrop-filter: blur(10px);
   }
 
   .album-meta-dot {
