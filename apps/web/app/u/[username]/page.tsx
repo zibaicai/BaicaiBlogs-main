@@ -47,7 +47,7 @@ export default async function RoomPage({ params }: { params: Promise<{ username:
           </section>
 
           <div className="hv-layout">
-            <GlassSurface as="section" variant="panel" className="hv-panel hv-posts">
+            <GlassSurface as="section" variant="panel" glassId="room.posts" className="hv-panel hv-posts">
               <div className="hv-panel-head">
                 <h2>最近写下</h2>
                 <Link href="/posts" className="hv-text-link">全部笔记 <span>→</span></Link>
@@ -71,7 +71,7 @@ export default async function RoomPage({ params }: { params: Promise<{ username:
             </GlassSurface>
 
             <aside className="hv-side">
-              <GlassSurface as="section" variant="panel" className="hv-panel hv-moments">
+              <GlassSurface as="section" variant="panel" glassId="room.moments" className="hv-panel hv-moments">
                 <div className="hv-panel-head">
                   <h2>最近的说说</h2>
                   <Link href="/moments" className="hv-text-link">全部说说 <span>→</span></Link>

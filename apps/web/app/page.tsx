@@ -65,7 +65,7 @@ export default async function Home() {
           </section>
 
           <div className="hv-layout">
-            <GlassSurface as="section" variant="panel" className="hv-panel hv-posts">
+            <GlassSurface as="section" variant="panel" glassId="home.posts" className="hv-panel hv-posts">
               <div className="hv-panel-head">
                 <h2>最近写下</h2>
                 <Link href="/posts" className="hv-text-link">
@@ -95,7 +95,7 @@ export default async function Home() {
             </GlassSurface>
 
             <aside className="hv-side">
-              <GlassSurface as="section" variant="panel" className="hv-panel hv-moments">
+              <GlassSurface as="section" variant="panel" glassId="home.moments" className="hv-panel hv-moments">
                 <div className="hv-panel-head">
                   <h2>最近的说说</h2>
                   <Link href="/moments" className="hv-text-link">

@@ -73,7 +73,7 @@ export default function SiteDashboard() {
     : "等待健康检查";
 
   return (
-    <GlassSurface as="section" variant="panel" className="hv-panel hv-metrics" aria-label="小屋仪表盘">
+    <GlassSurface as="section" variant="panel" glassId="home.dashboard" className="hv-panel hv-metrics" aria-label="小屋仪表盘">
       <div className="hv-metric">
         <div className="hv-metric-icon"><Clock3 size={15} /></div>
         <span className="hv-metric-label">RUNNING</span>

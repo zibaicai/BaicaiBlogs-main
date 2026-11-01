@@ -102,7 +102,7 @@ export default function ArticleToc() {
   };
 
   return (
-    <GlassSurface as="div" variant="card" className="article-toc">
+    <GlassSurface as="div" variant="card" glassId="article.toc" className="article-toc">
       <div className="article-toc-heading">目录</div>
       <div className="article-toc-list">
         {groups.map((group) => {

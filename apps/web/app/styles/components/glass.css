@@ -108,6 +108,20 @@ html[data-scrolling="true"] .glass[data-glass-scroll="suspend"] {
   backdrop-filter: none;
 }
 
+[data-glass][data-glass-disabled="true"],
+.glass-blur[data-glass-disabled="true"] {
+  backdrop-filter: none;
+}
+
+html[data-glass-content="off"] .glass,
+html[data-glass-content="off"] .glass-blur:not([data-glass-scope="background"]) {
+  backdrop-filter: none;
+}
+
+html[data-glass-background="off"] [data-glass-scope="background"] {
+  backdrop-filter: none;
+}
+
 html[data-visual-mode="plain"] .glass {
   background: var(--ui-surface, #ffffff);
   backdrop-filter: none;

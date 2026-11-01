@@ -30,7 +30,11 @@ export default function ThemeBackdrop() {
   return (
     <div className="site-backdrop fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
       {showSlider && <BackgroundSlider images={images} />}
-      <div className="absolute inset-0 z-[-9] bg-white/30 dark:bg-slate-900/40 glass-blur glass-blur--md transition-colors duration-1000" />
+      <div
+        data-glass-id="background.blur"
+        data-glass-scope="background"
+        className="absolute inset-0 z-[-9] bg-white/30 dark:bg-slate-900/40 glass-blur glass-blur--md transition-colors duration-1000"
+      />
       <div
         className="site-gradient absolute inset-0 z-[-8] opacity-40 dark:opacity-20 mix-blend-multiply dark:mix-blend-screen transition-opacity duration-1000 transform-gpu"
         style={{
