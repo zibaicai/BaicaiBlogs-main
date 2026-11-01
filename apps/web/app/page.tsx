@@ -1,4 +1,5 @@
 import Link from "next/link";
+import GlassSurface from "../components/ui/glass/GlassSurface";
 
 import Navbar from "../components/Navbar";
 import PageTransition from "../components/PageTransition";
@@ -64,7 +65,7 @@ export default async function Home() {
           </section>
 
           <div className="hv-layout">
-            <section className="hv-panel hv-posts">
+            <GlassSurface as="section" variant="panel" className="hv-panel hv-posts">
               <div className="hv-panel-head">
                 <h2>最近写下</h2>
                 <Link href="/posts" className="hv-text-link">
@@ -91,10 +92,10 @@ export default async function Home() {
               {recentPosts.length === 0 && (
                 <p className="hv-empty">还没有写下第一篇。</p>
               )}
-            </section>
+            </GlassSurface>
 
             <aside className="hv-side">
-              <section className="hv-panel hv-moments">
+              <GlassSurface as="section" variant="panel" className="hv-panel hv-moments">
                 <div className="hv-panel-head">
                   <h2>最近的说说</h2>
                   <Link href="/moments" className="hv-text-link">
@@ -116,7 +117,7 @@ export default async function Home() {
                 </div>
 
                 <HomeThemeToggle updatedAt={recentPosts[0]?.formattedDate} />
-              </section>
+              </GlassSurface>
             </aside>
           </div>
 
