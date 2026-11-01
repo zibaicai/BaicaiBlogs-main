@@ -124,30 +124,25 @@ html.dark .glass {
 [data-glass][data-glass-disabled="true"],
 .glass-blur[data-glass-disabled="true"] {
   backdrop-filter: none;
-  transition: none !important;
 }
 
 html[data-glass-content="off"] .glass,
 html[data-glass-content="off"] .glass-blur:not([data-glass-scope="background"]) {
   backdrop-filter: none;
-  transition: none !important;
 }
 
 html[data-glass-background="off"] [data-glass-scope="background"] {
   backdrop-filter: none;
-  transition: none !important;
 }
 
 html[data-glass-pause-mode="content"][data-glass-scroll-paused="true"] .glass,
 html[data-glass-pause-mode="content"][data-glass-scroll-paused="true"] .glass-blur:not([data-glass-scope="background"]) {
   backdrop-filter: none;
-  transition: none !important;
 }
 
 html[data-glass-pause-mode="all"][data-glass-scroll-paused="true"] .glass,
 html[data-glass-pause-mode="all"][data-glass-scroll-paused="true"] .glass-blur {
   backdrop-filter: none;
-  transition: none !important;
 }
 
 html[data-visual-mode="plain"] .glass {
