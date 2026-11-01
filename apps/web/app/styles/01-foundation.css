@@ -293,8 +293,6 @@ input[type=range]::-webkit-slider-thumb {
     min-height: 100%;
     margin: 0;
     padding: 0;
-    overscroll-behavior: none;
-    overscroll-behavior-y: none;
     overflow-x: hidden; /* 閼颁焦绁荤憴鍫濇珤閸忔粌绨?*/
     overflow-x: clip; /* 閺嶈涓嶆禍姘剼缁辩姾鍨楅崗銉ヮ嚤閼峰娈?1px 濡亜鎮滃┃銏犲毉閿涙矞lip 娑撳秳楠囬悽鐔哥泊閸斻劌顔愰崳顭掔礉娑撳秴濂栭崫?fixed/sticky */
   }
