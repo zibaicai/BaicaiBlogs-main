@@ -43,12 +43,15 @@ function readStoredSettings(): typeof DEFAULT_SETTINGS {
 
 export function GlassSettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     setSettings(readStoredSettings());
+    setLoaded(true);
   }, []);
 
   useEffect(() => {
+    if (!loaded) return;
     const root = document.documentElement;
     if (settings.backgroundEnabled) delete root.dataset.glassBackground;
     else root.dataset.glassBackground = "off";
@@ -58,7 +61,7 @@ export function GlassSettingsProvider({ children }: { children: ReactNode }) {
     else root.dataset.glassPauseMode = settings.scrollPauseMode;
 
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-  }, [settings]);
+  }, [settings, loaded]);
 
   useEffect(() => {
     if (settings.scrollPauseMode === "off") {

@@ -104,6 +104,13 @@ html.dark .glass {
   box-shadow: none;
 }
 
+/* Blur must never be animated: a transition-all would turn pause/restore into
+   a visible multi-frame blur interpolation and defeat the optimization. */
+.glass,
+.glass-blur {
+  transition-property: color, background-color, border-color, box-shadow, opacity, transform;
+}
+
 [data-glass][data-glass-disabled="true"],
 .glass-blur[data-glass-disabled="true"] {
   backdrop-filter: none;
