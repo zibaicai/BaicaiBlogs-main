@@ -122,7 +122,6 @@ html[data-visual-mode="plain"] .glass {
 .glass-blur {
   --glass-blur: 8px;
   backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
 }
 
 .glass-blur--sm { --glass-blur: 4px; }
@@ -133,11 +132,9 @@ html[data-visual-mode="plain"] .glass {
 
 html[data-scrolling="true"] .glass-blur:not(.glass-blur--keep) {
   backdrop-filter: none;
-  -webkit-backdrop-filter: none;
 }
 
 html[data-visual-mode="plain"] .glass-blur {
   backdrop-filter: none;
-  -webkit-backdrop-filter: none;
 }
 
