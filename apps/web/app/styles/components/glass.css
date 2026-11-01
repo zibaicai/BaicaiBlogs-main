@@ -1,0 +1,83 @@
+/*
+ * Glass is a visual primitive, not a card layout.
+ * Consumers opt in with <GlassSurface /> or the glassProps() helper.
+ * All blur, background, border, shadow and scroll fallback values live here.
+ */
+.glass {
+  --glass-blur: 24px;
+  --glass-saturate: 140%;
+  --glass-bg: rgba(255, 255, 255, 0.56);
+  --glass-bg-dark: rgba(15, 23, 42, 0.5);
+  --glass-bg-scroll: rgba(255, 255, 255, 0.92);
+  --glass-bg-scroll-dark: rgba(15, 23, 42, 0.92);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-border-dark: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 16px 44px rgba(15, 23, 42, 0.1);
+  --glass-shadow-dark: 0 16px 44px rgba(0, 0, 0, 0.24);
+  --glass-radius: var(--radius-panel, 22px);
+
+  border: 1px solid var(--glass-border);
+  border-radius: var(--glass-radius);
+  background: var(--glass-bg);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+}
+
+html.dark .glass {
+  border-color: var(--glass-border-dark);
+  background: var(--glass-bg-dark);
+  box-shadow: var(--glass-shadow-dark);
+}
+
+.glass--panel {
+  --glass-bg: rgba(255, 255, 255, 0.46);
+  --glass-bg-dark: rgba(8, 15, 26, 0.42);
+  --glass-blur: 30px;
+  --glass-radius: var(--radius-panel, 22px);
+}
+
+.glass--card {
+  --glass-bg: rgba(255, 255, 255, 0.56);
+  --glass-bg-dark: rgba(15, 23, 42, 0.5);
+  --glass-blur: 20px;
+  --glass-radius: var(--radius-panel, 22px);
+}
+
+.glass--popover {
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-bg-dark: rgba(15, 23, 42, 0.9);
+  --glass-blur: 40px;
+  --glass-radius: 24px;
+}
+
+.glass--nav {
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-bg-dark: rgba(15, 23, 42, 0.6);
+  --glass-blur: 24px;
+  --glass-radius: 0;
+}
+
+.glass--subtle {
+  --glass-bg: rgba(255, 255, 255, 0.4);
+  --glass-bg-dark: rgba(15, 23, 42, 0.36);
+  --glass-blur: 10px;
+  --glass-radius: 14px;
+}
+
+html[data-scrolling="true"] .glass[data-glass-scroll="suspend"] {
+  background: var(--glass-bg-scroll);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+html.dark[data-scrolling="true"] .glass[data-glass-scroll="suspend"] {
+  background: var(--glass-bg-scroll-dark);
+}
+
+html[data-visual-mode="plain"] .glass {
+  background: var(--ui-surface, #ffffff);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}

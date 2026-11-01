@@ -1,4 +1,5 @@
 import Link from "next/link";
+import GlassSurface from "./ui/glass/GlassSurface";
 import type { ReactNode } from "react";
 import { ResourceTitle, type ResourceTitleVariant } from "./ui/Typography";
 import { OptimizedImage } from "./ui/OptimizedImage";
@@ -86,15 +87,15 @@ export default function ArchiveItemCard({
     const profileClassName = "archive-profile-card group";
     if (external) {
       return (
-        <a href={href} target="_blank" rel="noopener noreferrer" className={profileClassName}>
+        <GlassSurface as="a" variant="card" href={href} target="_blank" rel="noopener noreferrer" className={profileClassName}>
           {body}
-        </a>
+        </GlassSurface>
       );
     }
     return (
-      <Link href={href} className={profileClassName}>
+      <GlassSurface as={Link} variant="card" href={href} className={profileClassName}>
         {body}
-      </Link>
+      </GlassSurface>
     );
   }
 
@@ -156,11 +157,15 @@ export default function ArchiveItemCard({
 
   if (external) {
     return (
-      <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
+      <GlassSurface as="a" variant="card" href={href} target="_blank" rel="noopener noreferrer" className={className}>
         {content}
-      </a>
+      </GlassSurface>
     );
   }
 
-  return <Link href={href} className={className}>{content}</Link>;
+  return (
+    <GlassSurface as={Link} variant="card" href={href} className={className}>
+      {content}
+    </GlassSurface>
+  );
 }

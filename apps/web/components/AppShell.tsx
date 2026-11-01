@@ -16,6 +16,7 @@ import ThemeBackdrop from "./ThemeBackdrop";
 import Footer from "./Footer";
 import GlobalToolbox from "./GlobalToolbox";
 import DeferredEffects from "./DeferredEffects";
+import { ScrollActivityProvider } from "./runtime/ScrollActivityProvider";
 
 interface AppShellProps {
   config: any;
@@ -37,6 +38,7 @@ export default function AppShell({ config, children }: AppShellProps) {
               <SplashScreen />
 
               <MusicProvider>
+                <ScrollActivityProvider>
                 <div id="app-mount-root" className="flex flex-1 flex-col transition-opacity duration-1000">
                   <ThemeBackdrop />
 
@@ -81,6 +83,7 @@ export default function AppShell({ config, children }: AppShellProps) {
                     `,
                   }}
                 />
+                </ScrollActivityProvider>
               </MusicProvider>
             </ToastProvider>
             </FeedbackProvider>

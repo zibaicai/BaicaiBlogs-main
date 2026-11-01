@@ -13,6 +13,7 @@ import {
   parseFriendLinkText,
 } from "../lib/friend-link";
 import { useFriendsVerification } from "./friends/FriendsVerificationProvider";
+import GlassSurface from "./ui/glass/GlassSurface";
 
 type Application = { id: number; name: string; url: string; avatar?: string; description?: string; contact?: string; status: string; bound?: boolean };
 
@@ -184,7 +185,7 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
   };
 
   const panel = (compact: boolean, withClose: boolean) => (
-    <div className={`friend-link-card ${compact ? "friend-link-card--compact" : ""}`}>
+    <GlassSurface as="div" variant="card" className={`friend-link-card ${compact ? "friend-link-card--compact" : ""}`}>
       <div className="friend-link-card-head">
         <h2>本站友链</h2>
         <div className="friend-link-card-actions">
@@ -253,7 +254,7 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
           )}
         </div>
       )}
-    </div>
+    </GlassSurface>
   );
 
   return (

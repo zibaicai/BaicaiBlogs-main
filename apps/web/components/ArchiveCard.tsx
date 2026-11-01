@@ -1,4 +1,5 @@
 import Link from "next/link";
+import GlassSurface from "./ui/glass/GlassSurface";
 import type { ReactNode } from "react";
 import { ResourceTitle, type ResourceTitleVariant } from "./ui/Typography";
 import { OptimizedImage } from "./ui/OptimizedImage";
@@ -64,15 +65,15 @@ export default function ArchiveCard({
 
   if (external) {
     return (
-      <a href={href} target="_blank" rel="noopener noreferrer" className="archive-card group">
+      <GlassSurface as="a" variant="card" href={href} target="_blank" rel="noopener noreferrer" className="archive-card group">
         {content}
-      </a>
+      </GlassSurface>
     );
   }
 
   return (
-    <Link href={href} className="archive-card group">
+    <GlassSurface as={Link} variant="card" href={href} className="archive-card group">
       {content}
-    </Link>
+    </GlassSurface>
   );
 }

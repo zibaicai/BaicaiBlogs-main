@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Activity, Clock3, Eye, HeartPulse, Users } from "lucide-react";
+import GlassSurface from "./ui/glass/GlassSurface";
 
 interface DashboardData {
   uptime: { startAt: string; days: number; hours: number };
@@ -72,7 +73,7 @@ export default function SiteDashboard() {
     : "等待健康检查";
 
   return (
-    <section className="hv-panel hv-metrics" aria-label="小屋仪表盘">
+    <GlassSurface as="section" variant="panel" className="hv-panel hv-metrics" aria-label="小屋仪表盘">
       <div className="hv-metric">
         <div className="hv-metric-icon"><Clock3 size={15} /></div>
         <span className="hv-metric-label">RUNNING</span>
@@ -112,6 +113,6 @@ export default function SiteDashboard() {
       </div>
 
       <span className="hv-metrics-refresh"><Activity size={10} /> 每分钟刷新</span>
-    </section>
+    </GlassSurface>
   );
 }

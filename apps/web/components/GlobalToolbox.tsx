@@ -8,6 +8,7 @@ import { useMusic } from "./MusicProvider";
 import { useTheme } from "./ThemeProvider";
 import ThemeStudio from "./ThemeStudio";
 import Tabs, { type TabItem } from "./ui/Tabs";
+import { glassProps } from "./ui/glass/GlassSurface";
 
 type ToolboxTab = "appearance" | "atmosphere" | "music";
 
@@ -127,11 +128,11 @@ export default function GlobalToolbox() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
+            {...glassProps("popover", "suspend", "tool-directory mb-1 flex max-h-[min(78vh,560px)] w-[min(320px,calc(100vw-2rem))] flex-col overflow-hidden")}
             initial={{ opacity: 0, y: 16, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.96 }}
             transition={{ duration: 0.22, ease: "easeOut" }}
-            className="tool-directory mb-1 flex max-h-[min(78vh,560px)] w-[min(320px,calc(100vw-2rem))] flex-col overflow-hidden rounded-3xl border border-white/60 bg-white/90 shadow-2xl backdrop-blur-2xl dark:border-white/10 dark:bg-slate-900/95"
           >
             <div className="flex items-start justify-between border-b border-slate-200/70 px-5 py-4 dark:border-white/10">
               <div>

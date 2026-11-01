@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import GlassSurface from "./ui/glass/GlassSurface";
 import { ChevronDown } from "lucide-react";
 
 type Heading = {
@@ -101,7 +102,7 @@ export default function ArticleToc() {
   };
 
   return (
-    <div className="article-toc">
+    <GlassSurface as="div" variant="card" className="article-toc">
       <div className="article-toc-heading">目录</div>
       <div className="article-toc-list">
         {groups.map((group) => {
@@ -137,6 +138,6 @@ export default function ArticleToc() {
           );
         })}
       </div>
-    </div>
+    </GlassSurface>
   );
 }
