@@ -28,7 +28,6 @@ export function ScrollActivityProvider({ children }: { children?: ReactNode }) {
     let active = false;
     let ticking = false;
     let fallbackTimer: number | null = null;
-    const supportsScrollEnd = "onscrollend" in window;
 
     const stop = () => {
       if (fallbackTimer !== null) {
@@ -48,11 +47,10 @@ export function ScrollActivityProvider({ children }: { children?: ReactNode }) {
       }
       if (fallbackTimer !== null) {
         window.clearTimeout(fallbackTimer);
-        fallbackTimer = null;
       }
-      if (!supportsScrollEnd) {
-        fallbackTimer = window.setTimeout(stop, 60);
-      }
+      // scrollend is not reliable for every input source; this short fallback
+      // keeps the background from staying frozen if the event is missed.
+      fallbackTimer = window.setTimeout(stop, 60);
     };
 
     const onScroll = () => {
