@@ -120,7 +120,7 @@ export default function Navbar() {
             )}
           </Link>
 
-          <div className="nav-cluster hidden lg:flex items-center gap-1">
+          <div className="nav-cluster hidden min-[1024px]:flex items-center gap-1">
             <nav className={`nav-links flex gap-8 text-sm font-bold ${searchOpen ? "search-open" : ""}`}>
               {NAV_LINKS.map((link) => (
                 <Link
@@ -140,7 +140,7 @@ export default function Navbar() {
               ))}
             </nav>
             {/* 占位div宽度16px */}
-            <div className="w-8"></div>
+            <div className="w-6"></div>
             <NavSearch open={searchOpen} onOpenChange={setSearchOpen} />
           </div>
 
@@ -152,7 +152,7 @@ export default function Navbar() {
               aria-expanded={mobileOpen}
               aria-controls="mobile-nav"
               onClick={() => setMobileOpen((v) => !v)}
-              className="lg:hidden w-10 h-10 rounded-xl bg-white/50 dark:bg-slate-800/50 flex items-center justify-center text-slate-700 dark:text-slate-200 border border-white/20 dark:border-white/10 shadow-sm"
+              className="min-[1024px]:hidden w-10 h-10 rounded-xl bg-white/50 dark:bg-slate-800/50 flex items-center justify-center text-slate-700 dark:text-slate-200 border border-white/20 dark:border-white/10 shadow-sm"
             >
               {mobileOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
@@ -166,7 +166,7 @@ export default function Navbar() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden overflow-hidden bg-transparent border-t border-white/20 dark:border-white/5"
+              className="min-[1024px]:hidden overflow-hidden bg-transparent border-t border-white/20 dark:border-white/5"
             >
               <div className="w-full max-w-[1180px] mx-auto px-4 sm:px-8 py-4 grid grid-cols-3 min-[420px]:grid-cols-4 gap-2">
                 {NAV_LINKS.map((link) => (

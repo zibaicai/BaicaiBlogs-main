@@ -381,7 +381,7 @@
 .dark .hv-dashboard > div {
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22) !important;
 }
-@media (max-width: 1023px) {
+@media (width < 1024px) {
   .hv-hero {
     grid-template-columns: 1fr;
     gap: 28px;
@@ -414,7 +414,7 @@
     margin-top: 2px;
   }
 }
-@media (max-width: 1023px) {
+@media (width < 1024px) {
   body:has(.home-v2) .danmaku-composer {
     display: none;
   }
@@ -490,7 +490,7 @@ body.tool-pet-off .whale-pet {
 .hv-side {
   min-height: 100%;
 }
-@media (max-width: 1023px) {
+@media (width < 1024px) {
   .hv-hero-copy {
     min-height: 0;
   }
@@ -516,7 +516,7 @@ body.tool-pet-off .whale-pet {
     gap: 20px;
   }
 }
-@media (max-width: 1023px) {
+@media (width < 1024px) {
   body:has(.home-v2) .global-toolbox {
     bottom: 0.5rem;
     left: 0.5rem;
@@ -685,7 +685,7 @@ body.tool-pet-off .whale-pet {
   font-family: "Songti SC", Georgia, serif;
   font-size: var(--type-section-title);
 }
-@media (max-width: 1023px) {
+@media (width < 1024px) {
   .album-accordion {
     height: 320px;
     overflow: hidden;
@@ -986,7 +986,7 @@ body.tool-pet-off .whale-pet {
 .home-v2 .hv-dashboard {
   margin-top: 12px;
 }
-@media (max-width: 1023px) {
+@media (width < 1024px) {
   .home-v2 .album-accordion {
     height: 240px;
   }

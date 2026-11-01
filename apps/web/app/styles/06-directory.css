@@ -249,7 +249,7 @@
 .timeline-row:nth-child(even) {
   margin-top: -88px;
 }
-@media (max-width: 1023px) {
+@media (width < 1024px) {
   .directory-grid > * {
     grid-column: span 6;
   }
