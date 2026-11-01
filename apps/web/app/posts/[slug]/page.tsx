@@ -51,6 +51,9 @@ export default async function PostDetail({ params }: { params: Promise<{ slug: s
       <PageTransition>
         <main className="article-reading-grid w-[95%] max-w-7xl mx-auto mt-24 md:mt-28 relative z-10">
           <div className="article-left-top">
+            <div className="article-back-slot">
+              <BackButton fallbackHref="/posts" />
+            </div>
             <div className="article-card-slot article-card-author">
               <AuthorCard />
             </div>
@@ -76,7 +79,6 @@ export default async function PostDetail({ params }: { params: Promise<{ slug: s
           <article className="article-content bg-white/60 dark:bg-slate-800/50 glass-blur glass-blur--xl rounded-b-3xl shadow-2xl border border-t-0 border-white/40 dark:border-white/10 overflow-hidden transition-colors duration-700">
             <div className="relative">
               <div className="article-header relative">
-                <BackButton fallbackHref="/posts" />
                 <header className="border-b border-slate-300/50 dark:border-slate-700 pb-5 md:pb-6 relative">
                   <h1 className="detail-title mb-3 pr-16 text-slate-900 transition-colors duration-700 dark:text-white md:pr-24">
                     {post.title}
