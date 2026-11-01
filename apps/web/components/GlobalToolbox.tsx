@@ -9,12 +9,14 @@ import { useTheme } from "./ThemeProvider";
 import ThemeStudio from "./ThemeStudio";
 import Tabs, { type TabItem } from "./ui/Tabs";
 import { glassProps } from "./ui/glass/GlassSurface";
+import { useGlassSettings, type GlassScrollPauseMode } from "./glass/GlassSettingsProvider";
 
-type ToolboxTab = "appearance" | "atmosphere" | "music";
+type ToolboxTab = "appearance" | "atmosphere" | "performance" | "music";
 
 const TOOLBOX_TABS: TabItem[] = [
   { value: "appearance", label: "外观", icon: <AppIcon name="palette" size={13} /> },
   { value: "atmosphere", label: "氛围", icon: <AppIcon name="sparkles" size={13} /> },
+  { value: "performance", label: "性能", icon: <AppIcon name="settings" size={13} /> },
   { value: "music", label: "音乐", icon: <AppIcon name="music" size={13} /> },
 ];
 
@@ -59,6 +61,14 @@ export default function GlobalToolbox() {
   const pathname = usePathname();
   const { currentSong, isPlaying, togglePlay } = useMusic();
   const { preset, setPreset } = useTheme();
+  const {
+    backgroundEnabled,
+    contentEnabled,
+    scrollPauseMode,
+    setBackgroundEnabled,
+    setContentEnabled,
+    setScrollPauseMode,
+  } = useGlassSettings();
 
   useEffect(() => {
     try {
@@ -293,6 +303,107 @@ export default function GlobalToolbox() {
                   })}
                   <p className="px-3 pt-2 text-meta text-slate-400">
                     开启博客模式后，氛围效果会暂时停用。
+                  </p>
+                </div>
+              )}
+
+              {tab === "performance" && (
+                <div
+                  role="tabpanel"
+                  id="toolbox-tabs-panel-performance"
+                  aria-labelledby="toolbox-tabs-tab-performance"
+                >
+                  <div className="flex items-center justify-between gap-4 rounded-2xl px-3 py-3 transition-colors hover:bg-slate-100/70 dark:hover:bg-white/5">
+                    <div className="flex min-w-0 items-center gap-2.5">
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
+                        <AppIcon name="image" size={15} />
+                      </span>
+                      <div className="min-w-0">
+                        <div className="text-sm font-bold text-slate-800 dark:text-slate-100">背景毛玻璃</div>
+                        <div className="mt-0.5 text-meta text-slate-400">关闭背景层的模糊，不影响内容</div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={backgroundEnabled}
+                      aria-label={`背景毛玻璃${backgroundEnabled ? "已开启" : "已关闭"}`}
+                      onClick={() => setBackgroundEnabled(!backgroundEnabled)}
+                      className={`tool-switch relative h-6 w-11 shrink-0 rounded-full transition-colors ${
+                        backgroundEnabled ? "bg-[var(--ui-accent)]" : "bg-slate-300 dark:bg-slate-700"
+                      }`}
+                    >
+                      <span
+                        className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-all ${
+                          backgroundEnabled ? "left-6" : "left-1"
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  <div className="mt-1 flex items-center justify-between gap-4 border-t border-slate-200/70 px-3 py-3 dark:border-white/10">
+                    <div className="flex min-w-0 items-center gap-2.5">
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
+                        <AppIcon name="sparkles" size={15} />
+                      </span>
+                      <div className="min-w-0">
+                        <div className="text-sm font-bold text-slate-800 dark:text-slate-100">内容毛玻璃</div>
+                        <div className="mt-0.5 text-meta text-slate-400">关闭卡片、面板和弹层的模糊</div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={contentEnabled}
+                      aria-label={`内容毛玻璃${contentEnabled ? "已开启" : "已关闭"}`}
+                      onClick={() => setContentEnabled(!contentEnabled)}
+                      className={`tool-switch relative h-6 w-11 shrink-0 rounded-full transition-colors ${
+                        contentEnabled ? "bg-[var(--ui-accent)]" : "bg-slate-300 dark:bg-slate-700"
+                      }`}
+                    >
+                      <span
+                        className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-all ${
+                          contentEnabled ? "left-6" : "left-1"
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  <div className={`mt-1 border-t border-slate-200/70 px-3 py-3 dark:border-white/10 ${contentEnabled ? "" : "opacity-50"}`}>
+                    <div className="flex items-center gap-2.5">
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
+                        <AppIcon name="pause" size={15} />
+                      </span>
+                      <div className="min-w-0">
+                        <div className="text-sm font-bold text-slate-800 dark:text-slate-100">滚动暂停</div>
+                        <div className="mt-0.5 text-meta text-slate-400">停止滚动 300ms 后恢复</div>
+                      </div>
+                    </div>
+                    <div className="mt-3 grid grid-cols-3 gap-1.5" role="group" aria-label="滚动暂停范围">
+                      {([
+                        ["off", "关闭"],
+                        ["content", "仅内容"],
+                        ["all", "全部"],
+                      ] as const).map(([value, label]) => (
+                        <button
+                          key={value as GlassScrollPauseMode}
+                          type="button"
+                          disabled={!contentEnabled}
+                          onClick={() => setScrollPauseMode(value)}
+                          className={`rounded-lg border px-2 py-1.5 text-meta font-black transition ${
+                            scrollPauseMode === value
+                              ? "border-[var(--ui-accent)] bg-[var(--ui-accent-soft)] text-[var(--ui-accent)]"
+                              : "border-slate-200 text-slate-500 hover:border-[var(--ui-accent)]/40 dark:border-white/10 dark:text-slate-400"
+                          }`}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <p className="px-3 pt-2 text-meta text-slate-400">
+                    关闭毛玻璃可以明显降低滚动合成开销。滚动暂停可能产生层重建抖动，建议仅在需要时开启。
                   </p>
                 </div>
               )}

@@ -121,6 +121,18 @@ html[data-glass-background="off"] [data-glass-scope="background"] {
   transition: none !important;
 }
 
+html[data-glass-pause-mode="content"][data-glass-scroll-paused="true"] .glass,
+html[data-glass-pause-mode="content"][data-glass-scroll-paused="true"] .glass-blur:not([data-glass-scope="background"]) {
+  backdrop-filter: none;
+  transition: none !important;
+}
+
+html[data-glass-pause-mode="all"][data-glass-scroll-paused="true"] .glass,
+html[data-glass-pause-mode="all"][data-glass-scroll-paused="true"] .glass-blur {
+  backdrop-filter: none;
+  transition: none !important;
+}
+
 html[data-visual-mode="plain"] .glass {
   background: var(--ui-surface, #ffffff);
   backdrop-filter: none;
