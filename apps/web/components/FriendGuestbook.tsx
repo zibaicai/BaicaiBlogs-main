@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Loader2, MessageCircle, Send } from "lucide-react";
 
 import Textarea from "./ui/Textarea";
@@ -8,6 +8,7 @@ import { formatDate, type FriendMessage } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { useFeedback } from "./FeedbackProvider";
 import { useToast } from "./ToastProvider";
+import { useFriendsVerification } from "./friends/FriendsVerificationProvider";
 import MessageListShell from "./messages/MessageListShell";
 import MessageItemShell from "./messages/MessageItemShell";
 
@@ -15,74 +16,10 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
   const { user } = useAuth();
   const { confirm } = useFeedback();
   const { showToast } = useToast();
+  const { ensureVerified, requestVerification, refreshStatus } = useFriendsVerification();
   const [messages, setMessages] = useState(initialMessages);
   const [content, setContent] = useState("");
   const [busy, setBusy] = useState(false);
-  const [turnstileConfig, setTurnstileConfig] = useState<{ enabled: boolean; siteKey: string } | null>(null);
-  const [verificationRequested, setVerificationRequested] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState("");
-  const [turnstileReady, setTurnstileReady] = useState(false);
-  const [turnstilePassed, setTurnstilePassed] = useState(false);
-  const [needsReverify, setNeedsReverify] = useState(false);
-  const turnstileRef = useRef<HTMLDivElement>(null);
-  const widgetRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    fetch("/api/auth/config", { credentials: "include" })
-      .then((response) => response.json())
-      .then((json) => {
-        const data = json?.data || {};
-        setTurnstileConfig({ enabled: Boolean(data.turnstileEnabled), siteKey: data.turnstileSiteKey || "" });
-      })
-      .catch(() => setTurnstileConfig({ enabled: false, siteKey: "" }));
-  }, []);
-
-  useEffect(() => {
-    if (!verificationRequested || !turnstileConfig?.enabled || !turnstileConfig.siteKey) return;
-    const script = document.querySelector<HTMLScriptElement>('script[data-guestbook-turnstile="true"]') || document.createElement("script");
-    if ((window as any).turnstile) {
-      setTurnstileReady(true);
-      return;
-    }
-    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
-    script.async = true;
-    script.defer = true;
-    script.dataset.guestbookTurnstile = "true";
-    script.onload = () => setTurnstileReady(true);
-    if (!script.parentElement) document.head.appendChild(script);
-  }, [verificationRequested, turnstileConfig]);
-
-  useEffect(() => {
-    if (!verificationRequested || !turnstileReady || !turnstileConfig?.siteKey || !turnstileRef.current || widgetRef.current) return;
-    const turnstile = (window as any).turnstile;
-    const widget = turnstile?.render(turnstileRef.current, {
-      sitekey: turnstileConfig.siteKey,
-      callback: (token: string) => {
-        setTurnstileToken(token);
-        setTurnstilePassed(true);
-      },
-      "expired-callback": () => {
-        setTurnstileToken("");
-        setTurnstilePassed(false);
-      },
-      "error-callback": () => {
-        setTurnstileToken("");
-        setTurnstilePassed(false);
-      },
-    });
-    widgetRef.current = widget || null;
-    return () => {
-      if (widgetRef.current && turnstile) turnstile.remove(widgetRef.current);
-      widgetRef.current = null;
-    };
-  }, [verificationRequested, turnstileReady, turnstileConfig]);
-
-  useEffect(() => {
-    if (needsReverify && content.length > 0) {
-      setNeedsReverify(false);
-      setTurnstilePassed(false);
-    }
-  }, [content, needsReverify]);
 
   const remove = async (id: number) => {
     const ok = await confirm({
@@ -109,39 +46,28 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
       showToast("请先写点什么", "warning");
       return;
     }
-    if (turnstileConfig?.enabled && !turnstileToken) {
+    const verified = await ensureVerified();
+    if (!verified) {
       showToast("请完成人机验证", "warning");
       return;
     }
     setBusy(true);
-    let status = 0;
     try {
       const res = await fetch("/api/public/friend-messages", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content, turnstileToken }),
+        body: JSON.stringify({ content }),
       });
-      status = res.status;
       const json = await res.json();
       if (!res.ok || !json?.success) throw new Error(json?.message || "提交失败");
       if (json.data) setMessages((current) => [json.data, ...current]);
       showToast("留言已发布", "success");
       setContent("");
-      setTurnstileToken("");
-      setTurnstilePassed(true);
-      setNeedsReverify(true);
-      if (widgetRef.current && (window as any).turnstile) (window as any).turnstile.reset(widgetRef.current);
+      await refreshStatus();
     } catch (error) {
-      const text = error instanceof Error ? error.message : "提交失败";
-      const turnstileError = status >= 500 || /人机验证|验证失败|验证服务/.test(text);
-      if (turnstileError) {
-        setTurnstilePassed(false);
-        setNeedsReverify(false);
-        setTurnstileToken("");
-        if (widgetRef.current && (window as any).turnstile) (window as any).turnstile.reset(widgetRef.current);
-      }
-      showToast(text, "error");
+      showToast(error instanceof Error ? error.message : "提交失败", "error");
+      await refreshStatus();
     } finally {
       setBusy(false);
     }
@@ -165,19 +91,11 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
           <Textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            onFocus={() => setVerificationRequested(true)}
+            onFocus={requestVerification}
             rows={4}
             className="mt-1"
             placeholder="说点什么，或者留下你的网站。"
           />
-          {turnstileConfig?.enabled && verificationRequested && (
-            <div className={turnstilePassed ? "h-0 overflow-hidden" : "mt-3 min-h-[65px]"}>
-              <div ref={turnstileRef} />
-            </div>
-          )}
-          {turnstileConfig?.enabled && turnstilePassed && (
-            <p className="mt-2 text-meta font-bold text-emerald-500">人机验证已通过</p>
-          )}
           <div className="mt-3 flex justify-end">
             <button
               type="button"

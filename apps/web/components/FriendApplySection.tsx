@@ -12,28 +12,13 @@ import {
   formatFriendLinkFields,
   parseFriendLinkText,
 } from "../lib/friend-link";
-
-interface TurnstileOptions {
-  sitekey: string;
-  callback: (token: string) => void;
-  "expired-callback"?: () => void;
-  "error-callback"?: () => void;
-}
-interface TurnstileInstance {
-  render: (element: HTMLElement, options: TurnstileOptions) => string;
-  remove: (id: string) => void;
-  reset: (id: string) => void;
-}
-declare global {
-  interface Window {
-    turnstile?: TurnstileInstance;
-  }
-}
+import { useFriendsVerification } from "./friends/FriendsVerificationProvider";
 
 type Application = { id: number; name: string; url: string; avatar?: string; description?: string; contact?: string; status: string; bound?: boolean };
 
 export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo }) {
   const { user } = useAuth();
+  const { ensureVerified, requestVerification, refreshStatus } = useFriendsVerification();
   const [panelOpen, setPanelOpen] = useState(false);
   const [isSheet, setIsSheet] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -45,12 +30,6 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
   const [message, setMessage] = useState("");
   const [application, setApplication] = useState<Application | null>(null);
   const [editing, setEditing] = useState(false);
-  const [turnstileConfig, setTurnstileConfig] = useState<{ enabled: boolean; siteKey: string } | null>(null);
-  const [verificationRequested, setVerificationRequested] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState("");
-  const [turnstileReady, setTurnstileReady] = useState(false);
-  const turnstileRef = useRef<HTMLDivElement>(null);
-  const widgetRef = useRef<string | null>(null);
 
   useEffect(() => {
     const media = window.matchMedia("(max-width: 639px)");
@@ -84,43 +63,6 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
   useEffect(() => {
     if (panelOpen) panelRef.current?.focus();
   }, [panelOpen]);
-
-  useEffect(() => {
-    fetch("/api/auth/config", { credentials: "include" })
-      .then((response) => response.json())
-      .then((json) => setTurnstileConfig({ enabled: Boolean(json?.data?.turnstileEnabled), siteKey: json?.data?.turnstileSiteKey || "" }))
-      .catch(() => setTurnstileConfig({ enabled: false, siteKey: "" }));
-  }, []);
-
-  useEffect(() => {
-    if (!open || !verificationRequested || !turnstileConfig?.enabled || !turnstileConfig.siteKey) return;
-    if (window.turnstile) {
-      setTurnstileReady(true);
-      return;
-    }
-    const script = document.querySelector<HTMLScriptElement>('script[data-friend-turnstile="true"]') || document.createElement("script");
-    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
-    script.async = true;
-    script.defer = true;
-    script.dataset.friendTurnstile = "true";
-    script.onload = () => setTurnstileReady(true);
-    if (!script.parentElement) document.head.appendChild(script);
-  }, [open, verificationRequested, turnstileConfig]);
-
-  useEffect(() => {
-    if (!open || !verificationRequested || !turnstileReady || !turnstileConfig?.siteKey || !turnstileRef.current) return;
-    const widget = window.turnstile?.render(turnstileRef.current, {
-      sitekey: turnstileConfig.siteKey,
-      callback: setTurnstileToken,
-      "expired-callback": () => setTurnstileToken(""),
-      "error-callback": () => setTurnstileToken(""),
-    });
-    widgetRef.current = widget || null;
-    return () => {
-      if (widgetRef.current && window.turnstile) window.turnstile.remove(widgetRef.current);
-      widgetRef.current = null;
-    };
-  }, [open, verificationRequested, turnstileReady, turnstileConfig]);
 
   useEffect(() => {
     if (!user) {
@@ -170,8 +112,6 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
       })
     );
     setEditing(true);
-    setVerificationRequested(false);
-    setTurnstileToken("");
     setOpen(true);
   };
 
@@ -196,10 +136,15 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
       setMessage(parsedApplication.errors.join("；"));
       return;
     }
-    if (turnstileConfig?.enabled && !turnstileToken && !editing) { setMessage("请完成人机验证"); return; }
     setBusy(true);
     setMessage("");
     try {
+      const verified = await ensureVerified();
+      if (!verified) {
+        setBusy(false);
+        setMessage("请完成人机验证");
+        return;
+      }
       const res = await fetch(editing ? "/api/user/friend-application" : "/api/public/friend-applications", {
         method: editing ? "PUT" : "POST",
         credentials: "include",
@@ -211,7 +156,6 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
           description: parsedApplication.description,
           contact: parsedApplication.contact,
           hasBacklink: String(hasBacklink),
-          turnstileToken,
         }),
       });
       const json = await res.json();
@@ -222,10 +166,10 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
       setEditing(false);
       setApplicationText("");
       setHasBacklink(false);
-      setVerificationRequested(false);
-      setTurnstileToken("");
+      await refreshStatus();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "提交失败");
+      await refreshStatus();
     } finally {
       setBusy(false);
     }
@@ -235,8 +179,6 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
     setEditing(false);
     setPanelOpen(false);
     setApplicationText("");
-    setVerificationRequested(false);
-    setTurnstileToken("");
     setMessage("");
     setOpen(true);
   };
@@ -371,7 +313,7 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
               <Textarea
                 value={applicationText}
                 onChange={(event) => setApplicationText(event.target.value)}
-                onFocus={() => setVerificationRequested(true)}
+                onFocus={requestVerification}
                 rows={7}
                 className="mt-1"
                 placeholder={FRIEND_LINK_TEMPLATE}
@@ -413,7 +355,6 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
               提交前请确认网站可访问、信息准确。提交后进入人工审核，审核期间请勿重复提交。
             </div>
             {message && <p className="friend-apply-message">{message}</p>}
-            {turnstileConfig?.enabled && verificationRequested && <div ref={turnstileRef} className="mt-3 min-h-[65px]" />}
             <div className="mt-4 flex justify-end gap-2">
               <button type="button" onClick={() => setOpen(false)} className="hv-button">取消</button>
               <button type="button" onClick={() => void submit()} disabled={busy} className="hv-button hv-button-primary inline-flex items-center gap-2 disabled:opacity-50">

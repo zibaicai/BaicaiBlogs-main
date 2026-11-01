@@ -3,6 +3,7 @@ package com.baicaiblogs.controller;
 import com.baicaiblogs.dto.ApiResponse;
 import com.baicaiblogs.entity.User;
 import com.baicaiblogs.service.FriendApplicationService;
+import com.baicaiblogs.service.HumanVerificationService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,6 +23,7 @@ public class FriendApplicationController {
     private static final String CLAIM_COOKIE = "FRIEND_CLAIM";
 
     private final FriendApplicationService service;
+    private final HumanVerificationService humanVerificationService;
 
     @PostMapping("/public/friend-applications")
     public ApiResponse<Map<String, Object>> submit(
@@ -30,7 +32,8 @@ public class FriendApplicationController {
             HttpServletResponse response) {
         try {
             String ip = clientIp(request);
-            Map<String, Object> result = service.submit(body, ip, request.getHeader("User-Agent"), currentUser());
+            Map<String, Object> result = service.submit(body, ip, request.getHeader("User-Agent"), currentUser(),
+                    humanVerificationService.find(request));
             String token = String.valueOf(result.get("claimToken"));
             Cookie cookie = new Cookie(CLAIM_COOKIE, token);
             cookie.setHttpOnly(true);

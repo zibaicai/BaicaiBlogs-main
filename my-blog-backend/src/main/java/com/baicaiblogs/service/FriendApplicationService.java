@@ -31,10 +31,11 @@ public class FriendApplicationService {
     private final FriendRepository friendRepository;
     private final UserRepository userRepository;
     private final TurnstileService turnstileService;
+    private final HumanVerificationService humanVerificationService;
 
     @Transactional
-    public Map<String, Object> submit(Map<String, String> body, String ip, String userAgent, User user) {
-        turnstileService.verify(body.get("turnstileToken"), ip);
+    public Map<String, Object> submit(Map<String, String> body, String ip, String userAgent, User user,
+                                      HumanVerificationService.Session humanSession) {
         String name = required(body.get("name"), "称谓", 100);
         String url = normalizeUrl(required(body.get("url"), "网站地址", 500));
         String avatar = optionalUrl(body.get("avatar"), 500);
@@ -51,6 +52,12 @@ public class FriendApplicationService {
         }
         if (ipHash != null && applicationRepository.countByIpHashAndCreatedAtAfter(ipHash, LocalDateTime.now().minusDays(1)) >= 3) {
             throw new RuntimeException("今天提交次数过多，请明天再试");
+        }
+
+        if (humanSession != null) {
+            humanVerificationService.consume(humanSession);
+        } else {
+            turnstileService.verify(body.get("turnstileToken"), ip);
         }
 
         String claimToken = newToken();

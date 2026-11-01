@@ -4,6 +4,7 @@ import ArchiveItemCard from "../../components/ArchiveItemCard";
 import DirectoryExplorer from "../../components/DirectoryExplorer";
 import FriendApplySection from "../../components/FriendApplySection";
 import FriendGuestbook from "../../components/FriendGuestbook";
+import FriendsVerificationProvider from "../../components/friends/FriendsVerificationProvider";
 import { getFriendMessages, getFriends, getPublicSiteConfig } from "../../lib/server-api";
 import { formatDay } from "../../lib/api";
 import { DEFAULT_SITE_INFO } from "../../lib/site-config";
@@ -78,8 +79,10 @@ export default async function FriendsPage() {
             searchPlaceholder="搜索朋友、简介或链接..."
             empty={empty}
           />
-          <FriendApplySection siteInfo={siteInfo} />
-          <FriendGuestbook initialMessages={messages} />
+          <FriendsVerificationProvider>
+            <FriendApplySection siteInfo={siteInfo} />
+            <FriendGuestbook initialMessages={messages} />
+          </FriendsVerificationProvider>
         </main>
       </PageTransition>
     </div>

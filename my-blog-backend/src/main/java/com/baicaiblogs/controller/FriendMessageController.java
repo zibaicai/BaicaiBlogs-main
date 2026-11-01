@@ -3,6 +3,7 @@ package com.baicaiblogs.controller;
 import com.baicaiblogs.dto.ApiResponse;
 import com.baicaiblogs.entity.User;
 import com.baicaiblogs.service.FriendMessageService;
+import com.baicaiblogs.service.HumanVerificationService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +18,7 @@ import java.util.Map;
 public class FriendMessageController {
 
     private final FriendMessageService service;
+    private final HumanVerificationService humanVerificationService;
 
     @GetMapping("/public/friend-messages")
     public ApiResponse<List<Map<String, Object>>> messages() {
@@ -31,7 +33,8 @@ public class FriendMessageController {
     public ApiResponse<Map<String, Object>> submit(@RequestBody Map<String, String> body, HttpServletRequest request) {
         try {
             String ip = clientIp(request);
-            return ApiResponse.success("留言已发布", service.submit(body, ip, request.getHeader("User-Agent"), optionalUser()));
+            return ApiResponse.success("留言已发布", service.submit(body, ip, request.getHeader("User-Agent"), optionalUser(),
+                    humanVerificationService.find(request)));
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
         }

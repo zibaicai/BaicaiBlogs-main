@@ -22,9 +22,11 @@ public class FriendMessageService {
     private final FriendMessageRepository messageRepository;
     private final FriendRepository friendRepository;
     private final TurnstileService turnstileService;
+    private final HumanVerificationService humanVerificationService;
 
     @Transactional
-    public Map<String, Object> submit(Map<String, String> body, String ip, String userAgent, User user) {
+    public Map<String, Object> submit(Map<String, String> body, String ip, String userAgent, User user,
+                                      HumanVerificationService.Session humanSession) {
         String content = required(body.get("content"), "留言内容", 500);
         String name = user == null
                 ? "匿名"
@@ -41,8 +43,12 @@ public class FriendMessageService {
             }
         }
 
-        // 先完成业务校验，再消耗一次性的 Turnstile token
-        turnstileService.verify(body.get("turnstileToken"), ip);
+        // 先完成业务校验，再消耗一次性的 Turnstile token 或共享验证额度
+        if (humanSession != null) {
+            humanVerificationService.consume(humanSession);
+        } else {
+            turnstileService.verify(body.get("turnstileToken"), ip);
+        }
 
         FriendMessage message = messageRepository.save(FriendMessage.builder()
                 .name(name)

@@ -235,6 +235,89 @@
     font-weight: 600;
   }
 
+  .friends-verification-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10020;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(2, 6, 23, 0.42);
+    backdrop-filter: blur(5px);
+  }
+
+  .friends-verification-dialog {
+    width: min(380px, 100%);
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 22px;
+    background: var(--ui-surface);
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.24);
+  }
+
+  .friends-verification-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .friends-verification-title {
+    display: flex;
+    gap: 10px;
+    color: var(--ui-accent);
+  }
+
+  .friends-verification-title h2 {
+    margin: 1px 0 0;
+    color: var(--ui-text);
+    font-size: var(--type-control);
+    font-weight: 800;
+  }
+
+  .friends-verification-title p {
+    margin: 4px 0 0;
+    color: var(--ui-text-muted);
+    font-size: var(--type-meta);
+    line-height: 1.55;
+  }
+
+  .friends-verification-head > button {
+    flex: 0 0 auto;
+    padding: 4px;
+    border-radius: 8px;
+    color: var(--ui-text-faint);
+  }
+
+  .friends-verification-head > button:hover {
+    background: var(--ui-secondary-bg);
+    color: var(--ui-text);
+  }
+
+  .friends-verification-widget {
+    min-height: 65px;
+    margin-top: 16px;
+  }
+
+  .friends-verification-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 65px;
+    margin-top: 12px;
+    color: var(--ui-text-muted);
+    font-size: var(--type-meta);
+  }
+
+  .friends-verification-error {
+    margin: 8px 0 0;
+    color: #dc2626;
+    font-size: var(--type-meta);
+    line-height: 1.5;
+  }
+
   .friend-link-summary {
     overflow: hidden;
     margin: 12px 0 0;
