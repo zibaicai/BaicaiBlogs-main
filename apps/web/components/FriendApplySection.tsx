@@ -4,10 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Clipboard, Link2, Loader2, Send, X } from "lucide-react";
 
-import Input from "./ui/Input";
 import Textarea from "./ui/Textarea";
 import { useAuth } from "../lib/auth";
 import type { SiteInfo } from "../lib/site-config";
+import {
+  FRIEND_LINK_TEMPLATE,
+  formatFriendLinkFields,
+  parseFriendLinkText,
+} from "../lib/friend-link";
 
 interface TurnstileOptions {
   sitekey: string;
@@ -35,13 +39,8 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
   const panelRef = useRef<HTMLDivElement>(null);
   const fabRef = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState("");
-  const [url, setUrl] = useState("");
-  const [avatar, setAvatar] = useState("");
-  const [description, setDescription] = useState("");
-  const [contact, setContact] = useState("");
+  const [applicationText, setApplicationText] = useState("");
   const [hasBacklink, setHasBacklink] = useState(false);
-  const [agreed, setAgreed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [application, setApplication] = useState<Application | null>(null);
@@ -147,13 +146,28 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
     }
   };
 
+  const copyFormat = async () => {
+    try {
+      await navigator.clipboard.writeText(FRIEND_LINK_TEMPLATE);
+      setMessage("申请格式已复制");
+    } catch {
+      setMessage("复制失败，请手动输入");
+    }
+  };
+
+  const parsed = parseFriendLinkText(applicationText);
+
   const startEdit = () => {
     if (!application) return;
-    setName(application.name);
-    setUrl(application.url);
-    setAvatar(application.avatar || "");
-    setDescription(application.description || "");
-    setContact(application.contact || "");
+    setApplicationText(
+      formatFriendLinkFields({
+        name: application.name,
+        url: application.url,
+        avatar: application.avatar || "",
+        description: application.description || "",
+        contact: application.contact || "",
+      })
+    );
     setEditing(true);
     setOpen(true);
   };
@@ -174,7 +188,11 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
   };
 
   const submit = async () => {
-    if (!agreed) { setMessage("请先确认信息无误"); return; }
+    const parsedApplication = parseFriendLinkText(applicationText);
+    if (parsedApplication.errors.length > 0) {
+      setMessage(parsedApplication.errors.join("；"));
+      return;
+    }
     if (turnstileConfig?.enabled && !turnstileToken && !editing) { setMessage("请完成人机验证"); return; }
     setBusy(true);
     setMessage("");
@@ -183,7 +201,15 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
         method: editing ? "PUT" : "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, url, avatar, description, contact, hasBacklink: String(hasBacklink), turnstileToken }),
+        body: JSON.stringify({
+          name: parsedApplication.name,
+          url: parsedApplication.url,
+          avatar: parsedApplication.avatar,
+          description: parsedApplication.description,
+          contact: parsedApplication.contact,
+          hasBacklink: String(hasBacklink),
+          turnstileToken,
+        }),
       });
       const json = await res.json();
       if (!res.ok || !json?.success) throw new Error(json?.message || "提交失败");
@@ -191,7 +217,8 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
       if (json.data?.bound || editing) setApplication(json.data);
       setOpen(false);
       setEditing(false);
-      setAgreed(false);
+      setApplicationText("");
+      setHasBacklink(false);
       setTurnstileToken("");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "提交失败");
@@ -203,6 +230,8 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
   const openApplication = () => {
     setEditing(false);
     setPanelOpen(false);
+    setApplicationText("");
+    setMessage("");
     setOpen(true);
   };
 
@@ -328,18 +357,55 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
               <h3 className="text-sm font-black text-slate-900 dark:text-white">{editing ? "编辑友链资料" : "申请友链"}</h3>
               <button type="button" onClick={() => setOpen(false)} className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"><X size={16} /></button>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <label className="text-meta font-bold text-slate-400">称谓<Input value={name} onChange={(e) => setName(e.target.value)} className="mt-1" /></label>
-              <label className="text-meta font-bold text-slate-400">网站地址<Input value={url} onChange={(e) => setUrl(e.target.value)} disabled={application?.status === "APPROVED"} className="mt-1" /></label>
-              <label className="text-meta font-bold text-slate-400">头像地址<Input value={avatar} onChange={(e) => setAvatar(e.target.value)} className="mt-1" /></label>
-              <label className="text-meta font-bold text-slate-400">联系方式（仅管理员可见）<Input value={contact} onChange={(e) => setContact(e.target.value)} className="mt-1" /></label>
-              <label className="text-meta font-bold text-slate-400 sm:col-span-2">简介<Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="mt-1" /></label>
+            <div className="friend-apply-editor">
+              <div className="friend-apply-editor-head">
+                <span>粘贴友链信息</span>
+                <button type="button" onClick={() => void copyFormat()}>复制格式</button>
+              </div>
+              <Textarea
+                value={applicationText}
+                onChange={(event) => setApplicationText(event.target.value)}
+                rows={7}
+                className="mt-1"
+                placeholder={FRIEND_LINK_TEMPLATE}
+              />
+              <p className="friend-apply-hint">
+                支持名称、网址、头像、简介四行，顺序不限，冒号可用中文或英文。
+              </p>
             </div>
+
+            {(parsed.name || parsed.url || parsed.description) && (
+              <div className="friend-apply-preview">
+                <div className="friend-apply-preview-avatar">
+                  {parsed.avatar && /^https?:\/\//i.test(parsed.avatar) ? (
+                    <img src={parsed.avatar} alt="" />
+                  ) : (
+                    (parsed.name || "友").slice(0, 1)
+                  )}
+                </div>
+                <div className="friend-apply-preview-copy">
+                  <strong>{parsed.name || "未识别名称"}</strong>
+                  {parsed.url && /^https?:\/\//i.test(parsed.url) ? (
+                    <a href={parsed.url} target="_blank" rel="noopener noreferrer">{parsed.url}</a>
+                  ) : (
+                    <span>未识别网址</span>
+                  )}
+                  {parsed.description && <p>{parsed.description}</p>}
+                </div>
+              </div>
+            )}
+
+            {parsed.errors.length > 0 && applicationText.trim() && (
+              <ul className="friend-apply-errors">
+                {parsed.errors.map((error) => <li key={error}>{error}</li>)}
+              </ul>
+            )}
+
             <label className="mt-3 flex items-center gap-2 text-xs text-slate-500"><input type="checkbox" checked={hasBacklink} onChange={(e) => setHasBacklink(e.target.checked)} /> 我已在本站添加贵站友链</label>
             <div className="mt-3 rounded-xl border border-amber-400/20 bg-amber-500/10 p-3 text-meta leading-5 text-amber-700 dark:text-amber-300">
               提交前请确认网站可访问、信息准确。提交后进入人工审核，审核期间请勿重复提交。
             </div>
-            <label className="mt-3 flex items-center gap-2 text-xs text-slate-500"><input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} /> 我已确认以上信息无误</label>
+            {message && <p className="friend-apply-message">{message}</p>}
             {turnstileConfig?.enabled && <div ref={turnstileRef} className="mt-3 min-h-[65px]" />}
             <div className="mt-4 flex justify-end gap-2">
               <button type="button" onClick={() => setOpen(false)} className="hv-button">取消</button>
