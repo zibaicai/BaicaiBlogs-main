@@ -79,10 +79,6 @@
 .music-center,
 .music-comments-side {
   min-width: 0;
-  border: 1px solid var(--ui-border);
-  border-radius: var(--radius-panel);
-  background: color-mix(in srgb, var(--ui-secondary-bg) 78%, transparent);
-  backdrop-filter: blur(18px);
 }
 .music-sidebar { padding: 10px; }
 .music-sidebar-tabs { display: flex; gap: 3px; margin-bottom: 8px; }
@@ -158,9 +154,6 @@
   left: 0;
   z-index: 90;
   height: 68px;
-  border-top: 1px solid var(--ui-border);
-  background: color-mix(in srgb, var(--ui-bg) 82%, transparent);
-  backdrop-filter: blur(22px);
 }
 /* The generic `.music-app-page > div { height: 100% }` rule is more specific
    than `.music-player-bar`, so the fixed bar needs its explicit height here. */

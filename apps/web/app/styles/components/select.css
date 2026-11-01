@@ -117,26 +117,7 @@
 
   .ui-select-menu {
     overflow-y: auto;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    border-radius: 1rem;
-    background: rgba(255, 255, 255, 0.96);
     padding: 0.375rem;
-    box-shadow: 0 25px 50px rgba(15, 23, 42, 0.2);
-    backdrop-filter: blur(40px);
-  }
-
-  .ui-select-menu--glass {
-    background: rgba(255, 255, 255, 0.78);
-    backdrop-filter: blur(22px);
-  }
-
-  .dark .ui-select-menu {
-    border-color: rgba(255, 255, 255, 0.1);
-    background: rgba(15, 23, 42, 0.96);
-  }
-
-  .dark .ui-select-menu--glass {
-    background: rgba(15, 23, 42, 0.78);
   }
 
   .ui-select-option {

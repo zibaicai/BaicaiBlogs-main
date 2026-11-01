@@ -11,6 +11,7 @@ import MusicCommentSection from "../../components/comments/MusicCommentSection";
 import { musicApi, type MusicPlaylist, type MusicTrack } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
 import { useMusic } from "../../components/MusicProvider";
+import { glassProps } from "../../components/ui/glass/GlassSurface";
 
 type Layout = "focus" | "studio";
 type LeftTab = "recommend" | "mine" | "queue";
@@ -217,7 +218,7 @@ export default function MusicPage() {
           )}
 
           <div className="music-workspace" data-layout={layout}>
-            <aside className="music-sidebar">
+            <aside {...glassProps("panel", "suspend", "music-sidebar")}>
               <div className="music-sidebar-tabs">
                 <button className={leftTab === "recommend" ? "is-active" : ""} onClick={() => setLeftTab("recommend")}><Flame size={13} />推荐</button>
                 <button className={leftTab === "mine" ? "is-active" : ""} onClick={() => setLeftTab("mine")}><UserRound size={13} />我的</button>
@@ -256,7 +257,7 @@ export default function MusicPage() {
               </div>
             </aside>
 
-            <section className="music-center">
+            <section {...glassProps("panel", "suspend", "music-center")}>
               <div className="music-now">
                 <div className="music-cover large">
                   {currentSong?.cover ? <img src={currentSong.cover} alt={currentSong.title || ""} /> : <Music2 size={36} />}
@@ -286,13 +287,13 @@ export default function MusicPage() {
             </section>
 
             {layout === "studio" && (
-              <aside className="music-comments-side">{commentsPanel}</aside>
+              <aside {...glassProps("panel", "suspend", "music-comments-side")}>{commentsPanel}</aside>
             )}
           </div>
         </main>
       </PageTransition>
 
-      <div className="music-player-bar">
+      <div {...glassProps("dock", "keep", "music-player-bar")}>
         <div className="music-player-inner">
           <div className="music-player-meta">
             <span className="music-cover xs">{currentSong?.cover ? <img src={currentSong.cover} alt="" /> : <Disc3 size={14} />}</span>

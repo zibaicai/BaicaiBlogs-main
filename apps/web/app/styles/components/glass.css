@@ -95,6 +95,15 @@ html.dark .glass {
   box-shadow: none;
 }
 
+.glass--dock {
+  --glass-bg: color-mix(in srgb, var(--ui-bg) 82%, transparent);
+  --glass-bg-dark: color-mix(in srgb, #020617 88%, transparent);
+  --glass-blur: 22px;
+  --glass-radius: 0;
+  border-width: 1px 0 0;
+  box-shadow: none;
+}
+
 html[data-scrolling="true"] .glass[data-glass-scroll="suspend"] {
   backdrop-filter: none;
 }

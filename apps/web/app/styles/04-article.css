@@ -237,10 +237,6 @@ body[data-nav-hidden="true"] .article-toc {
   align-items: center;
   gap: 2px;
   padding: 3px;
-  border: 1px solid rgba(148, 163, 184, 0.28);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.48);
-  backdrop-filter: blur(10px);
 }
 .dark .markdown-theme-options {
   border-color: rgba(255, 255, 255, 0.1);
