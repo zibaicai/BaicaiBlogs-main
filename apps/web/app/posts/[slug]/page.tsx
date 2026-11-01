@@ -80,7 +80,7 @@ export default async function PostDetail({ params }: { params: Promise<{ slug: s
             <div className="relative">
               <div className="article-header relative">
                 <header className="border-b border-slate-300/50 dark:border-slate-700 pb-5 md:pb-6 relative">
-                  <h1 className="detail-title mb-3 pr-16 text-slate-900 transition-colors duration-700 dark:text-white md:pr-24">
+                  <h1 className="detail-title mb-3 text-slate-900 transition-colors duration-700 dark:text-white">
                     {post.title}
                   </h1>
 
@@ -88,19 +88,6 @@ export default async function PostDetail({ params }: { params: Promise<{ slug: s
                     <p className="article-summary text-sm md:text-base text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
                       {post.description}
                     </p>
-                  )}
-
-                  {post.fileUrl && (
-                    <a
-                      href={post.fileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn btn-secondary absolute top-0 right-0 p-2.5 md:p-3 rounded-xl md:rounded-2xl transition-all shadow-sm border flex items-center gap-2"
-                      title="下载原始 Markdown 文件"
-                    >
-                      <Download size={18} />
-                      <span className="text-xs md:text-sm font-bold hidden md:inline-block">原文件</span>
-                    </a>
                   )}
 
                   <div className="flex flex-wrap items-center gap-2 md:gap-3">
@@ -119,6 +106,19 @@ export default async function PostDetail({ params }: { params: Promise<{ slug: s
                         <span className="text-meta md:text-xs opacity-70">#</span> {tag}
                       </div>
                     ))}
+
+                    {post.fileUrl && (
+                      <a
+                        href={post.fileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-secondary ml-auto shrink-0 p-2.5 md:px-3 md:py-2 rounded-xl md:rounded-2xl transition-all shadow-sm border flex items-center gap-2"
+                        title="下载原始 Markdown 文件"
+                      >
+                        <Download size={18} />
+                        <span className="text-xs md:text-sm font-bold hidden md:inline-block">原文件</span>
+                      </a>
+                    )}
                   </div>
                 </header>
               </div>
