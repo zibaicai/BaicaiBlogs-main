@@ -46,6 +46,7 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
   const [application, setApplication] = useState<Application | null>(null);
   const [editing, setEditing] = useState(false);
   const [turnstileConfig, setTurnstileConfig] = useState<{ enabled: boolean; siteKey: string } | null>(null);
+  const [verificationRequested, setVerificationRequested] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
   const [turnstileReady, setTurnstileReady] = useState(false);
   const turnstileRef = useRef<HTMLDivElement>(null);
@@ -92,7 +93,7 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
   }, []);
 
   useEffect(() => {
-    if (!open || !turnstileConfig?.enabled || !turnstileConfig.siteKey) return;
+    if (!open || !verificationRequested || !turnstileConfig?.enabled || !turnstileConfig.siteKey) return;
     if (window.turnstile) {
       setTurnstileReady(true);
       return;
@@ -104,10 +105,10 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
     script.dataset.friendTurnstile = "true";
     script.onload = () => setTurnstileReady(true);
     if (!script.parentElement) document.head.appendChild(script);
-  }, [open, turnstileConfig]);
+  }, [open, verificationRequested, turnstileConfig]);
 
   useEffect(() => {
-    if (!open || !turnstileReady || !turnstileConfig?.siteKey || !turnstileRef.current) return;
+    if (!open || !verificationRequested || !turnstileReady || !turnstileConfig?.siteKey || !turnstileRef.current) return;
     const widget = window.turnstile?.render(turnstileRef.current, {
       sitekey: turnstileConfig.siteKey,
       callback: setTurnstileToken,
@@ -119,7 +120,7 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
       if (widgetRef.current && window.turnstile) window.turnstile.remove(widgetRef.current);
       widgetRef.current = null;
     };
-  }, [open, turnstileReady, turnstileConfig]);
+  }, [open, verificationRequested, turnstileReady, turnstileConfig]);
 
   useEffect(() => {
     if (!user) {
@@ -169,6 +170,8 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
       })
     );
     setEditing(true);
+    setVerificationRequested(false);
+    setTurnstileToken("");
     setOpen(true);
   };
 
@@ -219,6 +222,7 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
       setEditing(false);
       setApplicationText("");
       setHasBacklink(false);
+      setVerificationRequested(false);
       setTurnstileToken("");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "提交失败");
@@ -231,6 +235,8 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
     setEditing(false);
     setPanelOpen(false);
     setApplicationText("");
+    setVerificationRequested(false);
+    setTurnstileToken("");
     setMessage("");
     setOpen(true);
   };
@@ -365,6 +371,7 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
               <Textarea
                 value={applicationText}
                 onChange={(event) => setApplicationText(event.target.value)}
+                onFocus={() => setVerificationRequested(true)}
                 rows={7}
                 className="mt-1"
                 placeholder={FRIEND_LINK_TEMPLATE}
@@ -406,7 +413,7 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
               提交前请确认网站可访问、信息准确。提交后进入人工审核，审核期间请勿重复提交。
             </div>
             {message && <p className="friend-apply-message">{message}</p>}
-            {turnstileConfig?.enabled && <div ref={turnstileRef} className="mt-3 min-h-[65px]" />}
+            {turnstileConfig?.enabled && verificationRequested && <div ref={turnstileRef} className="mt-3 min-h-[65px]" />}
             <div className="mt-4 flex justify-end gap-2">
               <button type="button" onClick={() => setOpen(false)} className="hv-button">取消</button>
               <button type="button" onClick={() => void submit()} disabled={busy} className="hv-button hv-button-primary inline-flex items-center gap-2 disabled:opacity-50">

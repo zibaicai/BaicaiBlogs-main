@@ -19,6 +19,7 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
   const [content, setContent] = useState("");
   const [busy, setBusy] = useState(false);
   const [turnstileConfig, setTurnstileConfig] = useState<{ enabled: boolean; siteKey: string } | null>(null);
+  const [verificationRequested, setVerificationRequested] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
   const [turnstileReady, setTurnstileReady] = useState(false);
   const [turnstilePassed, setTurnstilePassed] = useState(false);
@@ -37,7 +38,7 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
   }, []);
 
   useEffect(() => {
-    if (!turnstileConfig?.enabled || !turnstileConfig.siteKey) return;
+    if (!verificationRequested || !turnstileConfig?.enabled || !turnstileConfig.siteKey) return;
     const script = document.querySelector<HTMLScriptElement>('script[data-guestbook-turnstile="true"]') || document.createElement("script");
     if ((window as any).turnstile) {
       setTurnstileReady(true);
@@ -49,10 +50,10 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
     script.dataset.guestbookTurnstile = "true";
     script.onload = () => setTurnstileReady(true);
     if (!script.parentElement) document.head.appendChild(script);
-  }, [turnstileConfig]);
+  }, [verificationRequested, turnstileConfig]);
 
   useEffect(() => {
-    if (!turnstileReady || !turnstileConfig?.siteKey || !turnstileRef.current || widgetRef.current) return;
+    if (!verificationRequested || !turnstileReady || !turnstileConfig?.siteKey || !turnstileRef.current || widgetRef.current) return;
     const turnstile = (window as any).turnstile;
     const widget = turnstile?.render(turnstileRef.current, {
       sitekey: turnstileConfig.siteKey,
@@ -74,7 +75,7 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
       if (widgetRef.current && turnstile) turnstile.remove(widgetRef.current);
       widgetRef.current = null;
     };
-  }, [turnstileReady, turnstileConfig]);
+  }, [verificationRequested, turnstileReady, turnstileConfig]);
 
   useEffect(() => {
     if (needsReverify && content.length > 0) {
@@ -164,11 +165,12 @@ export default function FriendGuestbook({ initialMessages }: { initialMessages: 
           <Textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
+            onFocus={() => setVerificationRequested(true)}
             rows={4}
             className="mt-1"
             placeholder="说点什么，或者留下你的网站。"
           />
-          {turnstileConfig?.enabled && (
+          {turnstileConfig?.enabled && verificationRequested && (
             <div className={turnstilePassed ? "h-0 overflow-hidden" : "mt-3 min-h-[65px]"}>
               <div ref={turnstileRef} />
             </div>
