@@ -35,6 +35,6 @@
   html[data-scrolling="true"] .message-list--panel,
   html[data-scrolling="true"] .friend-link-card,
   html[data-scrolling="true"] .tool-directory {
-    background: color-mix(in srgb, var(--ui-surface) 92%, transparent);
+    background: color-mix(in srgb, var(--ui-secondary-bg) 92%, transparent);
   }
 }
