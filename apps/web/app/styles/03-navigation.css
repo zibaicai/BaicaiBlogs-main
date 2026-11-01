@@ -280,4 +280,16 @@
   background: rgba(49, 87, 183, 0.16);
 }
 
+@media (max-width: 1023px) {
+  .user-menu-dropdown {
+    position: fixed;
+    top: 72px;
+    right: 12px;
+    left: auto;
+    width: min(220px, calc(100vw - 24px));
+    max-height: calc(100vh - 88px);
+    overflow-y: auto;
+  }
+}
+
 }
