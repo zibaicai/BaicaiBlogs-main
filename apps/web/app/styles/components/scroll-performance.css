@@ -4,28 +4,6 @@
    * background makes every moving glass surface re-sample its backdrop.
    * ScrollActivity removes this flag 500ms after the last scroll event.
    */
-  html[data-scrolling="true"] .site-navbar,
-  html[data-scrolling="true"] .hv-panel,
-  html[data-scrolling="true"] .directory-card,
-  html[data-scrolling="true"] .archive-card,
-  html[data-scrolling="true"] .article-content,
-  html[data-scrolling="true"] .article-toc,
-  html[data-scrolling="true"] .comment-section,
-  html[data-scrolling="true"] .message-list--panel,
-  html[data-scrolling="true"] .friend-link-card,
-  html[data-scrolling="true"] .tool-directory,
-  html[data-scrolling="true"] .nav-search-results {
-    backdrop-filter: none !important;
-  }
-
-  html[data-scrolling="true"] .site-navbar {
-    background: rgba(255, 255, 255, 0.86) !important;
-  }
-
-  html.dark[data-scrolling="true"] .site-navbar {
-    background: rgba(15, 23, 42, 0.9) !important;
-  }
-
   html[data-scrolling="true"] .hv-panel,
   html[data-scrolling="true"] .directory-card,
   html[data-scrolling="true"] .archive-card,
@@ -35,6 +13,19 @@
   html[data-scrolling="true"] .message-list--panel,
   html[data-scrolling="true"] .friend-link-card,
   html[data-scrolling="true"] .tool-directory {
-    background: color-mix(in srgb, var(--ui-secondary-bg) 92%, transparent);
+    backdrop-filter: none !important;
+    background: rgba(255, 255, 255, 0.92) !important;
+  }
+
+  html.dark[data-scrolling="true"] .hv-panel,
+  html.dark[data-scrolling="true"] .directory-card,
+  html.dark[data-scrolling="true"] .archive-card,
+  html.dark[data-scrolling="true"] .article-content,
+  html.dark[data-scrolling="true"] .article-toc,
+  html.dark[data-scrolling="true"] .comment-section,
+  html.dark[data-scrolling="true"] .message-list--panel,
+  html.dark[data-scrolling="true"] .friend-link-card,
+  html.dark[data-scrolling="true"] .tool-directory {
+    background: rgba(15, 23, 42, 0.92) !important;
   }
 }
