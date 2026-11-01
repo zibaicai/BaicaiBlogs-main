@@ -18,19 +18,21 @@
 }
 .article-back-slot {
   flex: 0 0 auto;
-  margin-bottom: 2px;
+}
+.article-back-slot button {
+  margin-bottom: 0 !important;
 }
 .article-card-slot {
   min-height: 0;
 }
 .article-card-author {
-  flex: 0 0 auto;
+  flex: 42 1 0;
 }
 .article-card-recommended {
-  flex: 0 0 auto;
+  flex: 58 1 0;
 }
 .article-card-slot > * {
-  height: auto !important;
+  height: 100%;
 }
 .article-card-slot .author-card,
 .article-card-slot .recommended-card {
