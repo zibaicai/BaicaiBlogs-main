@@ -44,7 +44,7 @@ export default async function RoomAboutPage({ params }: { params: Promise<{ user
               <p className="page-subtitle mt-2 text-slate-500">{room.roomName}</p>
             </header>
 
-            <section className="rounded-3xl border border-white/40 bg-white/60 p-8 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/50 md:p-10">
+            <section className="rounded-3xl border border-white/40 bg-white/60 p-8 shadow-xl glass-blur glass-blur--xl dark:border-white/10 dark:bg-slate-800/50 md:p-10">
               <h2 className="mb-4 text-2xl font-black text-slate-900 dark:text-white">关于 {room.nickname}</h2>
               <p className="leading-relaxed text-slate-700 dark:text-slate-300">
                 {room.roomBio || "这个小屋还没有写下简介。"}

@@ -127,7 +127,7 @@ export default function ArchiveItemCard({
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-        {label && <span className="directory-date-badge text-meta">{label}</span>}
+        {label && <span className="directory-date-badge glass-blur glass-blur--sm text-meta">{label}</span>}
         {cornerBadge && <span {...glassProps("badge", "suspend", "directory-card-corner-badge")}>{cornerBadge}</span>}
       </div>
 

@@ -109,7 +109,7 @@ export function FeedbackProvider({ children }: { children: ReactNode }) {
       {children}
       {dialog && createPortal(
         <div
-          className="fixed inset-0 z-[120000] flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-[2px]"
+          className="fixed inset-0 z-[120000] flex items-center justify-center bg-slate-950/45 p-4 glass-blur-[2px]"
           role="presentation"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) close(false);

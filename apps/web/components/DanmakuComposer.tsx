@@ -50,13 +50,13 @@ export default function DanmakuComposer() {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="danmaku-trigger flex items-center gap-2 rounded-full border px-4 py-2.5 text-xs font-black shadow-xl backdrop-blur-xl transition-all hover:-translate-y-0.5"
+          className="danmaku-trigger flex items-center gap-2 rounded-full border px-4 py-2.5 text-xs font-black shadow-xl glass-blur glass-blur--xl transition-all hover:-translate-y-0.5"
         >
           <MessageCircle size={15} className="text-indigo-500" />
           发弹幕
         </button>
       ) : (
-        <div className="w-[min(320px,calc(100vw-2rem))] rounded-2xl border border-white/40 bg-white/80 p-3 shadow-2xl backdrop-blur-2xl dark:border-white/10 dark:bg-slate-900/90">
+        <div className="w-[min(320px,calc(100vw-2rem))] rounded-2xl border border-white/40 bg-white/80 p-3 shadow-2xl glass-blur glass-blur--2xl dark:border-white/10 dark:bg-slate-900/90">
           <div className="mb-2 flex items-center justify-between">
             <span className="text-meta font-black uppercase tracking-widest text-slate-400">
               发一条弹幕

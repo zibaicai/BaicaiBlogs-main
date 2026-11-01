@@ -94,7 +94,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           <div
             key={item.id}
             role="status"
-            className={`toast-card pointer-events-auto flex max-w-[min(30rem,calc(100vw-2rem))] items-center gap-2.5 rounded-xl border px-4 py-2.5 shadow-lg backdrop-blur-md ${KIND_CLASS[item.kind]}`}
+            className={`toast-card pointer-events-auto flex max-w-[min(30rem,calc(100vw-2rem))] items-center gap-2.5 rounded-xl border px-4 py-2.5 shadow-lg glass-blur glass-blur--md ${KIND_CLASS[item.kind]}`}
           >
             <Icon size={15} className="shrink-0" />
             <span className="text-description font-bold leading-5">{item.message}</span>

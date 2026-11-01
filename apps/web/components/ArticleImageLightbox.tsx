@@ -25,7 +25,7 @@ export default function ArticleImageLightbox({ src, alt, onClose }: ArticleImage
 
   return (
     <div
-      className="fixed inset-0 z-[10000] flex flex-col bg-slate-950/95 backdrop-blur-sm"
+      className="fixed inset-0 z-[10000] flex flex-col bg-slate-950/95 glass-blur glass-blur--sm"
       role="dialog"
       aria-modal="true"
       aria-label="查看文章图片"

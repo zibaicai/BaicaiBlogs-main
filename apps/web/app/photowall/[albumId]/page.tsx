@@ -191,7 +191,7 @@ export default function AlbumPage() {
           )}
 
           {!loading && error && (
-            <div className="max-w-md mx-auto rounded-3xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-white/40 dark:border-white/10 shadow-xl p-8 text-center">
+            <div className="max-w-md mx-auto rounded-3xl bg-white/60 dark:bg-slate-800/60 glass-blur glass-blur--xl border border-white/40 dark:border-white/10 shadow-xl p-8 text-center">
               <Lock className="mx-auto text-amber-400 mb-4" size={28} />
               <div className="text-sm font-bold text-red-400 mb-4">{error}</div>
               {error.includes("密码") && (
@@ -224,7 +224,7 @@ export default function AlbumPage() {
           )}
 
           {!loading && album?.locked && (
-            <div className="max-w-md mx-auto rounded-3xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-white/40 dark:border-white/10 shadow-xl p-8 text-center">
+            <div className="max-w-md mx-auto rounded-3xl bg-white/60 dark:bg-slate-800/60 glass-blur glass-blur--xl border border-white/40 dark:border-white/10 shadow-xl p-8 text-center">
               {album.coverBlurUrl && (
                 <img src={album.coverBlurUrl} alt="" className="w-full h-32 object-cover rounded-2xl blur-[2px] mb-5" />
               )}
@@ -313,7 +313,7 @@ export default function AlbumPage() {
       </PageTransition>
 
       {active && (
-        <div className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[200] bg-black/90 glass-blur glass-blur--md flex items-center justify-center p-4">
           <button
             onClick={closeLightbox}
             className="absolute top-5 right-5 w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20"

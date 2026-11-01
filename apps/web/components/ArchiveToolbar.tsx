@@ -41,7 +41,7 @@ export default function ArchiveToolbar({
   extra?: ReactNode;
 }) {
   return (
-    <div className="directory-toolbar">
+    <div className="directory-toolbar glass-blur glass-blur--md">
       <div className="directory-tab-scroll">
         <div className="directory-tabs">
           {filters.map((filter) => (
@@ -83,7 +83,7 @@ export default function ArchiveToolbar({
           </button>
         )}
         {views.length > 1 && (
-          <div className="directory-view-toggle" role="group" aria-label="视图模式">
+          <div className="directory-view-toggle glass-blur glass-blur--md" role="group" aria-label="视图模式">
             {views.map((key) => {
               const view = ARCHIVE_VIEWS[key];
               if (!view) return null;

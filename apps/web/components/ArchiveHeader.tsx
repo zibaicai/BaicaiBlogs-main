@@ -22,7 +22,7 @@ export default function ArchiveHeader({
       <div className="directory-subtitle">
         <Sparkles size={15} className="text-indigo-500" />
         {subtitle && <span>{subtitle}</span>}
-        {count !== undefined && <span className="directory-count text-meta">{count}</span>}
+        {count !== undefined && <span className="directory-count glass-blur glass-blur--md text-meta">{count}</span>}
       </div>
       {children}
     </header>

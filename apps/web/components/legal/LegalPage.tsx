@@ -23,7 +23,7 @@ export default function LegalPage({ title, subtitle, current, children }: LegalP
       <PageTransition>
         <main className="directory-shell">
           <div className="mx-auto max-w-4xl">
-            <header className="mb-8 rounded-3xl border border-white/30 bg-white/65 p-6 shadow-lg backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/65">
+            <header className="mb-8 rounded-3xl border border-white/30 bg-white/65 p-6 shadow-lg glass-blur glass-blur--xl dark:border-white/10 dark:bg-slate-900/65">
               <div className="mb-4 flex flex-wrap gap-2">
                 {LINKS.map((link) => (
                   <Link
@@ -50,7 +50,7 @@ export default function LegalPage({ title, subtitle, current, children }: LegalP
               </p>
             </header>
 
-            <article className="legal-document rounded-3xl border border-white/40 bg-white/85 p-7 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/85 md:p-10">
+            <article className="legal-document rounded-3xl border border-white/40 bg-white/85 p-7 shadow-xl glass-blur glass-blur--xl dark:border-white/10 dark:bg-slate-900/85 md:p-10">
               <style>{`
                 .legal-document h2 { margin: 2rem 0 .8rem; font-size: 1.15rem; font-weight: 900; color: var(--ui-text-strong); }
                 .legal-document h2:first-child { margin-top: 0; }

@@ -45,7 +45,7 @@ export default function FloatingPlayer() {
         transition={{ duration: 0.3, ease: "easeInOut" }}
         aria-label={isPlaying ? "暂停音乐" : "播放音乐"}
         title={isPlaying ? `暂停：${currentSong.title}` : `播放：${currentSong.title}`}
-        className={`music-orb group relative flex h-[52px] w-[52px] items-center justify-center rounded-full border shadow-2xl backdrop-blur-xl transition-colors ${
+        className={`music-orb group relative flex h-[52px] w-[52px] items-center justify-center rounded-full border shadow-2xl glass-blur glass-blur--xl transition-colors ${
           isPlaying
             ? "is-playing border-indigo-300/60 bg-indigo-500 text-white dark:border-indigo-400/40"
             : "border-white/50 bg-white/55 text-slate-500 dark:border-white/10 dark:bg-slate-900/55 dark:text-slate-300"

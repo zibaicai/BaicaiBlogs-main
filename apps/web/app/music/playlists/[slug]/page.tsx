@@ -86,7 +86,7 @@ export default function MusicPlaylistPage({ params }: { params: Promise<{ slug: 
             <div className="py-24 text-center text-sm text-slate-400">歌单不存在或未公开。</div>
           ) : (
             <>
-              <header className="grid gap-8 rounded-[2rem] border border-white/20 bg-white/35 p-6 backdrop-blur-xl dark:bg-slate-800/35 md:grid-cols-[240px_1fr] md:p-8">
+              <header className="grid gap-8 rounded-[2rem] border border-white/20 bg-white/35 p-6 glass-blur glass-blur--xl dark:bg-slate-800/35 md:grid-cols-[240px_1fr] md:p-8">
                 <div className="aspect-square overflow-hidden rounded-3xl bg-slate-900/30">
                   {playlist.cover ? (
                     <img src={playlist.cover} alt={playlist.title} className="h-full w-full object-cover" />
@@ -129,7 +129,7 @@ export default function MusicPlaylistPage({ params }: { params: Promise<{ slug: 
 
               <section className="mt-10">
                 <h2 className="mb-4 text-xl font-black text-slate-900 dark:text-white">曲目 · {playlist.tracks?.length || 0}</h2>
-                <div className="overflow-hidden rounded-3xl border border-white/20 bg-white/35 backdrop-blur-xl dark:bg-slate-800/35">
+                <div className="overflow-hidden rounded-3xl border border-white/20 bg-white/35 glass-blur glass-blur--xl dark:bg-slate-800/35">
                   {(playlist.tracks || []).map((track, index) => (
                     <Link key={track.id} href={`/music/tracks/${track.id}`} className="flex items-center gap-4 border-b border-white/10 p-4 last:border-0 hover:bg-white/20">
                       <span className="w-6 text-center font-mono text-meta text-slate-400">{index + 1}</span>
@@ -157,7 +157,7 @@ export default function MusicPlaylistPage({ params }: { params: Promise<{ slug: 
                     if (items.length === 0) return null;
                     const label = type === "REMOVED" ? "下架" : type === "VIP_ONLY" ? "升 VIP" : "地区限制";
                     return (
-                      <div key={type} className="mb-3 overflow-hidden rounded-2xl border border-white/20 bg-white/30 backdrop-blur-xl dark:bg-slate-800/30">
+                      <div key={type} className="mb-3 overflow-hidden rounded-2xl border border-white/20 bg-white/30 glass-blur glass-blur--xl dark:bg-slate-800/30">
                         <div className="border-b border-white/10 px-4 py-3 text-xs font-black text-slate-600 dark:text-slate-300">{label}（{items.length}）</div>
                         {items.map((issue) => (
                           <div key={issue.id} className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3 last:border-0">

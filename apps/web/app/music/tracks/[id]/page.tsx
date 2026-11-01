@@ -44,7 +44,7 @@ export default function MusicTrackPage({ params }: { params: Promise<{ id: strin
             <div className="py-24 text-center text-sm text-slate-400">歌曲不存在或未公开。</div>
           ) : (
             <>
-              <header className="flex flex-col gap-6 rounded-[2rem] border border-white/20 bg-white/35 p-6 backdrop-blur-xl dark:bg-slate-800/35 md:flex-row md:items-center md:p-8">
+              <header className="flex flex-col gap-6 rounded-[2rem] border border-white/20 bg-white/35 p-6 glass-blur glass-blur--xl dark:bg-slate-800/35 md:flex-row md:items-center md:p-8">
                 <div className="h-40 w-40 shrink-0 overflow-hidden rounded-3xl bg-slate-900/30">
                   {track.cover ? <img src={track.cover} alt={track.title} className="h-full w-full object-cover" /> : <Music2 className="m-12 text-indigo-300" size={40} />}
                 </div>

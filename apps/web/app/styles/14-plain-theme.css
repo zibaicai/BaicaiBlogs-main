@@ -57,9 +57,6 @@ html[data-visual-mode="plain"] .archive-filter-panel,
 html[data-visual-mode="plain"] .archive-filter-backdrop {
   backdrop-filter: none !important;
 }
-html[data-visual-mode="plain"] [class*="backdrop-blur"] {
-  backdrop-filter: none !important;
-}
 html[data-visual-mode="plain"] .danmaku-layer {
   display: none !important;
 }

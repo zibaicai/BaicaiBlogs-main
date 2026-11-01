@@ -274,10 +274,6 @@
     --tw-prose-links: var(--color-indigo-400);
   }
 
-  [class*="backdrop-blur-"] {
-    will-change: backdrop-filter;
-  }
-
   .group:hover img {
     will-change: transform;
   }
@@ -293,15 +289,6 @@ input[type=range]::-webkit-slider-thumb {
 }
 /* 4. 闁诲浚鍋嗙€氬嫭绋夐幘姹団偓宥嗗濡搫顕у☉鎾抽缁旈浠﹂埀顒勫礂濠婂啰淇?*/
 @layer base {
-  [class*="backdrop-blur-"] {
-    will-change: backdrop-filter;
-  }
-
-  @-moz-document url-prefix() {
-    [class*="backdrop-blur-md"] {
-    }
-  }
-
   html, body {
     min-height: 100%;
     margin: 0;

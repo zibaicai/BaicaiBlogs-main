@@ -25,7 +25,7 @@ export default async function AboutPage() {
               </p>
             </header>
 
-            <section className="rounded-3xl border border-white/40 bg-white/60 p-8 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/50 md:p-10">
+            <section className="rounded-3xl border border-white/40 bg-white/60 p-8 shadow-xl glass-blur glass-blur--xl dark:border-white/10 dark:bg-slate-800/50 md:p-10">
               <h2 className="text-2xl font-black text-slate-900 dark:text-white">社区介绍</h2>
               <p className="mt-4 leading-relaxed text-slate-700 dark:text-slate-300">
                 {siteInfo.bio || "拾起时光的砂砾，收藏那些不愿遗忘的记忆"}

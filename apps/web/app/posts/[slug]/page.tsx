@@ -73,7 +73,7 @@ export default async function PostDetail({ params }: { params: Promise<{ slug: s
             <ArticleToc />
           </aside>
 
-          <article className="article-content bg-white/60 dark:bg-slate-800/50 backdrop-blur-xl rounded-b-3xl shadow-2xl border border-t-0 border-white/40 dark:border-white/10 overflow-hidden transition-colors duration-700">
+          <article className="article-content bg-white/60 dark:bg-slate-800/50 glass-blur glass-blur--xl rounded-b-3xl shadow-2xl border border-t-0 border-white/40 dark:border-white/10 overflow-hidden transition-colors duration-700">
             <div className="relative">
               <div className="article-header relative">
                 <BackButton fallbackHref="/posts" />

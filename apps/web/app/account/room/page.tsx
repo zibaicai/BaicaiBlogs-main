@@ -72,7 +72,7 @@ export default function RoomSettingsPage() {
                 <Link href="/login?next=/account/room" className="hv-button hv-button-primary mt-4 inline-flex">去登录</Link>
               </section>
             ) : (
-              <section className="space-y-5 rounded-3xl border border-white/40 bg-white/60 p-6 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/50 md:p-8">
+              <section className="space-y-5 rounded-3xl border border-white/40 bg-white/60 p-6 shadow-xl glass-blur glass-blur--xl dark:border-white/10 dark:bg-slate-800/50 md:p-8">
                 <label className="block text-xs font-bold text-slate-500">
                   昵称
                   <Input value={nickname} onChange={(event) => setNickname(event.target.value)} className="mt-2" placeholder="例如：叶洛" />

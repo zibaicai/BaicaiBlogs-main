@@ -250,7 +250,7 @@ export default function WhalePet() {
               initial={{ opacity: 0, y: 8, scale: 0.94 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 4, scale: 0.94 }}
-              className="absolute bottom-full left-1/2 z-30 mb-3 w-max max-w-[250px] -translate-x-1/2 rounded-2xl border border-white/60 bg-white/95 px-4 py-3 text-center text-xs font-bold leading-relaxed text-slate-700 shadow-xl backdrop-blur-xl dark:border-slate-700 dark:bg-slate-800/95 dark:text-slate-200"
+              className="absolute bottom-full left-1/2 z-30 mb-3 w-max max-w-[250px] -translate-x-1/2 rounded-2xl border border-white/60 bg-white/95 px-4 py-3 text-center text-xs font-bold leading-relaxed text-slate-700 shadow-xl glass-blur glass-blur--xl dark:border-slate-700 dark:bg-slate-800/95 dark:text-slate-200"
             >
               {speech}
               <span className="absolute -bottom-1 left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border-b border-r border-white/60 bg-white/95 dark:border-slate-700 dark:bg-slate-800/95" />
@@ -279,7 +279,7 @@ export default function WhalePet() {
               setSpeech(null);
               setShowInput((v) => !v);
             }}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/40 bg-white/85 text-indigo-500 shadow-md backdrop-blur-md transition-transform hover:scale-110 active:scale-95 dark:border-white/10 dark:bg-slate-800/85"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/40 bg-white/85 text-indigo-500 shadow-md glass-blur glass-blur--md transition-transform hover:scale-110 active:scale-95 dark:border-white/10 dark:bg-slate-800/85"
             title="和鲸鱼娘聊天"
             aria-label="和鲸鱼娘聊天"
           >
@@ -292,7 +292,7 @@ export default function WhalePet() {
               handleFeed();
             }}
             disabled={isEating || state === "thinking"}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/40 bg-white/85 text-base shadow-md backdrop-blur-md transition-transform hover:scale-110 active:scale-95 disabled:opacity-40 dark:border-white/10 dark:bg-slate-800/85"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/40 bg-white/85 text-base shadow-md glass-blur glass-blur--md transition-transform hover:scale-110 active:scale-95 disabled:opacity-40 dark:border-white/10 dark:bg-slate-800/85"
             title="投喂一块小鱼干"
             aria-label="投喂一块小鱼干"
           >
@@ -353,7 +353,7 @@ export default function WhalePet() {
       </div>
 
       <div
-        className="whale-clock-card pointer-events-none relative z-0 flex w-[152px] flex-col items-center rounded-2xl border border-white/35 bg-white/30 px-3 py-2 shadow-lg backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/40"
+        className="whale-clock-card pointer-events-none relative z-0 flex w-[152px] flex-col items-center rounded-2xl border border-white/35 bg-white/30 px-3 py-2 shadow-lg glass-blur glass-blur--xl dark:border-white/10 dark:bg-slate-900/40"
         style={{ transform: "translateY(-16px)" }}
       >
         <time className="font-mono text-[19px] font-black tracking-[0.12em] text-slate-800 dark:text-slate-100" dateTime={clock}>
@@ -371,7 +371,7 @@ export default function WhalePet() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.96 }}
             onSubmit={handleChatSubmit}
-            className="absolute bottom-full left-1/2 z-30 mb-2 flex w-[260px] -translate-x-1/2 items-center rounded-full border border-white/60 bg-white/95 p-1.5 shadow-xl backdrop-blur-xl dark:border-slate-700 dark:bg-slate-800/95"
+            className="absolute bottom-full left-1/2 z-30 mb-2 flex w-[260px] -translate-x-1/2 items-center rounded-full border border-white/60 bg-white/95 p-1.5 shadow-xl glass-blur glass-blur--xl dark:border-slate-700 dark:bg-slate-800/95"
           >
             <input
               value={inputValue}

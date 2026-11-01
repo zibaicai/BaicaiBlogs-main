@@ -70,14 +70,12 @@ export default function AppShell({ config, children }: AppShellProps) {
                         overflow: visible !important;
                         background-color: rgba(239, 246, 255, 0.45) !important;
                         border-color: rgba(191, 219, 254, 0.6) !important;
-                        backdrop-filter: blur(12px) saturate(120%) !important;
                         box-shadow: 0 8px 32px rgba(191, 219, 254, 0.25) !important;
                         transition: all 0.7s ease !important;
                       }
                       .dark.winter-mode .snow-cap {
                         background-color: rgba(23, 37, 84, 0.4) !important;
                         border-color: rgba(59, 130, 246, 0.3) !important;
-                        backdrop-filter: blur(12px) brightness(80%) !important;
                         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
                       }
                     `,

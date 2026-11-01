@@ -76,7 +76,7 @@
   }
 
   .directory-date-badge {
-    @apply absolute bottom-3 left-4 rounded-md bg-black/40 px-2 py-1 font-mono font-bold text-white/90 backdrop-blur-sm;
+    @apply absolute bottom-3 left-4 rounded-md bg-black/40 px-2 py-1 font-mono font-bold text-white/90;
   }
 
   .directory-header {
@@ -108,7 +108,7 @@
   }
 
   .directory-count {
-    @apply inline-flex items-center rounded-full border border-white/50 bg-white/50 px-3 py-1 font-black text-indigo-500 backdrop-blur-md;
+    @apply inline-flex items-center rounded-full border border-white/50 bg-white/50 px-3 py-1 font-black text-indigo-500;
   }
 
   .dark .directory-count {
@@ -116,7 +116,7 @@
   }
 
   .directory-toolbar {
-    @apply mb-12 flex flex-col items-center justify-between gap-4 rounded-3xl border border-white/30 bg-white/30 p-4 backdrop-blur-md md:flex-row;
+    @apply mb-12 flex flex-col items-center justify-between gap-4 rounded-3xl border border-white/30 bg-white/30 p-4 md:flex-row;
   }
 
   .dark .directory-toolbar {
@@ -164,7 +164,7 @@
   }
 
   .directory-search {
-    @apply w-full max-w-lg rounded-2xl border border-white/40 bg-white/40 py-4 pl-14 pr-6 text-sm font-medium text-slate-800 shadow-xl outline-none backdrop-blur-xl transition-all placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500/50;
+    @apply w-full max-w-lg rounded-2xl border border-white/40 bg-white/40 py-4 pl-14 pr-6 text-sm font-medium text-slate-800 shadow-xl outline-none transition-all placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500/50;
   }
 
   .dark .directory-search {
@@ -173,7 +173,7 @@
 
 
   .directory-view-toggle {
-    @apply flex w-fit items-center gap-1 rounded-2xl border border-white/40 bg-white/50 p-1 shadow-inner backdrop-blur-md;
+    @apply flex w-fit items-center gap-1 rounded-2xl border border-white/40 bg-white/50 p-1 shadow-inner;
   }
 
   .dark .directory-view-toggle {

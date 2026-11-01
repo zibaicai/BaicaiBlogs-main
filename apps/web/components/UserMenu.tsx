@@ -54,7 +54,7 @@ export default function UserMenu() {
       </button>
 
       {open && (
-        <div className="user-menu-dropdown absolute right-0 mt-2 w-48 rounded-2xl bg-white/90 dark:bg-slate-900/95 backdrop-blur-2xl border border-white/40 dark:border-white/10 shadow-2xl p-2 z-[120]">
+        <div className="user-menu-dropdown absolute right-0 mt-2 w-48 rounded-2xl bg-white/90 dark:bg-slate-900/95 glass-blur glass-blur--2xl border border-white/40 dark:border-white/10 shadow-2xl p-2 z-[120]">
           <Link
             href={`/u/${encodeURIComponent(user.username)}`}
             onClick={() => setOpen(false)}

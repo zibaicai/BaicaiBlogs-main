@@ -352,7 +352,7 @@ export default function GlobalToolbox() {
         onClick={() => setIsOpen((value) => !value)}
         aria-label="打开工具目录"
         aria-expanded={isOpen}
-        className={`flex h-12 w-12 items-center justify-center rounded-full border border-white/50 shadow-xl backdrop-blur-xl transition-all duration-300 hover:scale-105 active:scale-95 dark:border-white/10 ${
+        className={`flex h-12 w-12 items-center justify-center rounded-full border border-white/50 shadow-xl glass-blur glass-blur--xl transition-all duration-300 hover:scale-105 active:scale-95 dark:border-white/10 ${
           isOpen
             ? "bg-[var(--ui-accent)] text-[var(--ui-accent-contrast)]"
             : "bg-white/80 text-slate-600 dark:bg-slate-900/80 dark:text-slate-200"
