@@ -80,28 +80,22 @@
   width: 100%;
   max-width: none;
   height: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.7);
   padding: 0 15px 0 38px;
   padding-right: 52px;
   color: #334155;
   font-size: var(--type-control);
   opacity: 0;
   outline: none;
-  backdrop-filter: blur(16px);
   transition: opacity 0.15s ease;
-}
-
-.dark .nav-search-input {
-  border-color: rgba(255, 255, 255, 0.1);
-  background: rgba(15, 23, 42, 0.78);
-  color: #e2e8f0;
 }
 
 .nav-search-input:focus {
   border-color: rgba(49, 87, 183, 0.55);
   box-shadow: 0 0 0 3px rgba(49, 87, 183, 0.12);
+}
+
+.dark .nav-search-input {
+  color: #e2e8f0;
 }
 
 .nav-search-input::placeholder {

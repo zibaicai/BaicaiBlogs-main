@@ -1,5 +1,6 @@
 import Link from "next/link";
 import GlassSurface from "./ui/glass/GlassSurface";
+import { glassProps } from "./ui/glass/GlassSurface";
 import type { ReactNode } from "react";
 import { ResourceTitle, type ResourceTitleVariant } from "./ui/Typography";
 import { OptimizedImage } from "./ui/OptimizedImage";
@@ -127,7 +128,7 @@ export default function ArchiveItemCard({
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         {label && <span className="directory-date-badge text-meta">{label}</span>}
-        {cornerBadge && <span className="directory-card-corner-badge">{cornerBadge}</span>}
+        {cornerBadge && <span {...glassProps("badge", "suspend", "directory-card-corner-badge")}>{cornerBadge}</span>}
       </div>
 
       <div className="directory-card-body">

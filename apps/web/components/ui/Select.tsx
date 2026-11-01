@@ -3,6 +3,7 @@
 import { useEffect, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Check, ChevronDown } from "lucide-react";
+import { glassProps } from "./glass/GlassSurface";
 
 export interface SelectOption {
   value: string;
@@ -246,7 +247,7 @@ export default function Select({
             role="listbox"
             aria-label={ariaLabel}
             style={resolvedMenuStyle}
-            className={`ui-select-menu ${menuTone === "glass" ? "ui-select-menu--glass" : ""} admin-scrollbar ${menuClassName}`}
+            {...glassProps("popover", "suspend", `ui-select-menu ${menuTone === "glass" ? "ui-select-menu--glass" : ""} admin-scrollbar ${menuClassName}`)}
           >
             {options.length === 0 ? (
               <div className="ui-select-empty">{empty ?? "暂无可选项"}</div>

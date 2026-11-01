@@ -14,6 +14,7 @@ import {
 } from "../lib/friend-link";
 import { useFriendsVerification } from "./friends/FriendsVerificationProvider";
 import GlassSurface from "./ui/glass/GlassSurface";
+import { glassProps } from "./ui/glass/GlassSurface";
 
 type Application = { id: number; name: string; url: string; avatar?: string; description?: string; contact?: string; status: string; bound?: boolean };
 
@@ -270,7 +271,7 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
       <button
         ref={fabRef}
         type="button"
-        className="friend-link-fab"
+        {...glassProps("field", "keep", "friend-link-fab")}
         aria-label="打开本站友链"
         aria-haspopup="dialog"
         aria-expanded={panelOpen}
@@ -282,7 +283,7 @@ export default function FriendApplySection({ siteInfo }: { siteInfo: SiteInfo })
 
       {panelOpen && typeof document !== "undefined" && createPortal(
         <>
-          <div className="friend-link-overlay" aria-hidden="true" onClick={() => { setPanelOpen(false); fabRef.current?.focus(); }} />
+          <div {...glassProps("overlay", "keep", "friend-link-overlay")} aria-hidden="true" onClick={() => { setPanelOpen(false); fabRef.current?.focus(); }} />
           <div
             ref={panelRef}
             id="friend-link-panel"

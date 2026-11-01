@@ -233,8 +233,6 @@
     align-items: center;
     justify-content: center;
     padding: 20px;
-    background: rgba(2, 6, 23, 0.42);
-    backdrop-filter: blur(5px);
   }
 
   .friends-verification-dialog {
@@ -365,12 +363,7 @@
     height: 48px;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    border-radius: 50%;
     color: var(--ui-accent);
-    background: rgba(255, 255, 255, 0.72);
-    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.18);
-    backdrop-filter: blur(18px);
     transform: translateY(-50%);
     transition: transform 0.2s ease, background-color 0.2s ease;
   }
@@ -380,17 +373,10 @@
     transform: translateY(-50%) scale(1.05);
   }
 
-  .dark .friend-link-fab {
-    border-color: rgba(255, 255, 255, 0.14);
-    background: rgba(15, 23, 42, 0.8);
-  }
-
   .friend-link-overlay {
     position: fixed;
     inset: 0;
     z-index: 9998;
-    background: rgba(2, 6, 23, 0.22);
-    backdrop-filter: blur(3px);
   }
 
   .friend-link-panel {

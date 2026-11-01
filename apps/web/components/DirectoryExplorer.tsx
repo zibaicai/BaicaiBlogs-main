@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Check, SlidersHorizontal, X } from "lucide-react";
 import ArchiveHeader from "./ArchiveHeader";
 import ArchiveToolbar, { type SortOption } from "./ArchiveToolbar";
+import { glassProps } from "./ui/glass/GlassSurface";
 import DirectoryView, {
   type ArchiveCardRatio,
   type ArchiveCardSize,
@@ -331,7 +332,7 @@ export default function DirectoryExplorer({
       )}
 
       {filterOpen && (
-        <div className="archive-filter-backdrop" onClick={() => setFilterOpen(false)}>
+        <div {...glassProps("overlay", "suspend", "archive-filter-backdrop")} onClick={() => setFilterOpen(false)}>
           <div
             className="archive-filter-panel"
             role="dialog"

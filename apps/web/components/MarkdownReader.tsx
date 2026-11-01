@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { glassProps } from "./ui/glass/GlassSurface";
 
 type MarkdownTheme = "classic" | "github-light" | "github-dark";
 
@@ -59,7 +60,7 @@ export default function MarkdownReader({ html }: { html: string }) {
     <section className="markdown-reader" data-md-theme={effectiveTheme} data-site-theme={theme}>
       <div className="markdown-theme-bar">
         <span className="markdown-theme-label">阅读主题</span>
-        <div className="markdown-theme-options" role="group" aria-label="Markdown 阅读主题">
+        <div {...glassProps("field", "suspend", "markdown-theme-options")} role="group" aria-label="Markdown 阅读主题">
           {THEMES.map((option) => (
             <button
               key={option.value}

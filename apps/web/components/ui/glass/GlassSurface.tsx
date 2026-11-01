@@ -2,7 +2,7 @@
 
 import { createElement, type ElementType, type ReactNode } from "react";
 
-export type GlassVariant = "panel" | "card" | "popover" | "nav" | "subtle";
+export type GlassVariant = "panel" | "card" | "popover" | "nav" | "subtle" | "control" | "field" | "overlay" | "badge";
 export type GlassScrollBehavior = "suspend" | "keep";
 
 interface GlassSurfaceProps {

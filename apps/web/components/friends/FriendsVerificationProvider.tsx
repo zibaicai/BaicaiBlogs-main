@@ -12,6 +12,7 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { Loader2, ShieldCheck, X } from "lucide-react";
+import { glassProps } from "../ui/glass/GlassSurface";
 
 interface HumanStatus {
   verified: boolean;
@@ -196,7 +197,7 @@ export default function FriendsVerificationProvider({ children }: { children: Re
     <FriendsVerificationContext.Provider value={value}>
       {children}
       {open && typeof document !== "undefined" && createPortal(
-        <div className="friends-verification-overlay">
+        <div {...glassProps("overlay", "keep", "friends-verification-overlay")}>
           <div className="friends-verification-dialog" role="dialog" aria-modal="true" aria-labelledby="friends-verification-title">
             <div className="friends-verification-head">
               <div className="friends-verification-title">

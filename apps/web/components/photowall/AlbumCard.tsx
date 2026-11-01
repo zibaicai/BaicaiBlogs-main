@@ -3,6 +3,7 @@
 import { Lock, ShieldCheck } from "lucide-react";
 import MediaStackCard, { type MediaStackVariant } from "../media/MediaStackCard";
 import { DEFAULT_MISC } from "../../lib/site-config";
+import { glassProps } from "../ui/glass/GlassSurface";
 
 export type AlbumCardVariant = MediaStackVariant;
 
@@ -58,11 +59,11 @@ export default function AlbumCard({
       description={album.description || undefined}
       badge={
         isLocked ? (
-          <span className="album-privacy-badge">
+          <span {...glassProps("badge", "suspend", "album-privacy-badge")}>
             <Lock size={10} /> {album.hasPassword ? "密码" : "锁定"}
           </span>
         ) : isPrivate ? (
-          <span className="album-privacy-badge">
+          <span {...glassProps("badge", "suspend", "album-privacy-badge")}>
             <ShieldCheck size={10} /> 私密
           </span>
         ) : null

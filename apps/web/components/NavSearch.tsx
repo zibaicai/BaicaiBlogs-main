@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { glassProps } from "./ui/glass/GlassSurface";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Search, X } from "lucide-react";
 import type { Album, Friend, Moment, Post, Project } from "../lib/api";
@@ -218,7 +219,7 @@ export default function NavSearch({ open, onOpenChange }: Props) {
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="搜索笔记、文章、说说、相册、项目..."
-          className="nav-search-input"
+          {...glassProps("field", "suspend", "nav-search-input")}
           aria-label="全站搜索"
           autoComplete="off"
           spellCheck={false}
@@ -228,15 +229,15 @@ export default function NavSearch({ open, onOpenChange }: Props) {
       <button
         type="button"
         onClick={() => onOpenChange(!open)}
-        className="nav-search-trigger"
         aria-label={open ? "关闭搜索" : "打开搜索"}
         aria-expanded={open}
+        {...glassProps("field", "suspend", "nav-search-trigger")}
       >
         {open ? <X size={16} /> : <Search size={17} />}
       </button>
 
       {showResults && (
-        <div className="nav-search-results">
+        <div {...glassProps("popover", "suspend", "nav-search-results")}>
           {loading ? (
             <div className="nav-search-empty">正在索引全站内容...</div>
           ) : results.length > 0 ? (
