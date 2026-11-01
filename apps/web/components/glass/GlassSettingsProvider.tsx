@@ -8,9 +8,13 @@ interface GlassSettingsValue {
   backgroundEnabled: boolean;
   contentEnabled: boolean;
   scrollPauseMode: GlassScrollPauseMode;
+  sakuraCount: number;
+  fireflyCount: number;
   setBackgroundEnabled: (enabled: boolean) => void;
   setContentEnabled: (enabled: boolean) => void;
   setScrollPauseMode: (mode: GlassScrollPauseMode) => void;
+  setSakuraCount: (count: number) => void;
+  setFireflyCount: (count: number) => void;
 }
 
 const STORAGE_KEY = "baicai:glass-settings";
@@ -19,6 +23,13 @@ const DEFAULT_SETTINGS = {
   backgroundEnabled: true,
   contentEnabled: true,
   scrollPauseMode: "off" as GlassScrollPauseMode,
+  sakuraCount: 1200,
+  fireflyCount: 42,
+};
+
+const clampCount = (value: unknown, fallback: number, min: number, max: number) => {
+  const number = typeof value === "number" && Number.isFinite(value) ? Math.round(value) : fallback;
+  return Math.min(max, Math.max(min, number));
 };
 
 const GlassSettingsContext = createContext<GlassSettingsValue | null>(null);
@@ -35,6 +46,8 @@ function readStoredSettings(): typeof DEFAULT_SETTINGS {
       backgroundEnabled: stored.backgroundEnabled ?? true,
       contentEnabled: stored.contentEnabled ?? true,
       scrollPauseMode,
+      sakuraCount: clampCount(stored.sakuraCount, DEFAULT_SETTINGS.sakuraCount, 100, 2000),
+      fireflyCount: clampCount(stored.fireflyCount, DEFAULT_SETTINGS.fireflyCount, 0, 120),
     };
   } catch {
     return DEFAULT_SETTINGS;
@@ -127,6 +140,12 @@ export function GlassSettingsProvider({ children }: { children: ReactNode }) {
   const setScrollPauseMode = useCallback((scrollPauseMode: GlassScrollPauseMode) => {
     setSettings((current) => ({ ...current, scrollPauseMode }));
   }, []);
+  const setSakuraCount = useCallback((sakuraCount: number) => {
+    setSettings((current) => ({ ...current, sakuraCount: clampCount(sakuraCount, current.sakuraCount, 100, 2000) }));
+  }, []);
+  const setFireflyCount = useCallback((fireflyCount: number) => {
+    setSettings((current) => ({ ...current, fireflyCount: clampCount(fireflyCount, current.fireflyCount, 0, 120) }));
+  }, []);
 
   const value = useMemo(
     () => ({
@@ -134,8 +153,10 @@ export function GlassSettingsProvider({ children }: { children: ReactNode }) {
       setBackgroundEnabled,
       setContentEnabled,
       setScrollPauseMode,
+      setSakuraCount,
+      setFireflyCount,
     }),
-    [settings, setBackgroundEnabled, setContentEnabled, setScrollPauseMode]
+    [settings, setBackgroundEnabled, setContentEnabled, setScrollPauseMode, setSakuraCount, setFireflyCount]
   );
 
   return <GlassSettingsContext.Provider value={value}>{children}</GlassSettingsContext.Provider>;

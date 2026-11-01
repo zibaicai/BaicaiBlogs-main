@@ -296,7 +296,13 @@ void main() {
 }
 `;
 
-export default function SakuraGL({ color }: { color?: { inner: number[]; outer: number[] } }) {
+export default function SakuraGL({
+  color,
+  petals,
+}: {
+  color?: { inner: number[]; outer: number[] };
+  petals?: number;
+}) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -366,6 +372,9 @@ export default function SakuraGL({ color }: { color?: { inner: number[]; outer: 
       };
 
       const CFG = resolveSakuraConfig(color);
+      if (petals !== undefined) {
+        CFG.petals = Math.max(50, Math.round(petals));
+      }
 
       // 调试入口：控制台里可以直接改
       //   __sakura.config.bloom.strength = 0.8;   ← 立刻生效（每帧读取）
@@ -766,7 +775,7 @@ export default function SakuraGL({ color }: { color?: { inner: number[]; outer: 
         }
       });
     };
-  }, [color]);
+  }, [color, petals]);
 
   return (
     <canvas

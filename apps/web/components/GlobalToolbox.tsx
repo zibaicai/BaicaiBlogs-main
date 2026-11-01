@@ -65,9 +65,13 @@ export default function GlobalToolbox() {
     backgroundEnabled,
     contentEnabled,
     scrollPauseMode,
+    sakuraCount,
+    fireflyCount,
     setBackgroundEnabled,
     setContentEnabled,
     setScrollPauseMode,
+    setSakuraCount,
+    setFireflyCount,
   } = useGlassSettings();
 
   useEffect(() => {
@@ -402,8 +406,58 @@ export default function GlobalToolbox() {
                     </div>
                   </div>
 
+                  <div className="mt-1 border-t border-slate-200/70 px-3 py-3 dark:border-white/10">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex min-w-0 items-center gap-2.5">
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
+                          <AppIcon name="sparkles" size={15} />
+                        </span>
+                        <div className="min-w-0">
+                          <div className="text-sm font-bold text-slate-800 dark:text-slate-100">樱花数量</div>
+                          <div className="mt-0.5 text-meta text-slate-400">白天背景花瓣密度</div>
+                        </div>
+                      </div>
+                      <span className="text-meta font-black text-slate-500 dark:text-slate-300">{sakuraCount}</span>
+                    </div>
+                    <input
+                      type="range"
+                      min={100}
+                      max={2000}
+                      step={100}
+                      value={sakuraCount}
+                      onChange={(event) => setSakuraCount(Number(event.target.value))}
+                      aria-label="樱花数量"
+                      className="mt-2 w-full accent-[var(--ui-accent)]"
+                    />
+                  </div>
+
+                  <div className="mt-1 border-t border-slate-200/70 px-3 py-3 dark:border-white/10">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex min-w-0 items-center gap-2.5">
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
+                          <AppIcon name="sparkles" size={15} />
+                        </span>
+                        <div className="min-w-0">
+                          <div className="text-sm font-bold text-slate-800 dark:text-slate-100">萤火虫数量</div>
+                          <div className="mt-0.5 text-meta text-slate-400">夜间背景光点密度</div>
+                        </div>
+                      </div>
+                      <span className="text-meta font-black text-slate-500 dark:text-slate-300">{fireflyCount}</span>
+                    </div>
+                    <input
+                      type="range"
+                      min={0}
+                      max={120}
+                      step={2}
+                      value={fireflyCount}
+                      onChange={(event) => setFireflyCount(Number(event.target.value))}
+                      aria-label="萤火虫数量"
+                      className="mt-2 w-full accent-[var(--ui-accent)]"
+                    />
+                  </div>
+
                   <p className="px-3 pt-2 text-meta text-slate-400">
-                    关闭毛玻璃可以明显降低滚动合成开销。滚动暂停可能产生层重建抖动，建议仅在需要时开启。
+                    关闭毛玻璃可以明显降低滚动合成开销。滚动暂停可能产生层重建抖动，建议仅在需要时开启。粒子数量修改后会立即重建背景效果。
                   </p>
                 </div>
               )}

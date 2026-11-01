@@ -1,6 +1,7 @@
 "use client";
 
 import { useTheme } from "./ThemeProvider";
+import { useGlassSettings } from "./glass/GlassSettingsProvider";
 import Fireflies from "./Fireflies";
 import SakuraGL from "./SakuraGL";
 import { SakuraBacklight, SakuraGlare } from "./SakuraLights";
@@ -22,6 +23,7 @@ const SAKURA_COLORS: Record<"ocean" | "violet", { inner: number[]; outer: number
  */
 export default function BackgroundEffects() {
   const { isDark, preset } = useTheme();
+  const { sakuraCount, fireflyCount } = useGlassSettings();
   const tone = preset === "violet" ? "violet" : "ocean";
   const sakuraColor = SAKURA_COLORS[tone];
 
@@ -34,12 +36,12 @@ export default function BackgroundEffects() {
 
       {isDark ? (
         <div className="transition-opacity duration-1000 opacity-100">
-          <Fireflies />
+          <Fireflies count={fireflyCount} />
         </div>
       ) : (
         <div className="sakura-layer">
           <SakuraBacklight tone={tone} />
-          <SakuraGL color={sakuraColor} />
+          <SakuraGL color={sakuraColor} petals={sakuraCount} />
           <SakuraGlare tone={tone} />
         </div>
       )}

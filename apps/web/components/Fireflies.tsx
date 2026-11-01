@@ -78,7 +78,7 @@ function createGlowSprite(stops: Array<[number, string]>) {
   return canvas;
 }
 
-export default function Fireflies() {
+export default function Fireflies({ count: requestedCount = TOTAL_PARTICLES }: { count?: number }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -88,7 +88,7 @@ export default function Fireflies() {
     if (!ctx) return;
 
     const preferReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const count = preferReducedMotion ? 28 : TOTAL_PARTICLES;
+    const count = preferReducedMotion ? Math.min(28, requestedCount) : requestedCount;
     const motionScale = preferReducedMotion ? 0.72 : MOTION_SCALE;
 
     let width = 0;
@@ -282,7 +282,7 @@ export default function Fireflies() {
       window.removeEventListener("resize", resize);
       document.removeEventListener("visibilitychange", onVisibilityChange);
     };
-  }, []);
+  }, [requestedCount]);
 
   return (
     <canvas
