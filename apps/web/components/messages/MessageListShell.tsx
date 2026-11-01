@@ -63,8 +63,9 @@ export default function MessageListShell({
   const classNameValue = `message-list message-list--${surface} message-list--${density} ${
     divider ? "message-list--divided" : ""
   } ${className}`;
-  const sectionProps = glass
-    ? glassProps(glass, "suspend", classNameValue)
+  const resolvedGlass = glass ?? (surface === "panel" ? "card" : undefined);
+  const sectionProps = resolvedGlass
+    ? glassProps(resolvedGlass, "suspend", classNameValue)
     : { className: classNameValue };
 
   return (
