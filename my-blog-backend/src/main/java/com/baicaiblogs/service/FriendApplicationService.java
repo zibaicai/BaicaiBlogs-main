@@ -55,7 +55,9 @@ public class FriendApplicationService {
         }
 
         if (humanSession != null) {
-            humanVerificationService.consume(humanSession);
+            if (humanVerificationService.consume(humanSession) == null) {
+                throw new RuntimeException("验证已过期，请重新验证");
+            }
         } else {
             turnstileService.verify(body.get("turnstileToken"), ip);
         }

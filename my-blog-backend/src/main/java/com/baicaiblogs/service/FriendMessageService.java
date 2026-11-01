@@ -45,7 +45,9 @@ public class FriendMessageService {
 
         // 先完成业务校验，再消耗一次性的 Turnstile token 或共享验证额度
         if (humanSession != null) {
-            humanVerificationService.consume(humanSession);
+            if (humanVerificationService.consume(humanSession) == null) {
+                throw new RuntimeException("验证已过期，请重新验证");
+            }
         } else {
             turnstileService.verify(body.get("turnstileToken"), ip);
         }
