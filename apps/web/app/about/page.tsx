@@ -28,7 +28,7 @@ export default async function AboutPage() {
             <section className="rounded-3xl border border-white/40 bg-white/60 p-8 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/50 md:p-10">
               <h2 className="text-2xl font-black text-slate-900 dark:text-white">社区介绍</h2>
               <p className="mt-4 leading-relaxed text-slate-700 dark:text-slate-300">
-                {siteInfo.bio || "收集生活的砂砾，也收藏那些不想丢掉的东西。"}
+                {siteInfo.bio || "拾起时光的砂砾，收藏那些不愿遗忘的记忆"}
               </p>
               <p className="mt-4 leading-relaxed text-slate-600 dark:text-slate-400">
                 这里由许多间独立的小屋组成。每个人可以拥有自己的昵称、小屋名、简介和内容，

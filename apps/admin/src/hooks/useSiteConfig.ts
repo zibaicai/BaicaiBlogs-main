@@ -73,7 +73,7 @@ const DEFAULT_SITE_INFO: SiteInfo = {
   ownerUsername: "admin",
   faviconUrl: "https://www.zibaicai.cn/favicon.ico",
   authorName: "YeLuo",
-  bio: "收集生活的砂砾，也收藏那些不想丢掉的东西。",
+  bio: "拾起时光的砂砾，收藏那些不愿遗忘的记忆",
   navAfter: "云端小屋",
   avatarUrl: "https://www.zibaicai.cn/avatar.jpg",
   buildDate: "2026-03-23T00:00:00",
@@ -122,7 +122,7 @@ const DEFAULT_AI_CONFIG: AiConfig = {
 const DEFAULT_MISC: MiscConfig = {
   cloudMusicIds: [],
   friendLinkApplyFormat:
-    "名称：YeLuo / 云端小屋\n简介：收集生活的砂砾，也收藏那些不想丢掉的东西。\n链接：https://www.zibaicai.cn\n头像：https://www.zibaicai.cn/avatar.jpg",
+    "名称：YeLuo / 云端小屋\n简介：拾起时光的砂砾，收藏那些不愿遗忘的记忆\n链接：https://www.zibaicai.cn\n头像：https://www.zibaicai.cn/avatar.jpg",
   photoWallImage: "https://www.zibaicai.cn/bg-4.webp",
   footerBadges: [
     { name: "Next.js 16", color: "text-sky-500", svg: "<path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z\"/>" },
