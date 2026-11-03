@@ -3,10 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import Navbar from "../../components/Navbar";
-import PageTransition from "../../components/PageTransition";
-import DirectoryExplorer from "../../components/DirectoryExplorer";
-import ArticleCard from "../../components/ArticleCard";
+import ArticleDirectory from "../../components/articles/ArticleDirectory";
 import { articleApi, type Article, type Category } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
 
@@ -51,39 +48,6 @@ export default function ArticlesPage() {
       .finally(() => setLoading(false));
   }, [authLoading, forcePublic, isAdmin, queryReady]);
 
-  const roots = categories.filter((category) => category.depth === 1);
-  const rootByArticle = (article: Article) =>
-    roots.find((root) =>
-      article.categoryId === root.id ||
-      (article.categoryPath || article.category || "") === root.path ||
-      (article.categoryPath || "").startsWith(`${root.path}/`)
-    );
-
-  const filters = [
-    { value: "all", label: "全部文章", count: items.length },
-    ...roots
-      .map((root) => ({
-        value: `category-${root.id}`,
-        label: root.path,
-        count: items.filter((article) => rootByArticle(article)?.id === root.id).length,
-      }))
-      .filter((filter) => filter.count > 0),
-  ];
-
-  const directoryItems = items.map((article) => {
-    const root = rootByArticle(article);
-    return {
-      key: article.slug,
-      node: <ArticleCard key={article.slug} article={article} />,
-      searchText: [article.title, article.summary, article.categoryPath, ...(article.tags || [])].join(" "),
-      filterValues: root ? [`category-${root.id}`] : [],
-      title: article.title,
-      tags: article.tags,
-      date: article.publishedAt,
-      updatedAt: article.updatedAt,
-    };
-  });
-
   if (authLoading || !queryReady) {
     return (
       <div className="flex min-h-screen items-center justify-center text-sm text-slate-400">
@@ -104,34 +68,13 @@ export default function ArticlesPage() {
     );
   }
 
-  return (
-    <div className="min-h-screen relative pb-20">
-      <Navbar />
-      <PageTransition>
-        <main className="directory-shell articles-shell">
-          {loading ? (
-            <div className="py-24 text-center text-slate-400">加载中…</div>
-          ) : (
-            <DirectoryExplorer
-              eyebrow="BAICAI / FEATURES"
-              title="文章"
-              subtitle="长文、专栏与更完整的表达。"
-              count={`共 ${items.length} 篇文章`}
-              items={directoryItems}
-              filters={filters}
-              views={["grid", "timeline", "masonry"]}
-              featuredFirst
-              compact
-              gridVariant="cover"
-              columns={{ base: 1, sm: 2, lg: 3, xl: 4 }}
-              pageSize={12}
-              defaultSort="newest"
-              searchPlaceholder="搜索标题、摘要、分类或标签..."
-              empty="还没有发布文章。"
-            />
-          )}
-        </main>
-      </PageTransition>
-    </div>
-  );
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center text-sm text-slate-400">
+        <Loader2 className="mr-2 animate-spin" size={16} /> 加载中…
+      </div>
+    );
+  }
+
+  return <ArticleDirectory articles={items} categories={categories} mode="public" />;
 }
