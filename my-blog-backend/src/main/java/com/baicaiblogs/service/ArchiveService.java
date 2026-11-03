@@ -703,7 +703,8 @@ public class ArchiveService {
             String canonical = document.select("link[rel=canonical]").attr("abs:href");
 
             document.select("script, style, noscript, iframe, object, embed, form, input, button, link, meta, base, svg, math").remove();
-            Element body = document.selectFirst("article");
+            Element body = weChatPage ? document.selectFirst("#js_content") : null;
+            if (body == null) body = document.selectFirst("article");
             if (body == null) body = document.selectFirst("main");
             if (body == null) body = document.selectFirst("[role=main]");
             if (body == null) body = document.body();
@@ -735,12 +736,16 @@ public class ArchiveService {
         String cleaned = POLICY.sanitize(html);
         Document doc = Jsoup.parseBodyFragment(cleaned);
         doc.select("img").forEach(img -> {
-            String src = img.attr("src").trim();
+            String src = img.attr("data-src").trim();
+            if (src.isBlank()) src = img.attr("src").trim();
             if (!(src.startsWith("http://") || src.startsWith("https://"))
                     && !INTERNAL_ASSET.matcher(src).matches()) {
                 img.remove();
                 return;
             }
+            img.attr("src", src);
+            img.removeAttr("data-src");
+            img.removeAttr("data-original");
             img.attr("referrerpolicy", "no-referrer");
             img.attr("loading", "lazy");
         });
