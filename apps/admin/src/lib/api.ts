@@ -166,7 +166,7 @@ export const api = {
   get: <T = any>(path: string) => request<T>(path),
 
   login: (username: string, password: string) =>
-    request<{ token: string; username: string; role: string }>("/auth/login?cookie=true", {
+    request<{ token: string; username: string; role: string }>("/auth/login?cookie=true&adminCookie=true", {
       method: "POST",
       credentials: "include",
       body: JSON.stringify({ username, password }),

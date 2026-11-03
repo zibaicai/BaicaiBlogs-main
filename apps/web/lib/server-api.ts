@@ -58,7 +58,7 @@ export type CurrentUser = {
 export async function getCurrentUser(): Promise<CurrentUser | null> {
   try {
     const cookieStore = await cookies();
-    const token = cookieStore.get("BC_TOKEN")?.value;
+    const token = cookieStore.get("BC_ADMIN_TOKEN")?.value || cookieStore.get("BC_TOKEN")?.value;
     if (!token) return null;
     const res = await fetch(`${INTERNAL_BASE}/api/auth/me`, {
       cache: "no-store",
@@ -79,7 +79,7 @@ export function isAdminUser(user: CurrentUser | null): boolean {
 export async function getAdminArticles(): Promise<Article[]> {
   try {
     const cookieStore = await cookies();
-    const token = cookieStore.get("BC_TOKEN")?.value;
+    const token = cookieStore.get("BC_ADMIN_TOKEN")?.value || cookieStore.get("BC_TOKEN")?.value;
     if (!token) return [];
     const res = await fetch(`${INTERNAL_BASE}/api/admin/articles`, {
       cache: "no-store",

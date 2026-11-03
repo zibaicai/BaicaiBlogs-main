@@ -24,6 +24,7 @@ import java.util.Collections;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     public static final String COOKIE_NAME = "BC_TOKEN";
+    public static final String ADMIN_COOKIE_NAME = "BC_ADMIN_TOKEN";
 
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
@@ -60,9 +61,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return bearerToken.substring(7);
         }
         if (request.getCookies() != null) {
+            String fallback = null;
             for (Cookie cookie : request.getCookies()) {
-                if (COOKIE_NAME.equals(cookie.getName())) return cookie.getValue();
+                if (ADMIN_COOKIE_NAME.equals(cookie.getName())) return cookie.getValue();
+                if (COOKIE_NAME.equals(cookie.getName())) fallback = cookie.getValue();
             }
+            return fallback;
         }
         return null;
     }

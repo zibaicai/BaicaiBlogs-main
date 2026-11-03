@@ -30,6 +30,7 @@ public class AuthController {
     @PostMapping("/login")
     public ApiResponse<LoginResponse> login(@RequestBody LoginRequest request,
                                             @RequestParam(defaultValue = "false") boolean cookie,
+                                            @RequestParam(defaultValue = "false") boolean adminCookie,
                                             HttpServletRequest httpRequest,
                                             HttpServletResponse httpResponse) {
         try {
@@ -38,13 +39,15 @@ public class AuthController {
                 boolean secure = "https".equalsIgnoreCase(httpRequest.getHeader("X-Forwarded-Proto"))
                         || httpRequest.isSecure();
                 String host = httpRequest.getServerName() == null ? "" : httpRequest.getServerName().toLowerCase();
-                ResponseCookie.ResponseCookieBuilder builder = ResponseCookie.from(JwtAuthenticationFilter.COOKIE_NAME, response.getToken())
+                ResponseCookie.ResponseCookieBuilder builder = ResponseCookie.from(
+                                adminCookie ? JwtAuthenticationFilter.ADMIN_COOKIE_NAME : JwtAuthenticationFilter.COOKIE_NAME,
+                                response.getToken())
                         .httpOnly(true)
                         .secure(secure)
                         .sameSite("Lax")
                         .path("/")
                         .maxAge(Duration.ofDays(7));
-                if (host.equals("zibaicai.cn") || host.endsWith(".zibaicai.cn")) {
+                if (adminCookie && (host.equals("zibaicai.cn") || host.endsWith(".zibaicai.cn"))) {
                     builder.domain(".zibaicai.cn");
                 }
                 ResponseCookie c = builder.build();
@@ -104,17 +107,24 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ApiResponse<Void> logout(HttpServletRequest request, HttpServletResponse response) {
-        ResponseCookie.ResponseCookieBuilder builder = ResponseCookie.from(JwtAuthenticationFilter.COOKIE_NAME, "")
+        ResponseCookie userCookie = ResponseCookie.from(JwtAuthenticationFilter.COOKIE_NAME, "")
+                .httpOnly(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Lax")
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, userCookie.toString());
+
+        ResponseCookie.ResponseCookieBuilder adminBuilder = ResponseCookie.from(JwtAuthenticationFilter.ADMIN_COOKIE_NAME, "")
                 .httpOnly(true)
                 .path("/")
                 .maxAge(0)
                 .sameSite("Lax");
         String host = request.getServerName() == null ? "" : request.getServerName().toLowerCase();
         if (host.equals("zibaicai.cn") || host.endsWith(".zibaicai.cn")) {
-            builder.domain(".zibaicai.cn");
+            adminBuilder.domain(".zibaicai.cn");
         }
-        ResponseCookie c = builder.build();
-        response.addHeader(HttpHeaders.SET_COOKIE, c.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, adminBuilder.build().toString());
         return ApiResponse.success("已退出", null);
     }
 }
