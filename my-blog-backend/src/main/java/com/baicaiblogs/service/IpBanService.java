@@ -62,6 +62,7 @@ public class IpBanService {
         bannedHashes.add(h);
         expiresAt.remove(h);
         IpBan entity = repository.findByIpHash(h).orElseGet(() -> IpBan.builder().ipHash(h).build());
+        entity.setIp(ip);
         entity.setReason(reason);
         entity.setCreatedBy(adminId);
         entity.setExpiresAt(null);
@@ -74,6 +75,7 @@ public class IpBanService {
         bannedHashes.add(h);
         expiresAt.put(h, expires);
         IpBan entity = repository.findByIpHash(h).orElseGet(() -> IpBan.builder().ipHash(h).build());
+        entity.setIp(ip);
         entity.setReason(reason);
         entity.setCreatedBy(null);
         entity.setExpiresAt(expires);

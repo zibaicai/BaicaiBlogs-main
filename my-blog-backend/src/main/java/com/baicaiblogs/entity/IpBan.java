@@ -20,6 +20,9 @@ public class IpBan {
     @Column(name = "ip_hash", nullable = false, length = 100)
     private String ipHash;
 
+    @Column(length = 45)
+    private String ip;
+
     @Column(columnDefinition = "TEXT")
     private String reason;
 

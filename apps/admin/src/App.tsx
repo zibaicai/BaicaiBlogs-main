@@ -4,6 +4,7 @@ import {
   Activity,
   Archive,
   ArrowUpRight,
+  Ban,
   BookOpen,
   Database,
   FolderKanban,
@@ -56,6 +57,7 @@ import SuggestionsAdminPage from "./pages/SuggestionsAdminPage";
 import ArchivesPage from "./pages/ArchivesPage";
 import FriendApplicationsPage from "./pages/FriendApplicationsPage";
 import FriendMessagesPage from "./pages/FriendMessagesPage";
+import IpBansPage from "./pages/IpBansPage";
 
 type Any = Record<string, any>;
 
@@ -170,6 +172,7 @@ const NAV_ITEMS = [
   { to: "/suggestions", label: "建议", icon: Lightbulb },
   { to: "/danmaku", label: "弹幕", icon: MessageSquareText },
   { to: "/reports", label: "举报", icon: ShieldAlert },
+  { to: "/ip-bans", label: "IP 封禁", icon: Ban },
   { to: "/privacy", label: "隐私审计", icon: Eye },
   { to: "/access", label: "授权", icon: KeyRound },
   { to: "/timeline", label: "归档", icon: Waypoints },
@@ -180,7 +183,7 @@ function Shell({ children }: { children: React.ReactNode }) {
   const nav = useNavigate();
   const user = getAdminUser();
   const role = getAdminRole();
-  const visibleNavItems = NAV_ITEMS.filter((item) => (item.to !== "/privacy" && item.to !== "/suggestions") || role === "SUPER_ADMIN");
+  const visibleNavItems = NAV_ITEMS.filter((item) => (item.to !== "/privacy" && item.to !== "/suggestions" && item.to !== "/ip-bans") || role === "SUPER_ADMIN");
 
   const logout = async () => {
     try {
@@ -767,6 +770,7 @@ export default function App() {
             <Route path="/gallery" element={<RequireAuth><Shell><GalleryListPage /></Shell></RequireAuth>} />
             <Route path="/gallery/:albumId" element={<RequireAuth><Shell><GalleryDetailPage /></Shell></RequireAuth>} />
             <Route path="/reports" element={<RequireAuth><Shell><ReportsPage /></Shell></RequireAuth>} />
+            <Route path="/ip-bans" element={<RequireAuth><Shell><IpBansPage /></Shell></RequireAuth>} />
             <Route path="/moments" element={<RequireAuth><Shell><MomentsPage /></Shell></RequireAuth>} />
             <Route path="/music" element={<RequireAuth><Shell><MusicAdminPage /></Shell></RequireAuth>} />
             <Route path="/suggestions" element={<RequireAuth><Shell><SuggestionsAdminPage /></Shell></RequireAuth>} />

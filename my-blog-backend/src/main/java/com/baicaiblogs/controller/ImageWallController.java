@@ -561,7 +561,15 @@ public class ImageWallController {
 
     @GetMapping("/admin/ip-bans")
     public ApiResponse<List<IpBan>> ipBans() {
-        return ApiResponse.success(ipBanService.list());
+        try {
+            User admin = imageWallService.currentUser();
+            if (!imageWallService.isSuperAdmin(admin)) {
+                return ApiResponse.error("只有超级管理员可以查看 IP 封禁列表");
+            }
+            return ApiResponse.success(ipBanService.list());
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
     }
 
     @PostMapping("/admin/ip-bans")
@@ -577,8 +585,16 @@ public class ImageWallController {
 
     @DeleteMapping("/admin/ip-bans/{id}")
     public ApiResponse<Void> unbanIp(@PathVariable Long id) {
-        ipBanService.unban(id);
-        return ApiResponse.success("已解封", null);
+        try {
+            User admin = imageWallService.currentUser();
+            if (!imageWallService.isSuperAdmin(admin)) {
+                return ApiResponse.error("只有超级管理员可以解封 IP");
+            }
+            ipBanService.unban(id);
+            return ApiResponse.success("已解封", null);
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
     }
 
     @GetMapping("/admin/appeals")
