@@ -203,7 +203,7 @@ export const api = {
       body: JSON.stringify({ visibility }),
     }),
 
-  getCategories: () => request<Category[]>("/admin/categories"),
+  getCategories: () => request<Category[]>("/me/categories"),
   createCategory: (category: Partial<Category>) =>
     request<Category>("/admin/categories", { method: "POST", body: JSON.stringify(category) }),
   updateCategory: (id: number, category: Partial<Category>) =>
@@ -211,7 +211,7 @@ export const api = {
   deleteCategory: (id: number) =>
     request<void>(`/admin/categories/${id}`, { method: "DELETE" }),
 
-  getTags: () => request<Tag[]>("/admin/tags"),
+  getTags: () => request<Tag[]>("/me/tags"),
   getPendingTags: () => request<Tag[]>("/admin/tags/pending"),
   createTag: (name: string) =>
     request<Tag>("/admin/tags", { method: "POST", body: JSON.stringify({ name }) }),
@@ -220,7 +220,7 @@ export const api = {
   rejectTag: (id: number, note: string) =>
     request<Tag>(`/admin/tags/${id}/reject?note=${encodeURIComponent(note)}`, { method: "POST" }),
   recommendTags: (categoryId?: number) =>
-    request<string[]>(`/admin/tags/recommend${categoryId ? `?categoryId=${categoryId}` : ""}`),
+    request<string[]>(`/me/tags/recommend${categoryId ? `?categoryId=${categoryId}` : ""}`),
 
   myMoments: () => request<Moment[]>("/me/moments"),
   createMoment: (moment: Partial<Moment>) =>
@@ -249,13 +249,13 @@ export const api = {
   uploadImage: (file: File) => {
     const form = new FormData();
     form.append("file", file);
-    return request<string>("/admin/images", { method: "POST", body: form });
+    return request<string>("/me/images", { method: "POST", body: form });
   },
 
   uploadBackground: (file: File) => {
     const form = new FormData();
     form.append("file", file);
-    return request<string>("/admin/backgrounds", { method: "POST", body: form });
+    return request<string>("/me/backgrounds", { method: "POST", body: form });
   },
 
   repairPost: (slug: string) =>

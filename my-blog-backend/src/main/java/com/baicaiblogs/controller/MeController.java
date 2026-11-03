@@ -3,9 +3,11 @@ package com.baicaiblogs.controller;
 import com.baicaiblogs.dto.*;
 import com.baicaiblogs.entity.User;
 import com.baicaiblogs.service.AdminOverviewService;
+import com.baicaiblogs.service.CategoryService;
 import com.baicaiblogs.service.MomentService;
 import com.baicaiblogs.service.PostService;
 import com.baicaiblogs.service.ProjectService;
+import com.baicaiblogs.service.TagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +28,9 @@ public class MeController {
     private final PostService postService;
     private final ProjectService projectService;
     private final MomentService momentService;
+    private final CategoryService categoryService;
+    private final TagService tagService;
+    private final PostController postController;
 
     @GetMapping("/overview")
     public ApiResponse<Map<String, Object>> overview() {
@@ -191,6 +196,43 @@ public class MeController {
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
         }
+    }
+
+    @GetMapping("/categories")
+    public ApiResponse<List<CategoryResponse>> categories() {
+        try {
+            return ApiResponse.success(categoryService.listAll());
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/tags")
+    public ApiResponse<List<TagResponse>> tags() {
+        try {
+            return ApiResponse.success(tagService.allTags());
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/tags/recommend")
+    public ApiResponse<List<String>> recommendTags(@RequestParam(required = false) Long categoryId) {
+        try {
+            return ApiResponse.success(tagService.recommend(categoryId));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @PostMapping("/images")
+    public ApiResponse<String> uploadImage(@RequestParam("file") MultipartFile file) {
+        return postController.uploadImage(file);
+    }
+
+    @PostMapping("/backgrounds")
+    public ApiResponse<String> uploadBackground(@RequestParam("file") MultipartFile file) {
+        return postController.uploadBackground(file);
     }
 
     private User currentUser() {
