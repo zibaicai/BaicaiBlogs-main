@@ -58,6 +58,7 @@ import ArchivesPage from "./pages/ArchivesPage";
 import FriendApplicationsPage from "./pages/FriendApplicationsPage";
 import FriendMessagesPage from "./pages/FriendMessagesPage";
 import IpBansPage from "./pages/IpBansPage";
+import ForbiddenPage from "./pages/ForbiddenPage";
 
 type Any = Record<string, any>;
 
@@ -305,6 +306,7 @@ function Dashboard() {
   const pending = data.pending || {};
   const engagement = data.engagement || {};
   const health = data.health || {};
+  const canModerate = getAdminRole() !== "USER";
   const rawActivity: { date: string; posts: number }[] = data.activity || [];
   const activityLookup = new Map(rawActivity.map((item) => [item.date, item.posts]));
   const today = new Date();
@@ -318,10 +320,14 @@ function Dashboard() {
   const healthOk = health.status === "ok";
 
   const pendingItems = [
-    { label: "举报待处理", value: pending.reports || 0, to: "/reports", tone: "text-red-300" },
-    { label: "标签申请", value: pending.tagRequests || 0, to: "/tags", tone: "text-amber-300" },
-    { label: "相册访问申请", value: pending.albumAccessRequests || 0, to: "/access", tone: "text-purple-300" },
-    { label: "待审核评论", value: pending.comments || 0, to: "/reports", tone: "text-sky-300" },
+    ...(canModerate
+      ? [
+          { label: "举报待处理", value: pending.reports || 0, to: "/reports", tone: "text-red-300" },
+          { label: "标签申请", value: pending.tagRequests || 0, to: "/tags", tone: "text-amber-300" },
+          { label: "相册访问申请", value: pending.albumAccessRequests || 0, to: "/access", tone: "text-purple-300" },
+          { label: "待审核评论", value: pending.comments || 0, to: "/reports", tone: "text-sky-300" },
+        ]
+      : []),
     { label: "未完成草稿", value: pending.drafts || 0, to: "/posts", tone: "text-slate-300" },
   ];
 
@@ -757,7 +763,7 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
 
 function RequireRole({ roles, children }: { roles: string[]; children: React.ReactNode }) {
   const role = getAdminRole();
-  if (!roles.includes(role)) return <Navigate to="/" replace />;
+  if (!roles.includes(role)) return <Navigate to="/forbidden" replace />;
   return <>{children}</>;
 }
 
@@ -807,6 +813,7 @@ export default function App() {
             <Route path="/access" element={<RequireAuth><RequireRole roles={["SUPER_ADMIN"]}><Shell><AccessPage /></Shell></RequireRole></RequireAuth>} />
             <Route path="/settings" element={<RequireAuth><RequireRole roles={["ADMIN", "SUPER_ADMIN"]}><Shell><SettingsPage /></Shell></RequireRole></RequireAuth>} />
             <Route path="/editor/:slug?" element={<RequireAuth><EditorPage /></RequireAuth>} />
+            <Route path="/forbidden" element={<RequireAuth><Shell><ForbiddenPage /></Shell></RequireAuth>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </SiteConfigProvider>
