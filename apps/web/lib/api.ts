@@ -324,6 +324,9 @@ export interface Article {
   tags?: string[];
   status: string;
   visibility: string;
+  sourcePlatform?: string;
+  sourceUrl?: string;
+  sourceAuthor?: string;
   readingTime?: number;
   publishedAt?: string;
   createdAt: string;

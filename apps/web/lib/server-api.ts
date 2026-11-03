@@ -1,7 +1,7 @@
 // 服务端数据读取：直接访问内网后端，避免浏览器跨域；带 60s ISR 缓存。
 import { cookies } from "next/headers";
 import { isScopedPath } from "./content-scope";
-import type { Album, Category, Friend, FriendMessage, Moment, Post, Project, RoomProfile } from "./api";
+import type { Album, Article, Category, Friend, FriendMessage, Moment, Post, Project, RoomProfile } from "./api";
 import {
   DEFAULT_AI_CONFIG,
   DEFAULT_BACKGROUND,
@@ -48,7 +48,14 @@ async function getJson<T>(path: string, revalidate = 60): Promise<T | null> {
   }
 }
 
-export async function getCurrentUser(): Promise<{ username: string; nickname?: string } | null> {
+export type CurrentUser = {
+  id?: number;
+  username: string;
+  nickname?: string;
+  role?: string;
+};
+
+export async function getCurrentUser(): Promise<CurrentUser | null> {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("BC_TOKEN")?.value;
@@ -58,11 +65,37 @@ export async function getCurrentUser(): Promise<{ username: string; nickname?: s
       headers: { Accept: "application/json", Cookie: `BC_TOKEN=${token}` },
     });
     if (!res.ok) return null;
-    const json = (await res.json()) as { success?: boolean; data?: { username: string; nickname?: string } };
+    const json = (await res.json()) as { success?: boolean; data?: CurrentUser };
     return json?.success === false ? null : json?.data ?? null;
   } catch {
     return null;
   }
+}
+
+export function isAdminUser(user: CurrentUser | null): boolean {
+  return user?.role === "ADMIN" || user?.role === "SUPER_ADMIN";
+}
+
+export async function getAdminArticles(): Promise<Article[]> {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("BC_TOKEN")?.value;
+    if (!token) return [];
+    const res = await fetch(`${INTERNAL_BASE}/api/admin/articles`, {
+      cache: "no-store",
+      headers: { Accept: "application/json", Cookie: `BC_TOKEN=${token}` },
+    });
+    if (!res.ok) return [];
+    const json = (await res.json()) as { success?: boolean; data?: Article[] };
+    return json?.success === false ? [] : json?.data ?? [];
+  } catch {
+    return [];
+  }
+}
+
+export async function getAdminArticleBySlug(slug: string): Promise<Article | null> {
+  const articles = await getAdminArticles();
+  return articles.find((article) => article.slug === slug) ?? null;
 }
 
 function sortByDate<T extends { date?: string }>(items: T[]): T[] {

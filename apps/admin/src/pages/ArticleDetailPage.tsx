@@ -83,7 +83,10 @@ export default function ArticleDetailPage() {
           {article.status === "PUBLISHED" && article.visibility === "PUBLIC" ? (
             <a href={`https://www.zibaicai.cn/articles/${article.slug}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-1.5 text-[10px] font-bold text-slate-300 hover:bg-white/5"><Eye size={13} /> C 端预览</a>
           ) : (
-            <span className="rounded-lg border border-amber-400/20 bg-amber-400/10 px-3 py-1.5 text-[10px] font-bold text-amber-300">未公开，仅后台可见</span>
+            <>
+              <span className="rounded-lg border border-amber-400/20 bg-amber-400/10 px-3 py-1.5 text-[10px] font-bold text-amber-300">未公开，仅管理员可见</span>
+              <a href={`https://www.zibaicai.cn/articles/manage/${encodeURIComponent(article.slug)}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-1.5 text-[10px] font-bold text-slate-300 hover:bg-white/5"><Eye size={13} /> C 端管理预览</a>
+            </>
           )}
           <Link to={`/articles/${article.id}/edit`} className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-500 px-3 py-1.5 text-[10px] font-bold text-white"><Pencil size={13} /> 编辑</Link>
           <button type="button" onClick={() => void remove()} className="rounded-lg p-2 text-slate-500 hover:bg-red-500/10 hover:text-red-300"><Trash2 size={14} /></button>
