@@ -733,9 +733,8 @@ public class ArchiveService {
     }
 
     private String sanitize(String html) {
-        String cleaned = POLICY.sanitize(html);
-        Document doc = Jsoup.parseBodyFragment(cleaned);
-        doc.select("img").forEach(img -> {
+        Document source = Jsoup.parseBodyFragment(html);
+        source.select("img").forEach(img -> {
             String src = img.attr("data-src").trim();
             if (src.isBlank()) src = img.attr("src").trim();
             if (!(src.startsWith("http://") || src.startsWith("https://"))
@@ -746,6 +745,10 @@ public class ArchiveService {
             img.attr("src", src);
             img.removeAttr("data-src");
             img.removeAttr("data-original");
+        });
+        String cleaned = POLICY.sanitize(source.body().html());
+        Document doc = Jsoup.parseBodyFragment(cleaned);
+        doc.select("img").forEach(img -> {
             img.attr("referrerpolicy", "no-referrer");
             img.attr("loading", "lazy");
         });
