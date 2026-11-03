@@ -69,6 +69,13 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/public/friend-messages").permitAll()
                 // 公开 GET 接口（相册/文章/图片墙）免登录；原图下载接口在 Controller 内单独校验
                 .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll()
+                // 所有登录用户的个人工作区接口
+                .requestMatchers("/api/admin/overview").authenticated()
+                .requestMatchers("/api/admin/posts", "/api/admin/posts/**", "/api/admin/projects", "/api/admin/projects/**", "/api/admin/moments", "/api/admin/moments/**").authenticated()
+                .requestMatchers("/api/admin/images", "/api/admin/backgrounds").authenticated()
+                .requestMatchers("/api/admin/posts/mine").authenticated()
+                .requestMatchers("/api/admin/projects/mine").authenticated()
+                .requestMatchers("/api/admin/moments/mine").authenticated()
                 // 管理接口允许 ADMIN 与 SUPER_ADMIN
                 .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                 // 内部存档入口仅管理员可用；具体授权由 ArchiveService 校验

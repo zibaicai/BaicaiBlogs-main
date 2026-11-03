@@ -29,14 +29,16 @@ export async function request<T = any>(path: string, opts: RequestInit = {}): Pr
   const res = await fetch(BASE + path, { ...opts, headers });
   const json = (await res.json().catch(() => null)) as ApiResponse<T> | null;
 
-  if (res.status === 401 || res.status === 403) {
+  if (res.status === 401) {
     setToken("");
     if (typeof window !== "undefined" && !window.location.pathname.startsWith("/login")) {
       window.location.href = "/login";
     }
   }
 
-  if (!res.ok) throw new Error(json?.message || `HTTP ${res.status}`);
+  if (!res.ok) {
+    throw new Error(res.status === 403 ? "当前账户无权执行该操作" : json?.message || `HTTP ${res.status}`);
+  }
   if (!json) throw new Error("后端返回为空");
   return json;
 }

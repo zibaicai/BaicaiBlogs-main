@@ -183,7 +183,13 @@ function Shell({ children }: { children: React.ReactNode }) {
   const nav = useNavigate();
   const user = getAdminUser();
   const role = getAdminRole();
-  const visibleNavItems = NAV_ITEMS.filter((item) => (item.to !== "/privacy" && item.to !== "/suggestions" && item.to !== "/ip-bans") || role === "SUPER_ADMIN");
+  const userNav = new Set(["/", "/posts", "/projects", "/gallery", "/moments"]);
+  const superOnlyNav = new Set(["/privacy", "/suggestions", "/ip-bans", "/archives", "/access"]);
+  const visibleNavItems = NAV_ITEMS.filter((item) => {
+    if (role === "SUPER_ADMIN") return true;
+    if (role === "ADMIN") return !superOnlyNav.has(item.to);
+    return userNav.has(item.to);
+  });
 
   const logout = async () => {
     try {
