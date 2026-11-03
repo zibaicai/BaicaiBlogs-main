@@ -32,8 +32,8 @@ export default async function ManagedArticlesPage() {
                 <h1 className="mt-2 text-3xl font-black text-slate-900 dark:text-white">文章目录</h1>
                 <p className="mt-1 text-sm text-slate-500">当前账户可查看公开、私有与草稿文章。</p>
               </div>
-              <Link href="/articles" className="rounded-full border border-slate-200/80 bg-white/60 px-4 py-2 text-sm font-bold text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
-                返回公开文章
+              <Link href="/articles?view=public" className="rounded-full border border-slate-200/80 bg-white/60 px-4 py-2 text-sm font-bold text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
+                查看公开视图
               </Link>
             </div>
 
