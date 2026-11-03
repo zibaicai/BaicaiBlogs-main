@@ -53,7 +53,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class ArchiveService {
 
-    private static final int MAX_HTML_BYTES = 2 * 1024 * 1024;
+    private static final int MAX_HTML_BYTES = 8 * 1024 * 1024;
     private static final int MAX_IMAGE_BYTES = 10 * 1024 * 1024;
     private static final long MAX_IMAGE_PIXELS = 40_000_000L;
     private static final int MAX_GIF_FRAMES = 300;
@@ -642,12 +642,20 @@ public class ArchiveService {
             HttpResponse<byte[]> response = null;
             URI current = uri;
             for (int i = 0; i <= MAX_REDIRECTS; i++) {
-                HttpRequest request = HttpRequest.newBuilder(current)
+                boolean weChat = "mp.weixin.qq.com".equalsIgnoreCase(current.getHost());
+                HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(current)
                         .timeout(Duration.ofSeconds(10))
-                        .header("User-Agent", "BaicaiArchive/1.0 (+https://www.zibaicai.cn)")
-                        .header("Accept", "text/html,application/xhtml+xml")
-                        .GET()
-                        .build();
+                        .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+                        .GET();
+                if (weChat) {
+                    requestBuilder
+                            .header("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1")
+                            .header("Accept-Language", "zh-CN,zh;q=0.9")
+                            .header("Referer", "https://mp.weixin.qq.com/");
+                } else {
+                    requestBuilder.header("User-Agent", "BaicaiArchive/1.0 (+https://www.zibaicai.cn)");
+                }
+                HttpRequest request = requestBuilder.build();
                 response = HTTP.send(request, HttpResponse.BodyHandlers.ofByteArray());
                 int status = response.statusCode();
                 if (status >= 300 && status < 400) {
@@ -678,6 +686,13 @@ public class ArchiveService {
             if (bytes.length > MAX_HTML_BYTES) throw new RuntimeException("页面超过 2MB 限制");
 
             Document document = Jsoup.parse(new String(bytes, pageCharset(contentType)), current.toString());
+            boolean weChatPage = "mp.weixin.qq.com".equalsIgnoreCase(current.getHost());
+            if (weChatPage && document.selectFirst("#js_content") == null) {
+                String pageText = document.text();
+                if (pageText.contains("环境异常") || pageText.contains("完成验证") || pageText.contains("去验证")) {
+                    throw new RuntimeException("微信返回环境异常验证页，请稍后重试或手动导入");
+                }
+            }
             String rawSnapshot = document.outerHtml();
             String title = meta(document, "meta[property=og:title]", "content");
             if (title.isBlank()) title = document.title();
