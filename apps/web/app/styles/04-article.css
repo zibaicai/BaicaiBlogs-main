@@ -430,3 +430,7 @@ html[data-custom-theme="true"] .btn-secondary {
 .wechat-article pre code {
   display: block;
 }
+.article-content pre,
+.wechat-article pre {
+  white-space: pre-wrap;
+}

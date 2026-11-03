@@ -7,6 +7,7 @@ import com.baicaiblogs.entity.ArchiveDocument;
 import com.baicaiblogs.entity.ArchiveGrant;
 import com.baicaiblogs.entity.User;
 import com.baicaiblogs.config.OssProperties;
+import com.baicaiblogs.util.CodeBlockNormalizer;
 import com.baicaiblogs.repository.ArchiveAccessLogRepository;
 import com.baicaiblogs.repository.ArchiveAssetRepository;
 import com.baicaiblogs.repository.ArchiveDeleteRequestRepository;
@@ -746,6 +747,7 @@ public class ArchiveService {
             img.removeAttr("data-src");
             img.removeAttr("data-original");
         });
+        CodeBlockNormalizer.normalize(source);
         String cleaned = POLICY.sanitize(source.body().html());
         Document doc = Jsoup.parseBodyFragment(cleaned);
         doc.select("img").forEach(img -> {

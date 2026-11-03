@@ -1,6 +1,7 @@
 package com.baicaiblogs.service.articleimport;
 
 import com.baicaiblogs.entity.ArchiveDocument;
+import com.baicaiblogs.util.CodeBlockNormalizer;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -27,6 +28,7 @@ public class WeChatArticleAdapter implements ArticleSourceAdapter {
         document.select("script, style, noscript, iframe, object, embed, form, input, button").remove();
         body.select("script, style, noscript, iframe, object, embed, form, input, button").remove();
         body.select("section").forEach(Element::unwrap);
+        CodeBlockNormalizer.normalize(document);
 
         body.select("img").forEach(img -> {
             String source = firstNonBlank(img.attr("data-src"), img.attr("src"));

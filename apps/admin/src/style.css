@@ -218,6 +218,7 @@ html[data-admin-preset="violet"] {
   border-radius: 0.75rem;
   padding: 1rem;
   overflow-x: auto;
+  white-space: pre-wrap;
 }
 .tiptap img {
   max-width: 100%;
@@ -279,7 +280,7 @@ textarea.admin-input {
 .archive-reader blockquote { margin: 1.2em 0; border-left: 3px solid #6366f1; background: #eef2ff; padding: .7em 1em; color: #334155; }
 .archive-reader a { color: #4f46e5; text-decoration: underline; text-underline-offset: 2px; }
 .archive-reader img { display: block; max-width: 100%; height: auto; margin: 1.2em auto; border-radius: 10px; }
-.archive-reader pre { overflow-x: auto; margin: 1.2em 0; border-radius: 12px; background: #0f172a; padding: 1em; color: #e2e8f0; font-size: 12px; line-height: 1.7; }
+.archive-reader pre { overflow-x: auto; margin: 1.2em 0; border-radius: 12px; background: #0f172a; padding: 1em; color: #e2e8f0; font-size: 12px; line-height: 1.7; white-space: pre-wrap; }
 .archive-reader code { border-radius: 5px; background: #f1f5f9; padding: .15em .35em; color: #4338ca; font-size: .9em; }
 .archive-reader pre code { background: transparent; padding: 0; color: inherit; display: block; }
 .archive-reader table { width: 100%; margin: 1.2em 0; border-collapse: collapse; font-size: 12px; }
@@ -299,7 +300,7 @@ textarea.admin-input {
 .admin-article-reader blockquote { margin: 1em 0; border-left: 3px solid #6366f1; background: rgba(99, 102, 241, .08); padding: .65em 1em; color: #cbd5e1; }
 .admin-article-reader a { color: #818cf8; text-decoration: underline; text-underline-offset: 2px; }
 .admin-article-reader img { display: block; max-width: 100%; height: auto; margin: 1em auto; border-radius: 10px; }
-.admin-article-reader pre { overflow-x: auto; margin: 1em 0; border-radius: 10px; background: #020617; padding: .9em; color: #e2e8f0; font-size: 12px; line-height: 1.7; }
+.admin-article-reader pre { overflow-x: auto; margin: 1em 0; border-radius: 10px; background: #020617; padding: .9em; color: #e2e8f0; font-size: 12px; line-height: 1.7; white-space: pre-wrap; }
 .admin-article-reader code { border-radius: 4px; background: rgba(255,255,255,.08); padding: .12em .3em; color: #c7d2fe; font-size: .9em; }
 .admin-article-reader pre code { background: transparent; padding: 0; color: inherit; display: block; }
 .admin-article-reader table { width: 100%; margin: 1em 0; border-collapse: collapse; font-size: 12px; }
