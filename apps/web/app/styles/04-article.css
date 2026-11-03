@@ -424,3 +424,9 @@ html[data-custom-theme="true"] .btn-secondary {
 }
 
 }
+
+/* Imported platform articles use one <code> element per source line. */
+.article-content pre code,
+.wechat-article pre code {
+  display: block;
+}
