@@ -755,6 +755,12 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function RequireRole({ roles, children }: { roles: string[]; children: React.ReactNode }) {
+  const role = getAdminRole();
+  if (!roles.includes(role)) return <Navigate to="/" replace />;
+  return <>{children}</>;
+}
+
 export default function App() {
   return (
     <ToastProvider>
@@ -764,28 +770,28 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<RequireAuth><Shell><Dashboard /></Shell></RequireAuth>} />
             <Route path="/posts" element={<RequireAuth><Shell><Posts /></Shell></RequireAuth>} />
-            <Route path="/archives" element={<RequireAuth><Shell><ArchivesPage /></Shell></RequireAuth>} />
-            <Route path="/friend-applications" element={<RequireAuth><Shell><FriendApplicationsPage /></Shell></RequireAuth>} />
-            <Route path="/friend-messages" element={<RequireAuth><Shell><FriendMessagesPage /></Shell></RequireAuth>} />
-            <Route path="/articles" element={<RequireAuth><Shell><ArticlesListPage /></Shell></RequireAuth>} />
-            <Route path="/articles/new" element={<RequireAuth><Shell><ArticleEditorPage /></Shell></RequireAuth>} />
-            <Route path="/articles/:id" element={<RequireAuth><Shell><ArticleDetailPage /></Shell></RequireAuth>} />
-            <Route path="/articles/:id/edit" element={<RequireAuth><Shell><ArticleEditorPage /></Shell></RequireAuth>} />
+            <Route path="/archives" element={<RequireAuth><RequireRole roles={["SUPER_ADMIN"]}><Shell><ArchivesPage /></Shell></RequireRole></RequireAuth>} />
+            <Route path="/friend-applications" element={<RequireAuth><RequireRole roles={["ADMIN", "SUPER_ADMIN"]}><Shell><FriendApplicationsPage /></Shell></RequireRole></RequireAuth>} />
+            <Route path="/friend-messages" element={<RequireAuth><RequireRole roles={["ADMIN", "SUPER_ADMIN"]}><Shell><FriendMessagesPage /></Shell></RequireRole></RequireAuth>} />
+            <Route path="/articles" element={<RequireAuth><RequireRole roles={["ADMIN", "SUPER_ADMIN"]}><Shell><ArticlesListPage /></Shell></RequireRole></RequireAuth>} />
+            <Route path="/articles/new" element={<RequireAuth><RequireRole roles={["ADMIN", "SUPER_ADMIN"]}><Shell><ArticleEditorPage /></Shell></RequireRole></RequireAuth>} />
+            <Route path="/articles/:id" element={<RequireAuth><RequireRole roles={["ADMIN", "SUPER_ADMIN"]}><Shell><ArticleDetailPage /></Shell></RequireRole></RequireAuth>} />
+            <Route path="/articles/:id/edit" element={<RequireAuth><RequireRole roles={["ADMIN", "SUPER_ADMIN"]}><Shell><ArticleEditorPage /></Shell></RequireRole></RequireAuth>} />
             <Route path="/projects" element={<RequireAuth><Shell><Projects /></Shell></RequireAuth>} />
-            <Route path="/timeline" element={<RequireAuth><Shell><TimelinePreview /></Shell></RequireAuth>} />
+            <Route path="/timeline" element={<RequireAuth><RequireRole roles={["ADMIN", "SUPER_ADMIN"]}><Shell><TimelinePreview /></Shell></RequireRole></RequireAuth>} />
             <Route path="/gallery" element={<RequireAuth><Shell><GalleryListPage /></Shell></RequireAuth>} />
             <Route path="/gallery/:albumId" element={<RequireAuth><Shell><GalleryDetailPage /></Shell></RequireAuth>} />
-            <Route path="/reports" element={<RequireAuth><Shell><ReportsPage /></Shell></RequireAuth>} />
-            <Route path="/ip-bans" element={<RequireAuth><Shell><IpBansPage /></Shell></RequireAuth>} />
+            <Route path="/reports" element={<RequireAuth><RequireRole roles={["ADMIN", "SUPER_ADMIN"]}><Shell><ReportsPage /></Shell></RequireRole></RequireAuth>} />
+            <Route path="/ip-bans" element={<RequireAuth><RequireRole roles={["SUPER_ADMIN"]}><Shell><IpBansPage /></Shell></RequireRole></RequireAuth>} />
             <Route path="/moments" element={<RequireAuth><Shell><MomentsPage /></Shell></RequireAuth>} />
-            <Route path="/music" element={<RequireAuth><Shell><MusicAdminPage /></Shell></RequireAuth>} />
-            <Route path="/suggestions" element={<RequireAuth><Shell><SuggestionsAdminPage /></Shell></RequireAuth>} />
-            <Route path="/categories" element={<RequireAuth><Shell><CategoriesPage /></Shell></RequireAuth>} />
-            <Route path="/tags" element={<RequireAuth><Shell><TagsPage /></Shell></RequireAuth>} />
-            <Route path="/privacy" element={<RequireAuth><Shell><PrivacyAuditPage /></Shell></RequireAuth>} />
-            <Route path="/danmaku" element={<RequireAuth><Shell><DanmakuPage /></Shell></RequireAuth>} />
-            <Route path="/access" element={<RequireAuth><Shell><AccessPage /></Shell></RequireAuth>} />
-            <Route path="/settings" element={<RequireAuth><Shell><SettingsPage /></Shell></RequireAuth>} />
+            <Route path="/music" element={<RequireAuth><RequireRole roles={["ADMIN", "SUPER_ADMIN"]}><Shell><MusicAdminPage /></Shell></RequireRole></RequireAuth>} />
+            <Route path="/suggestions" element={<RequireAuth><RequireRole roles={["SUPER_ADMIN"]}><Shell><SuggestionsAdminPage /></Shell></RequireRole></RequireAuth>} />
+            <Route path="/categories" element={<RequireAuth><RequireRole roles={["ADMIN", "SUPER_ADMIN"]}><Shell><CategoriesPage /></Shell></RequireRole></RequireAuth>} />
+            <Route path="/tags" element={<RequireAuth><RequireRole roles={["ADMIN", "SUPER_ADMIN"]}><Shell><TagsPage /></Shell></RequireRole></RequireAuth>} />
+            <Route path="/privacy" element={<RequireAuth><RequireRole roles={["SUPER_ADMIN"]}><Shell><PrivacyAuditPage /></Shell></RequireRole></RequireAuth>} />
+            <Route path="/danmaku" element={<RequireAuth><RequireRole roles={["ADMIN", "SUPER_ADMIN"]}><Shell><DanmakuPage /></Shell></RequireRole></RequireAuth>} />
+            <Route path="/access" element={<RequireAuth><RequireRole roles={["SUPER_ADMIN"]}><Shell><AccessPage /></Shell></RequireRole></RequireAuth>} />
+            <Route path="/settings" element={<RequireAuth><RequireRole roles={["ADMIN", "SUPER_ADMIN"]}><Shell><SettingsPage /></Shell></RequireRole></RequireAuth>} />
             <Route path="/editor/:slug?" element={<RequireAuth><EditorPage /></RequireAuth>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

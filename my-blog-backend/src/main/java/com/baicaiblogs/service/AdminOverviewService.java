@@ -21,6 +21,8 @@ public class AdminOverviewService {
 
     public Map<String, Object> snapshot(User user) {
         Long userId = user == null ? null : user.getId();
+        boolean canModerate = user != null
+                && ("ADMIN".equals(user.getRole()) || "SUPER_ADMIN".equals(user.getRole()));
 
         Map<String, Object> assets = new LinkedHashMap<>();
         assets.put("posts", count("SELECT COUNT(*) FROM posts WHERE user_id = ?", userId));
@@ -43,15 +45,15 @@ public class AdminOverviewService {
         storage.put("usagePercent", storageQuota <= 0 ? 0 : Math.min(100, Math.round(storageUsed * 100.0 / storageQuota)));
 
         Map<String, Object> pending = new LinkedHashMap<>();
-        pending.put("reports", count("SELECT COUNT(*) FROM reports WHERE status = 'PENDING'"));
-        pending.put("tagRequests", count("SELECT COUNT(*) FROM tags WHERE status = 'PENDING'"));
-        pending.put("albumAccessRequests", count("SELECT COUNT(*) FROM album_access_requests WHERE status = 'PENDING'"));
-        pending.put("comments", count("SELECT COUNT(*) FROM comments WHERE status = 'PENDING'"));
+        pending.put("reports", canModerate ? count("SELECT COUNT(*) FROM reports WHERE status = 'PENDING'") : 0);
+        pending.put("tagRequests", canModerate ? count("SELECT COUNT(*) FROM tags WHERE status = 'PENDING'") : 0);
+        pending.put("albumAccessRequests", canModerate ? count("SELECT COUNT(*) FROM album_access_requests WHERE status = 'PENDING'") : 0);
+        pending.put("comments", canModerate ? count("SELECT COUNT(*) FROM comments WHERE status = 'PENDING'") : 0);
         pending.put("drafts", assets.get("drafts"));
 
         Map<String, Object> engagement = new LinkedHashMap<>();
-        engagement.put("comments", count("SELECT COUNT(*) FROM comments"));
-        engagement.put("danmaku", count("SELECT COUNT(*) FROM danmaku_messages"));
+        engagement.put("comments", canModerate ? count("SELECT COUNT(*) FROM comments") : 0);
+        engagement.put("danmaku", canModerate ? count("SELECT COUNT(*) FROM danmaku_messages") : 0);
 
         Map<String, Object> dashboard = dashboardService.snapshot();
         engagement.put("totalPv", nested(dashboard, "visits", "total"));
