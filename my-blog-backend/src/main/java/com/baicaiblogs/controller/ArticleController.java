@@ -5,6 +5,7 @@ import com.baicaiblogs.dto.ArticleDtos;
 import com.baicaiblogs.entity.User;
 import com.baicaiblogs.repository.UserRepository;
 import com.baicaiblogs.service.ArticleService;
+import com.baicaiblogs.service.articleimport.ArticleImportService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.CacheControl;
@@ -23,6 +24,7 @@ import java.util.List;
 public class ArticleController {
 
     private final ArticleService articleService;
+    private final ArticleImportService articleImportService;
     private final UserRepository userRepository;
 
     @GetMapping("/public/articles")
@@ -102,6 +104,16 @@ public class ArticleController {
                                                            Authentication authentication) {
         try {
             return ApiResponse.success(articleService.update(currentUser(authentication), id, request));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @PostMapping("/admin/articles/import/archive/{archiveId}")
+    public ApiResponse<ArticleDtos.ArticleResponse> importArchive(@PathVariable Long archiveId,
+                                                                 Authentication authentication) {
+        try {
+            return ApiResponse.success(articleImportService.importArchive(currentUser(authentication), archiveId));
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
         }

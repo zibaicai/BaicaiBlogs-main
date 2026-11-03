@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import DOMPurify from "dompurify";
-import { Archive, ChevronLeft, ChevronRight, Download, ExternalLink, Loader2, Pencil, Plus, RefreshCw, Search, ShieldCheck, Trash2, UserRound, X } from "lucide-react";
+import { Archive, ChevronLeft, ChevronRight, Download, ExternalLink, FileText, Loader2, Pencil, Plus, RefreshCw, Search, ShieldCheck, Trash2, UserRound, X } from "lucide-react";
 import { getAdminRole, getToken } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
 import { AdminEmptyState, AdminLoading, AdminPageHeader, AdminPageShell, StatusBadge } from "../components/admin/AdminUI";
@@ -80,6 +81,7 @@ function ArchiveStatusBadge({ status }: { status?: string }) {
 
 export default function ArchivesPage() {
   const { showToast } = useToast();
+  const navigate = useNavigate();
   const role = getAdminRole();
   const superAdmin = role === "SUPER_ADMIN";
   const [items, setItems] = useState<ArchiveItem[]>([]);
@@ -182,6 +184,22 @@ export default function ArchivesPage() {
       setSelected(saved);
     } catch (error) {
       showToast(error instanceof Error ? error.message : "保存失败", "error");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const convertToArticle = async () => {
+    if (!selected) return;
+    setBusy(true);
+    try {
+      const article = await archiveRequest<{ id: number }>(`/admin/articles/import/archive/${selected.id}`, {
+        method: "POST",
+      });
+      showToast("已转为文章草稿", "success");
+      navigate(`/articles/${article.id}/edit`);
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "转换失败", "error");
     } finally {
       setBusy(false);
     }
@@ -608,6 +626,11 @@ export default function ArchivesPage() {
                   {superAdmin && !editing && (
                     <Button variant="ghost" onClick={startEdit}>
                       <Pencil size={12} /> 编辑
+                    </Button>
+                  )}
+                  {superAdmin && (
+                    <Button variant="success" onClick={() => void convertToArticle()} disabled={busy}>
+                      {busy ? <Loader2 size={12} className="animate-spin" /> : <FileText size={12} />} 转文章草稿
                     </Button>
                   )}
                   {superAdmin && <Button variant="danger" onClick={() => void remove()}><Trash2 size={12} /> 删除</Button>}

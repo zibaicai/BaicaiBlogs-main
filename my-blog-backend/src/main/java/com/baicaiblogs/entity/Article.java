@@ -70,6 +70,18 @@ public class Article {
     @Column(name = "reading_time")
     private Integer readingTime;
 
+    @Column(name = "source_platform", length = 40)
+    private String sourcePlatform;
+
+    @Column(name = "source_url", length = 1000)
+    private String sourceUrl;
+
+    @Column(name = "source_author", length = 255)
+    private String sourceAuthor;
+
+    @Column(name = "source_archive_id")
+    private Long sourceArchiveId;
+
     @Column(name = "published_at")
     private LocalDateTime publishedAt;
 

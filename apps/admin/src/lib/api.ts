@@ -351,6 +351,8 @@ export const api = {
   adminArticles: () => request<any[]>("/admin/articles"),
   adminArticle: (id: number) => request<any>(`/admin/articles/${id}`),
   createArticle: (payload: any) => request<any>("/admin/articles", { method: "POST", body: JSON.stringify(payload) }),
+  importArticleFromArchive: (archiveId: number) =>
+    request<any>(`/admin/articles/import/archive/${archiveId}`, { method: "POST" }),
   updateArticle: (id: number, payload: any) =>
     request<any>(`/admin/articles/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
   deleteArticle: (id: number) => request<void>(`/admin/articles/${id}`, { method: "DELETE" }),

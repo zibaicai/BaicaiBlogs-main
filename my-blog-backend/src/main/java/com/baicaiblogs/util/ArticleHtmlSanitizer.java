@@ -18,10 +18,12 @@ public final class ArticleHtmlSanitizer {
                     "ul", "ol", "li",
                     "a", "img",
                     "figure", "figcaption",
+                    "table", "thead", "tbody", "tr", "th", "td",
+                    "sup", "sub",
                     "span", "div")
             .allowUrlProtocols("http", "https", "mailto")
             .allowAttributes("href", "title", "target").onElements("a")
-            .allowAttributes("src", "alt", "title", "width", "height").onElements("img")
+            .allowAttributes("src", "alt", "title", "width", "height", "loading", "referrerpolicy").onElements("img")
             .allowAttributes("class", "style").onElements(
                     "p", "h1", "h2", "h3", "h4", "span", "div", "img", "blockquote", "pre", "code")
             .allowStyling()

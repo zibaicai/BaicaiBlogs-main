@@ -98,6 +98,10 @@ public class ArticleService {
                 .status(status)
                 .visibility(normalizeVisibility(request.getVisibility()))
                 .readingTime(readingTime(text))
+                .sourcePlatform(trim(request.getSourcePlatform()))
+                .sourceUrl(trim(request.getSourceUrl()))
+                .sourceAuthor(trim(request.getSourceAuthor()))
+                .sourceArchiveId(request.getSourceArchiveId())
                 .publishedAt("PUBLISHED".equals(status) ? LocalDateTime.now() : null)
                 .build();
         return toResponse(articleRepository.save(article));
@@ -159,6 +163,23 @@ public class ArticleService {
         }
     }
 
+    @Transactional
+    public String uploadImportedImage(byte[] bytes) {
+        if (bytes == null || bytes.length == 0) throw new RuntimeException("图片内容为空");
+        if (bytes.length > ImageSecurityService.MAX_BYTES) throw new RuntimeException("图片不能超过 10MB");
+        try {
+            ImageSecurityService.SafeImage safe = imageSecurityService.sanitize(bytes);
+            String key = "articles/" + LocalDateTime.now().toLocalDate() + "/"
+                    + UUID.randomUUID().toString().replace("-", "") + "." + safe.extension();
+            ossService.putObject(key, safe.bytes(), safe.contentType());
+            return "/api/public/articles/images?key=" + URLEncoder.encode(key, StandardCharsets.UTF_8);
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("图片转存失败");
+        }
+    }
+
     @Transactional(readOnly = true)
     public byte[] imageBytes(String key) {
         if (key == null || !key.startsWith("articles/") || key.contains("..") || key.contains("\\")) {
@@ -199,6 +220,10 @@ public class ArticleService {
                 .status(article.getStatus())
                 .visibility(article.getVisibility())
                 .readingTime(article.getReadingTime())
+                .sourcePlatform(article.getSourcePlatform())
+                .sourceUrl(article.getSourceUrl())
+                .sourceAuthor(article.getSourceAuthor())
+                .sourceArchiveId(article.getSourceArchiveId())
                 .publishedAt(article.getPublishedAt())
                 .createdAt(article.getCreatedAt())
                 .updatedAt(article.getUpdatedAt())

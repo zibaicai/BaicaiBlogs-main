@@ -25,6 +25,10 @@ public class ArticleDtos {
         private List<String> tags;
         private String status;
         private String visibility;
+        private String sourcePlatform;
+        private String sourceUrl;
+        private String sourceAuthor;
+        private Long sourceArchiveId;
     }
 
     @Data
@@ -48,6 +52,10 @@ public class ArticleDtos {
         private List<String> tags;
         private String status;
         private String visibility;
+        private String sourcePlatform;
+        private String sourceUrl;
+        private String sourceAuthor;
+        private Long sourceArchiveId;
         private Integer readingTime;
         private LocalDateTime publishedAt;
         private LocalDateTime createdAt;

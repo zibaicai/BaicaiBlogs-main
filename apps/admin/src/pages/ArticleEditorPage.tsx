@@ -22,6 +22,7 @@ type Article = {
   tags?: string[];
   categoryId?: number;
   status: string;
+  visibility?: string;
   slug: string;
 };
 
@@ -43,6 +44,7 @@ export default function ArticleEditorPage() {
   const [categoryId, setCategoryId] = useState("");
   const [tags, setTags] = useState("");
   const [status, setStatus] = useState("DRAFT");
+  const [visibility, setVisibility] = useState("PUBLIC");
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -65,6 +67,7 @@ export default function ArticleEditorPage() {
       setCategoryId("");
       setTags("");
       setStatus("DRAFT");
+      setVisibility("PUBLIC");
       setLoading(false);
       return;
     }
@@ -81,6 +84,7 @@ export default function ArticleEditorPage() {
         setCategoryId(article.categoryId ? String(article.categoryId) : "");
         setTags((article.tags || []).join(", "));
         setStatus(article.status || "DRAFT");
+        setVisibility(article.visibility || "PUBLIC");
       })
       .catch((error) => {
         showToast(error instanceof Error ? error.message : "加载失败", "error");
@@ -130,6 +134,7 @@ export default function ArticleEditorPage() {
       categoryId: categoryId ? Number(categoryId) : null,
       tags: tags.split(/[,，]/).map((tag) => tag.trim()).filter(Boolean),
       status,
+      visibility,
       visibility: "PUBLIC",
     };
     try {
@@ -215,6 +220,11 @@ export default function ArticleEditorPage() {
         <div className="block text-[10px] font-black uppercase tracking-widest text-slate-400">状态
           <div className="mt-2">
             <Select value={status} onChange={setStatus} ariaLabel="文章状态" options={[{ value: "DRAFT", label: "草稿" }, { value: "PUBLISHED", label: "发布" }]} />
+          </div>
+        </div>
+        <div className="block text-[10px] font-black uppercase tracking-widest text-slate-400">可见性
+          <div className="mt-2">
+            <Select value={visibility} onChange={setVisibility} ariaLabel="文章可见性" options={[{ value: "PRIVATE", label: "仅管理员" }, { value: "PUBLIC", label: "公开" }]} />
           </div>
         </div>
       </div>
