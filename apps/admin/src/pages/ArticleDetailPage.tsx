@@ -19,6 +19,7 @@ type Article = {
   category?: string;
   tags?: string[];
   status: string;
+  visibility?: string;
   slug: string;
   publishedAt?: string;
   updatedAt?: string;
@@ -79,7 +80,11 @@ export default function ArticleDetailPage() {
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Link to="/articles" className="inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-400 hover:text-white"><ArrowLeft size={14} /> 返回文章列表</Link>
         <div className="flex items-center gap-2">
-          <a href={`https://www.zibaicai.cn/articles/${article.slug}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-1.5 text-[10px] font-bold text-slate-300 hover:bg-white/5"><Eye size={13} /> 预览</a>
+          {article.status === "PUBLISHED" && article.visibility === "PUBLIC" ? (
+            <a href={`https://www.zibaicai.cn/articles/${article.slug}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-1.5 text-[10px] font-bold text-slate-300 hover:bg-white/5"><Eye size={13} /> C 端预览</a>
+          ) : (
+            <span className="rounded-lg border border-amber-400/20 bg-amber-400/10 px-3 py-1.5 text-[10px] font-bold text-amber-300">未公开，仅后台可见</span>
+          )}
           <Link to={`/articles/${article.id}/edit`} className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-500 px-3 py-1.5 text-[10px] font-bold text-white"><Pencil size={13} /> 编辑</Link>
           <button type="button" onClick={() => void remove()} className="rounded-lg p-2 text-slate-500 hover:bg-red-500/10 hover:text-red-300"><Trash2 size={14} /></button>
         </div>

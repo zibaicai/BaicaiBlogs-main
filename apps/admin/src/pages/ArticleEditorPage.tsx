@@ -181,7 +181,14 @@ export default function ArticleEditorPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {current?.slug && <a href={`https://www.zibaicai.cn/articles/${current.slug}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 px-3 py-2 text-[10px] font-bold text-slate-300 hover:bg-white/5"><Eye size={13} /> 预览</a>}
+          {current?.slug && (
+            <Link
+              to={`/articles/${current.id}`}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 px-3 py-2 text-[10px] font-bold text-slate-300 hover:bg-white/5"
+            >
+              <Eye size={13} /> 后台预览
+            </Link>
+          )}
           {current && <button type="button" onClick={() => void remove()} className="inline-flex items-center gap-1.5 rounded-xl bg-red-500/15 px-3 py-2 text-[10px] font-bold text-red-300"><Trash2 size={13} /> 删除</button>}
           <button type="button" onClick={() => void save()} disabled={saving || uploading} className="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-2 text-[11px] font-black text-white disabled:opacity-50">
             {saving ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />} 保存
