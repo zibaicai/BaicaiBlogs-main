@@ -37,7 +37,11 @@ export async function request<T = any>(path: string, opts: RequestInit = {}): Pr
   }
 
   if (!res.ok) {
-    throw new Error(res.status === 403 ? "当前账户无权执行该操作" : json?.message || `HTTP ${res.status}`);
+    const message = res.status === 403 ? "当前账户无权执行该操作" : json?.message || `HTTP ${res.status}`;
+    if (res.status === 403 && typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("admin:forbidden", { detail: message }));
+    }
+    throw new Error(message);
   }
   if (!json) throw new Error("后端返回为空");
   return json;

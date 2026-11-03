@@ -761,9 +761,23 @@ function RequireRole({ roles, children }: { roles: string[]; children: React.Rea
   return <>{children}</>;
 }
 
+function ForbiddenListener() {
+  const { showToast } = useToast();
+  useEffect(() => {
+    const handler = (event: Event) => {
+      const message = (event as CustomEvent<string>).detail || "当前账户无权执行该操作";
+      showToast(message, "error");
+    };
+    window.addEventListener("admin:forbidden", handler);
+    return () => window.removeEventListener("admin:forbidden", handler);
+  }, [showToast]);
+  return null;
+}
+
 export default function App() {
   return (
     <ToastProvider>
+      <ForbiddenListener />
       <OperationProvider>
         <SiteConfigProvider>
           <Routes>
