@@ -173,28 +173,28 @@ export const api = {
     }),
 
   logout: () => request<void>("/auth/logout", { method: "POST", credentials: "include" }),
-  myPosts: () => request<Post[]>("/admin/posts/mine"),
-  myProjects: () => request<Project[]>("/admin/projects/mine"),
+  myPosts: () => request<Post[]>("/me/posts"),
+  myProjects: () => request<Project[]>("/me/projects"),
   createProject: (project: Partial<Project>) =>
-    request<Project>("/admin/projects", { method: "POST", body: JSON.stringify(project) }),
+    request<Project>("/me/projects", { method: "POST", body: JSON.stringify(project) }),
   updateProject: (projectId: string, project: Partial<Project>) =>
-    request<Project>(`/admin/projects/${encodeURIComponent(projectId)}`, {
+    request<Project>(`/me/projects/${encodeURIComponent(projectId)}`, {
       method: "PUT",
       body: JSON.stringify(project),
     }),
   deleteProject: (projectId: string) =>
-    request<void>(`/admin/projects/${encodeURIComponent(projectId)}`, { method: "DELETE" }),
-  getOverview: () => request<any>("/admin/overview"),
+    request<void>(`/me/projects/${encodeURIComponent(projectId)}`, { method: "DELETE" }),
+  getOverview: () => request<any>("/me/overview"),
   publicPosts: () => request<Post[]>("/public/posts"),
 
   setPostVisibility: (slug: string, visibility: string) =>
-    request<Post>(`/admin/posts/${encodeURIComponent(slug)}/visibility`, {
+    request<Post>(`/me/posts/${encodeURIComponent(slug)}/visibility`, {
       method: "PATCH",
       body: JSON.stringify({ visibility }),
     }),
 
   setProjectVisibility: (projectId: string, visibility: string) =>
-    request<Project>(`/admin/projects/${encodeURIComponent(projectId)}/visibility`, {
+    request<Project>(`/me/projects/${encodeURIComponent(projectId)}/visibility`, {
       method: "PATCH",
       body: JSON.stringify({ visibility }),
     }),
@@ -218,28 +218,28 @@ export const api = {
   recommendTags: (categoryId?: number) =>
     request<string[]>(`/admin/tags/recommend${categoryId ? `?categoryId=${categoryId}` : ""}`),
 
-  myMoments: () => request<Moment[]>("/admin/moments/mine"),
+  myMoments: () => request<Moment[]>("/me/moments"),
   createMoment: (moment: Partial<Moment>) =>
-    request<Moment>("/admin/moments", { method: "POST", body: JSON.stringify(moment) }),
+    request<Moment>("/me/moments", { method: "POST", body: JSON.stringify(moment) }),
   updateMoment: (slug: string, moment: Partial<Moment>) =>
-    request<Moment>(`/admin/moments/${encodeURIComponent(slug)}`, { method: "PUT", body: JSON.stringify(moment) }),
+    request<Moment>(`/me/moments/${encodeURIComponent(slug)}`, { method: "PUT", body: JSON.stringify(moment) }),
   deleteMoment: (slug: string) =>
-    request<void>(`/admin/moments/${encodeURIComponent(slug)}`, { method: "DELETE" }),
+    request<void>(`/me/moments/${encodeURIComponent(slug)}`, { method: "DELETE" }),
   getPrivateMoments: (reason: string) =>
     request<Moment[]>(`/admin/moments/private?reason=${encodeURIComponent(reason)}`),
-  getAllTags: () => request<string[]>("/admin/posts/all_tags"),
-  getMyPostBySlug: (slug: string) => request<Post>(`/admin/posts/${encodeURIComponent(slug)}`),
+  getAllTags: () => request<string[]>("/me/posts/all_tags"),
+  getMyPostBySlug: (slug: string) => request<Post>(`/me/posts/${encodeURIComponent(slug)}`),
 
   createPost: (post: Partial<Post>) =>
-    request<Post>("/admin/posts", { method: "POST", body: JSON.stringify(post) }),
+    request<Post>("/me/posts", { method: "POST", body: JSON.stringify(post) }),
 
   updatePost: (slug: string, post: Partial<Post>) =>
-    request<Post>(`/admin/posts/${encodeURIComponent(slug)}`, { method: "PUT", body: JSON.stringify(post) }),
+    request<Post>(`/me/posts/${encodeURIComponent(slug)}`, { method: "PUT", body: JSON.stringify(post) }),
 
   uploadPost: (file: File) => {
     const form = new FormData();
     form.append("file", file);
-    return request<Post>("/admin/posts/upload", { method: "POST", body: form });
+    return request<Post>("/me/posts/upload", { method: "POST", body: form });
   },
 
   uploadImage: (file: File) => {
@@ -258,7 +258,7 @@ export const api = {
     request<Post>(`/admin/posts/${encodeURIComponent(slug)}/repair`, { method: "POST" }),
 
   deletePost: (slug: string) =>
-    request<void>(`/admin/posts/${encodeURIComponent(slug)}`, { method: "DELETE" }),
+    request<void>(`/me/posts/${encodeURIComponent(slug)}`, { method: "DELETE" }),
 
   getAllConfigs: () => request<SiteConfigItem[]>("/admin/config"),
 
