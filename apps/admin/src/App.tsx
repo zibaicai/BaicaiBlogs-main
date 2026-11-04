@@ -59,6 +59,7 @@ import FriendApplicationsPage from "./pages/FriendApplicationsPage";
 import FriendMessagesPage from "./pages/FriendMessagesPage";
 import IpBansPage from "./pages/IpBansPage";
 import ForbiddenPage from "./pages/ForbiddenPage";
+import MySettingsPage from "./pages/MySettingsPage";
 
 type Any = Record<string, any>;
 
@@ -178,13 +179,14 @@ const NAV_ITEMS = [
   { to: "/access", label: "授权", icon: KeyRound },
   { to: "/timeline", label: "归档", icon: Waypoints },
   { to: "/settings", label: "设置", icon: Settings },
+  { to: "/my-settings", label: "个人设置", icon: Settings },
 ];
 
 function Shell({ children }: { children: React.ReactNode }) {
   const nav = useNavigate();
   const user = getAdminUser();
   const role = getAdminRole();
-  const userNav = new Set(["/", "/posts", "/projects", "/gallery", "/moments"]);
+  const userNav = new Set(["/", "/posts", "/projects", "/gallery", "/moments", "/my-settings"]);
   const superOnlyNav = new Set(["/privacy", "/suggestions", "/ip-bans", "/archives", "/access"]);
   const visibleNavItems = NAV_ITEMS.filter((item) => {
     if (role === "SUPER_ADMIN") return true;
@@ -812,6 +814,7 @@ export default function App() {
             <Route path="/danmaku" element={<RequireAuth><RequireRole roles={["ADMIN", "SUPER_ADMIN"]}><Shell><DanmakuPage /></Shell></RequireRole></RequireAuth>} />
             <Route path="/access" element={<RequireAuth><RequireRole roles={["SUPER_ADMIN"]}><Shell><AccessPage /></Shell></RequireRole></RequireAuth>} />
             <Route path="/settings" element={<RequireAuth><RequireRole roles={["ADMIN", "SUPER_ADMIN"]}><Shell><SettingsPage /></Shell></RequireRole></RequireAuth>} />
+            <Route path="/my-settings" element={<RequireAuth><Shell><MySettingsPage /></Shell></RequireAuth>} />
             <Route path="/editor/:slug?" element={<RequireAuth><EditorPage /></RequireAuth>} />
             <Route path="/forbidden" element={<RequireAuth><Shell><ForbiddenPage /></Shell></RequireAuth>} />
             <Route path="*" element={<Navigate to="/" replace />} />

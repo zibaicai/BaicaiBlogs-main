@@ -189,6 +189,12 @@ export const api = {
   deleteProject: (projectId: string) =>
     request<void>(`/me/projects/${encodeURIComponent(projectId)}`, { method: "DELETE" }),
   getOverview: () => request<any>("/me/overview"),
+  myProfile: () => request<any>("/me/profile"),
+  updateMyProfile: (payload: Record<string, unknown>) =>
+    request<any>("/me/profile", { method: "PUT", body: JSON.stringify(payload) }),
+  myPreferences: () => request<Record<string, unknown>>("/me/preferences"),
+  updateMyPreferences: (payload: Record<string, unknown>) =>
+    request<Record<string, unknown>>("/me/preferences", { method: "PUT", body: JSON.stringify(payload) }),
   publicPosts: () => request<Post[]>("/public/posts"),
 
   setPostVisibility: (slug: string, visibility: string) =>

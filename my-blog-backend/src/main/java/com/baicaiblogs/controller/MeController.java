@@ -2,12 +2,15 @@ package com.baicaiblogs.controller;
 
 import com.baicaiblogs.dto.*;
 import com.baicaiblogs.entity.User;
+import com.baicaiblogs.repository.UserRepository;
 import com.baicaiblogs.service.AdminOverviewService;
 import com.baicaiblogs.service.CategoryService;
 import com.baicaiblogs.service.MomentService;
 import com.baicaiblogs.service.PostService;
 import com.baicaiblogs.service.ProjectService;
 import com.baicaiblogs.service.TagService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +34,8 @@ public class MeController {
     private final CategoryService categoryService;
     private final TagService tagService;
     private final PostController postController;
+    private final UserRepository userRepository;
+    private final ObjectMapper objectMapper;
 
     @GetMapping("/overview")
     public ApiResponse<Map<String, Object>> overview() {
@@ -233,6 +238,61 @@ public class MeController {
     @PostMapping("/backgrounds")
     public ApiResponse<String> uploadBackground(@RequestParam("file") MultipartFile file) {
         return postController.uploadBackground(file);
+    }
+
+    @GetMapping("/profile")
+    public ApiResponse<Map<String, Object>> profile() {
+        try {
+            User user = currentUser();
+            Map<String, Object> data = new java.util.LinkedHashMap<>();
+            data.put("id", user.getId());
+            data.put("username", user.getUsername());
+            data.put("nickname", user.getNickname());
+            data.put("avatar", user.getAvatar());
+            data.put("roomName", user.getRoomName());
+            data.put("roomBio", user.getRoomBio());
+            return ApiResponse.success(data);
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @PutMapping("/profile")
+    public ApiResponse<Map<String, Object>> updateProfile(@RequestBody Map<String, String> body) {
+        try {
+            User user = currentUser();
+            if (body.containsKey("nickname")) user.setNickname(body.get("nickname"));
+            if (body.containsKey("avatar")) user.setAvatar(body.get("avatar"));
+            if (body.containsKey("roomName")) user.setRoomName(body.get("roomName"));
+            if (body.containsKey("roomBio")) user.setRoomBio(body.get("roomBio"));
+            userRepository.save(user);
+            return profile();
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/preferences")
+    public ApiResponse<Map<String, Object>> preferences() {
+        try {
+            String raw = currentUser().getPreferences();
+            if (raw == null || raw.isBlank()) return ApiResponse.success(Map.of());
+            return ApiResponse.success(objectMapper.readValue(raw, new TypeReference<Map<String, Object>>() {}));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @PutMapping("/preferences")
+    public ApiResponse<Map<String, Object>> updatePreferences(@RequestBody Map<String, Object> body) {
+        try {
+            User user = currentUser();
+            user.setPreferences(objectMapper.writeValueAsString(body));
+            userRepository.save(user);
+            return ApiResponse.success(body);
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
     }
 
     private User currentUser() {

@@ -43,6 +43,10 @@ public class User {
     @Column(name = "room_bio", length = 500)
     private String roomBio;
 
+    /** 用户级外观与阅读偏好，JSON 字符串。 */
+    @Column(columnDefinition = "LONGTEXT")
+    private String preferences;
+
     /** ACTIVE / BANNED */
     @Column(length = 20)
     @Builder.Default
