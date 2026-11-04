@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Bell, Check } from "lucide-react";
+import { Bell, Check, ChevronRight } from "lucide-react";
 import Navbar from "../../../components/Navbar";
 import PageTransition from "../../../components/PageTransition";
 import { PageTitle } from "../../../components/ui/Typography";
@@ -9,36 +9,71 @@ import { PageTitle } from "../../../components/ui/Typography";
 interface Notice {
   id: number;
   type: string;
+  category?: string;
   title: string;
   body: string;
   read: boolean;
+  link?: string;
   createdAt: string;
 }
 
+const CATEGORIES = [
+  { id: "all", label: "全部消息" },
+  { id: "reply", label: "回复我的" },
+  { id: "mention", label: "@ 我的" },
+  { id: "like", label: "收到的赞" },
+  { id: "system", label: "系统通知" },
+  { id: "moderation", label: "审核通知" },
+] as const;
+
 export default function NotificationsPage() {
+  const [category, setCategory] = useState("all");
   const [items, setItems] = useState<Notice[]>([]);
+  const [summary, setSummary] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const load = async () => {
+  const load = async (nextCategory = category) => {
     setLoading(true);
+    setError("");
     try {
-      const res = await fetch("/api/user/notifications", { credentials: "include" });
-      const json = await res.json();
-      if (!json?.success) throw new Error(json?.message || "加载失败");
-      setItems(json.data || []);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "加载失败");
+      const [listResponse, summaryResponse] = await Promise.all([
+        fetch(`/api/user/notifications?category=${nextCategory}&page=1&size=50`, { credentials: "include" }),
+        fetch("/api/user/notifications/summary", { credentials: "include" }),
+      ]);
+      const listJson = await listResponse.json();
+      const summaryJson = await summaryResponse.json();
+      if (!listJson?.success) throw new Error(listJson?.message || "加载失败");
+      setItems(listJson.data || []);
+      setSummary(summaryJson?.data || {});
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "加载失败");
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => { void load(); }, []);
+  useEffect(() => {
+    void load(category);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [category]);
 
-  const markRead = async (id: number) => {
-    await fetch(`/api/user/notifications/${id}/read`, { method: "POST", credentials: "include" });
-    setItems((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
+  const open = async (notice: Notice) => {
+    if (!notice.read) {
+      await fetch(`/api/user/notifications/${notice.id}/read`, { method: "POST", credentials: "include" });
+      setItems((current) => current.map((item) => item.id === notice.id ? { ...item, read: true } : item));
+      setSummary((current) => ({
+        ...current,
+        all: Math.max(0, (current.all || 0) - 1),
+        [notice.category || "system"]: Math.max(0, (current[notice.category || "system"] || 0) - 1),
+      }));
+    }
+    if (notice.link) window.location.href = notice.link;
+  };
+
+  const readAll = async () => {
+    await fetch(`/api/user/notifications/read-all?category=${category}`, { method: "POST", credentials: "include" });
+    await load(category);
   };
 
   return (
@@ -46,34 +81,73 @@ export default function NotificationsPage() {
       <Navbar />
       <PageTransition>
         <main className="directory-shell">
-          <div className="max-w-3xl mx-auto">
-          <PageTitle className="mb-2 flex items-center gap-2 text-slate-900 dark:text-white">
+          <PageTitle className="mb-6 flex items-center gap-2 text-slate-900 dark:text-white">
             <Bell className="text-indigo-500" /> 消息中心
           </PageTitle>
-          <p className="page-subtitle text-slate-500 dark:text-slate-400 mb-8">管理员查看你的密码相册时会在这里通知。</p>
-          {loading && <div className="text-slate-400 text-sm">加载中...</div>}
-          {error && <div className="text-red-400 text-sm font-bold">{error}</div>}
-          {!loading && !error && items.length === 0 && (
-            <div className="text-center py-24 text-slate-500 font-bold">暂无消息</div>
-          )}
-          <div className="flex flex-col gap-3">
-            {items.map((n) => (
-              <div key={n.id} className={`rounded-2xl border p-5 ${n.read ? "bg-white/40 dark:bg-slate-900/30 border-white/30 dark:border-white/5" : "bg-indigo-50/70 dark:bg-indigo-500/10 border-indigo-200 dark:border-indigo-500/20"}`}>
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="text-sm font-black text-slate-800 dark:text-slate-100">{n.title}</div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-6">{n.body}</p>
-                    <div className="text-meta text-slate-400 mt-2">{n.createdAt}</div>
-                  </div>
-                  {!n.read && (
-                    <button onClick={() => void markRead(n.id)} className="shrink-0 text-meta font-black text-indigo-500 flex items-center gap-1">
-                      <Check size={12} /> 已读
+
+          <div className="grid gap-5 md:grid-cols-[190px_minmax(0,1fr)]">
+            <aside className="md:sticky md:top-24 md:self-start">
+              <nav className="flex gap-1 overflow-x-auto pb-1 md:flex-col md:overflow-visible" aria-label="消息分类">
+                {CATEGORIES.map((item) => {
+                  const active = category === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setCategory(item.id)}
+                      className={`flex shrink-0 items-center justify-between gap-2 rounded-xl px-3 py-2 text-left text-xs font-bold transition ${
+                        active
+                          ? "bg-indigo-500/15 text-indigo-500"
+                          : "text-slate-500 hover:bg-white/40 hover:text-slate-800 dark:hover:bg-white/5 dark:hover:text-white"
+                      }`}
+                    >
+                      <span>{item.label}</span>
+                      {!!summary[item.id] && (
+                        <span className="rounded-full bg-red-500 px-1.5 py-0.5 text-[9px] text-white">{summary[item.id]}</span>
+                      )}
                     </button>
-                  )}
-                </div>
+                  );
+                })}
+              </nav>
+            </aside>
+
+            <section className="min-w-0">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <h2 className="text-sm font-black text-slate-800 dark:text-slate-100">
+                  {CATEGORIES.find((item) => item.id === category)?.label}
+                </h2>
+                <button type="button" onClick={() => void readAll()} className="text-[11px] font-bold text-indigo-500">
+                  全部已读
+                </button>
               </div>
-            ))}
-          </div>
+
+              {loading && <div className="py-12 text-center text-sm text-slate-400">加载中…</div>}
+              {error && <div className="py-12 text-center text-sm font-bold text-red-400">{error}</div>}
+              {!loading && !error && items.length === 0 && (
+                <div className="py-16 text-center text-sm text-slate-400">暂无消息</div>
+              )}
+
+              <div className="divide-y divide-white/10 overflow-hidden rounded-xl border border-white/20 bg-white/40 dark:border-white/10 dark:bg-slate-900/30">
+                {items.map((notice) => (
+                  <button
+                    key={notice.id}
+                    type="button"
+                    onClick={() => void open(notice)}
+                    className={`flex w-full items-start gap-3 px-4 py-4 text-left transition hover:bg-white/40 dark:hover:bg-white/5 ${
+                      notice.read ? "opacity-70" : ""
+                    }`}
+                  >
+                    <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${notice.read ? "bg-slate-300" : "bg-indigo-500"}`} />
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-xs font-black text-slate-800 dark:text-slate-100">{notice.title}</span>
+                      <span className="mt-1 block truncate text-xs text-slate-500 dark:text-slate-400">{notice.body}</span>
+                      <span className="mt-1 block text-[10px] text-slate-400">{notice.createdAt}</span>
+                    </span>
+                    <ChevronRight size={14} className="mt-1 shrink-0 text-slate-300" />
+                  </button>
+                ))}
+              </div>
+            </section>
           </div>
         </main>
       </PageTransition>

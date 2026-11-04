@@ -34,6 +34,15 @@ public class Notification {
     @Column(name = "target_id")
     private Long targetId;
 
+    @Column(length = 20)
+    private String category;
+
+    @Column(length = 500)
+    private String link;
+
+    @Column(name = "read_at")
+    private LocalDateTime readAt;
+
     @Column(name = "is_read")
     @Builder.Default
     private Boolean read = false;

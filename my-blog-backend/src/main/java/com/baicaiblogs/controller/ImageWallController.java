@@ -718,9 +718,31 @@ public class ImageWallController {
     }
 
     @GetMapping("/user/notifications")
-    public ApiResponse<List<Notification>> notifications() {
+    public ApiResponse<List<Notification>> notifications(
+            @RequestParam(required = false) String category,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "20") int size) {
         try {
-            return ApiResponse.success(notificationService.list(imageWallService.currentUser()));
+            return ApiResponse.success(notificationService.list(imageWallService.currentUser(), category, page, size));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/user/notifications/summary")
+    public ApiResponse<Map<String, Long>> notificationSummary() {
+        try {
+            return ApiResponse.success(notificationService.summary(imageWallService.currentUser()));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @PostMapping("/user/notifications/read-all")
+    public ApiResponse<Void> readAllNotifications(@RequestParam(required = false) String category) {
+        try {
+            notificationService.markAllRead(imageWallService.currentUser(), category);
+            return ApiResponse.success("已全部标记为已读", null);
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
         }

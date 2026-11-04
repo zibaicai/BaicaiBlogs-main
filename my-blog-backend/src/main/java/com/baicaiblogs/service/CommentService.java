@@ -118,7 +118,19 @@ public class CommentService {
                 .content(content)
                 .status("VISIBLE")
                 .build();
-        return toResponse(commentRepository.save(comment), author);
+        Comment saved = commentRepository.save(comment);
+        if (parentId != null && replyToUserId != null && !replyToUserId.equals(author.getId())) {
+            notificationService.notifyUser(
+                    replyToUserId,
+                    "COMMENT_REPLY",
+                    "有人回复了你的评论",
+                    displayName(author) + "：" + (content.length() > 80 ? content.substring(0, 80) + "…" : content),
+                    type,
+                    request.getTargetId(),
+                    "/comments/thread/" + (rootId == null ? saved.getId() : rootId)
+            );
+        }
+        return toResponse(saved, author);
     }
 
     @Transactional
@@ -271,7 +283,10 @@ public class CommentService {
                 comment.getUserId(),
                 "COMMENT_HIDDEN",
                 "评论被隐藏",
-                "你在资源下的评论被所有者或管理员隐藏。"
+                "你在资源下的评论被所有者或管理员隐藏。",
+                comment.getTargetType(),
+                comment.getTargetId(),
+                "/comments/thread/" + (comment.getRootId() == null ? comment.getId() : comment.getRootId())
         );
     }
 
