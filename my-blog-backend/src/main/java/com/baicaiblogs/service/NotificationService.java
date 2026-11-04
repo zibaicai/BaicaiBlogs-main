@@ -5,11 +5,14 @@ import com.baicaiblogs.entity.Notification;
 import com.baicaiblogs.entity.User;
 import com.baicaiblogs.repository.AlbumRepository;
 import com.baicaiblogs.repository.NotificationRepository;
+import com.baicaiblogs.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +27,8 @@ public class NotificationService {
 
     private final NotificationRepository repository;
     private final AlbumRepository albumRepository;
+    private final UserRepository userRepository;
+    private static final ObjectMapper JSON = new ObjectMapper();
 
     @Transactional
     public void notifyAdminView(Album album, User admin, Long grantId) {
@@ -65,10 +70,12 @@ public class NotificationService {
                            String targetType, Long targetId, String link,
                            Long actorId, String actorName, String actorAvatar) {
         if (userId == null) return;
+        String category = categoryOf(type);
+        if (!enabled(userId, category)) return;
         repository.save(Notification.builder()
                 .userId(userId)
                 .type(type)
-                .category(categoryOf(type))
+                .category(category)
                 .title(title)
                 .body(body)
                 .targetType(targetType)
@@ -85,6 +92,63 @@ public class NotificationService {
     @Transactional
     public void backfillCategories() {
         repository.backfillCategories();
+    }
+
+    @Scheduled(cron = "0 30 3 * * *")
+    @Transactional
+    public void purgeOldNotifications() {
+        repository.deleteByCreatedAtBefore(LocalDateTime.now().minusDays(180));
+    }
+
+    @Transactional(readOnly = true)
+    public Map<String, Boolean> preferences(User user) {
+        Map<String, Boolean> result = new LinkedHashMap<>();
+        for (String key : List.of("reply", "mention", "like", "system", "moderation")) {
+            result.put(key, true);
+        }
+        Map<String, Object> root = readPreferences(user);
+        Object value = root.get("notifications");
+        if (value instanceof Map<?, ?> saved) {
+            for (String key : result.keySet()) {
+                Object enabled = saved.get(key);
+                if (enabled instanceof Boolean bool) result.put(key, bool);
+            }
+        }
+        return result;
+    }
+
+    @Transactional
+    public Map<String, Boolean> updatePreferences(User user, Map<String, Boolean> values) {
+        Map<String, Object> root = readPreferences(user);
+        Map<String, Object> saved = new LinkedHashMap<>();
+        for (String key : List.of("reply", "mention", "like", "system", "moderation")) {
+            saved.put(key, values.getOrDefault(key, true));
+        }
+        root.put("notifications", saved);
+        try {
+            user.setPreferences(JSON.writeValueAsString(root));
+        } catch (Exception e) {
+            throw new RuntimeException("保存消息设置失败");
+        }
+        userRepository.save(user);
+        return preferences(user);
+    }
+
+    private boolean enabled(Long userId, String category) {
+        if (userId == null) return false;
+        return userRepository.findById(userId)
+                .map(user -> preferences(user).getOrDefault(category, true))
+                .orElse(true);
+    }
+
+    private Map<String, Object> readPreferences(User user) {
+        if (user.getPreferences() == null || user.getPreferences().isBlank()) return new LinkedHashMap<>();
+        try {
+            return JSON.readValue(user.getPreferences(),
+                    new com.fasterxml.jackson.core.type.TypeReference<LinkedHashMap<String, Object>>() {});
+        } catch (Exception e) {
+            return new LinkedHashMap<>();
+        }
     }
 
     @Transactional(readOnly = true)

@@ -26,6 +26,15 @@ const CATEGORIES = [
   { id: "like", label: "收到的赞" },
   { id: "system", label: "系统通知" },
   { id: "moderation", label: "审核通知" },
+  { id: "settings", label: "消息设置" },
+] as const;
+
+const SETTING_ITEMS = [
+  { id: "reply", label: "回复我的" },
+  { id: "mention", label: "@ 我的" },
+  { id: "like", label: "收到的赞" },
+  { id: "system", label: "系统通知" },
+  { id: "moderation", label: "审核通知" },
 ] as const;
 
 export default function NotificationsPage() {
@@ -36,6 +45,7 @@ export default function NotificationsPage() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
+  const [preferences, setPreferences] = useState<Record<string, boolean>>({});
   const [error, setError] = useState("");
 
   const load = async (nextCategory = category, nextPage = 1, append = false) => {
@@ -47,11 +57,14 @@ export default function NotificationsPage() {
         fetch(`/api/me/notifications?category=${nextCategory}&page=${nextPage}&size=20`, { credentials: "include" }),
         fetch("/api/me/notifications/summary", { credentials: "include" }),
       ]);
+      const preferencesResponse = await fetch("/api/me/notifications/preferences", { credentials: "include" });
       const listJson = await listResponse.json();
       const summaryJson = await summaryResponse.json();
+      const preferencesJson = await preferencesResponse.json();
       if (!listJson?.success) throw new Error(listJson?.message || "加载失败");
       const nextItems = listJson.data || [];
       setItems((current) => append ? [...current, ...nextItems] : nextItems);
+      setPreferences(preferencesJson?.data || {});
       setPage(nextPage);
       setHasMore(nextItems.length === 20);
       setSummary(summaryJson?.data || {});
@@ -84,6 +97,17 @@ export default function NotificationsPage() {
   const readAll = async () => {
     await fetch(`/api/me/notifications/read-all?category=${category}`, { method: "POST", credentials: "include" });
     await load(category);
+  };
+
+  const togglePreference = async (key: string) => {
+    const next = { ...preferences, [key]: !preferences[key] };
+    setPreferences(next);
+    await fetch("/api/me/notifications/preferences", {
+      method: "PUT",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(next),
+    });
   };
 
   return (
@@ -126,11 +150,27 @@ export default function NotificationsPage() {
                 <h2 className="text-sm font-black text-slate-800 dark:text-slate-100">
                   {CATEGORIES.find((item) => item.id === category)?.label}
                 </h2>
-                <button type="button" onClick={() => void readAll()} className="text-[11px] font-bold text-indigo-500">
+                <button type="button" onClick={() => void readAll()} className="text-[11px] font-bold text-indigo-500" style={{ display: category === "settings" ? "none" : undefined }}>
                   全部已读
                 </button>
               </div>
 
+              {category === "settings" ? (
+                <div className="divide-y divide-white/10 overflow-hidden rounded-xl border border-white/20 bg-white/40 dark:border-white/10 dark:bg-slate-900/30">
+                  {SETTING_ITEMS.map((item) => (
+                    <label key={item.id} className="flex cursor-pointer items-center justify-between gap-4 px-4 py-4">
+                      <span className="text-xs font-bold text-slate-700 dark:text-slate-200">{item.label}</span>
+                      <input
+                        type="checkbox"
+                        checked={preferences[item.id] !== false}
+                        onChange={() => void togglePreference(item.id)}
+                        className="h-4 w-4 accent-indigo-500"
+                      />
+                    </label>
+                  ))}
+                </div>
+              ) : (
+              <>
               {loading && <div className="py-12 text-center text-sm text-slate-400">加载中…</div>}
               {error && <div className="py-12 text-center text-sm font-bold text-red-400">{error}</div>}
               {!loading && !error && items.length === 0 && (
@@ -169,6 +209,8 @@ export default function NotificationsPage() {
                     {loadingMore ? "加载中…" : "加载更多"}
                   </button>
                 </div>
+              )}
+              </>
               )}
             </section>
           </div>

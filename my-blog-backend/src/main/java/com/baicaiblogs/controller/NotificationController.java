@@ -31,6 +31,24 @@ public class NotificationController {
         }
     }
 
+    @GetMapping("/preferences")
+    public ApiResponse<Map<String, Boolean>> preferences() {
+        try {
+            return ApiResponse.success(notificationService.preferences(currentUser()));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @PutMapping("/preferences")
+    public ApiResponse<Map<String, Boolean>> updatePreferences(@RequestBody Map<String, Boolean> values) {
+        try {
+            return ApiResponse.success(notificationService.updatePreferences(currentUser(), values));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
     @GetMapping("/summary")
     public ApiResponse<Map<String, Long>> summary() {
         try {
