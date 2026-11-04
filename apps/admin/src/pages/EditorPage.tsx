@@ -4,6 +4,7 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import RichTextEditor, { type RichTextEditorHandle } from "../components/editor/RichTextEditor";
 import MetaMatrix from "../components/editor/MetaMatrix";
 import FloatingImageTool from "../components/editor/FloatingImageTool";
+import OwnerCommentsPanel from "../components/comments/OwnerCommentsPanel";
 import { useToast } from "../components/ToastProvider";
 import { api, type Category, type Tag } from "../lib/api";
 
@@ -20,6 +21,7 @@ export default function EditorPage() {
   const [cover, setCover] = useState("");
   const [summary, setSummary] = useState("");
   const [content, setContent] = useState("");
+  const [postId, setPostId] = useState<number | null>(null);
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [categoryId, setCategoryId] = useState<string>("");
   const [categories, setCategories] = useState<Category[]>([]);
@@ -88,6 +90,7 @@ export default function EditorPage() {
         if (!active) return;
         if (!res.success || !res.data) throw new Error(res.message || "文章不存在");
         const post = res.data;
+        setPostId(post.id);
         setTitle(post.title || "");
         setTags(post.tags || []);
         setCover(post.cover || "");
@@ -212,6 +215,8 @@ export default function EditorPage() {
           </aside>
         </div>
       </div>
+
+      {postId && <OwnerCommentsPanel targetType="POST" targetId={postId} />}
 
       <FloatingImageTool
         isOpen={imageToolOpen}
