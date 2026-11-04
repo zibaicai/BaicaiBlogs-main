@@ -28,6 +28,17 @@ export default function CommentThreadPage() {
   const [error, setError] = useState("");
   const [replyingTo, setReplyingTo] = useState<Comment | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [page, setPage] = useState(0);
+  const pageSize = 20;
+  const totalPages = Math.max(1, Math.ceil(comments.length / pageSize));
+  const pageComments = comments.slice(page * pageSize, (page + 1) * pageSize);
+  const targetType = comments[0]?.targetType;
+  const backHref = targetType === "POST" ? "/posts"
+    : targetType === "MOMENT" ? "/moments"
+    : targetType === "ALBUM" ? "/photowall"
+    : targetType === "PROJECT" ? "/projects"
+    : targetType === "TRACK" ? "/music"
+    : "/articles";
 
   useEffect(() => {
     if (!params?.rootId) return;
@@ -48,7 +59,7 @@ export default function CommentThreadPage() {
       <PageTransition>
         <main className="directory-shell articles-shell">
           <div className="mx-auto max-w-3xl py-10">
-            <Link href="/articles" className="inline-flex items-center gap-1.5 text-sm font-bold text-indigo-500 hover:underline">
+            <Link href={backHref} className="inline-flex items-center gap-1.5 text-sm font-bold text-indigo-500 hover:underline">
               <ArrowLeft size={14} /> 返回
             </Link>
             <h1 className="mt-4 text-2xl font-black text-slate-900 dark:text-white">评论楼</h1>
@@ -61,7 +72,7 @@ export default function CommentThreadPage() {
               <p className="py-10 text-sm text-red-400">{error}</p>
             ) : (
               <div className="mt-5 space-y-3">
-                {comments.map((comment, index) => (
+                {pageComments.map((comment, index) => (
                   <div
                     key={comment.id}
                     className={`rounded-2xl border border-white/20 bg-white/50 p-4 dark:border-white/10 dark:bg-slate-900/50 ${
@@ -85,6 +96,14 @@ export default function CommentThreadPage() {
                   </div>
                 ))}
                 {comments.length === 0 && <p className="text-sm text-slate-400">暂无评论。</p>}
+              </div>
+            )}
+
+            {totalPages > 1 && (
+              <div className="mt-4 flex items-center justify-between text-xs text-slate-400">
+                <button type="button" disabled={page === 0} onClick={() => setPage((value) => Math.max(0, value - 1))} className="font-bold disabled:opacity-30">上一页</button>
+                <span>{page + 1} / {totalPages}</span>
+                <button type="button" disabled={page >= totalPages - 1} onClick={() => setPage((value) => Math.min(totalPages - 1, value + 1))} className="font-bold disabled:opacity-30">下一页</button>
               </div>
             )}
 

@@ -73,6 +73,9 @@ export default function CommentSection({
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [replyingTo, setReplyingTo] = useState<CommentItem | null>(null);
+  const focusComposer = () => {
+    document.querySelector<HTMLTextAreaElement>(".comment-textarea")?.focus();
+  };
   const rootComments = useMemo(() => comments.filter((comment) => !comment.parentId), [comments]);
   const replyCounts = useMemo(() => {
     const counts = new Map<number, number>();
@@ -211,7 +214,7 @@ export default function CommentSection({
               // 收起状态下整条框都可以点：否则用户点边框/padding 没反应（移动端尤其明显）
               onClick={(event) => {
                 if ((event.target as HTMLElement).closest("button")) return;
-                if (!expanded) textareaRef.current?.focus();
+                if (!expanded) focusComposer();
               }}
             >
               <div className="comment-avatar">
@@ -261,7 +264,7 @@ export default function CommentSection({
               <button
                 type="button"
                 onClick={() => {
-                  if (canComment) textareaRef.current?.focus();
+                  if (canComment) focusComposer();
                   else window.location.href = "/login";
                 }}
               >
@@ -310,7 +313,7 @@ export default function CommentSection({
                 onClick={() => {
                   setReplyingTo(comment);
                   setExpanded(true);
-                  textareaRef.current?.focus();
+                  focusComposer();
                 }}
                 disabled={!user}
                 aria-label="回复"
