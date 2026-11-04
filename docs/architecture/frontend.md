@@ -139,3 +139,35 @@ a
 - 前端隐藏代替服务端授权
 - 403 清登录态
 - 客户端根据 role 显示私有数据后再隐藏
+
+## 表单与设置组件登记
+
+页面不得直接写原生 `<select>`，也不得重复实现已有表单控件。
+
+必须优先复用：
+
+```text
+components/ui/Button
+components/ui/Input
+components/ui/Select
+components/admin/AdminUI Tabs
+components/admin/DataTable
+components/settings/SettingsCard
+components/settings/SettingsField
+components/settings/SettingsControls.inputClass
+```
+
+新增基础控件时：
+
+```text
+先放入 components/ui 或 components/settings
+再在页面中使用
+```
+
+禁止：
+
+```text
+页面内直接写 <select>
+页面内复制 SettingsCard 样式
+页面内复制 input 基础样式
+```

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AppIcon } from "../ui/AppIcon";
+import { Select } from "../ui/Select";
 import {
   inputClass,
   SettingsCard,
@@ -54,14 +55,15 @@ export default function AIWhaleSection({ formData, handleUpdate, pushToQueue }: 
     >
       <div className="space-y-6">
         <SettingsField label="服务提供方" hint="切换提供方后，模型 ID 需要填写对应平台的模型名。">
-          <select
+          <Select
             value={config.provider}
-            onChange={(event) => update("provider", event.target.value as "gemini" | "deepseek")}
-            className={inputClass}
-          >
-            <option value="gemini">Gemini</option>
-            <option value="deepseek">DeepSeek</option>
-          </select>
+            onChange={(value) => update("provider", value as "gemini" | "deepseek")}
+            ariaLabel="AI 服务提供商"
+            options={[
+              { value: "gemini", label: "Gemini" },
+              { value: "deepseek", label: "DeepSeek" },
+            ]}
+          />
         </SettingsField>
 
         <SettingsField label="模型 ID" hint="建议使用轻量模型，响应速度更快。">

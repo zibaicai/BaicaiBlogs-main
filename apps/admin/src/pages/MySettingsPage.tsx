@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2, Save } from "lucide-react";
+import { Loader2, Save, UserRound } from "lucide-react";
 import { api } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
 import { AdminPageHeader, AdminPageShell } from "../components/admin/AdminUI";
 import { Button } from "../components/ui/Button";
+import { Select } from "../components/ui/Select";
+import { inputClass, SettingsCard, SettingsField } from "../components/settings/SettingsControls";
 
 type Profile = { nickname?: string; avatar?: string; roomName?: string; roomBio?: string };
 
@@ -39,7 +41,13 @@ export default function MySettingsPage() {
   };
 
   if (loading) {
-    return <AdminPageShell><div className="flex h-64 items-center justify-center text-sm text-slate-400"><Loader2 className="mr-2 animate-spin" size={16} />加载中…</div></AdminPageShell>;
+    return (
+      <AdminPageShell>
+        <div className="flex h-64 items-center justify-center text-sm text-slate-400">
+          <Loader2 className="mr-2 animate-spin" size={16} /> 加载中…
+        </div>
+      </AdminPageShell>
+    );
   }
 
   return (
@@ -48,52 +56,78 @@ export default function MySettingsPage() {
         title="个人设置"
         description="只影响当前账户的资料、主题与阅读偏好。"
         eyebrow="MY SETTINGS"
-        actions={<Button onClick={() => void save()} disabled={saving}>{saving ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />} 保存</Button>}
+        actions={
+          <Button onClick={() => void save()} disabled={saving}>
+            {saving ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />} 保存
+          </Button>
+        }
       />
 
-      <section className="rounded-xl border border-white/10 bg-white/[0.03] p-5">
-        <h2 className="text-xs font-black uppercase tracking-widest text-slate-400">个人资料</h2>
-        <div className="mt-4 grid gap-4 md:grid-cols-2">
-          <label className="text-[11px] font-bold text-slate-300">昵称
-            <input className="admin-input mt-2" value={profile.nickname || ""} onChange={(event) => setProfile({ ...profile, nickname: event.target.value })} />
-          </label>
-          <label className="text-[11px] font-bold text-slate-300">头像 URL
-            <input className="admin-input mt-2" value={profile.avatar || ""} onChange={(event) => setProfile({ ...profile, avatar: event.target.value })} />
-          </label>
-          <label className="text-[11px] font-bold text-slate-300">空间名称
-            <input className="admin-input mt-2" value={profile.roomName || ""} onChange={(event) => setProfile({ ...profile, roomName: event.target.value })} />
-          </label>
-          <label className="text-[11px] font-bold text-slate-300">空间简介
-            <input className="admin-input mt-2" value={profile.roomBio || ""} onChange={(event) => setProfile({ ...profile, roomBio: event.target.value })} />
-          </label>
+      <SettingsCard
+        title="个人资料"
+        description="这些字段只属于当前账户，不会影响站点 SEO 或全站文案。"
+        icon={<UserRound size={20} className="text-indigo-400" />}
+      >
+        <div className="grid gap-4 md:grid-cols-2">
+          <SettingsField label="昵称">
+            <input className={inputClass} value={profile.nickname || ""} onChange={(event) => setProfile({ ...profile, nickname: event.target.value })} />
+          </SettingsField>
+          <SettingsField label="头像 URL">
+            <input className={inputClass} value={profile.avatar || ""} onChange={(event) => setProfile({ ...profile, avatar: event.target.value })} />
+          </SettingsField>
+          <SettingsField label="空间名称">
+            <input className={inputClass} value={profile.roomName || ""} onChange={(event) => setProfile({ ...profile, roomName: event.target.value })} />
+          </SettingsField>
+          <SettingsField label="空间简介">
+            <input className={inputClass} value={profile.roomBio || ""} onChange={(event) => setProfile({ ...profile, roomBio: event.target.value })} />
+          </SettingsField>
         </div>
-      </section>
+      </SettingsCard>
 
-      <section className="mt-4 rounded-xl border border-white/10 bg-white/[0.03] p-5">
-        <h2 className="text-xs font-black uppercase tracking-widest text-slate-400">外观偏好</h2>
-        <div className="mt-4 grid gap-4 md:grid-cols-2">
-          <label className="text-[11px] font-bold text-slate-300">主题模式
-            <select className="admin-input mt-2" value={String(preferences.themeMode || "dark")} onChange={(event) => setPreferences({ ...preferences, themeMode: event.target.value })}>
-              <option value="dark">深色</option>
-              <option value="light">浅色</option>
-            </select>
-          </label>
-          <label className="text-[11px] font-bold text-slate-300">主题预设
-            <select className="admin-input mt-2" value={String(preferences.themePreset || "ocean")} onChange={(event) => setPreferences({ ...preferences, themePreset: event.target.value })}>
-              <option value="ocean">深海鲸歌</option>
-              <option value="violet">旧日紫夜</option>
-            </select>
-          </label>
-          <label className="flex items-center gap-2 text-[11px] font-bold text-slate-300">
-            <input type="checkbox" checked={Boolean(preferences.backgroundAnimation ?? true)} onChange={(event) => setPreferences({ ...preferences, backgroundAnimation: event.target.checked })} />
-            背景动画
-          </label>
-          <label className="flex items-center gap-2 text-[11px] font-bold text-slate-300">
-            <input type="checkbox" checked={Boolean(preferences.glassContent ?? true)} onChange={(event) => setPreferences({ ...preferences, glassContent: event.target.checked })} />
-            内容毛玻璃
-          </label>
-        </div>
-      </section>
+      <div className="mt-4">
+        <SettingsCard title="外观偏好" description="只影响当前账户在 C 端的展示偏好。">
+          <div className="grid gap-4 md:grid-cols-2">
+            <SettingsField label="主题模式">
+              <Select
+                value={String(preferences.themeMode || "dark")}
+                onChange={(value) => setPreferences({ ...preferences, themeMode: value })}
+                ariaLabel="主题模式"
+                options={[
+                  { value: "dark", label: "深色" },
+                  { value: "light", label: "浅色" },
+                ]}
+              />
+            </SettingsField>
+            <SettingsField label="主题预设">
+              <Select
+                value={String(preferences.themePreset || "ocean")}
+                onChange={(value) => setPreferences({ ...preferences, themePreset: value })}
+                ariaLabel="主题预设"
+                options={[
+                  { value: "ocean", label: "深海鲸歌" },
+                  { value: "violet", label: "旧日紫夜" },
+                ]}
+              />
+            </SettingsField>
+            <label className="flex items-center gap-2 text-[11px] font-bold text-slate-300">
+              <input
+                type="checkbox"
+                checked={Boolean(preferences.backgroundAnimation ?? true)}
+                onChange={(event) => setPreferences({ ...preferences, backgroundAnimation: event.target.checked })}
+              />
+              背景动画
+            </label>
+            <label className="flex items-center gap-2 text-[11px] font-bold text-slate-300">
+              <input
+                type="checkbox"
+                checked={Boolean(preferences.glassContent ?? true)}
+                onChange={(event) => setPreferences({ ...preferences, glassContent: event.target.checked })}
+              />
+              内容毛玻璃
+            </label>
+          </div>
+        </SettingsCard>
+      </div>
     </AdminPageShell>
   );
 }
