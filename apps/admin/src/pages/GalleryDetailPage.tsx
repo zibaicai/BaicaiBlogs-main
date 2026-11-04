@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, ChevronDown, ChevronUp, Image as ImageIcon, Loader2, Lock, Pencil, RefreshCw, Trash2, UploadCloud } from "lucide-react";
+import { ArrowLeft, ChevronDown, ChevronUp, Image as ImageIcon, Loader2, Lock, MessageCircle, Pencil, RefreshCw, Trash2, UploadCloud } from "lucide-react";
 
 import { api, uploadToOss, type GalleryAlbum, type GalleryPhoto } from "../lib/api";
 import AuthImage from "../components/AuthImage";
@@ -10,6 +10,7 @@ import { useToast } from "../components/ToastProvider";
 import { AdminEmptyState, AdminLoading, AdminPageHeader, AdminPageShell } from "../components/admin/AdminUI";
 import { Button } from "../components/ui/Button";
 import { Dialog } from "../components/ui/Dialog";
+import { publicCommentUrl } from "../lib/public-links";
 import { Input } from "../components/ui/Input";
 import { Select } from "../components/ui/Select";
 
@@ -198,6 +199,7 @@ export default function GalleryDetailPage() {
         actions={<>
           <Link to="/gallery" className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-2.5 py-1.5 text-[10px] font-bold text-slate-300 hover:bg-white/5"><ArrowLeft size={13} /> 返回</Link>
           <Button variant="ghost" onClick={() => void load()}><RefreshCw size={13} /> 刷新</Button>
+          <a href={publicCommentUrl("ALBUM", album.id)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-2.5 py-1.5 text-[10px] font-bold text-slate-300 hover:bg-white/5"><MessageCircle size={13} /> 评论</a>
           {isOwner ? (
             <>
               <Button onClick={() => setUploadOpen(true)}><UploadCloud size={13} /> 上传照片</Button>

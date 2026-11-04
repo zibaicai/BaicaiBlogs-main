@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ImagePlus, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react";
+import { ImagePlus, MessageCircle, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react";
 import { api, type Moment } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
 import { Button, Dialog, Input, MediaField, Select, Textarea } from "../components/ui";
@@ -13,6 +13,7 @@ import {
   StatusBadge,
 } from "../components/admin/AdminUI";
 import { DataTable } from "../components/admin/DataTable";
+import { publicCommentUrl } from "../lib/public-links";
 
 type MomentDraft = {
   content: string;
@@ -256,6 +257,15 @@ export default function MomentsPage() {
               width: "120px",
               cell: (item) => (
                 <div className="flex justify-end gap-0.5">
+                  <a
+                    href={publicCommentUrl("MOMENT", item.id)}
+                    target="_blank"
+                    rel="noreferrer"
+                    title="评论"
+                    className="rounded-md p-1.5 text-slate-400 hover:bg-white/10 hover:text-white"
+                  >
+                    <MessageCircle size={13} />
+                  </a>
                   <button
                     type="button"
                     title="编辑"
