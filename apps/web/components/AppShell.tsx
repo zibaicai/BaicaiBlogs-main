@@ -13,6 +13,7 @@ import PageViewTracker from "./PageViewTracker";
 import PresenceHeartbeat from "./PresenceHeartbeat";
 import SplashScreen from "./SplashScreen";
 import ThemeBackdrop from "./ThemeBackdrop";
+import ViewportHeightSync from "./ViewportHeightSync";
 import Footer from "./Footer";
 import GlobalToolbox from "./GlobalToolbox";
 import DeferredEffects from "./DeferredEffects";
@@ -36,6 +37,7 @@ export default function AppShell({ config, children }: AppShellProps) {
               <PageViewTracker />
               <PresenceHeartbeat />
               <SplashScreen />
+              <ViewportHeightSync />
 
               <MusicProvider>
                 <GlassSettingsProvider>
