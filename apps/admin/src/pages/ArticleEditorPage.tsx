@@ -5,6 +5,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, BookOpen, Eye, Loader2, Save, Trash2 } from "lucide-react";
 
 import RichTextEditor, { type RichTextEditorHandle } from "../components/editor/RichTextEditor";
+import OwnerCommentsPanel from "../components/comments/OwnerCommentsPanel";
 import { Select } from "../components/ui/Select";
 import { api } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
@@ -251,6 +252,8 @@ export default function ArticleEditorPage() {
           onChange={() => undefined}
         />
       </div>
+
+      {current?.id && <OwnerCommentsPanel targetType="ARTICLE" targetId={current.id} />}
 
       {imagePanelOpen && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm" onClick={() => setImagePanelOpen(false)}>
