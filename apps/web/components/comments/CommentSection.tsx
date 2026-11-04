@@ -53,7 +53,7 @@ export default function CommentSection({
   externalLabel,
   readOnly = false,
 }: {
-  targetType: "POST" | "ALBUM" | "MOMENT" | "TRACK" | "ARTICLE";
+  targetType: "POST" | "ALBUM" | "MOMENT" | "TRACK" | "ARTICLE" | "PROJECT";
   targetId: number;
   title?: string;
   emptyTitle?: string;
