@@ -201,6 +201,36 @@ public class CommentService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<CommentResponse> adminList(User admin, String status) {
+        assertAdmin(admin);
+        return commentRepository.findAll().stream()
+                .filter(comment -> status == null || status.isBlank() || status.equalsIgnoreCase(comment.getStatus()))
+                .map(comment -> toResponse(comment, admin))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void appeal(Long commentId, User author, String reason) {
+        if (author == null) throw new RuntimeException("请先登录");
+        Comment comment = get(commentId);
+        if (!author.getId().equals(comment.getUserId())) throw new RuntimeException("只能申诉自己的评论");
+        if (!"HIDDEN".equals(comment.getStatus())) throw new RuntimeException("只有被隐藏的评论可以申诉");
+        if ("PENDING".equals(comment.getAppealStatus())) throw new RuntimeException("申诉已提交，请等待处理");
+        comment.setAppealReason(reason == null ? "" : reason.trim());
+        comment.setAppealedAt(LocalDateTime.now());
+        comment.setAppealStatus("PENDING");
+        commentRepository.save(comment);
+    }
+
+    @Transactional
+    public void rejectAppeal(Long commentId, User admin) {
+        assertAdmin(admin);
+        Comment comment = get(commentId);
+        comment.setAppealStatus("REJECTED");
+        commentRepository.save(comment);
+    }
+
     @Transactional
     public void ownerSetStatus(Long commentId, User owner, String status) {
         if (owner == null) throw new RuntimeException("请先登录");
@@ -236,6 +266,7 @@ public class CommentService {
             comment.setHiddenReason(null);
             comment.setHiddenAt(null);
             comment.setModerationSource(null);
+            if ("PENDING".equals(comment.getAppealStatus())) comment.setAppealStatus("ACCEPTED");
         }
     }
 
@@ -394,6 +425,9 @@ public class CommentService {
                 .hiddenReason(comment.getHiddenReason())
                 .hiddenAt(comment.getHiddenAt())
                 .moderationSource(comment.getModerationSource())
+                .appealReason(comment.getAppealReason())
+                .appealedAt(comment.getAppealedAt())
+                .appealStatus(comment.getAppealStatus())
                 .createdAt(comment.getCreatedAt())
                 .likeCount(reactionRepository.countByCommentIdAndType(comment.getId(), "LIKE"))
                 .dislikeCount(reactionRepository.countByCommentIdAndType(comment.getId(), "DISLIKE"))

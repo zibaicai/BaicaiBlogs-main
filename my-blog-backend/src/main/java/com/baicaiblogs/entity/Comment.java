@@ -72,6 +72,16 @@ public class Comment {
     @Column(name = "moderation_source", length = 20)
     private String moderationSource;
 
+    @Column(name = "appeal_reason", length = 1000)
+    private String appealReason;
+
+    @Column(name = "appealed_at")
+    private LocalDateTime appealedAt;
+
+    /** PENDING / REJECTED / ACCEPTED */
+    @Column(name = "appeal_status", length = 20)
+    private String appealStatus;
+
     @Column(name = "expires_at")
     private LocalDateTime expiresAt;
 

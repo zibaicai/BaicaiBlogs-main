@@ -198,6 +198,13 @@ export const api = {
   myComments: () => request<any[]>("/me/comments"),
   hideOwnerComment: (id: number) => request<void>(`/me/comments/${id}/hide`, { method: "POST" }),
   restoreOwnerComment: (id: number) => request<void>(`/me/comments/${id}/restore`, { method: "POST" }),
+  adminComments: (status?: string) => request<any[]>(`/admin/comments${status ? `?status=${encodeURIComponent(status)}` : ""}`),
+  adminHideComment: (id: number) => request<void>(`/admin/comments/${id}/hide`, { method: "POST" }),
+  adminRestoreComment: (id: number) => request<void>(`/admin/comments/${id}/restore`, { method: "POST" }),
+  adminDeleteComment: (id: number) => request<void>(`/admin/comments/${id}`, { method: "DELETE" }),
+  adminRejectCommentAppeal: (id: number) => request<void>(`/admin/comments/${id}/reject-appeal`, { method: "POST" }),
+  appealComment: (id: number, reason: string) =>
+    request<void>(`/user/comments/${id}/appeal`, { method: "POST", body: JSON.stringify({ reason }) }),
   publicPosts: () => request<Post[]>("/public/posts"),
 
   setPostVisibility: (slug: string, visibility: string) =>

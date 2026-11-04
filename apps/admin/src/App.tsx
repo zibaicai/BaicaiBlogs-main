@@ -60,6 +60,7 @@ import FriendMessagesPage from "./pages/FriendMessagesPage";
 import IpBansPage from "./pages/IpBansPage";
 import ForbiddenPage from "./pages/ForbiddenPage";
 import MySettingsPage from "./pages/MySettingsPage";
+import CommentAuditPage from "./pages/CommentAuditPage";
 
 type Any = Record<string, any>;
 
@@ -174,6 +175,7 @@ const NAV_ITEMS = [
   { to: "/suggestions", label: "建议", icon: Lightbulb },
   { to: "/danmaku", label: "弹幕", icon: MessageSquareText },
   { to: "/reports", label: "举报", icon: ShieldAlert },
+  { to: "/comments", label: "评论审计", icon: MessageSquareText },
   { to: "/ip-bans", label: "IP 封禁", icon: Ban },
   { to: "/privacy", label: "隐私审计", icon: Eye },
   { to: "/access", label: "授权", icon: KeyRound },
@@ -804,6 +806,7 @@ export default function App() {
             <Route path="/gallery" element={<RequireAuth><Shell><GalleryListPage /></Shell></RequireAuth>} />
             <Route path="/gallery/:albumId" element={<RequireAuth><Shell><GalleryDetailPage /></Shell></RequireAuth>} />
             <Route path="/reports" element={<RequireAuth><RequireRole roles={["ADMIN", "SUPER_ADMIN"]}><Shell><ReportsPage /></Shell></RequireRole></RequireAuth>} />
+            <Route path="/comments" element={<RequireAuth><RequireRole roles={["ADMIN", "SUPER_ADMIN"]}><Shell><CommentAuditPage /></Shell></RequireRole></RequireAuth>} />
             <Route path="/ip-bans" element={<RequireAuth><RequireRole roles={["SUPER_ADMIN"]}><Shell><IpBansPage /></Shell></RequireRole></RequireAuth>} />
             <Route path="/moments" element={<RequireAuth><Shell><MomentsPage /></Shell></RequireAuth>} />
             <Route path="/music" element={<RequireAuth><RequireRole roles={["ADMIN", "SUPER_ADMIN"]}><Shell><MusicAdminPage /></Shell></RequireRole></RequireAuth>} />

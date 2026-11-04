@@ -110,6 +110,37 @@ public class CommentController {
         }
     }
 
+    @PostMapping("/user/comments/{id}/appeal")
+    public ApiResponse<Void> appeal(@PathVariable Long id, @RequestBody Map<String, String> body,
+                                    Authentication authentication) {
+        try {
+            commentService.appeal(id, currentUser(authentication), body.get("reason"));
+            return ApiResponse.success("申诉已提交", null);
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/admin/comments")
+    public ApiResponse<List<CommentResponse>> adminList(@RequestParam(required = false) String status,
+                                                        Authentication authentication) {
+        try {
+            return ApiResponse.success(commentService.adminList(currentUser(authentication), status));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @PostMapping("/admin/comments/{id}/reject-appeal")
+    public ApiResponse<Void> rejectAppeal(@PathVariable Long id, Authentication authentication) {
+        try {
+            commentService.rejectAppeal(id, currentUser(authentication));
+            return ApiResponse.success("申诉已驳回", null);
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
     @PostMapping("/admin/comments/{id}/hide")
     public ApiResponse<Void> hide(@PathVariable Long id, Authentication authentication) {
         try {

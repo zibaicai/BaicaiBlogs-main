@@ -28,6 +28,9 @@ public class CommentResponse {
     private String hiddenReason;
     private LocalDateTime hiddenAt;
     private String moderationSource;
+    private String appealReason;
+    private LocalDateTime appealedAt;
+    private String appealStatus;
     private LocalDateTime createdAt;
     private long likeCount;
     private long dislikeCount;
