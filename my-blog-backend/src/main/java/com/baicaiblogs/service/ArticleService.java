@@ -86,6 +86,9 @@ public class ArticleService {
         }
         String text = plainText(html);
         String status = normalizeStatus(request.getStatus());
+        String visibility = normalizeVisibility(request.getVisibility());
+        boolean needsReview = !isAdmin(user) && "PUBLISHED".equals(status) && "PUBLIC".equals(visibility);
+        if (needsReview) status = "PENDING_REVIEW";
         Category category = resolveCategory(request.getCategoryId());
         Article article = Article.builder()
                 .userId(user.getId())
@@ -100,7 +103,9 @@ public class ArticleService {
                 .categoryId(category != null ? category.getId() : null)
                 .tags(writeTags(request.getTags()))
                 .status(status)
-                .visibility(normalizeVisibility(request.getVisibility()))
+                .visibility(visibility)
+                .reviewNote(null)
+                .submittedAt(needsReview ? LocalDateTime.now() : null)
                 .readingTime(readingTime(text))
                 .sourcePlatform(trim(request.getSourcePlatform()))
                 .sourceUrl(trim(request.getSourceUrl()))
@@ -125,6 +130,12 @@ public class ArticleService {
         }
         String text = plainText(html);
         String status = normalizeStatus(request.getStatus());
+        String visibility = normalizeVisibility(request.getVisibility());
+        if (!isAdmin(user) && ("PUBLISHED".equals(article.getStatus()) || "PENDING_REVIEW".equals(article.getStatus()))) {
+            throw new RuntimeException("已提交或已发布的文章需要先撤回才能编辑");
+        }
+        boolean needsReview = !isAdmin(user) && "PUBLISHED".equals(status) && "PUBLIC".equals(visibility);
+        if (needsReview) status = "PENDING_REVIEW";
         Category category = resolveCategory(request.getCategoryId());
         article.setTitle(title);
         article.setSubtitle(trim(request.getSubtitle()));
@@ -136,11 +147,66 @@ public class ArticleService {
         article.setCategoryId(category != null ? category.getId() : null);
         article.setTags(writeTags(request.getTags()));
         article.setStatus(status);
-        article.setVisibility(normalizeVisibility(request.getVisibility()));
+        article.setVisibility(visibility);
         article.setReadingTime(readingTime(text));
+        if (needsReview) {
+            article.setSubmittedAt(LocalDateTime.now());
+            article.setReviewNote(null);
+        }
         if ("PUBLISHED".equals(status) && article.getPublishedAt() == null) {
             article.setPublishedAt(LocalDateTime.now());
         }
+        return toResponse(articleRepository.save(article));
+    }
+
+    @Transactional
+    public ArticleDtos.ArticleResponse submit(User user, Long id) {
+        requireLogin(user);
+        Article article = articleRepository.findById(id).orElseThrow(() -> new RuntimeException("文章不存在"));
+        assertCanManage(user, article);
+        if (!"DRAFT".equals(article.getStatus()) && !"REJECTED".equals(article.getStatus())) {
+            throw new RuntimeException("只有草稿或已驳回文章可以提交审核");
+        }
+        article.setStatus("PENDING_REVIEW");
+        article.setSubmittedAt(LocalDateTime.now());
+        article.setReviewNote(null);
+        return toResponse(articleRepository.save(article));
+    }
+
+    @Transactional
+    public ArticleDtos.ArticleResponse withdraw(User user, Long id) {
+        requireLogin(user);
+        Article article = articleRepository.findById(id).orElseThrow(() -> new RuntimeException("文章不存在"));
+        assertCanManage(user, article);
+        if (!"PENDING_REVIEW".equals(article.getStatus()) && !"PUBLISHED".equals(article.getStatus())) {
+            throw new RuntimeException("当前状态不能撤回");
+        }
+        article.setStatus("DRAFT");
+        return toResponse(articleRepository.save(article));
+    }
+
+    @Transactional
+    public ArticleDtos.ArticleResponse approve(User admin, Long id) {
+        requireAdmin(admin);
+        Article article = articleRepository.findById(id).orElseThrow(() -> new RuntimeException("文章不存在"));
+        if (!"PENDING_REVIEW".equals(article.getStatus())) throw new RuntimeException("文章不在待审核状态");
+        article.setStatus("PUBLISHED");
+        article.setReviewNote(null);
+        article.setReviewedBy(admin.getId());
+        article.setReviewedAt(LocalDateTime.now());
+        if (article.getPublishedAt() == null) article.setPublishedAt(LocalDateTime.now());
+        return toResponse(articleRepository.save(article));
+    }
+
+    @Transactional
+    public ArticleDtos.ArticleResponse reject(User admin, Long id, String reason) {
+        requireAdmin(admin);
+        Article article = articleRepository.findById(id).orElseThrow(() -> new RuntimeException("文章不存在"));
+        if (!"PENDING_REVIEW".equals(article.getStatus())) throw new RuntimeException("文章不在待审核状态");
+        article.setStatus("REJECTED");
+        article.setReviewNote(reason == null ? "" : reason.trim());
+        article.setReviewedBy(admin.getId());
+        article.setReviewedAt(LocalDateTime.now());
         return toResponse(articleRepository.save(article));
     }
 

@@ -88,6 +88,35 @@ public class ArticleController {
         }
     }
 
+    @PostMapping("/admin/articles/{id}/approve")
+    public ApiResponse<ArticleDtos.ArticleResponse> approve(@PathVariable Long id, Authentication authentication) {
+        try {
+            return ApiResponse.success("已通过审核", articleService.approve(currentUser(authentication), id));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @PostMapping("/admin/articles/{id}/reject")
+    public ApiResponse<ArticleDtos.ArticleResponse> reject(@PathVariable Long id,
+                                                           @RequestBody java.util.Map<String, String> body,
+                                                           Authentication authentication) {
+        try {
+            return ApiResponse.success("已驳回", articleService.reject(currentUser(authentication), id, body.get("reason")));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @PostMapping("/admin/articles/{id}/unpublish")
+    public ApiResponse<ArticleDtos.ArticleResponse> unpublish(@PathVariable Long id, Authentication authentication) {
+        try {
+            return ApiResponse.success("已下架", articleService.withdraw(currentUser(authentication), id));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
     @PostMapping("/admin/articles")
     public ApiResponse<ArticleDtos.ArticleResponse> create(@RequestBody ArticleDtos.ArticleRequest request,
                                                            Authentication authentication) {

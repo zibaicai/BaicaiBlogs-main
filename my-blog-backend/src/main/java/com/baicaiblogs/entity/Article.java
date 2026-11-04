@@ -57,10 +57,22 @@ public class Article {
     @Column(length = 1000)
     private String tags;
 
-    /** DRAFT / PUBLISHED / ARCHIVED */
+    /** DRAFT / PENDING_REVIEW / PUBLISHED / REJECTED / ARCHIVED */
     @Column(nullable = false, length = 20)
     @Builder.Default
     private String status = "DRAFT";
+
+    @Column(name = "review_note", length = 1000)
+    private String reviewNote;
+
+    @Column(name = "submitted_at")
+    private java.time.LocalDateTime submittedAt;
+
+    @Column(name = "reviewed_by")
+    private Long reviewedBy;
+
+    @Column(name = "reviewed_at")
+    private java.time.LocalDateTime reviewedAt;
 
     /** PUBLIC / PRIVATE */
     @Column(nullable = false, length = 20)

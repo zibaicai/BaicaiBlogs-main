@@ -55,6 +55,24 @@ public class MeArticleController {
         }
     }
 
+    @PostMapping("/{id}/submit")
+    public ApiResponse<ArticleDtos.ArticleResponse> submit(@PathVariable Long id) {
+        try {
+            return ApiResponse.success("已提交审核", articleService.submit(currentUser(), id));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @PostMapping("/{id}/withdraw")
+    public ApiResponse<ArticleDtos.ArticleResponse> withdraw(@PathVariable Long id) {
+        try {
+            return ApiResponse.success("已撤回", articleService.withdraw(currentUser(), id));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
     @PostMapping("/images")
     public ApiResponse<String> uploadImage(@RequestParam("file") MultipartFile file) {
         try {
