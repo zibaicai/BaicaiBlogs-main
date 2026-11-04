@@ -29,6 +29,7 @@ public class CommentService {
     private final MusicPlaylistRepository musicPlaylistRepository;
     private final MusicPlaylistTrackRepository musicPlaylistTrackRepository;
     private final ReportRepository reportRepository;
+    private final NotificationService notificationService;
 
     @Transactional(readOnly = true)
     public List<CommentResponse> getComments(String targetType, Long targetId, User viewer) {
@@ -152,6 +153,7 @@ public class CommentService {
         comment.setStatus(status);
         applyModeration(comment, status, admin.getId(), "ADMIN", status.equals("HIDDEN") ? "管理员隐藏" : null);
         commentRepository.save(comment);
+        notifyHidden(comment, status);
     }
 
     @Transactional
@@ -180,6 +182,17 @@ public class CommentService {
         comment.setStatus(status);
         applyModeration(comment, status, owner.getId(), "OWNER", status.equals("HIDDEN") ? "资源所有者隐藏" : null);
         commentRepository.save(comment);
+        notifyHidden(comment, status);
+    }
+
+    private void notifyHidden(Comment comment, String status) {
+        if (!"HIDDEN".equals(status) || comment.getUserId() == null) return;
+        notificationService.notifyUser(
+                comment.getUserId(),
+                "COMMENT_HIDDEN",
+                "评论被隐藏",
+                "你在资源下的评论被所有者或管理员隐藏。"
+        );
     }
 
     private void applyModeration(Comment comment, String status, Long actorId, String source, String reason) {
