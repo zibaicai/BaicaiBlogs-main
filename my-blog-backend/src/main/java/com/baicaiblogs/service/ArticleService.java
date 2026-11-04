@@ -59,21 +59,25 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public List<ArticleDtos.ArticleResponse> adminList(User admin) {
-        requireAdmin(admin);
-        return articleRepository.findAllByOrderByCreatedAtDesc().stream().map(this::toResponse).toList();
+    public List<ArticleDtos.ArticleResponse> adminList(User user) {
+        requireLogin(user);
+        if (isAdmin(user)) {
+            return articleRepository.findAllByOrderByCreatedAtDesc().stream().map(this::toResponse).toList();
+        }
+        return articleRepository.findByUserIdOrderByCreatedAtDesc(user.getId()).stream().map(this::toResponse).toList();
     }
 
     @Transactional(readOnly = true)
-    public ArticleDtos.ArticleResponse adminGet(User admin, Long id) {
-        requireAdmin(admin);
-        return toResponse(articleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("文章不存在")));
+    public ArticleDtos.ArticleResponse adminGet(User user, Long id) {
+        requireLogin(user);
+        Article article = articleRepository.findById(id).orElseThrow(() -> new RuntimeException("文章不存在"));
+        assertCanManage(user, article);
+        return toResponse(article);
     }
 
     @Transactional
-    public ArticleDtos.ArticleResponse create(User admin, ArticleDtos.ArticleRequest request) {
-        requireAdmin(admin);
+    public ArticleDtos.ArticleResponse create(User user, ArticleDtos.ArticleRequest request) {
+        requireLogin(user);
         String title = trim(request.getTitle());
         String html = ArticleHtmlSanitizer.clean(request.getContentHtml());
         if (title.length() < 2) throw new RuntimeException("标题至少 2 个字符");
@@ -84,7 +88,7 @@ public class ArticleService {
         String status = normalizeStatus(request.getStatus());
         Category category = resolveCategory(request.getCategoryId());
         Article article = Article.builder()
-                .userId(admin.getId())
+                .userId(user.getId())
                 .slug(uniqueSlug(title))
                 .title(title)
                 .subtitle(trim(request.getSubtitle()))
@@ -108,10 +112,11 @@ public class ArticleService {
     }
 
     @Transactional
-    public ArticleDtos.ArticleResponse update(User admin, Long id, ArticleDtos.ArticleRequest request) {
-        requireAdmin(admin);
+    public ArticleDtos.ArticleResponse update(User user, Long id, ArticleDtos.ArticleRequest request) {
+        requireLogin(user);
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("文章不存在"));
+        assertCanManage(user, article);
         String title = trim(request.getTitle());
         String html = ArticleHtmlSanitizer.clean(request.getContentHtml());
         if (title.length() < 2) throw new RuntimeException("标题至少 2 个字符");
@@ -140,14 +145,16 @@ public class ArticleService {
     }
 
     @Transactional
-    public void delete(User admin, Long id) {
-        requireAdmin(admin);
-        articleRepository.deleteById(id);
+    public void delete(User user, Long id) {
+        requireLogin(user);
+        Article article = articleRepository.findById(id).orElseThrow(() -> new RuntimeException("文章不存在"));
+        assertCanManage(user, article);
+        articleRepository.delete(article);
     }
 
     @Transactional
-    public String uploadImage(User admin, MultipartFile file) {
-        requireAdmin(admin);
+    public String uploadImage(User user, MultipartFile file) {
+        requireLogin(user);
         if (file == null || file.isEmpty()) throw new RuntimeException("请选择图片");
         if (file.getSize() > ImageSecurityService.MAX_BYTES) throw new RuntimeException("图片不能超过 10MB");
         try {
@@ -295,6 +302,20 @@ public class ArticleService {
 
     private String trim(String value) {
         return value == null ? "" : value.trim();
+    }
+
+    private void requireLogin(User user) {
+        if (user == null) throw new RuntimeException("请先登录");
+    }
+
+    private boolean isAdmin(User user) {
+        return "ADMIN".equals(user.getRole()) || "SUPER_ADMIN".equals(user.getRole());
+    }
+
+    private void assertCanManage(User user, Article article) {
+        if (!isAdmin(user) && !user.getId().equals(article.getUserId())) {
+            throw new RuntimeException("无权管理该文章");
+        }
     }
 
     private void requireAdmin(User user) {

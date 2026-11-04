@@ -188,7 +188,7 @@ function Shell({ children }: { children: React.ReactNode }) {
   const nav = useNavigate();
   const user = getAdminUser();
   const role = getAdminRole();
-  const userNav = new Set(["/", "/posts", "/projects", "/gallery", "/moments", "/my-settings"]);
+  const userNav = new Set(["/", "/posts", "/projects", "/gallery", "/moments", "/articles", "/my-settings"]);
   const superOnlyNav = new Set(["/privacy", "/suggestions", "/ip-bans", "/archives", "/access"]);
   const visibleNavItems = NAV_ITEMS.filter((item) => {
     if (role === "SUPER_ADMIN") return true;
@@ -797,10 +797,10 @@ export default function App() {
             <Route path="/archives" element={<RequireAuth><RequireRole roles={["SUPER_ADMIN"]}><Shell><ArchivesPage /></Shell></RequireRole></RequireAuth>} />
             <Route path="/friend-applications" element={<RequireAuth><RequireRole roles={["ADMIN", "SUPER_ADMIN"]}><Shell><FriendApplicationsPage /></Shell></RequireRole></RequireAuth>} />
             <Route path="/friend-messages" element={<RequireAuth><RequireRole roles={["ADMIN", "SUPER_ADMIN"]}><Shell><FriendMessagesPage /></Shell></RequireRole></RequireAuth>} />
-            <Route path="/articles" element={<RequireAuth><RequireRole roles={["ADMIN", "SUPER_ADMIN"]}><Shell><ArticlesListPage /></Shell></RequireRole></RequireAuth>} />
-            <Route path="/articles/new" element={<RequireAuth><RequireRole roles={["ADMIN", "SUPER_ADMIN"]}><Shell><ArticleEditorPage /></Shell></RequireRole></RequireAuth>} />
-            <Route path="/articles/:id" element={<RequireAuth><RequireRole roles={["ADMIN", "SUPER_ADMIN"]}><Shell><ArticleDetailPage /></Shell></RequireRole></RequireAuth>} />
-            <Route path="/articles/:id/edit" element={<RequireAuth><RequireRole roles={["ADMIN", "SUPER_ADMIN"]}><Shell><ArticleEditorPage /></Shell></RequireRole></RequireAuth>} />
+            <Route path="/articles" element={<RequireAuth><RequireRole roles={["USER", "ADMIN", "SUPER_ADMIN"]}><Shell><ArticlesListPage /></Shell></RequireRole></RequireAuth>} />
+            <Route path="/articles/new" element={<RequireAuth><RequireRole roles={["USER", "ADMIN", "SUPER_ADMIN"]}><Shell><ArticleEditorPage /></Shell></RequireRole></RequireAuth>} />
+            <Route path="/articles/:id" element={<RequireAuth><RequireRole roles={["USER", "ADMIN", "SUPER_ADMIN"]}><Shell><ArticleDetailPage /></Shell></RequireRole></RequireAuth>} />
+            <Route path="/articles/:id/edit" element={<RequireAuth><RequireRole roles={["USER", "ADMIN", "SUPER_ADMIN"]}><Shell><ArticleEditorPage /></Shell></RequireRole></RequireAuth>} />
             <Route path="/projects" element={<RequireAuth><Shell><Projects /></Shell></RequireAuth>} />
             <Route path="/timeline" element={<RequireAuth><RequireRole roles={["ADMIN", "SUPER_ADMIN"]}><Shell><TimelinePreview /></Shell></RequireRole></RequireAuth>} />
             <Route path="/gallery" element={<RequireAuth><Shell><GalleryListPage /></Shell></RequireAuth>} />

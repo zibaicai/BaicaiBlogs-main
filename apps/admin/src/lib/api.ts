@@ -370,18 +370,18 @@ export const api = {
   resolveReport: (id: number, action: string) =>
     request<void>(`/admin/reports/${id}/resolve?action=${encodeURIComponent(action)}`, { method: "POST" }),
 
-  adminArticles: () => request<any[]>("/admin/articles"),
-  adminArticle: (id: number) => request<any>(`/admin/articles/${id}`),
-  createArticle: (payload: any) => request<any>("/admin/articles", { method: "POST", body: JSON.stringify(payload) }),
+  adminArticles: () => request<any[]>("/me/articles"),
+  adminArticle: (id: number) => request<any>(`/me/articles/${id}`),
+  createArticle: (payload: any) => request<any>("/me/articles", { method: "POST", body: JSON.stringify(payload) }),
   importArticleFromArchive: (archiveId: number) =>
     request<any>(`/admin/articles/import/archive/${archiveId}`, { method: "POST" }),
   updateArticle: (id: number, payload: any) =>
-    request<any>(`/admin/articles/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
-  deleteArticle: (id: number) => request<void>(`/admin/articles/${id}`, { method: "DELETE" }),
+    request<any>(`/me/articles/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
+  deleteArticle: (id: number) => request<void>(`/me/articles/${id}`, { method: "DELETE" }),
   uploadArticleImage: (file: File) => {
     const form = new FormData();
     form.append("file", file);
-    return request<string>("/admin/articles/images", { method: "POST", body: form });
+    return request<string>("/me/articles/images", { method: "POST", body: form });
   },
 
   adminSuggestions: (status?: string) =>    request<any[]>(`/admin/suggestions${status ? `?status=${encodeURIComponent(status)}` : ""}`),
