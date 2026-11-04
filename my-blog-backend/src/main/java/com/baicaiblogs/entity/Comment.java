@@ -75,6 +75,15 @@ public class Comment {
     @Column(name = "expires_at")
     private LocalDateTime expiresAt;
 
+    @Column(name = "parent_id")
+    private Long parentId;
+
+    @Column(name = "root_id")
+    private Long rootId;
+
+    @Column(name = "reply_to_user_id")
+    private Long replyToUserId;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

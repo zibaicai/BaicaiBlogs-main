@@ -44,6 +44,15 @@ public class CommentController {
         }
     }
 
+    @GetMapping("/public/comments/thread/{rootId}")
+    public ApiResponse<List<CommentResponse>> getThread(@PathVariable Long rootId, Authentication authentication) {
+        try {
+            return ApiResponse.success(commentService.getThread(rootId, currentUser(authentication)));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
     @PostMapping("/user/comments")
     public ApiResponse<CommentResponse> createComment(@RequestBody CommentRequest request,
                                                        Authentication authentication) {

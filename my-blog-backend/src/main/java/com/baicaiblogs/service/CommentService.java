@@ -44,6 +44,19 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
+    public List<CommentResponse> getThread(Long rootId, User viewer) {
+        Comment root = get(rootId);
+        assertPublicTarget(root.getTargetType(), root.getTargetId());
+        List<Comment> comments = new java.util.ArrayList<>();
+        comments.add(root);
+        comments.addAll(commentRepository.findByRootIdOrderByCreatedAtAsc(rootId));
+        return comments.stream()
+                .filter(comment -> "VISIBLE".equals(comment.getStatus()))
+                .map(comment -> toResponse(comment, viewer))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public long countVisible(String targetType, Long targetId) {
         return commentRepository.countByTargetTypeAndTargetIdAndStatus(
                 normalizeTargetType(targetType), targetId, "VISIBLE");
@@ -60,9 +73,25 @@ public class CommentService {
         assertPublicTarget(type, request.getTargetId());
         assertInteractionTarget(type, request.getTargetId());
 
+        Long parentId = request.getParentId();
+        Long rootId = null;
+        Long replyToUserId = null;
+        if (parentId != null) {
+            Comment parent = get(parentId);
+            if (!type.equals(parent.getTargetType()) || !request.getTargetId().equals(parent.getTargetId())) {
+                throw new RuntimeException("回复目标不匹配");
+            }
+            if (!"VISIBLE".equals(parent.getStatus())) throw new RuntimeException("该评论不可回复");
+            rootId = parent.getRootId() == null ? parent.getId() : parent.getRootId();
+            replyToUserId = parent.getUserId();
+        }
+
         Comment comment = Comment.builder()
                 .targetType(type)
                 .targetId(request.getTargetId())
+                .parentId(parentId)
+                .rootId(rootId)
+                .replyToUserId(replyToUserId)
                 .userId(author.getId())
                 .author(displayName(author))
                 .avatar(author.getAvatar())
@@ -350,6 +379,9 @@ public class CommentService {
                 .id(comment.getId())
                 .targetType(comment.getTargetType())
                 .targetId(comment.getTargetId())
+                .parentId(comment.getParentId())
+                .rootId(comment.getRootId())
+                .replyToUserId(comment.getReplyToUserId())
                 .userId(comment.getUserId())
                 .author(author == null ? comment.getAuthor() : displayName(author))
                 .avatar(author == null ? comment.getAvatar() : author.getAvatar())

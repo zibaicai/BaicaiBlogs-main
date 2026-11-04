@@ -15,6 +15,9 @@ public class CommentResponse {
     private Long id;
     private String targetType;
     private Long targetId;
+    private Long parentId;
+    private Long rootId;
+    private Long replyToUserId;
     private Long userId;
     private String author;
     private String avatar;

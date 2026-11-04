@@ -14,6 +14,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     List<Comment> findByTargetTypeAndTargetIdAndStatusOrderByCreatedAtDesc(String targetType, Long targetId, String status);
     List<Comment> findByTargetTypeAndTargetIdOrderByCreatedAtDesc(String targetType, Long targetId);
+    List<Comment> findByRootIdOrderByCreatedAtAsc(Long rootId);
     List<Comment> findByTargetTypeAndTargetIdInOrderByCreatedAtDesc(String targetType, List<Long> targetIds);
     long countByTargetTypeAndTargetIdAndStatus(String targetType, Long targetId, String status);
     long countByTargetTypeAndTargetId(String targetType, Long targetId);
