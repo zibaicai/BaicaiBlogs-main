@@ -148,6 +148,7 @@ public class CommentService {
         }
         Comment comment = get(commentId);
         comment.setStatus(status);
+        applyModeration(comment, status, admin.getId(), "ADMIN", status.equals("HIDDEN") ? "管理员隐藏" : null);
         commentRepository.save(comment);
     }
 
@@ -175,7 +176,22 @@ public class CommentService {
         Comment comment = get(commentId);
         if (!ownsTarget(comment, owner)) throw new RuntimeException("无权管理该评论");
         comment.setStatus(status);
+        applyModeration(comment, status, owner.getId(), "OWNER", status.equals("HIDDEN") ? "资源所有者隐藏" : null);
         commentRepository.save(comment);
+    }
+
+    private void applyModeration(Comment comment, String status, Long actorId, String source, String reason) {
+        if ("HIDDEN".equals(status)) {
+            comment.setHiddenBy(actorId);
+            comment.setHiddenReason(reason);
+            comment.setHiddenAt(LocalDateTime.now());
+            comment.setModerationSource(source);
+        } else {
+            comment.setHiddenBy(null);
+            comment.setHiddenReason(null);
+            comment.setHiddenAt(null);
+            comment.setModerationSource(null);
+        }
     }
 
     private boolean ownsTarget(Comment comment, User user) {
@@ -312,6 +328,10 @@ public class CommentService {
                 .avatar(author == null ? comment.getAvatar() : author.getAvatar())
                 .content(comment.getContent())
                 .status(comment.getStatus())
+                .hiddenBy(comment.getHiddenBy())
+                .hiddenReason(comment.getHiddenReason())
+                .hiddenAt(comment.getHiddenAt())
+                .moderationSource(comment.getModerationSource())
                 .createdAt(comment.getCreatedAt())
                 .likeCount(reactionRepository.countByCommentIdAndType(comment.getId(), "LIKE"))
                 .dislikeCount(reactionRepository.countByCommentIdAndType(comment.getId(), "DISLIKE"))

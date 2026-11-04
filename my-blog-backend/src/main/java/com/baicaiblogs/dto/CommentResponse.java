@@ -20,6 +20,10 @@ public class CommentResponse {
     private String avatar;
     private String content;
     private String status;
+    private Long hiddenBy;
+    private String hiddenReason;
+    private LocalDateTime hiddenAt;
+    private String moderationSource;
     private LocalDateTime createdAt;
     private long likeCount;
     private long dislikeCount;

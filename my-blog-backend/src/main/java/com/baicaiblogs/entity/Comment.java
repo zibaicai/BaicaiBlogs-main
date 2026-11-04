@@ -59,6 +59,19 @@ public class Comment {
     @Builder.Default
     private String status = "VISIBLE";
 
+    @Column(name = "hidden_by")
+    private Long hiddenBy;
+
+    @Column(name = "hidden_reason", length = 500)
+    private String hiddenReason;
+
+    @Column(name = "hidden_at")
+    private LocalDateTime hiddenAt;
+
+    /** OWNER / ADMIN */
+    @Column(name = "moderation_source", length = 20)
+    private String moderationSource;
+
     @Column(name = "expires_at")
     private LocalDateTime expiresAt;
 
