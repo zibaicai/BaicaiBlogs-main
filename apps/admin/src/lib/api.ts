@@ -195,6 +195,9 @@ export const api = {
   myPreferences: () => request<Record<string, unknown>>("/me/preferences"),
   updateMyPreferences: (payload: Record<string, unknown>) =>
     request<Record<string, unknown>>("/me/preferences", { method: "PUT", body: JSON.stringify(payload) }),
+  myComments: () => request<any[]>("/me/comments"),
+  hideOwnerComment: (id: number) => request<void>(`/me/comments/${id}/hide`, { method: "POST" }),
+  restoreOwnerComment: (id: number) => request<void>(`/me/comments/${id}/restore`, { method: "POST" }),
   publicPosts: () => request<Post[]>("/public/posts"),
 
   setPostVisibility: (slug: string, visibility: string) =>

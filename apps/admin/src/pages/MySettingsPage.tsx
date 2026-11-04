@@ -15,14 +15,16 @@ export default function MySettingsPage() {
   const { showToast } = useToast();
   const [profile, setProfile] = useState<Profile>({});
   const [preferences, setPreferences] = useState<Record<string, unknown>>({});
+  const [comments, setComments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    Promise.all([api.myProfile(), api.myPreferences()])
-      .then(([profileResponse, preferencesResponse]) => {
+    Promise.all([api.myProfile(), api.myPreferences(), api.myComments()])
+      .then(([profileResponse, preferencesResponse, commentsResponse]) => {
         setProfile((profileResponse.data || {}) as Profile);
         setPreferences(preferencesResponse.data || {});
+        setComments(commentsResponse.data || []);
       })
       .catch((error) => showToast(error instanceof Error ? error.message : "加载失败", "error"))
       .finally(() => setLoading(false));
@@ -37,6 +39,21 @@ export default function MySettingsPage() {
       showToast(error instanceof Error ? error.message : "保存失败", "error");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const changeCommentStatus = async (comment: any) => {
+    try {
+      if (comment.status === "HIDDEN") {
+        await api.restoreOwnerComment(comment.id);
+        setComments((current) => current.map((item) => item.id === comment.id ? { ...item, status: "VISIBLE" } : item));
+      } else {
+        await api.hideOwnerComment(comment.id);
+        setComments((current) => current.map((item) => item.id === comment.id ? { ...item, status: "HIDDEN" } : item));
+      }
+      showToast(comment.status === "HIDDEN" ? "评论已恢复" : "评论已隐藏", "success");
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "操作失败", "error");
     }
   };
 
@@ -125,6 +142,30 @@ export default function MySettingsPage() {
               />
               内容毛玻璃
             </label>
+          </div>
+        </SettingsCard>
+      </div>
+
+      <div className="mt-4">
+        <SettingsCard title="评论管理" description="管理自己资源下的评论：所有者只能隐藏或恢复，永久删除由管理员处理。">
+          <div className="divide-y divide-white/10">
+            {comments.length === 0 ? (
+              <p className="py-4 text-xs text-slate-500">暂无评论。</p>
+            ) : comments.map((comment) => (
+              <div key={comment.id} className="flex flex-wrap items-center gap-3 py-3 text-xs">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-slate-200">{comment.content || "已删除评论"}</p>
+                  <p className="mt-1 text-[10px] text-slate-500">
+                    {comment.targetType} · {comment.author || "用户"} · {comment.status === "HIDDEN" ? "已隐藏" : "显示中"}
+                  </p>
+                </div>
+                {comment.status !== "DELETED" && (
+                  <Button variant="ghost" onClick={() => void changeCommentStatus(comment)}>
+                    {comment.status === "HIDDEN" ? "恢复" : "隐藏"}
+                  </Button>
+                )}
+              </div>
+            ))}
           </div>
         </SettingsCard>
       </div>

@@ -157,6 +157,43 @@ public class CommentService {
         hardDelete(get(commentId));
     }
 
+    @Transactional(readOnly = true)
+    public List<CommentResponse> ownerComments(User owner) {
+        if (owner == null) throw new RuntimeException("请先登录");
+        return commentRepository.findAll().stream()
+                .filter(comment -> ownsTarget(comment, owner))
+                .map(comment -> toResponse(comment, owner))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void ownerSetStatus(Long commentId, User owner, String status) {
+        if (owner == null) throw new RuntimeException("请先登录");
+        if (!"VISIBLE".equals(status) && !"HIDDEN".equals(status)) {
+            throw new RuntimeException("不支持的评论状态");
+        }
+        Comment comment = get(commentId);
+        if (!ownsTarget(comment, owner)) throw new RuntimeException("无权管理该评论");
+        comment.setStatus(status);
+        commentRepository.save(comment);
+    }
+
+    private boolean ownsTarget(Comment comment, User user) {
+        if (user == null || comment.getTargetId() == null) return false;
+        Long userId = user.getId();
+        return switch (comment.getTargetType()) {
+            case "POST" -> postRepository.findById(comment.getTargetId())
+                    .map(post -> userId.equals(post.getUserId())).orElse(false);
+            case "MOMENT" -> momentRepository.findById(comment.getTargetId())
+                    .map(moment -> userId.equals(moment.getUserId())).orElse(false);
+            case "ARTICLE" -> articleRepository.findById(comment.getTargetId())
+                    .map(article -> userId.equals(article.getUserId())).orElse(false);
+            case "ALBUM" -> albumRepository.findById(comment.getTargetId())
+                    .map(album -> userId.equals(album.getUserId())).orElse(false);
+            default -> false;
+        };
+    }
+
     @Transactional
     public void expireTrackComments(Long trackId) {
         List<Comment> comments = commentRepository.findByTargetTypeAndTargetIdOrderByCreatedAtDesc("TRACK", trackId);
