@@ -80,6 +80,7 @@ export default function CommentSection({
   const [notice, setNotice] = useState("");
   const [replyingTo, setReplyingTo] = useState<CommentItem | null>(null);
   const [expandedRootId, setExpandedRootId] = useState<number | null>(null);
+  const [highlightedId, setHighlightedId] = useState<number | null>(null);
   const focusComposer = () => {
     document.querySelector<HTMLTextAreaElement>(".comment-textarea")?.focus();
   };
@@ -112,6 +113,18 @@ export default function CommentSection({
   }, [loading]);
 
   const showStickyComposer = !rootComposerVisible && sectionVisible && !replyingTo;
+
+  useEffect(() => {
+    if (loading) return;
+    const match = window.location.hash.match(/^#comment-(\d+)$/);
+    if (!match) return;
+    const id = Number(match[1]);
+    const timer = window.setTimeout(() => {
+      document.getElementById(`comment-${id}`)?.scrollIntoView({ block: "center" });
+      setHighlightedId(id);
+    }, 120);
+    return () => window.clearTimeout(timer);
+  }, [loading, comments.length]);
 
   // 点击输入框以外区域时收回单行（草稿保留在 textarea 里，重新点开即可继续编辑）
   useEffect(() => {
@@ -309,7 +322,7 @@ export default function CommentSection({
       }
     >
       {rootComments.map((comment) => (
-        <div key={comment.id} id={`comment-${comment.id}`}>
+        <div key={comment.id} id={`comment-${comment.id}`} className={highlightedId === comment.id ? "rounded-xl ring-2 ring-indigo-400/60" : ""}>
         <MessageItemShell
           avatar={comment.avatar}
           fallback={(comment.author || "匿").slice(0, 1)}

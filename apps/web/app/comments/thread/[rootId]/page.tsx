@@ -29,6 +29,7 @@ export default function CommentThreadPage() {
   const [error, setError] = useState("");
   const [replyingTo, setReplyingTo] = useState<Comment | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [highlightedId, setHighlightedId] = useState<number | null>(null);
   const [page, setPage] = useState(0);
   const pageSize = 20;
   const totalPages = Math.max(1, Math.ceil(comments.length / pageSize));
@@ -53,6 +54,18 @@ export default function CommentThreadPage() {
       .catch((reason) => setError(reason instanceof Error ? reason.message : "加载失败"))
       .finally(() => setLoading(false));
   }, [params?.rootId, refreshKey]);
+
+  useEffect(() => {
+    if (loading) return;
+    const match = window.location.hash.match(/^#comment-(\d+)$/);
+    if (!match) return;
+    const id = Number(match[1]);
+    const timer = window.setTimeout(() => {
+      document.getElementById(`comment-${id}`)?.scrollIntoView({ block: "center" });
+      setHighlightedId(id);
+    }, 120);
+    return () => window.clearTimeout(timer);
+  }, [loading, comments.length]);
 
   return (
     <div className="min-h-screen relative pb-20">
@@ -79,7 +92,7 @@ export default function CommentThreadPage() {
                     id={`comment-${comment.id}`}
                     className={`rounded-2xl border border-white/20 bg-white/50 p-4 dark:border-white/10 dark:bg-slate-900/50 ${
                       index > 0 ? "ml-6" : ""
-                    }`}
+                    } ${highlightedId === comment.id ? "ring-2 ring-indigo-400/60" : ""}`}
                   >
                     <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
                       <span className="text-slate-800 dark:text-slate-100">{comment.author || "用户"}</span>

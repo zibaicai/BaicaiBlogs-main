@@ -127,13 +127,13 @@ public class CommentService {
                     displayName(author) + "：" + (content.length() > 80 ? content.substring(0, 80) + "…" : content),
                     type,
                     request.getTargetId(),
-                    "/comments/thread/" + (rootId == null ? saved.getId() : rootId),
+                    "/comments/thread/" + (rootId == null ? saved.getId() : rootId) + "#comment-" + saved.getId(),
                     author.getId(),
                     displayName(author),
                     author.getAvatar()
             );
         }
-        notifyMentions(content, author, type, request.getTargetId(), rootId == null ? saved.getId() : rootId);
+        notifyMentions(content, author, type, request.getTargetId(), rootId == null ? saved.getId() : rootId, saved.getId());
         return toResponse(saved, author);
     }
 
@@ -195,7 +195,7 @@ public class CommentService {
                     displayName(current) + " 赞了你的评论",
                     comment.getTargetType(),
                     comment.getTargetId(),
-                    "/comments/thread/" + (comment.getRootId() == null ? comment.getId() : comment.getRootId()),
+                    "/comments/thread/" + (comment.getRootId() == null ? comment.getId() : comment.getRootId()) + "#comment-" + comment.getId(),
                     current.getId(),
                     displayName(current),
                     current.getAvatar()
@@ -283,6 +283,17 @@ public class CommentService {
         Comment comment = get(commentId);
         comment.setAppealStatus("REJECTED");
         commentRepository.save(comment);
+        if (comment.getUserId() != null) {
+            notificationService.notifyUser(
+                    comment.getUserId(),
+                    "COMMENT_APPEAL_REJECTED",
+                    "评论申诉未通过",
+                    "你的评论申诉未通过，评论仍保持隐藏。",
+                    comment.getTargetType(),
+                    comment.getTargetId(),
+                    "/comments/thread/" + (comment.getRootId() == null ? comment.getId() : comment.getRootId()) + "#comment-" + comment.getId()
+            );
+        }
     }
 
     @Transactional
@@ -299,7 +310,7 @@ public class CommentService {
         notifyHidden(comment, status);
     }
 
-    private void notifyMentions(String content, User author, String targetType, Long targetId, Long rootId) {
+    private void notifyMentions(String content, User author, String targetType, Long targetId, Long rootId, Long commentId) {
         java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("@([A-Za-z0-9_\\u4e00-\\u9fa5-]{2,32})").matcher(content);
         java.util.Set<Long> notified = new java.util.HashSet<>();
         while (matcher.find()) {
@@ -313,7 +324,7 @@ public class CommentService {
                         displayName(author) + " 在评论中 @ 了你",
                         targetType,
                         targetId,
-                        "/comments/thread/" + rootId,
+                        "/comments/thread/" + rootId + "#comment-" + commentId,
                         author.getId(),
                         displayName(author),
                         author.getAvatar()
@@ -331,7 +342,7 @@ public class CommentService {
                 "你在资源下的评论被所有者或管理员隐藏。",
                 comment.getTargetType(),
                 comment.getTargetId(),
-                "/comments/thread/" + (comment.getRootId() == null ? comment.getId() : comment.getRootId())
+                "/comments/thread/" + (comment.getRootId() == null ? comment.getId() : comment.getRootId()) + "#comment-" + comment.getId()
         );
     }
 
@@ -342,15 +353,16 @@ public class CommentService {
             comment.setHiddenAt(LocalDateTime.now());
             comment.setModerationSource(source);
         } else {
+            boolean appealAccepted = "PENDING".equals(comment.getAppealStatus());
             if (comment.getHiddenBy() != null && comment.getUserId() != null) {
                 notificationService.notifyUser(
                         comment.getUserId(),
-                        "COMMENT_RESTORED",
-                        "评论已恢复",
-                        "你被隐藏的评论已恢复显示。",
+                        appealAccepted ? "COMMENT_APPEAL_ACCEPTED" : "COMMENT_RESTORED",
+                        appealAccepted ? "评论申诉已通过" : "评论已恢复",
+                        appealAccepted ? "你的评论申诉已通过，评论已恢复显示。" : "你被隐藏的评论已恢复显示。",
                         comment.getTargetType(),
                         comment.getTargetId(),
-                        "/comments/thread/" + (comment.getRootId() == null ? comment.getId() : comment.getRootId())
+                        "/comments/thread/" + (comment.getRootId() == null ? comment.getId() : comment.getRootId()) + "#comment-" + comment.getId()
                 );
             }
             comment.setHiddenBy(null);
