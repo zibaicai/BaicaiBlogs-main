@@ -127,9 +127,13 @@ public class CommentService {
                     displayName(author) + "：" + (content.length() > 80 ? content.substring(0, 80) + "…" : content),
                     type,
                     request.getTargetId(),
-                    "/comments/thread/" + (rootId == null ? saved.getId() : rootId)
+                    "/comments/thread/" + (rootId == null ? saved.getId() : rootId),
+                    author.getId(),
+                    displayName(author),
+                    author.getAvatar()
             );
         }
+        notifyMentions(content, author, type, request.getTargetId(), rootId == null ? saved.getId() : rootId);
         return toResponse(saved, author);
     }
 
@@ -164,6 +168,7 @@ public class CommentService {
             return toResponse(comment, current);
         }
         String type = "DISLIKE".equalsIgnoreCase(rawType) ? "DISLIKE" : "LIKE";
+        boolean notifyLike = false;
         if (existing.isPresent()) {
             CommentReaction reaction = existing.get();
             if (type.equals(reaction.getType())) {
@@ -171,6 +176,7 @@ public class CommentService {
             } else {
                 reaction.setType(type);
                 reactionRepository.save(reaction);
+                notifyLike = "LIKE".equals(type);
             }
         } else {
             reactionRepository.save(CommentReaction.builder()
@@ -178,6 +184,21 @@ public class CommentService {
                     .userId(current.getId())
                     .type(type)
                     .build());
+            notifyLike = "LIKE".equals(type);
+        }
+        if (notifyLike && comment.getUserId() != null) {
+            notificationService.notifyUser(
+                    comment.getUserId(),
+                    "COMMENT_LIKE",
+                    "有人赞了你的评论",
+                    displayName(current) + " 赞了你的评论",
+                    comment.getTargetType(),
+                    comment.getTargetId(),
+                    "/comments/thread/" + (comment.getRootId() == null ? comment.getId() : comment.getRootId()),
+                    current.getId(),
+                    displayName(current),
+                    current.getAvatar()
+            );
         }
         return toResponse(comment, current);
     }
@@ -275,6 +296,29 @@ public class CommentService {
         applyModeration(comment, status, owner.getId(), "OWNER", status.equals("HIDDEN") ? "资源所有者隐藏" : null);
         commentRepository.save(comment);
         notifyHidden(comment, status);
+    }
+
+    private void notifyMentions(String content, User author, String targetType, Long targetId, Long rootId) {
+        java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("@([A-Za-z0-9_\\u4e00-\\u9fa5-]{2,32})").matcher(content);
+        java.util.Set<Long> notified = new java.util.HashSet<>();
+        while (matcher.find()) {
+            String username = matcher.group(1);
+            userRepository.findByUsername(username).ifPresent(target -> {
+                if (target.getId().equals(author.getId()) || !notified.add(target.getId())) return;
+                notificationService.notifyUser(
+                        target.getId(),
+                        "MENTION",
+                        "有人在评论中 @ 了你",
+                        displayName(author) + " 在评论中 @ 了你",
+                        targetType,
+                        targetId,
+                        "/comments/thread/" + rootId,
+                        author.getId(),
+                        displayName(author),
+                        author.getAvatar()
+                );
+            });
+        }
     }
 
     private void notifyHidden(Comment comment, String status) {

@@ -4,6 +4,8 @@ import com.baicaiblogs.entity.Notification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -17,4 +19,17 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     long countByUserIdAndReadFalse(Long userId);
     long countByUserIdAndCategoryAndReadFalse(Long userId, String category);
     boolean existsByUserIdAndTypeAndTargetIdAndCreatedAtAfter(Long userId, String type, Long targetId, LocalDateTime after);
+
+    @Modifying
+    @Query(value = """
+            UPDATE notifications SET category = CASE
+              WHEN type = 'COMMENT_REPLY' THEN 'reply'
+              WHEN type = 'MENTION' THEN 'mention'
+              WHEN type LIKE '%\\_LIKE' THEN 'like'
+              WHEN type IN ('COMMENT_HIDDEN','COMMENT_RESTORED','COMMENT_APPEAL_REJECTED','COMMENT_APPEAL_ACCEPTED') THEN 'moderation'
+              ELSE 'system'
+            END
+            WHERE category IS NULL
+            """, nativeQuery = true)
+    int backfillCategories();
 }

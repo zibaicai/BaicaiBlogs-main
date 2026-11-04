@@ -21,6 +21,9 @@ public class NotificationResponse {
     private String targetType;
     private Long targetId;
     private String link;
+    private Long actorId;
+    private String actorName;
+    private String actorAvatar;
     private boolean read;
     private LocalDateTime createdAt;
 
@@ -34,6 +37,9 @@ public class NotificationResponse {
                 .targetType(notification.getTargetType())
                 .targetId(notification.getTargetId())
                 .link(notification.getLink())
+                .actorId(notification.getActorId())
+                .actorName(notification.getActorName())
+                .actorAvatar(notification.getActorAvatar())
                 .read(Boolean.TRUE.equals(notification.getRead()))
                 .createdAt(notification.getCreatedAt())
                 .build();

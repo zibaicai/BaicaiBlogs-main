@@ -6,6 +6,8 @@ import com.baicaiblogs.entity.User;
 import com.baicaiblogs.repository.AlbumRepository;
 import com.baicaiblogs.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -55,6 +57,13 @@ public class NotificationService {
     @Transactional
     public void notifyUser(Long userId, String type, String title, String body,
                            String targetType, Long targetId, String link) {
+        notifyUser(userId, type, title, body, targetType, targetId, link, null, null, null);
+    }
+
+    @Transactional
+    public void notifyUser(Long userId, String type, String title, String body,
+                           String targetType, Long targetId, String link,
+                           Long actorId, String actorName, String actorAvatar) {
         if (userId == null) return;
         repository.save(Notification.builder()
                 .userId(userId)
@@ -65,8 +74,17 @@ public class NotificationService {
                 .targetType(targetType)
                 .targetId(targetId)
                 .link(link)
+                .actorId(actorId)
+                .actorName(actorName)
+                .actorAvatar(actorAvatar)
                 .read(false)
                 .build());
+    }
+
+    @EventListener(ApplicationReadyEvent.class)
+    @Transactional
+    public void backfillCategories() {
+        repository.backfillCategories();
     }
 
     @Transactional(readOnly = true)
