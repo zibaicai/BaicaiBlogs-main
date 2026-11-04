@@ -71,15 +71,6 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll()
                 // 个人工作区 API
                 .requestMatchers("/api/me/**").authenticated()
-                // 所有登录用户的个人工作区接口
-                .requestMatchers("/api/admin/overview").authenticated()
-                .requestMatchers("/api/admin/posts", "/api/admin/posts/**", "/api/admin/projects", "/api/admin/projects/**", "/api/admin/moments", "/api/admin/moments/**").authenticated()
-                .requestMatchers(HttpMethod.GET, "/api/admin/categories", "/api/admin/categories/**").authenticated()
-                .requestMatchers(HttpMethod.GET, "/api/admin/tags", "/api/admin/tags/**").authenticated()
-                .requestMatchers("/api/admin/images", "/api/admin/backgrounds").authenticated()
-                .requestMatchers("/api/admin/posts/mine").authenticated()
-                .requestMatchers("/api/admin/projects/mine").authenticated()
-                .requestMatchers("/api/admin/moments/mine").authenticated()
                 // 管理接口允许 ADMIN 与 SUPER_ADMIN
                 .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                 // 内部存档入口仅管理员可用；具体授权由 ArchiveService 校验
