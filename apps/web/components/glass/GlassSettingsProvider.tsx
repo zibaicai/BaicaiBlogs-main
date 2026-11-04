@@ -61,11 +61,54 @@ function readStoredSettings(): typeof DEFAULT_SETTINGS {
 export function GlassSettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
   const [loaded, setLoaded] = useState(false);
+  const [remoteAvailable, setRemoteAvailable] = useState(false);
 
   useEffect(() => {
     setSettings(readStoredSettings());
     setLoaded(true);
   }, []);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/me/preferences", { credentials: "include" })
+      .then(async (response) => {
+        if (!response.ok) return null;
+        const json = await response.json().catch(() => null);
+        return json?.success ? json.data : null;
+      })
+      .then((preferences) => {
+        if (!active || !preferences) return;
+        const remote = preferences.glassSettings;
+        if (remote && typeof remote === "object") {
+          setSettings((current) => ({ ...current, ...remote }));
+        }
+        setRemoteAvailable(true);
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!loaded || !remoteAvailable) return;
+    const timer = window.setTimeout(async () => {
+      try {
+        const current = await fetch("/api/me/preferences", { credentials: "include" })
+          .then((response) => response.json())
+          .then((json) => (json?.data && typeof json.data === "object" ? json.data : {}));
+        await fetch("/api/me/preferences", {
+          method: "PUT",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...current, glassSettings: settings }),
+        });
+      } catch {
+        /* 网络失败时保留本地设置 */
+      }
+    }, 700);
+    return () => window.clearTimeout(timer);
+  }, [settings, loaded, remoteAvailable]);
 
   useEffect(() => {
     if (!loaded) return;
