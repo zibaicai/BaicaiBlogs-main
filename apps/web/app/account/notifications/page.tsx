@@ -44,6 +44,7 @@ export default function NotificationsPage() {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [preferences, setPreferences] = useState<Record<string, boolean>>({});
   const [error, setError] = useState("");
@@ -62,11 +63,13 @@ export default function NotificationsPage() {
       const summaryJson = await summaryResponse.json();
       const preferencesJson = await preferencesResponse.json();
       if (!listJson?.success) throw new Error(listJson?.message || "加载失败");
-      const nextItems = listJson.data || [];
+      const nextItems = listJson.data?.items || [];
+      const nextTotalPages = listJson.data?.totalPages || 1;
       setItems((current) => append ? [...current, ...nextItems] : nextItems);
       setPreferences(preferencesJson?.data || {});
       setPage(nextPage);
-      setHasMore(nextItems.length === 20);
+      setTotalPages(nextTotalPages);
+      setHasMore(nextPage < nextTotalPages);
       setSummary(summaryJson?.data || {});
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "加载失败");

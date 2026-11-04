@@ -180,6 +180,11 @@ public class NotificationService {
         return repository.existsByUserIdAndTypeAndTargetIdAndActorId(userId, type, targetId, actorId);
     }
 
+    @Transactional
+    public void remove(Long userId, String type, Long targetId, Long actorId) {
+        repository.deleteByUserIdAndTypeAndTargetIdAndActorId(userId, type, targetId, actorId);
+    }
+
     @Transactional(readOnly = true)
     public long unread(User user) {
         return repository.countByUserIdAndReadFalse(user.getId());

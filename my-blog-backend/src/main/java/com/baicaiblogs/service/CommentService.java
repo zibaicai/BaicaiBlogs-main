@@ -168,6 +168,7 @@ public class CommentService {
             return toResponse(comment, current);
         }
         String type = "DISLIKE".equalsIgnoreCase(rawType) ? "DISLIKE" : "LIKE";
+        String previousType = existing.map(CommentReaction::getType).orElse(null);
         boolean notifyLike = false;
         if (existing.isPresent()) {
             CommentReaction reaction = existing.get();
@@ -185,6 +186,9 @@ public class CommentService {
                     .type(type)
                     .build());
             notifyLike = "LIKE".equals(type);
+        }
+        if ("LIKE".equals(previousType) && !"LIKE".equals(type) && comment.getUserId() != null) {
+            notificationService.remove(comment.getUserId(), "COMMENT_LIKE", commentId, current.getId());
         }
         if (notifyLike && comment.getUserId() != null
                 && !notificationService.exists(comment.getUserId(), "COMMENT_LIKE", commentId, current.getId())) {

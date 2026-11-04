@@ -1,6 +1,7 @@
 package com.baicaiblogs.controller;
 
 import com.baicaiblogs.dto.ApiResponse;
+import com.baicaiblogs.dto.NotificationPage;
 import com.baicaiblogs.dto.NotificationResponse;
 import com.baicaiblogs.entity.User;
 import com.baicaiblogs.service.NotificationService;
@@ -19,13 +20,19 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     @GetMapping
-    public ApiResponse<List<NotificationResponse>> list(
+    public ApiResponse<NotificationPage> list(
             @RequestParam(required = false) String category,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int size) {
         try {
-            return ApiResponse.success(notificationService.page(currentUser(), category, page, size)
-                    .getContent().stream().map(NotificationResponse::from).toList());
+            var result = notificationService.page(currentUser(), category, page, size);
+            return ApiResponse.success(NotificationPage.builder()
+                    .items(result.getContent().stream().map(NotificationResponse::from).toList())
+                    .page(result.getNumber() + 1)
+                    .size(result.getSize())
+                    .total(result.getTotalElements())
+                    .totalPages(result.getTotalPages())
+                    .build());
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
         }
