@@ -12,6 +12,9 @@ export interface CommentItem {
   targetType: string;
   targetId: number;
   userId?: number;
+  parentId?: number;
+  rootId?: number;
+  replyToUserId?: number;
   author: string;
   avatar?: string;
   content: string;
@@ -66,6 +69,7 @@ export default function CommentSection({
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [replyingTo, setReplyingTo] = useState<CommentItem | null>(null);
 
   // 点击输入框以外区域时收回单行（草稿保留在 textarea 里，重新点开即可继续编辑）
   useEffect(() => {
@@ -118,11 +122,12 @@ export default function CommentSection({
     try {
       const created = await commentRequest<CommentItem>("/user/comments", {
         method: "POST",
-        body: JSON.stringify({ targetType, targetId, content: value }),
+        body: JSON.stringify({ targetType, targetId, content: value, parentId: replyingTo?.id }),
       });
       setComments((prev) => [created, ...prev]);
       setContent("");
       setExpanded(false);
+      setReplyingTo(null);
       setNotice("评论已发布");
     } catch (e) {
       setError(e instanceof Error ? e.message : "评论失败");
@@ -261,8 +266,8 @@ export default function CommentSection({
       }
     >
       {comments.map((comment) => (
+        <div key={comment.id} style={comment.parentId ? { marginLeft: 28 } : undefined}>
         <MessageItemShell
-          key={comment.id}
           avatar={comment.avatar}
           fallback={(comment.author || "匿").slice(0, 1)}
           name={comment.author}
@@ -288,6 +293,18 @@ export default function CommentSection({
               >
                 <ThumbsDown size={13} /> {comment.dislikeCount}
               </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setReplyingTo(comment);
+                  setExpanded(true);
+                  textareaRef.current?.focus();
+                }}
+                disabled={!user}
+                aria-label="回复"
+              >
+                <MessageCircle size={13} /> 回复
+              </button>
               {comment.canDelete && (
                 <button type="button" onClick={() => void remove(comment.id)} aria-label="删除">
                   <Trash2 size={13} /> 删除
@@ -303,6 +320,7 @@ export default function CommentSection({
         >
           {comment.content}
         </MessageItemShell>
+        </div>
       ))}
     </MessageListShell>
   );
