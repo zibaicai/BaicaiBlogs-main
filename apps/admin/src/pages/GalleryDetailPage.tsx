@@ -11,6 +11,7 @@ import { AdminEmptyState, AdminLoading, AdminPageHeader, AdminPageShell } from "
 import { Button } from "../components/ui/Button";
 import { Dialog } from "../components/ui/Dialog";
 import { publicCommentUrl } from "../lib/public-links";
+import OwnerCommentsPanel from "../components/comments/OwnerCommentsPanel";
 import { Input } from "../components/ui/Input";
 import { Select } from "../components/ui/Select";
 
@@ -209,6 +210,10 @@ export default function GalleryDetailPage() {
           ) : <Button onClick={() => void requestAccess()}><Lock size={13} /> 申请查看</Button>}
         </>}
       />
+
+      <div className="mb-4">
+        <OwnerCommentsPanel targetType="ALBUM" targetId={album.id} />
+      </div>
 
       {photos.length === 0 ? (
         <AdminEmptyState title="还没有图片" description="点击上传照片，添加第一批影像。" />

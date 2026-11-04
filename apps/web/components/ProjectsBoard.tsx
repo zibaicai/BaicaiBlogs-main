@@ -22,17 +22,22 @@ export default function ProjectsBoard({ projects }: { projects: Project[] }) {
     return {
       key: project.projectId,
       node: (
-        <ArchiveItemCard
-          layout="profile"
-          external
-          href={project.githubUrl || "#"}
-          title={project.name}
-          description={project.description}
-          label={project.createdAt ? `收录于 ${formatDay(project.createdAt)}` : undefined}
-          tags={project.tags || []}
-          cornerBadge={repoProviderLabel(project.githubUrl)}
-          media={{ kind: "icon", content: project.icon || "🚀" }}
-        />
+        <div>
+          <ArchiveItemCard
+            layout="profile"
+            external
+            href={project.githubUrl || "#"}
+            title={project.name}
+            description={project.description}
+            label={project.createdAt ? `收录于 ${formatDay(project.createdAt)}` : undefined}
+            tags={project.tags || []}
+            cornerBadge={repoProviderLabel(project.githubUrl)}
+            media={{ kind: "icon", content: project.icon || "🚀" }}
+          />
+          <a href={`/comments/resource/PROJECT/${project.id}`} className="mt-2 inline-flex text-[11px] font-bold text-indigo-500 hover:underline">
+            评论
+          </a>
+        </div>
       ),
       searchText: [project.name, project.description, ...(project.tags || [])].join(" "),
       filterValues: primaryTag ? [primaryTag] : [],

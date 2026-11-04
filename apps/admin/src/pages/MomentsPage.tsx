@@ -14,6 +14,7 @@ import {
 } from "../components/admin/AdminUI";
 import { DataTable } from "../components/admin/DataTable";
 import { publicCommentUrl } from "../lib/public-links";
+import OwnerCommentsPanel from "../components/comments/OwnerCommentsPanel";
 
 type MomentDraft = {
   content: string;
@@ -51,6 +52,7 @@ export default function MomentsPage() {
   const [items, setItems] = useState<Moment[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "draft" | "private" | "public">("all");
+  const [commentsItem, setCommentsItem] = useState<Moment | null>(null);
   const [editing, setEditing] = useState<Moment | null>(null);
   const [draft, setDraft] = useState<MomentDraft>(emptyDraft());
   const [formOpen, setFormOpen] = useState(false);
@@ -257,6 +259,14 @@ export default function MomentsPage() {
               width: "120px",
               cell: (item) => (
                 <div className="flex justify-end gap-0.5">
+                  <button
+                    type="button"
+                    title="评论管理"
+                    onClick={() => setCommentsItem(item)}
+                    className="rounded-md p-1.5 text-slate-400 hover:bg-white/10 hover:text-white"
+                  >
+                    <MessageCircle size={13} />
+                  </button>
                   <a
                     href={publicCommentUrl("MOMENT", item.id)}
                     target="_blank"
@@ -358,6 +368,16 @@ export default function MomentsPage() {
             </div>
           </div>
         </div>
+      </Dialog>
+
+      <Dialog
+        open={Boolean(commentsItem)}
+        onClose={() => setCommentsItem(null)}
+        title="评论管理"
+        description="资源所有者可以隐藏或恢复评论。"
+        widthClassName="max-w-2xl"
+      >
+        {commentsItem && <OwnerCommentsPanel targetType="MOMENT" targetId={commentsItem.id} />}
       </Dialog>
     </AdminPageShell>
   );
