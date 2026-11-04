@@ -30,6 +30,7 @@ export default function ArticleCard({
       tags={article.tags}
       cornerBadge={showStatus && statusLabel ? statusLabel : undefined}
       media={article.cover ? { kind: "cover", src: article.cover, alt: article.title, fit: "contain" } : undefined}
+      layout="cover"
     />
   );
 }

@@ -7,7 +7,7 @@ import type { ReactNode } from "react";
 import { ResourceTitle, type ResourceTitleVariant } from "./ui/Typography";
 import { OptimizedImage } from "./ui/OptimizedImage";
 
-export type ArchiveCardLayout = "auto" | "profile";
+export type ArchiveCardLayout = "auto" | "cover" | "row" | "profile" | "timeline" | "masonry";
 
 export type ArchiveMedia =
   | { kind: "cover"; src: string; alt?: string; fit?: "cover" | "contain" }
@@ -156,7 +156,7 @@ export default function ArchiveItemCard({
     </>
   );
 
-  const className = "directory-card group archive-item";
+  const className = `directory-card archive-card archive-card--${layout === "auto" ? "cover" : layout} group archive-item`;
 
   if (external) {
     return (
