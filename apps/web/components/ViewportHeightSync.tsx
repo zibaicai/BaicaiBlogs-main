@@ -16,21 +16,20 @@ function keyboardInset() {
 
 /**
  * Keeps the backdrop at the last keyboard-closed viewport height.
- * Split-screen, fullscreen, rotation and desktop resizing still update it;
- * the virtual keyboard does not.
+ * The keyboard lock starts on pointerdown/focusin, before Android resize events,
+ * and is released only after focus leaves editable content.
  */
 export default function ViewportHeightSync() {
   useEffect(() => {
     const root = document.documentElement;
     let stableHeight = root.clientHeight || window.innerHeight;
-    let pendingResize = false;
+    let keyboardLock = false;
+    let unlockTimer = 0;
+    let frame = 0;
 
     const apply = (force = false) => {
-      const keyboardOpen = isEditable(document.activeElement) && keyboardInset() > 150;
-      if (keyboardOpen && !force) {
-        pendingResize = true;
-        return;
-      }
+      if (keyboardLock && !force) return;
+      if (!force && isEditable(document.activeElement) && keyboardInset() > 120) return;
       const next = root.clientHeight || window.innerHeight;
       if (Math.abs(next - stableHeight) < 2) return;
       stableHeight = next;
@@ -39,39 +38,55 @@ export default function ViewportHeightSync() {
 
     root.style.setProperty("--app-height", `${Math.round(stableHeight)}px`);
 
-    let frame = 0;
     const schedule = () => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => apply());
     };
 
-    const onOrientation = () => {
-      window.setTimeout(() => {
-        if (!isEditable(document.activeElement)) apply();
-      }, 250);
+    const lock = () => {
+      keyboardLock = true;
+      window.clearTimeout(unlockTimer);
+    };
+
+    const onPointerDown = (event: PointerEvent) => {
+      const target = event.target as Element | null;
+      if (target?.closest("input, textarea, [contenteditable='true']")) lock();
+    };
+
+    const onFocusIn = (event: FocusEvent) => {
+      if (isEditable(event.target as Element | null)) lock();
     };
 
     const onFocusOut = () => {
-      window.setTimeout(() => {
-        if (pendingResize || !isEditable(document.activeElement)) {
-          pendingResize = false;
-          apply();
-        }
-      }, 180);
+      window.clearTimeout(unlockTimer);
+      unlockTimer = window.setTimeout(() => {
+        if (isEditable(document.activeElement)) return;
+        keyboardLock = false;
+        apply(true);
+      }, 320);
     };
 
+    const onOrientation = () => {
+      window.setTimeout(() => apply(), 260);
+    };
+
+    document.addEventListener("pointerdown", onPointerDown, { capture: true });
+    document.addEventListener("focusin", onFocusIn, { capture: true });
+    document.addEventListener("focusout", onFocusOut);
     window.addEventListener("resize", schedule);
     window.addEventListener("orientationchange", onOrientation);
     document.addEventListener("fullscreenchange", schedule);
-    document.addEventListener("focusout", onFocusOut);
     window.visualViewport?.addEventListener("resize", schedule);
 
     return () => {
+      window.clearTimeout(unlockTimer);
       cancelAnimationFrame(frame);
+      document.removeEventListener("pointerdown", onPointerDown, { capture: true });
+      document.removeEventListener("focusin", onFocusIn, { capture: true });
+      document.removeEventListener("focusout", onFocusOut);
       window.removeEventListener("resize", schedule);
       window.removeEventListener("orientationchange", onOrientation);
       document.removeEventListener("fullscreenchange", schedule);
-      document.removeEventListener("focusout", onFocusOut);
       window.visualViewport?.removeEventListener("resize", schedule);
     };
   }, []);

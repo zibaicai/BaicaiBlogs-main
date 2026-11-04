@@ -1,0 +1,8 @@
+/* Keep the document backdrop filled while Android resizes for the keyboard. */
+html {
+  background-color: #0b1220;
+}
+
+body {
+  background-color: transparent !important;
+}
