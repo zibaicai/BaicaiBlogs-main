@@ -64,6 +64,9 @@ export default function CommentSection({
   const { user, loading: authLoading } = useAuth();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const composerRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [rootComposerVisible, setRootComposerVisible] = useState(true);
+  const [sectionVisible, setSectionVisible] = useState(true);
   const [comments, setComments] = useState<CommentItem[]>([]);
   const [content, setContent] = useState("");
   const [expanded, setExpanded] = useState(false);
@@ -85,6 +88,22 @@ export default function CommentSection({
     }
     return counts;
   }, [comments]);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+    const composer = section.querySelector(".comment-composer");
+    const rootObserver = composer ? new IntersectionObserver(([entry]) => setRootComposerVisible(entry.isIntersecting)) : null;
+    const sectionObserver = new IntersectionObserver(([entry]) => setSectionVisible(entry.isIntersecting));
+    if (rootObserver && composer) rootObserver.observe(composer);
+    sectionObserver.observe(section);
+    return () => {
+      rootObserver?.disconnect();
+      sectionObserver.disconnect();
+    };
+  }, [loading]);
+
+  const showStickyComposer = !rootComposerVisible && sectionVisible && !replyingTo;
 
   // 点击输入框以外区域时收回单行（草稿保留在 textarea 里，重新点开即可继续编辑）
   useEffect(() => {
@@ -191,6 +210,7 @@ export default function CommentSection({
   };
 
   return (
+    <div ref={sectionRef}>
     <MessageListShell
       className="comment-section"
       glass="card"
@@ -354,5 +374,26 @@ export default function CommentSection({
         </div>
       ))}
     </MessageListShell>
+
+    {showStickyComposer && (
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/20 bg-white/90 p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/90">
+        <div className="mx-auto flex max-w-3xl items-center gap-2">
+          <span className="shrink-0 text-[11px] font-bold text-slate-500">{user?.nickname || user?.username || "我"}</span>
+          <AutoGrowTextarea
+            value={content}
+            onChange={setContent}
+            onSubmit={() => void submit()}
+            placeholder="继续写根评论…"
+            maxRows={2}
+            ariaLabel="继续写根评论"
+            className="min-w-0 flex-1 rounded-full border border-white/20 bg-white/60 px-3 py-1.5 text-xs text-slate-700 outline-none dark:border-white/10 dark:bg-slate-900/60 dark:text-slate-200"
+          />
+          <button type="button" onClick={() => void submit()} disabled={sending || !content.trim()} className="rounded-full bg-indigo-500 px-3 py-1.5 text-[11px] font-bold text-white disabled:opacity-40">
+            {sending ? <Loader2 size={12} className="animate-spin" /> : "发送"}
+          </button>
+        </div>
+      </div>
+    )}
+    </div>
   );
 }
