@@ -56,6 +56,15 @@ public class NotificationController {
         }
     }
 
+    @DeleteMapping("/preferences")
+    public ApiResponse<Map<String, Boolean>> resetPreferences() {
+        try {
+            return ApiResponse.success(notificationService.resetPreferences(currentUser()));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
     @GetMapping("/summary")
     public ApiResponse<Map<String, Long>> summary() {
         try {

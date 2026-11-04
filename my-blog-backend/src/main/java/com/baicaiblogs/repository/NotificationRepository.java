@@ -35,4 +35,5 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
             """, nativeQuery = true)
     int backfillCategories();
     long deleteByCreatedAtBefore(LocalDateTime before);
+    long deleteByCategoryAndCreatedAtBefore(String category, LocalDateTime before);
 }

@@ -45,6 +45,7 @@ export default function NotificationsPage() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
   const [hasMore, setHasMore] = useState(false);
   const [preferences, setPreferences] = useState<Record<string, boolean>>({});
   const [error, setError] = useState("");
@@ -69,6 +70,7 @@ export default function NotificationsPage() {
       setPreferences(preferencesJson?.data || {});
       setPage(nextPage);
       setTotalPages(nextTotalPages);
+      setTotal(listJson.data?.total || 0);
       setHasMore(nextPage < nextTotalPages);
       setSummary(summaryJson?.data || {});
     } catch (reason) {
@@ -113,6 +115,12 @@ export default function NotificationsPage() {
     });
   };
 
+  const resetPreferences = async () => {
+    const response = await fetch("/api/me/notifications/preferences", { method: "DELETE", credentials: "include" });
+    const json = await response.json();
+    if (json?.success) setPreferences(json.data || {});
+  };
+
   return (
     <div className="min-h-screen relative pb-20">
       <Navbar />
@@ -152,6 +160,7 @@ export default function NotificationsPage() {
               <div className="mb-3 flex items-center justify-between gap-3">
                 <h2 className="text-sm font-black text-slate-800 dark:text-slate-100">
                   {CATEGORIES.find((item) => item.id === category)?.label}
+                  {category !== "settings" && <span className="ml-2 text-[10px] font-bold text-slate-400">共 {total} 条</span>}
                 </h2>
                 <button type="button" onClick={() => void readAll()} className="text-[11px] font-bold text-indigo-500" style={{ display: category === "settings" ? "none" : undefined }}>
                   全部已读
@@ -171,6 +180,9 @@ export default function NotificationsPage() {
                       />
                     </label>
                   ))}
+                  <div className="px-4 py-3 text-right">
+                    <button type="button" onClick={() => void resetPreferences()} className="text-[11px] font-bold text-indigo-500">恢复默认</button>
+                  </div>
                 </div>
               ) : (
               <>

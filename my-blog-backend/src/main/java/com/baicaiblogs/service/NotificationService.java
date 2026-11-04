@@ -33,6 +33,7 @@ public class NotificationService {
     @Transactional
     public void notifyAdminView(Album album, User admin, Long grantId) {
         if (album.getUserId() == null || admin == null || !"ADMIN".equals(admin.getRole())) return;
+        if (!enabled(album.getUserId(), "system")) return;
         long version = album.getContentVersion() == null ? 0 : album.getContentVersion();
         if (album.getOwnerNotifiedVersion() != null && album.getOwnerNotifiedVersion() == version) return;
         if (repository.existsByUserIdAndTypeAndTargetIdAndCreatedAtAfter(
@@ -97,7 +98,11 @@ public class NotificationService {
     @Scheduled(cron = "0 30 3 * * *")
     @Transactional
     public void purgeOldNotifications() {
-        repository.deleteByCreatedAtBefore(LocalDateTime.now().minusDays(180));
+        LocalDateTime cutoff180 = LocalDateTime.now().minusDays(180);
+        for (String category : List.of("reply", "mention", "like", "moderation")) {
+            repository.deleteByCategoryAndCreatedAtBefore(category, cutoff180);
+        }
+        repository.deleteByCategoryAndCreatedAtBefore("system", LocalDateTime.now().minusDays(365));
     }
 
     @Transactional(readOnly = true)
@@ -129,6 +134,19 @@ public class NotificationService {
             user.setPreferences(JSON.writeValueAsString(root));
         } catch (Exception e) {
             throw new RuntimeException("保存消息设置失败");
+        }
+        userRepository.save(user);
+        return preferences(user);
+    }
+
+    @Transactional
+    public Map<String, Boolean> resetPreferences(User user) {
+        Map<String, Object> root = readPreferences(user);
+        root.remove("notifications");
+        try {
+            user.setPreferences(JSON.writeValueAsString(root));
+        } catch (Exception e) {
+            throw new RuntimeException("重置消息设置失败");
         }
         userRepository.save(user);
         return preferences(user);
