@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ArticleDirectory from "../../../components/articles/ArticleDirectory";
-import { getAdminArticles, getCategories, getCurrentUser, isAdminUser } from "../../../lib/server-api";
+import { getAdminArticles, getCategories, getCurrentUser, getMyArticles, isAdminUser } from "../../../lib/server-api";
 
 export const dynamic = "force-dynamic";
 
@@ -12,9 +12,12 @@ export const metadata: Metadata = {
 
 export default async function ManagedArticlesPage() {
   const user = await getCurrentUser();
-  if (!isAdminUser(user)) notFound();
+  if (!user) notFound();
 
-  const [articles, categories] = await Promise.all([getAdminArticles(), getCategories()]);
+  const [articles, categories] = await Promise.all([
+    isAdminUser(user) ? getAdminArticles() : getMyArticles(),
+    getCategories(),
+  ]);
 
   return <ArticleDirectory articles={articles} categories={categories} mode="manage" />;
 }

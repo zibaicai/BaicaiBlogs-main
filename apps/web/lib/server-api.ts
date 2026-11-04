@@ -98,6 +98,28 @@ export async function getAdminArticleBySlug(slug: string): Promise<Article | nul
   return articles.find((article) => article.slug === slug) ?? null;
 }
 
+export async function getMyArticles(): Promise<Article[]> {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("BC_TOKEN")?.value;
+    if (!token) return [];
+    const res = await fetch(`${INTERNAL_BASE}/api/me/articles`, {
+      cache: "no-store",
+      headers: { Accept: "application/json", Cookie: `BC_TOKEN=${token}` },
+    });
+    if (!res.ok) return [];
+    const json = (await res.json()) as { success?: boolean; data?: Article[] };
+    return json?.success === false ? [] : json?.data ?? [];
+  } catch {
+    return [];
+  }
+}
+
+export async function getMyArticleBySlug(slug: string): Promise<Article | null> {
+  const articles = await getMyArticles();
+  return articles.find((article) => article.slug === slug) ?? null;
+}
+
 function sortByDate<T extends { date?: string }>(items: T[]): T[] {
   return [...items].sort((a, b) => (b.date || "").localeCompare(a.date || ""));
 }

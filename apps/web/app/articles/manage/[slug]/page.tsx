@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Navbar from "../../../../components/Navbar";
 import PageTransition from "../../../../components/PageTransition";
-import { getAdminArticleBySlug, getCurrentUser, isAdminUser } from "../../../../lib/server-api";
+import { getAdminArticleBySlug, getCurrentUser, getMyArticleBySlug, isAdminUser } from "../../../../lib/server-api";
 
 export const dynamic = "force-dynamic";
 
@@ -14,10 +14,12 @@ export const metadata: Metadata = {
 
 export default async function ManagedArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const user = await getCurrentUser();
-  if (!isAdminUser(user)) notFound();
+  if (!user) notFound();
 
   const { slug } = await params;
-  const article = await getAdminArticleBySlug(decodeURIComponent(slug));
+  const article = isAdminUser(user)
+    ? await getAdminArticleBySlug(decodeURIComponent(slug))
+    : await getMyArticleBySlug(decodeURIComponent(slug));
   if (!article) notFound();
 
   return (
