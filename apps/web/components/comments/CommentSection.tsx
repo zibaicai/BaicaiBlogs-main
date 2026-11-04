@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Flag, Heart, Loader2, MessageCircle, Send, ThumbsDown, Trash2 } from "lucide-react";
 import { formatDate } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
@@ -60,6 +61,7 @@ export default function CommentSection({
   readOnly?: boolean;
 }) {
   const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const composerRef = useRef<HTMLDivElement>(null);
   const [comments, setComments] = useState<CommentItem[]>([]);
@@ -70,6 +72,15 @@ export default function CommentSection({
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [replyingTo, setReplyingTo] = useState<CommentItem | null>(null);
+  const rootComments = useMemo(() => comments.filter((comment) => !comment.parentId), [comments]);
+  const replyCounts = useMemo(() => {
+    const counts = new Map<number, number>();
+    for (const comment of comments) {
+      if (!comment.rootId) continue;
+      counts.set(comment.rootId, (counts.get(comment.rootId) || 0) + 1);
+    }
+    return counts;
+  }, [comments]);
 
   // 点击输入框以外区域时收回单行（草稿保留在 textarea 里，重新点开即可继续编辑）
   useEffect(() => {
@@ -265,8 +276,8 @@ export default function CommentSection({
         )
       }
     >
-      {comments.map((comment) => (
-        <div key={comment.id} style={comment.parentId ? { marginLeft: 28 } : undefined}>
+      {rootComments.map((comment) => (
+        <div key={comment.id}>
         <MessageItemShell
           avatar={comment.avatar}
           fallback={(comment.author || "匿").slice(0, 1)}
@@ -304,6 +315,13 @@ export default function CommentSection({
                 aria-label="回复"
               >
                 <MessageCircle size={13} /> 回复
+              </button>
+              <button
+                type="button"
+                onClick={() => router.push(`/comments/thread/${comment.id}`)}
+                aria-label="查看评论楼"
+              >
+                <MessageCircle size={13} /> 回复 {replyCounts.get(comment.id) || 0}
               </button>
               {comment.canDelete && (
                 <button type="button" onClick={() => void remove(comment.id)} aria-label="删除">
