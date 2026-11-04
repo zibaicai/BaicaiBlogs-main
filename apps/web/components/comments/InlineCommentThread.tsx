@@ -82,6 +82,7 @@ export default function InlineCommentThread({
 
           <div className="mt-3">
             <CommentComposer
+              key={replyingTo?.id ?? rootId}
               targetType={targetType}
               targetId={targetId}
               parentId={replyingTo?.id ?? rootId}

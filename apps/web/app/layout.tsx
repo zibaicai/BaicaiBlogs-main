@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import "katex/dist/katex.min.css";
 import "highlight.js/styles/atom-one-dark.css";
@@ -10,6 +10,12 @@ import AppShell from "../components/AppShell";
 import { getPublicSiteConfig } from "../lib/server-api";
 
 export const dynamic = "force-dynamic";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
 
 export async function generateMetadata(): Promise<Metadata> {
   const { siteInfo } = await getPublicSiteConfig();
