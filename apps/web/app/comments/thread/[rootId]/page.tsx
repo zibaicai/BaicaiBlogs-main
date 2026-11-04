@@ -19,6 +19,7 @@ type Comment = {
   createdAt: string;
   parentId?: number;
   rootId?: number;
+  replyToAuthor?: string;
 };
 
 export default function CommentThreadPage() {
@@ -83,7 +84,7 @@ export default function CommentThreadPage() {
                       <span className="text-slate-800 dark:text-slate-100">{comment.author || "用户"}</span>
                       <span>·</span>
                       <span>{formatDate(comment.createdAt)}</span>
-                      {comment.parentId && <span className="text-meta text-indigo-400">回复</span>}
+                      {comment.parentId && <span className="text-meta text-indigo-400">回复 {comment.replyToAuthor ? `@${comment.replyToAuthor}` : ""}</span>}
                     </div>
                     <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-slate-700 dark:text-slate-200">{comment.content}</p>
                     <button

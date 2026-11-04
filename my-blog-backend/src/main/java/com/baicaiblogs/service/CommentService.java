@@ -382,6 +382,9 @@ public class CommentService {
                 .parentId(comment.getParentId())
                 .rootId(comment.getRootId())
                 .replyToUserId(comment.getReplyToUserId())
+                .replyToAuthor(comment.getReplyToUserId() == null ? null
+                        : userRepository.findById(comment.getReplyToUserId())
+                                .map(this::displayName).orElse(null))
                 .userId(comment.getUserId())
                 .author(author == null ? comment.getAuthor() : displayName(author))
                 .avatar(author == null ? comment.getAvatar() : author.getAvatar())
