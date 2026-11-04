@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Flag, Heart, Loader2, MessageCircle, Send, ThumbsDown, Trash2 } from "lucide-react";
 import { formatDate } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
@@ -69,6 +70,7 @@ export default function CommentSection({
   const sectionRef = useRef<HTMLDivElement>(null);
   const [rootComposerVisible, setRootComposerVisible] = useState(true);
   const [sectionVisible, setSectionVisible] = useState(true);
+  const [mounted, setMounted] = useState(false);
   const [comments, setComments] = useState<CommentItem[]>([]);
   const [content, setContent] = useState("");
   const [expanded, setExpanded] = useState(false);
@@ -90,6 +92,10 @@ export default function CommentSection({
     }
     return counts;
   }, [comments]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -377,9 +383,9 @@ export default function CommentSection({
       ))}
     </MessageListShell>
 
-    {showStickyComposer && (
+    {showStickyComposer && mounted && createPortal(
       <div
-        className="fixed inset-x-0 z-40 border-t border-white/20 bg-white/90 p-2 backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/90"
+        className="fixed inset-x-0 z-[9999] border-t border-white/20 bg-white/90 p-2 backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/90"
         style={{ bottom: `calc(${keyboardInset}px + env(safe-area-inset-bottom))`, paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))" }}
       >
         <div className="mx-auto flex max-w-3xl items-center gap-2">
@@ -397,7 +403,8 @@ export default function CommentSection({
             {sending ? <Loader2 size={12} className="animate-spin" /> : "发送"}
           </button>
         </div>
-      </div>
+      </div>,
+      document.body
     )}
     </div>
   );
