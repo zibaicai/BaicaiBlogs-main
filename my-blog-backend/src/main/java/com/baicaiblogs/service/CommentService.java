@@ -26,6 +26,8 @@ public class CommentService {
     private final MusicTrackRepository musicTrackRepository;
     private final ArticleRepository articleRepository;
     private final MusicLibraryService musicLibraryService;
+    private final MusicPlaylistRepository musicPlaylistRepository;
+    private final MusicPlaylistTrackRepository musicPlaylistTrackRepository;
     private final ReportRepository reportRepository;
 
     @Transactional(readOnly = true)
@@ -206,6 +208,9 @@ public class CommentService {
                     .map(article -> userId.equals(article.getUserId())).orElse(false);
             case "ALBUM" -> albumRepository.findById(comment.getTargetId())
                     .map(album -> userId.equals(album.getUserId())).orElse(false);
+            case "TRACK" -> musicPlaylistTrackRepository.findByTrackId(comment.getTargetId()).stream()
+                    .map(ref -> musicPlaylistRepository.findById(ref.getPlaylistId()).orElse(null))
+                    .anyMatch(playlist -> playlist != null && userId.equals(playlist.getOwnerId()));
             default -> false;
         };
     }
