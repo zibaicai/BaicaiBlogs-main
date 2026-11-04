@@ -25,6 +25,7 @@ public class CommentService {
     private final AlbumRepository albumRepository;
     private final MusicTrackRepository musicTrackRepository;
     private final ArticleRepository articleRepository;
+    private final ProjectRepository projectRepository;
     private final MusicLibraryService musicLibraryService;
     private final MusicPlaylistRepository musicPlaylistRepository;
     private final MusicPlaylistTrackRepository musicPlaylistTrackRepository;
@@ -221,6 +222,8 @@ public class CommentService {
                     .map(article -> userId.equals(article.getUserId())).orElse(false);
             case "ALBUM" -> albumRepository.findById(comment.getTargetId())
                     .map(album -> userId.equals(album.getUserId())).orElse(false);
+            case "PROJECT" -> projectRepository.findById(comment.getTargetId())
+                    .map(project -> userId.equals(project.getUserId())).orElse(false);
             case "TRACK" -> musicPlaylistTrackRepository.findByTrackId(comment.getTargetId()).stream()
                     .map(ref -> musicPlaylistRepository.findById(ref.getPlaylistId()).orElse(null))
                     .anyMatch(playlist -> playlist != null && userId.equals(playlist.getOwnerId()));
@@ -312,6 +315,12 @@ public class CommentService {
                 Article article = articleRepository.findById(targetId).orElseThrow(() -> new RuntimeException("文章不存在"));
                 if (!"PUBLISHED".equalsIgnoreCase(article.getStatus()) || !"PUBLIC".equalsIgnoreCase(article.getVisibility())) {
                     throw new RuntimeException("文章不可评论");
+                }
+            }
+            case "PROJECT" -> {
+                Project project = projectRepository.findById(targetId).orElseThrow(() -> new RuntimeException("项目不存在"));
+                if (!"public".equalsIgnoreCase(project.getVisibility())) {
+                    throw new RuntimeException("项目不可评论");
                 }
             }
             default -> throw new RuntimeException("不支持的评论目标");
