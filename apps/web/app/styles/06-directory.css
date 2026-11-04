@@ -1365,16 +1365,22 @@ html:not(.dark) .hv-empty {
 .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-body {
   position: absolute;
   inset: 0;
-  display: block;
+  display: flex;
+  flex-direction: column;
   min-height: 0;
   padding: 14px;
 }
 .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-copy {
-  position: absolute;
-  right: 14px;
-  left: 14px;
+  position: relative;
+  right: auto;
+  left: auto;
+  top: auto;
+  bottom: auto;
   display: flex;
+  flex: 1 1 auto;
   flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
 }
 .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-title {
   --resource-title-size: var(--type-overlay-title);
@@ -1389,29 +1395,31 @@ html:not(.dark) .hv-empty {
   line-height: 1.55;
 }
 .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-foot {
-  position: absolute;
-  right: 14px;
-  bottom: 14px;
-  left: 14px;
-  min-height: 42px;
-  max-height: 42px;
-  margin: 0;
+  position: relative;
+  right: auto;
+  bottom: auto;
+  left: auto;
+  flex: 0 0 auto;
+  min-height: 32px;
+  max-height: 38px;
+  margin: 8px 0 0;
   padding: 0;
   align-items: center;
   align-content: flex-end;
   overflow: hidden;
 }
-/* Final spacing / proportion tuning for the new post views. */
-@media (max-width: 640px) {
-  .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-copy {
-    top: 46%;
+/* Mobile grid keeps the same content stack but uses a wider card ratio. */
+@media (max-width: 767px) {
+  .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) {
+    aspect-ratio: 16 / 9;
+  }
+
+  .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-foot {
+    min-height: 30px;
+    max-height: 32px;
   }
 }
 @media (min-width: 1201px) {
-  .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-copy {
-    top: 40%;
-  }
-
   .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-title {
     --resource-title-size: 0.9375rem;
     line-height: 1.45;
@@ -1433,16 +1441,6 @@ html:not(.dark) .hv-empty {
   .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-foot {
     min-height: 38px;
     max-height: 38px;
-  }
-}
-@media (max-width: 1200px) {
-  .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-copy {
-    top: 45%;
-  }
-}
-@media (max-width: 900px) {
-  .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-copy {
-    top: 47%;
   }
 }
 .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-category {
