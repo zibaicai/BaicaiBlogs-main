@@ -3,6 +3,7 @@ package com.baicaiblogs.controller;
 import com.baicaiblogs.dto.ApiResponse;
 import com.baicaiblogs.dto.CommentRequest;
 import com.baicaiblogs.dto.CommentResponse;
+import com.baicaiblogs.dto.CommentThreadPage;
 import com.baicaiblogs.entity.User;
 import com.baicaiblogs.repository.UserRepository;
 import com.baicaiblogs.service.CommentService;
@@ -39,6 +40,18 @@ public class CommentController {
                 id = momentId;
             }
             return ApiResponse.success(commentService.getComments(type, id, currentUser(authentication)));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/public/comments/thread/{rootId}/page")
+    public ApiResponse<CommentThreadPage> getThreadPage(@PathVariable Long rootId,
+                                                        @RequestParam(defaultValue = "1") int page,
+                                                        @RequestParam(defaultValue = "10") int size,
+                                                        Authentication authentication) {
+        try {
+            return ApiResponse.success(commentService.getThreadPage(rootId, page, size, currentUser(authentication)));
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
         }

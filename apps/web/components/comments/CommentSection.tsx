@@ -1,13 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { Flag, Heart, Loader2, MessageCircle, Send, ThumbsDown, Trash2 } from "lucide-react";
 import { formatDate } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
 import MessageListShell from "../messages/MessageListShell";
 import MessageItemShell from "../messages/MessageItemShell";
 import AutoGrowTextarea from "../ui/AutoGrowTextarea";
+import InlineCommentThread from "./InlineCommentThread";
 
 export interface CommentItem {
   id: number;
@@ -62,7 +62,6 @@ export default function CommentSection({
   readOnly?: boolean;
 }) {
   const { user, loading: authLoading } = useAuth();
-  const router = useRouter();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const composerRef = useRef<HTMLDivElement>(null);
   const [comments, setComments] = useState<CommentItem[]>([]);
@@ -73,6 +72,7 @@ export default function CommentSection({
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [replyingTo, setReplyingTo] = useState<CommentItem | null>(null);
+  const [expandedRootId, setExpandedRootId] = useState<number | null>(null);
   const focusComposer = () => {
     document.querySelector<HTMLTextAreaElement>(".comment-textarea")?.focus();
   };
@@ -322,7 +322,7 @@ export default function CommentSection({
               </button>
               <button
                 type="button"
-                onClick={() => router.push(`/comments/thread/${comment.id}`)}
+                onClick={() => setExpandedRootId((current) => current === comment.id ? null : comment.id)}
                 aria-label="查看评论楼"
               >
                 <MessageCircle size={13} /> 回复 {replyCounts.get(comment.id) || 0}
@@ -342,6 +342,15 @@ export default function CommentSection({
         >
           {comment.content}
         </MessageItemShell>
+        {expandedRootId === comment.id && (
+          <InlineCommentThread
+            rootId={comment.id}
+            targetType={targetType as "POST" | "MOMENT" | "ARTICLE" | "PROJECT" | "ALBUM" | "TRACK"}
+            targetId={targetId}
+            onCollapse={() => setExpandedRootId(null)}
+            onSubmitted={() => void load()}
+          />
+        )}
         </div>
       ))}
     </MessageListShell>

@@ -1,6 +1,8 @@
 package com.baicaiblogs.repository;
 
 import com.baicaiblogs.entity.Comment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,6 +17,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findByTargetTypeAndTargetIdAndStatusOrderByCreatedAtDesc(String targetType, Long targetId, String status);
     List<Comment> findByTargetTypeAndTargetIdOrderByCreatedAtDesc(String targetType, Long targetId);
     List<Comment> findByRootIdOrderByCreatedAtAsc(Long rootId);
+    Page<Comment> findByRootIdAndStatusOrderByCreatedAtAsc(Long rootId, String status, Pageable pageable);
     List<Comment> findByTargetTypeAndTargetIdInOrderByCreatedAtDesc(String targetType, List<Long> targetIds);
     long countByTargetTypeAndTargetIdAndStatus(String targetType, Long targetId, String status);
     long countByTargetTypeAndTargetId(String targetType, Long targetId);

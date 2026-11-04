@@ -2,9 +2,12 @@ package com.baicaiblogs.service;
 
 import com.baicaiblogs.dto.CommentRequest;
 import com.baicaiblogs.dto.CommentResponse;
+import com.baicaiblogs.dto.CommentThreadPage;
 import com.baicaiblogs.entity.*;
 import com.baicaiblogs.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +44,23 @@ public class CommentService {
                 .stream()
                 .map(comment -> toResponse(comment, viewer))
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public CommentThreadPage getThreadPage(Long rootId, int page, int size, User viewer) {
+        Comment root = get(rootId);
+        assertPublicTarget(root.getTargetType(), root.getTargetId());
+        int safePage = Math.max(0, page - 1);
+        int safeSize = Math.min(50, Math.max(1, size));
+        Page<Comment> result = commentRepository.findByRootIdAndStatusOrderByCreatedAtAsc(
+                rootId, "VISIBLE", PageRequest.of(safePage, safeSize));
+        return CommentThreadPage.builder()
+                .items(result.getContent().stream().map(comment -> toResponse(comment, viewer)).toList())
+                .page(safePage + 1)
+                .size(safeSize)
+                .total(result.getTotalElements())
+                .totalPages(result.getTotalPages())
+                .build();
     }
 
     @Transactional(readOnly = true)
