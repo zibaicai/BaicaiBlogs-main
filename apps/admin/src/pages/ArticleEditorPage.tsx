@@ -23,6 +23,7 @@ type Article = {
   tags?: string[];
   categoryId?: number;
   status: string;
+  reviewNote?: string;
   visibility?: string;
   slug: string;
 };
@@ -114,6 +115,22 @@ export default function ArticleEditorPage() {
     }
   };
 
+  const changeReview = async (action: "submit" | "withdraw") => {
+    if (!current) return;
+    try {
+      const response = action === "submit"
+        ? await api.submitArticle(current.id)
+        : await api.withdrawArticle(current.id);
+      if (response.data) {
+        setCurrent({ ...current, ...response.data });
+        setStatus(response.data.status || current.status);
+      }
+      showToast(action === "submit" ? "已提交审核" : "已撤回", "success");
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "操作失败", "error");
+    }
+  };
+
   const save = async () => {
     if (title.trim().length < 2) {
       showToast("标题至少 2 个字符", "error");
@@ -191,11 +208,23 @@ export default function ArticleEditorPage() {
             </Link>
           )}
           {current && <button type="button" onClick={() => void remove()} className="inline-flex items-center gap-1.5 rounded-xl bg-red-500/15 px-3 py-2 text-[10px] font-bold text-red-300"><Trash2 size={13} /> 删除</button>}
+          {current && (current.status === "DRAFT" || current.status === "REJECTED") && (
+            <button type="button" onClick={() => void changeReview("submit")} className="rounded-xl bg-emerald-500/15 px-3 py-2 text-[10px] font-bold text-emerald-300">提交审核</button>
+          )}
+          {current && (current.status === "PENDING_REVIEW" || current.status === "PUBLISHED") && (
+            <button type="button" onClick={() => void changeReview("withdraw")} className="rounded-xl bg-amber-500/15 px-3 py-2 text-[10px] font-bold text-amber-300">撤回</button>
+          )}
           <button type="button" onClick={() => void save()} disabled={saving || uploading} className="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-2 text-[11px] font-black text-white disabled:opacity-50">
             {saving ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />} 保存
           </button>
         </div>
       </header>
+
+      {current?.reviewNote && (
+        <div className="mb-3 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-[11px] font-bold text-red-300">
+          驳回原因：{current.reviewNote}
+        </div>
+      )}
 
       <div className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 md:grid-cols-3">
         <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400">副标题
@@ -227,7 +256,7 @@ export default function ArticleEditorPage() {
         </div>
         <div className="block text-[10px] font-black uppercase tracking-widest text-slate-400">状态
           <div className="mt-2">
-            <Select value={status} onChange={setStatus} ariaLabel="文章状态" options={[{ value: "DRAFT", label: "草稿" }, { value: "PUBLISHED", label: "发布" }]} />
+            <Select value={status} onChange={setStatus} ariaLabel="文章状态" options={[{ value: "DRAFT", label: "草稿" }, { value: "PUBLISHED", label: "发布" }, { value: "PENDING_REVIEW", label: "待审核" }, { value: "REJECTED", label: "已驳回" }]} />
           </div>
         </div>
         <div className="block text-[10px] font-black uppercase tracking-widest text-slate-400">可见性

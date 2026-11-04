@@ -34,6 +34,7 @@ public class ArticleService {
     private final ImageSecurityService imageSecurityService;
     private final OssService ossService;
     private final ObjectMapper objectMapper;
+    private final NotificationService notificationService;
 
     @Transactional(readOnly = true)
     public List<ArticleDtos.ArticleResponse> publicList() {
@@ -195,7 +196,11 @@ public class ArticleService {
         article.setReviewedBy(admin.getId());
         article.setReviewedAt(LocalDateTime.now());
         if (article.getPublishedAt() == null) article.setPublishedAt(LocalDateTime.now());
-        return toResponse(articleRepository.save(article));
+        Article saved = articleRepository.save(article);
+        notificationService.notifyUser(saved.getUserId(), "ARTICLE_APPROVED", "文章审核通过",
+                "你的文章《" + saved.getTitle() + "》已通过审核并发布。", "article", saved.getId(),
+                "/articles/manage/" + saved.getSlug());
+        return toResponse(saved);
     }
 
     @Transactional
@@ -207,7 +212,11 @@ public class ArticleService {
         article.setReviewNote(reason == null ? "" : reason.trim());
         article.setReviewedBy(admin.getId());
         article.setReviewedAt(LocalDateTime.now());
-        return toResponse(articleRepository.save(article));
+        Article saved = articleRepository.save(article);
+        notificationService.notifyUser(saved.getUserId(), "ARTICLE_REJECTED", "文章审核未通过",
+                "你的文章《" + saved.getTitle() + "》未通过审核：" + (saved.getReviewNote() == null ? "" : saved.getReviewNote()),
+                "article", saved.getId(), "/articles/manage/" + saved.getSlug());
+        return toResponse(saved);
     }
 
     @Transactional
