@@ -6,6 +6,8 @@ import com.baicaiblogs.entity.User;
 import com.baicaiblogs.repository.AlbumRepository;
 import com.baicaiblogs.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,29 +70,25 @@ public class NotificationService {
     }
 
     @Transactional(readOnly = true)
-    public List<Notification> list(User user, String category, int page, int size) {
+    public Page<Notification> page(User user, String category, int page, int size) {
         String requested = category == null || category.isBlank() ? "all" : category;
-        List<Notification> filtered = repository.findByUserIdOrderByCreatedAtDesc(user.getId()).stream()
-                .filter(notification -> "all".equals(requested) || requested.equals(categoryOf(notification)))
-                .toList();
-        int safePage = Math.max(0, page - 1);
-        int safeSize = Math.min(50, Math.max(1, size));
-        return filtered.stream().skip((long) safePage * safeSize).limit(safeSize).toList();
+        PageRequest request = PageRequest.of(Math.max(0, page - 1), Math.min(50, Math.max(1, size)));
+        return "all".equals(requested)
+                ? repository.findByUserIdOrderByCreatedAtDesc(user.getId(), request)
+                : repository.findByUserIdAndCategoryOrderByCreatedAtDesc(user.getId(), requested, request);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Notification> list(User user, String category, int page, int size) {
+        return page(user, category, page, size).getContent();
     }
 
     @Transactional(readOnly = true)
     public Map<String, Long> summary(User user) {
-        List<Notification> items = repository.findByUserIdOrderByCreatedAtDesc(user.getId());
         Map<String, Long> counts = new LinkedHashMap<>();
-        counts.put("all", 0L);
+        counts.put("all", repository.countByUserIdAndReadFalse(user.getId()));
         for (String key : List.of("reply", "mention", "like", "system", "moderation")) {
-            counts.put(key, 0L);
-        }
-        for (Notification item : items) {
-            if (Boolean.TRUE.equals(item.getRead())) continue;
-            counts.put("all", counts.get("all") + 1);
-            String category = categoryOf(item);
-            counts.put(category, counts.getOrDefault(category, 0L) + 1);
+            counts.put(key, repository.countByUserIdAndCategoryAndReadFalse(user.getId(), key));
         }
         return counts;
     }
@@ -108,6 +106,13 @@ public class NotificationService {
                 notification.setReadAt(LocalDateTime.now());
                 repository.save(notification);
             }
+        });
+    }
+
+    @Transactional
+    public void delete(User user, Long id) {
+        repository.findById(id).ifPresent(notification -> {
+            if (notification.getUserId().equals(user.getId())) repository.delete(notification);
         });
     }
 

@@ -38,8 +38,8 @@ export default function NotificationsPage() {
     setError("");
     try {
       const [listResponse, summaryResponse] = await Promise.all([
-        fetch(`/api/user/notifications?category=${nextCategory}&page=1&size=50`, { credentials: "include" }),
-        fetch("/api/user/notifications/summary", { credentials: "include" }),
+        fetch(`/api/me/notifications?category=${nextCategory}&page=1&size=20`, { credentials: "include" }),
+        fetch("/api/me/notifications/summary", { credentials: "include" }),
       ]);
       const listJson = await listResponse.json();
       const summaryJson = await summaryResponse.json();
@@ -60,7 +60,7 @@ export default function NotificationsPage() {
 
   const open = async (notice: Notice) => {
     if (!notice.read) {
-      await fetch(`/api/user/notifications/${notice.id}/read`, { method: "POST", credentials: "include" });
+      await fetch(`/api/me/notifications/${notice.id}/read`, { method: "POST", credentials: "include" });
       setItems((current) => current.map((item) => item.id === notice.id ? { ...item, read: true } : item));
       setSummary((current) => ({
         ...current,
@@ -72,7 +72,7 @@ export default function NotificationsPage() {
   };
 
   const readAll = async () => {
-    await fetch(`/api/user/notifications/read-all?category=${category}`, { method: "POST", credentials: "include" });
+    await fetch(`/api/me/notifications/read-all?category=${category}`, { method: "POST", credentials: "include" });
     await load(category);
   };
 

@@ -1,0 +1,80 @@
+package com.baicaiblogs.controller;
+
+import com.baicaiblogs.dto.ApiResponse;
+import com.baicaiblogs.dto.NotificationResponse;
+import com.baicaiblogs.entity.User;
+import com.baicaiblogs.service.NotificationService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/me/notifications")
+@RequiredArgsConstructor
+public class NotificationController {
+
+    private final NotificationService notificationService;
+
+    @GetMapping
+    public ApiResponse<List<NotificationResponse>> list(
+            @RequestParam(required = false) String category,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        try {
+            return ApiResponse.success(notificationService.page(currentUser(), category, page, size)
+                    .getContent().stream().map(NotificationResponse::from).toList());
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/summary")
+    public ApiResponse<Map<String, Long>> summary() {
+        try {
+            return ApiResponse.success(notificationService.summary(currentUser()));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @PostMapping("/{id}/read")
+    public ApiResponse<Void> read(@PathVariable Long id) {
+        try {
+            notificationService.markRead(currentUser(), id);
+            return ApiResponse.success("已读", null);
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @PostMapping("/read-all")
+    public ApiResponse<Void> readAll(@RequestParam(required = false) String category) {
+        try {
+            notificationService.markAllRead(currentUser(), category);
+            return ApiResponse.success("已全部标记为已读", null);
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ApiResponse<Void> delete(@PathVariable Long id) {
+        try {
+            notificationService.delete(currentUser(), id);
+            return ApiResponse.success("已删除", null);
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    private User currentUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication() == null
+                ? null
+                : SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User user) return user;
+        throw new RuntimeException("未登录");
+    }
+}
