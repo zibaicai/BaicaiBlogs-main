@@ -28,7 +28,7 @@ export default function ThemeBackdrop() {
   const showSlider = preset === "violet" ? true : !presetBackground.useGradient;
 
   return (
-    <div className="site-backdrop fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
+    <div className="site-backdrop fixed inset-0 z-[-1] h-[100lvh] w-screen pointer-events-none overflow-hidden">
       {showSlider && <BackgroundSlider images={images} />}
       <div
         data-glass-id="background.blur"
