@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, Pencil, Plus, Search, Trash2 } from "lucide-react";
 
-import { api } from "../lib/api";
+import { api, getAdminRole } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
 import { AdminPageHeader, AdminPageShell, FilterTabs, StatusBadge, TagBadge } from "../components/admin/AdminUI";
 import { DataTable } from "../components/admin/DataTable";
@@ -28,6 +28,7 @@ export default function ArticlesListPage() {
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("ALL");
+  const isAdmin = getAdminRole() === "ADMIN" || getAdminRole() === "SUPER_ADMIN";
 
   const load = async () => {
     setLoading(true);
@@ -65,6 +66,28 @@ export default function ArticlesListPage() {
     }
   };
 
+  const approve = async (article: Article) => {
+    try {
+      await api.approveArticle(article.id);
+      showToast("已通过审核", "success");
+      await load();
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "审核失败", "error");
+    }
+  };
+
+  const reject = async (article: Article) => {
+    const reason = window.prompt("驳回原因");
+    if (!reason) return;
+    try {
+      await api.rejectArticle(article.id, reason);
+      showToast("已驳回", "success");
+      await load();
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "驳回失败", "error");
+    }
+  };
+
   return (
     <AdminPageShell>
       <AdminPageHeader
@@ -85,6 +108,8 @@ export default function ArticlesListPage() {
           options={[
             { value: "ALL", label: "全部", count: items.length },
             { value: "DRAFT", label: "草稿", count: items.filter((item) => item.status === "DRAFT").length },
+            { value: "PENDING_REVIEW", label: "待审核", count: items.filter((item) => item.status === "PENDING_REVIEW").length },
+            { value: "REJECTED", label: "已驳回", count: items.filter((item) => item.status === "REJECTED").length },
             { value: "PUBLISHED", label: "已发布", count: items.filter((item) => item.status === "PUBLISHED").length },
           ]}
         />
@@ -103,6 +128,7 @@ export default function ArticlesListPage() {
           { key: "category", header: "分类", cell: (article) => <span className="text-slate-400">{article.category || "未分类"}</span> },
           { key: "tags", header: "标签", className: "max-w-[180px]", cell: (article) => <div className="flex flex-wrap gap-1">{(article.tags || []).slice(0, 3).map((tag) => <TagBadge key={tag}>{tag}</TagBadge>)}{!(article.tags || []).length && <span className="text-slate-600">—</span>}</div> },
           { key: "updatedAt", header: "更新时间", cell: (article) => <span className="whitespace-nowrap text-[10px] text-slate-500">{article.updatedAt ? new Date(article.updatedAt).toLocaleString("zh-CN", { dateStyle: "short", timeStyle: "short" }) : "—"}</span> },
+          { key: "review", header: "审核", className: "text-right", cell: (article) => isAdmin && article.status === "PENDING_REVIEW" ? <div className="flex justify-end gap-1"><button type="button" onClick={() => void approve(article)} className="rounded-md bg-emerald-500/15 px-2 py-1 text-[10px] font-bold text-emerald-300">通过</button><button type="button" onClick={() => void reject(article)} className="rounded-md bg-red-500/15 px-2 py-1 text-[10px] font-bold text-red-300">驳回</button></div> : null },
           { key: "action", header: "操作", className: "text-right", cell: (article) => <div className="flex justify-end gap-0.5"><button type="button" onClick={() => navigate(`/articles/${article.id}/edit`)} title="编辑" className="rounded-md p-1.5 text-slate-400 hover:bg-white/10 hover:text-white"><Pencil size={13} /></button><button type="button" onClick={() => article.status === "PUBLISHED" && article.visibility === "PUBLIC" ? window.open(`https://www.zibaicai.cn/articles/${article.slug}`, "_blank") : navigate(`/articles/${article.id}`)} title={article.status === "PUBLISHED" && article.visibility === "PUBLIC" ? "C 端预览" : "后台预览"} className="rounded-md p-1.5 text-slate-400 hover:bg-white/10 hover:text-white"><Eye size={13} /></button><button type="button" onClick={() => void remove(article)} title="删除" className="rounded-md p-1.5 text-slate-500 hover:bg-red-500/10 hover:text-red-300"><Trash2 size={13} /></button></div> },
         ]}
       />

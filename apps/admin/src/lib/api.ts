@@ -378,6 +378,11 @@ export const api = {
   updateArticle: (id: number, payload: any) =>
     request<any>(`/me/articles/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
   deleteArticle: (id: number) => request<void>(`/me/articles/${id}`, { method: "DELETE" }),
+  submitArticle: (id: number) => request<any>(`/me/articles/${id}/submit`, { method: "POST" }),
+  withdrawArticle: (id: number) => request<any>(`/me/articles/${id}/withdraw`, { method: "POST" }),
+  approveArticle: (id: number) => request<any>(`/admin/articles/${id}/approve`, { method: "POST" }),
+  rejectArticle: (id: number, reason: string) =>
+    request<any>(`/admin/articles/${id}/reject`, { method: "POST", body: JSON.stringify({ reason }) }),
   uploadArticleImage: (file: File) => {
     const form = new FormData();
     form.append("file", file);
