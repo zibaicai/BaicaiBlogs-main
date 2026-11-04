@@ -13,9 +13,13 @@ export default function ArticleCard({
   const statusLabel =
     article.status === "DRAFT"
       ? "草稿"
-      : article.visibility === "PRIVATE"
-        ? "仅管理员"
-        : undefined;
+      : article.status === "PENDING_REVIEW"
+        ? "待审核"
+        : article.status === "REJECTED"
+          ? "已驳回"
+          : article.visibility === "PRIVATE"
+            ? "仅管理员"
+            : undefined;
   return (
     <ArchiveItemCard
       href={`${hrefBase}/${encodeURIComponent(article.slug)}`}

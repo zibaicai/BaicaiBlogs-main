@@ -171,7 +171,13 @@ public class ArticleService {
         article.setStatus("PENDING_REVIEW");
         article.setSubmittedAt(LocalDateTime.now());
         article.setReviewNote(null);
-        return toResponse(articleRepository.save(article));
+        Article saved = articleRepository.save(article);
+        for (var admin : userRepository.findByRoleIn(java.util.List.of("ADMIN", "SUPER_ADMIN"))) {
+            notificationService.notifyUser(admin.getId(), "ARTICLE_SUBMITTED", "有新的文章待审核",
+                    user.getUsername() + " 提交了《" + saved.getTitle() + "》",
+                    "article", saved.getId(), "/articles/" + saved.getId());
+        }
+        return toResponse(saved);
     }
 
     @Transactional

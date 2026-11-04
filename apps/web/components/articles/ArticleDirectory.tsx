@@ -33,6 +33,16 @@ export default function ArticleDirectory({ articles, categories, mode }: Article
             count: articles.filter((article) => article.status === "DRAFT").length,
           },
           {
+            value: "status-PENDING_REVIEW",
+            label: "待审核",
+            count: articles.filter((article) => article.status === "PENDING_REVIEW").length,
+          },
+          {
+            value: "status-REJECTED",
+            label: "已驳回",
+            count: articles.filter((article) => article.status === "REJECTED").length,
+          },
+          {
             value: "visibility-PRIVATE",
             label: "仅管理员",
             count: articles.filter((article) => article.visibility === "PRIVATE").length,
