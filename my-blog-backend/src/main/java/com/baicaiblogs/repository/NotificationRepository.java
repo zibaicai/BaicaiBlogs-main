@@ -19,6 +19,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     long countByUserIdAndReadFalse(Long userId);
     long countByUserIdAndCategoryAndReadFalse(Long userId, String category);
     boolean existsByUserIdAndTypeAndTargetIdAndCreatedAtAfter(Long userId, String type, Long targetId, LocalDateTime after);
+    boolean existsByUserIdAndTypeAndTargetIdAndActorId(Long userId, String type, Long targetId, Long actorId);
 
     @Modifying
     @Query(value = """

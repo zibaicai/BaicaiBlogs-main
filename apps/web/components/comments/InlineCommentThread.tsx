@@ -60,7 +60,7 @@ export default function InlineCommentThread({
         <>
           <div className="space-y-3">
             {items.map((reply) => (
-              <div key={reply.id} className="rounded-lg border border-white/5 px-3 py-2">
+              <div key={reply.id} id={`comment-${reply.id}`} className="rounded-lg border border-white/5 px-3 py-2">
                 <div className="text-[11px] font-bold text-slate-300">
                   {reply.author || "用户"}
                   {reply.replyToAuthor && <span className="ml-1 text-slate-500">回复 @{reply.replyToAuthor}</span>}

@@ -309,7 +309,7 @@ export default function CommentSection({
       }
     >
       {rootComments.map((comment) => (
-        <div key={comment.id}>
+        <div key={comment.id} id={`comment-${comment.id}`}>
         <MessageItemShell
           avatar={comment.avatar}
           fallback={(comment.author || "匿").slice(0, 1)}

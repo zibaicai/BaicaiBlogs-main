@@ -14,6 +14,8 @@ interface Notice {
   body: string;
   read: boolean;
   link?: string;
+  actorName?: string;
+  actorAvatar?: string;
   createdAt: string;
 }
 
@@ -31,30 +33,38 @@ export default function NotificationsPage() {
   const [items, setItems] = useState<Notice[]>([]);
   const [summary, setSummary] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
   const [error, setError] = useState("");
 
-  const load = async (nextCategory = category) => {
-    setLoading(true);
+  const load = async (nextCategory = category, nextPage = 1, append = false) => {
+    if (append) setLoadingMore(true);
+    else setLoading(true);
     setError("");
     try {
       const [listResponse, summaryResponse] = await Promise.all([
-        fetch(`/api/me/notifications?category=${nextCategory}&page=1&size=20`, { credentials: "include" }),
+        fetch(`/api/me/notifications?category=${nextCategory}&page=${nextPage}&size=20`, { credentials: "include" }),
         fetch("/api/me/notifications/summary", { credentials: "include" }),
       ]);
       const listJson = await listResponse.json();
       const summaryJson = await summaryResponse.json();
       if (!listJson?.success) throw new Error(listJson?.message || "加载失败");
-      setItems(listJson.data || []);
+      const nextItems = listJson.data || [];
+      setItems((current) => append ? [...current, ...nextItems] : nextItems);
+      setPage(nextPage);
+      setHasMore(nextItems.length === 20);
       setSummary(summaryJson?.data || {});
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "加载失败");
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
 
   useEffect(() => {
-    void load(category);
+    void load(category, 1, false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category]);
 
@@ -137,8 +147,13 @@ export default function NotificationsPage() {
                       notice.read ? "opacity-70" : ""
                     }`}
                   >
-                    <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${notice.read ? "bg-slate-300" : "bg-indigo-500"}`} />
+                    {notice.actorAvatar ? (
+                      <img src={notice.actorAvatar} alt="" className="mt-0.5 h-8 w-8 shrink-0 rounded-full object-cover" />
+                    ) : (
+                      <span className={`mt-2 h-2 w-2 shrink-0 rounded-full ${notice.read ? "bg-slate-300" : "bg-indigo-500"}`} />
+                    )}
                     <span className="min-w-0 flex-1">
+                      {notice.actorName && <span className="mb-0.5 block text-[10px] font-bold text-indigo-500">{notice.actorName}</span>}
                       <span className="block text-xs font-black text-slate-800 dark:text-slate-100">{notice.title}</span>
                       <span className="mt-1 block truncate text-xs text-slate-500 dark:text-slate-400">{notice.body}</span>
                       <span className="mt-1 block text-[10px] text-slate-400">{notice.createdAt}</span>
@@ -147,6 +162,14 @@ export default function NotificationsPage() {
                   </button>
                 ))}
               </div>
+
+              {hasMore && (
+                <div className="mt-3 text-center">
+                  <button type="button" onClick={() => void load(category, page + 1, true)} disabled={loadingMore} className="rounded-full border border-white/20 px-4 py-2 text-[11px] font-bold text-slate-500 disabled:opacity-40">
+                    {loadingMore ? "加载中…" : "加载更多"}
+                  </button>
+                </div>
+              )}
             </section>
           </div>
         </main>

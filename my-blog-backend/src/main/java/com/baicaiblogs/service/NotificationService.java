@@ -112,6 +112,11 @@ public class NotificationService {
     }
 
     @Transactional(readOnly = true)
+    public boolean exists(Long userId, String type, Long targetId, Long actorId) {
+        return repository.existsByUserIdAndTypeAndTargetIdAndActorId(userId, type, targetId, actorId);
+    }
+
+    @Transactional(readOnly = true)
     public long unread(User user) {
         return repository.countByUserIdAndReadFalse(user.getId());
     }

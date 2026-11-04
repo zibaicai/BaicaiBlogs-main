@@ -186,7 +186,8 @@ public class CommentService {
                     .build());
             notifyLike = "LIKE".equals(type);
         }
-        if (notifyLike && comment.getUserId() != null) {
+        if (notifyLike && comment.getUserId() != null
+                && !notificationService.exists(comment.getUserId(), "COMMENT_LIKE", commentId, current.getId())) {
             notificationService.notifyUser(
                     comment.getUserId(),
                     "COMMENT_LIKE",
@@ -341,6 +342,17 @@ public class CommentService {
             comment.setHiddenAt(LocalDateTime.now());
             comment.setModerationSource(source);
         } else {
+            if (comment.getHiddenBy() != null && comment.getUserId() != null) {
+                notificationService.notifyUser(
+                        comment.getUserId(),
+                        "COMMENT_RESTORED",
+                        "评论已恢复",
+                        "你被隐藏的评论已恢复显示。",
+                        comment.getTargetType(),
+                        comment.getTargetId(),
+                        "/comments/thread/" + (comment.getRootId() == null ? comment.getId() : comment.getRootId())
+                );
+            }
             comment.setHiddenBy(null);
             comment.setHiddenReason(null);
             comment.setHiddenAt(null);

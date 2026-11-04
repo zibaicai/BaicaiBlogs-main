@@ -76,6 +76,7 @@ export default function CommentThreadPage() {
                 {pageComments.map((comment, index) => (
                   <div
                     key={comment.id}
+                    id={`comment-${comment.id}`}
                     className={`rounded-2xl border border-white/20 bg-white/50 p-4 dark:border-white/10 dark:bg-slate-900/50 ${
                       index > 0 ? "ml-6" : ""
                     }`}
