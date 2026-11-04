@@ -7,6 +7,7 @@ import { formatDate } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
 import MessageListShell from "../messages/MessageListShell";
 import MessageItemShell from "../messages/MessageItemShell";
+import AutoGrowTextarea from "../ui/AutoGrowTextarea";
 
 export interface CommentItem {
   id: number;
@@ -217,15 +218,15 @@ export default function CommentSection({
                 {user?.avatar ? <img src={user.avatar} alt="" /> : (user?.nickname || user?.username || "我").slice(0, 1)}
               </div>
               <div className="comment-composer-body">
-                <textarea
-                  ref={textareaRef}
+                <AutoGrowTextarea
                   value={content}
-                  onChange={(event) => setContent(event.target.value)}
-                  onFocus={() => setExpanded(true)}
-                  onKeyDown={onKeyDown}
+                  onChange={setContent}
+                  onSubmit={() => void submit()}
                   placeholder="写下你的想法..."
-                  maxLength={1000}
-                  rows={1}
+                  minRows={1}
+                  maxRows={4}
+                  ariaLabel="评论内容"
+                  className="comment-textarea"
                 />
                 <div className="comment-composer-foot">
                   <span>{content.length} / 1000</span>
