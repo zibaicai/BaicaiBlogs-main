@@ -1,4 +1,4 @@
-﻿@layer components {
+@layer components {
 .directory-shell {
     @apply w-[95%] md:w-[90%] max-w-7xl mx-auto mt-28 px-4 relative z-10 pb-20;
   }
@@ -1307,7 +1307,7 @@ html:not(.dark) .hv-empty {
 }
 /* The compact-row rules are intentionally more specific than the legacy
    horizontal layout, so the grid variant needs an equally explicit scope. */
-@media (max-width: 767px) {
+@media (max-width: 1023px) {
   .archive-card--cover {
     aspect-ratio: 16 / 9;
   }
@@ -1632,6 +1632,7 @@ html:not(.dark) .hv-empty {
 }
 
 }
+
 
 
 
