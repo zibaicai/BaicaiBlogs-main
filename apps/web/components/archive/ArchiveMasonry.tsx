@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -9,8 +9,10 @@ export default function ArchiveMasonry({ items, masonryColumns = 4 }: ArchiveMas
 
   useEffect(() => {
     const update = () => {
-      if (window.innerWidth <= 640) setColumnCount(1);
-      else if (window.innerWidth <= 900) setColumnCount(Math.min(2, masonryColumns));
+      const width = window.innerWidth;
+      if (width < 640) setColumnCount(1);
+      else if (width < 1024) setColumnCount(Math.min(2, masonryColumns));
+      else if (width < 1280) setColumnCount(Math.min(3, masonryColumns));
       else setColumnCount(masonryColumns);
     };
     update();
