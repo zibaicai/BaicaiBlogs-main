@@ -1160,6 +1160,46 @@ html:not(.dark) .hv-empty {
   padding: 14px 0 0;
   overflow: hidden;
 }
+.directory-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  margin-bottom: 8px;
+}
+.directory-card-meta .directory-card-time {
+  margin-bottom: 0;
+}
+.directory-card-meta .directory-card-category {
+  min-width: 0;
+  max-width: 48%;
+  margin-left: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.archive-card--cover .directory-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  margin-bottom: 8px;
+}
+.archive-card--cover .directory-card-meta .directory-card-time {
+  margin-bottom: 0;
+}
+.archive-card--cover .directory-card-meta .directory-card-category {
+  min-width: 0;
+  max-width: 48%;
+  margin-left: auto;
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: var(--type-meta);
+  font-weight: 700;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .archive-card--cover .directory-card-time {
   display: inline-flex;
   align-self: flex-start;

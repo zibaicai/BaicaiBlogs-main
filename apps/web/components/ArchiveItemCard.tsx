@@ -137,14 +137,18 @@ export default function ArchiveItemCard({
 
       <div className="directory-card-body">
         <div className="directory-card-copy">
-          {label && <time className="directory-card-time text-meta">{label}</time>}
+          {(label || category) && (
+            <div className="directory-card-meta">
+              {label && <time className="directory-card-time text-meta">{label}</time>}
+              {category && <span className="directory-card-category text-meta">{category}</span>}
+            </div>
+          )}
           <ResourceTitle className="directory-card-title" variant={variant}>{title}</ResourceTitle>
           {description && <p className="directory-card-description">{description}</p>}
           {footnote && <p className="directory-card-footnote">{footnote}</p>}
         </div>
 
         <div className="directory-card-foot">
-          {category && <span className="directory-card-category text-meta">{category}</span>}
           {tags.length > 0 && (
             <div className="directory-card-tags">
               {tags.map((tag) => (
