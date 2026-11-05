@@ -1147,7 +1147,7 @@ html:not(.dark) .hv-empty {
 .archive-card--cover .directory-card-copy {
   position: absolute;
   right: 14px;
-  bottom: calc(14px + var(--cover-foot-height) + 8px);
+  bottom: calc(14px + var(--cover-foot-height));
   left: 14px;
   display: flex;
   flex-direction: column;
@@ -1329,11 +1329,6 @@ html:not(.dark) .hv-empty {
   .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-time {
     height: 21px;
     margin-bottom: 7px;
-  }
-
-  .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-foot {
-    min-height: 38px;
-    max-height: 38px;
   }
 }
 .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-category {
