@@ -1069,8 +1069,8 @@ html:not(.dark) .hv-empty {
   align-self: start;
 }
 .archive-card--cover {
-  --cover-copy-height: 8.2em;
-  --cover-foot-height: 38px;
+  --cover-copy-height: 7.6em;
+  --cover-foot-height: 26px;
   position: relative;
   display: block;
   width: 100%;
@@ -1204,12 +1204,13 @@ html:not(.dark) .hv-empty {
   bottom: 14px;
   left: 14px;
   display: flex;
+  flex-wrap: nowrap;
   height: var(--cover-foot-height);
   min-height: var(--cover-foot-height);
   max-height: var(--cover-foot-height);
   margin: 0;
   padding: 0;
-  align-content: flex-end;
+  align-content: center;
   align-items: center;
   gap: 4px;
   overflow: hidden;
@@ -1219,7 +1220,11 @@ html:not(.dark) .hv-empty {
   letter-spacing: 0.06em;
 }
 .archive-card--cover .directory-card-tags {
+  display: flex;
+  flex-wrap: nowrap;
   gap: 4px;
+  min-width: 0;
+  overflow: hidden;
 }
 .archive-card--cover .directory-tag {
   border: 1px solid rgba(255, 255, 255, 0.14);
@@ -1311,7 +1316,7 @@ html:not(.dark) .hv-empty {
    horizontal layout, so the grid variant needs an equally explicit scope. */
 @media (max-width: 1023px) {
   .archive-card--cover {
-    --cover-foot-height: 32px;
+    --cover-foot-height: 24px;
     aspect-ratio: 16 / 9;
   }
 
