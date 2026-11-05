@@ -41,7 +41,7 @@
 
   .directory-card-title {
     @apply line-clamp-2 font-semibold text-slate-800 transition-colors duration-300;
-    font-size: var(--resource-title-size, var(--type-card-title));
+    font-size: var(--type-card-title);
     line-height: 1.4;
   }
 
@@ -236,7 +236,7 @@
   padding: 32px;
 }
 .directory-featured .directory-card-title {
-  --resource-title-size: clamp(1.5rem, 2.2vw, 2rem);
+  font-size: clamp(1.5rem, 2.2vw, 2rem);
   line-height: 1.2;
 }
 .directory-featured .directory-card-description {
@@ -449,7 +449,6 @@ html:not(.dark) .hv-empty {
 }
 .archive-card {
   display: grid;
-  --resource-title-size: var(--type-card-title);
   grid-template-columns: 182px minmax(0, 1fr);
   min-height: 154px;
   overflow: hidden;
@@ -488,7 +487,7 @@ html:not(.dark) .hv-empty {
   overflow: hidden;
   color: var(--hv-text);
   font-family: "Songti SC", "Noto Serif SC", Georgia, serif;
-  font-size: var(--resource-title-size, var(--type-card-title));
+  font-size: var(--type-card-title);
   font-weight: 600;
   line-height: 1.35;
   text-overflow: ellipsis;
@@ -565,7 +564,7 @@ html:not(.dark) .hv-empty {
   }
 
   .archive-card-title {
-    --resource-title-size: 0.9375rem;
+    font-size: 0.9375rem;
   }
 
   .archive-card-description {
@@ -589,7 +588,7 @@ html:not(.dark) .hv-empty {
   padding: 16px 18px;
 }
 .directory-grid.directory-grid-compact:not(.cover-grid) > * .directory-card:not(.archive-card) .directory-card-title {
-  --resource-title-size: var(--type-list-title);
+  font-size: var(--type-list-title);
 }
 @media (max-width: 767px) {
   .directory-grid.directory-grid-compact:not(.cover-grid) > * .directory-card:not(.archive-card) {
