@@ -156,7 +156,7 @@ export default function ArchiveItemCard({
     </>
   );
 
-  const className = `directory-card archive-card archive-card--${layout === "auto" ? "cover" : layout} group archive-item`;
+  const className = `directory-card archive-card--${layout === "auto" ? "cover" : layout} group archive-item`;
 
   if (external) {
     return (
