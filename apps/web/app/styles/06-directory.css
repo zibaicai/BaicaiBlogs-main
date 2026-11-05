@@ -1069,6 +1069,8 @@ html:not(.dark) .hv-empty {
   align-self: start;
 }
 .archive-card--cover {
+  --cover-copy-height: 8.2em;
+  --cover-foot-height: 38px;
   position: relative;
   display: block;
   width: 100%;
@@ -1138,26 +1140,24 @@ html:not(.dark) .hv-empty {
   position: absolute;
   inset: 0;
   z-index: 3;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 0;
+  display: block;
   padding: 0;
   min-height: 0;
 }
 .archive-card--cover .directory-card-copy {
-  position: relative;
+  position: absolute;
+  right: 14px;
+  bottom: calc(14px + var(--cover-foot-height) + 8px);
+  left: 14px;
   display: flex;
-  flex: 0 1 auto;
   flex-direction: column;
   justify-content: flex-start;
   box-sizing: border-box;
-  width: 100%;
-  height: auto;
-  max-height: calc(100% - 40px);
+  font-size: var(--type-card-title);
+  height: var(--cover-copy-height);
   min-width: 0;
   min-height: 0;
-  padding: 14px 14px 0;
+  padding: 14px 0 0;
   overflow: hidden;
 }
 .archive-card--cover .directory-card-time {
@@ -1199,13 +1199,16 @@ html:not(.dark) .hv-empty {
   -webkit-line-clamp: 2;
 }
 .archive-card--cover .directory-card-foot {
-  position: relative;
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  left: 14px;
   display: flex;
-  flex: 0 0 auto;
-  min-height: 32px;
-  max-height: 42px;
-  margin: 8px 0 0;
-  padding: 0 14px 14px;
+  height: var(--cover-foot-height);
+  min-height: var(--cover-foot-height);
+  max-height: var(--cover-foot-height);
+  margin: 0;
+  padding: 0;
   align-content: flex-end;
   align-items: center;
   gap: 4px;
@@ -1308,18 +1311,13 @@ html:not(.dark) .hv-empty {
    horizontal layout, so the grid variant needs an equally explicit scope. */
 @media (max-width: 1023px) {
   .archive-card--cover {
+    --cover-foot-height: 32px;
     aspect-ratio: 16 / 9;
   }
 
-  .archive-card--cover .directory-card-foot {
-    min-height: 30px;
-    max-height: 32px;
-  }
-
   .archive-card--cover .directory-card-copy {
-    flex: 0 1 auto;
     height: auto;
-    max-height: calc(100% - 40px);
+    max-height: calc(100% - var(--cover-foot-height) - 22px);
   }
 }
 @media (min-width: 1201px) {
