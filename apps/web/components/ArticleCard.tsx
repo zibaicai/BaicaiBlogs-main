@@ -5,10 +5,12 @@ export default function ArticleCard({
   article,
   hrefBase = "/articles",
   showStatus = false,
+  layout = "cover",
 }: {
   article: Article;
   hrefBase?: string;
   showStatus?: boolean;
+  layout?: "cover" | "timeline" | "masonry";
 }) {
   const statusLabel =
     article.status === "DRAFT"
@@ -30,7 +32,7 @@ export default function ArticleCard({
       tags={article.tags}
       cornerBadge={showStatus && statusLabel ? statusLabel : undefined}
       media={article.cover ? { kind: "cover", src: article.cover, alt: article.title, fit: "contain" } : undefined}
-      layout="cover"
+      layout={layout}
     />
   );
 }

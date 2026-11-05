@@ -2,7 +2,7 @@ import { formatDay, type Post } from "../lib/api";
 import { DEFAULT_BACKGROUND } from "../lib/site-config";
 import ArchiveItemCard from "./ArchiveItemCard";
 
-export default function PostCard({ post }: { post: Post }) {
+export default function PostCard({ post, layout = "cover" }: { post: Post; layout?: "cover" | "timeline" | "masonry" }) {
   const cover = post.cover || DEFAULT_BACKGROUND.defaultPostCover;
 
   return (
@@ -14,6 +14,7 @@ export default function PostCard({ post }: { post: Post }) {
       category={post.categoryPath?.split("/").join(" / ")}
       tags={post.tags}
       media={{ kind: "cover", src: cover, alt: post.title }}
+      layout={layout}
     />
   );
 }

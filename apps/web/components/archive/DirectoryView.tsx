@@ -1,5 +1,6 @@
 "use client";
 
+import { cloneElement, isValidElement, type ReactElement } from "react";
 import ArchiveGrid from "./ArchiveGrid";
 import ArchiveMasonry from "./ArchiveMasonry";
 import ArchiveThread from "./ArchiveThread";
@@ -24,21 +25,30 @@ export default function DirectoryView({
   alternating = true,
   masonryColumns = 4,
 }: ArchiveLayoutProps & { mode: ArchiveViewMode }) {
+  const withLayout = (layout: "cover" | "profile" | "timeline" | "masonry") =>
+    items.map((item) =>
+      isValidElement(item)
+        ? cloneElement(item as ReactElement<{ layout?: string }>, { layout })
+        : item
+    );
+
   if (mode === "timeline") {
-    return <ArchiveTimeline items={items} alternating={alternating} />;
+    return <ArchiveTimeline items={withLayout("timeline")} alternating={alternating} />;
   }
 
   if (mode === "masonry") {
-    return <ArchiveMasonry items={items} masonryColumns={masonryColumns} />;
+    return <ArchiveMasonry items={withLayout("masonry")} masonryColumns={masonryColumns} />;
   }
 
   if (mode === "thread") {
     return <ArchiveThread items={items} />;
   }
 
+  const gridLayout = gridVariant === "profile" ? "profile" : "cover";
+
   return (
     <ArchiveGrid
-      items={items}
+      items={withLayout(gridLayout)}
       featuredFirst={featuredFirst}
       compact={compact}
       gridVariant={gridVariant}
