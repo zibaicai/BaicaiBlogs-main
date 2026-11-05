@@ -1312,13 +1312,22 @@ html:not(.dark) .hv-empty {
   padding: 14px;
   justify-content: flex-start;
 }
+.archive-card--masonry .directory-date-badge {
+  display: none;
+}
 .archive-card--masonry .directory-card-copy {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
+.archive-card--masonry .directory-card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
 .archive-card--masonry .directory-card-time {
-  display: none;
+  display: inline-flex;
+  color: var(--ui-text-muted);
 }
 .archive-card--masonry .directory-card-title {
   line-height: 1.35;
