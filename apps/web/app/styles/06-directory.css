@@ -647,16 +647,16 @@ html:not(.dark) .hv-empty {
 .hv-health.is-degraded { --status-color: var(--ui-warning); }
 .hv-health.is-error { --status-color: var(--ui-danger); }
 /* Timeline rows reuse the same horizontal archive card as the grid. */
-.archive-timeline .directory-card:not(.archive-card) {
+.archive-card--timeline {
   display: grid;
   grid-template-columns: 138px minmax(0, 1fr);
   min-height: 132px;
 }
-.archive-timeline .directory-card:not(.archive-card) .directory-card-media {
+.archive-card--timeline .directory-card-media {
   height: 100%;
   min-height: 132px;
 }
-.archive-timeline .directory-card:not(.archive-card) .directory-card-body {
+.archive-card--timeline .directory-card-body {
   justify-content: center;
   padding: 13px 15px;
 }
@@ -799,16 +799,16 @@ html:not(.dark) .hv-empty {
   flex-direction: column;
   gap: 16px;
 }
-.archive-masonry .directory-card:not(.archive-card) {
+.archive-card--masonry {
   display: grid;
   grid-template-columns: 160px minmax(0, 1fr);
   min-height: 142px;
 }
-.archive-masonry .directory-card:not(.archive-card) .directory-card-media {
+.archive-card--masonry .directory-card-media {
   height: 100%;
   min-height: 142px;
 }
-.archive-masonry .directory-card:not(.archive-card) .directory-card-body {
+.archive-card--masonry .directory-card-body {
   justify-content: center;
   padding: 13px 15px;
 }
@@ -821,12 +821,12 @@ html:not(.dark) .hv-empty {
     margin-top: 16px;
   }
 
-  .archive-masonry .directory-card:not(.archive-card) {
+  .archive-card--masonry {
     grid-template-columns: 108px minmax(0, 1fr);
     min-height: 128px;
   }
 
-  .archive-masonry .directory-card:not(.archive-card) .directory-card-media {
+  .archive-card--masonry .directory-card-media {
     min-height: 128px;
   }
 }
@@ -916,9 +916,9 @@ html:not(.dark) .hv-empty {
    The card owns the padding; the image no longer bleeds to the border. */
 .archive-card,
 .directory-grid.directory-grid-compact:not(.cover-grid) > * .directory-card:not(.archive-card),
-.archive-timeline .directory-card:not(.archive-card),
+.archive-card--timeline,
 .archive-timeline .archive-card,
-.archive-masonry .directory-card:not(.archive-card) {
+.archive-card--masonry {
   --archive-card-pad: 10px;
   --archive-card-gap: 12px;
   padding: var(--archive-card-pad);
@@ -929,9 +929,9 @@ html:not(.dark) .hv-empty {
 }
 .archive-card-media,
 .directory-grid.directory-grid-compact:not(.cover-grid) > * .directory-card:not(.archive-card) .directory-card-media,
-.archive-timeline .directory-card:not(.archive-card) .directory-card-media,
+.archive-card--timeline .directory-card-media,
 .archive-timeline .archive-card-media,
-.archive-masonry .directory-card:not(.archive-card) .directory-card-media {
+.archive-card--masonry .directory-card-media {
   height: 100%;
   min-height: 0;
   align-self: stretch;
@@ -940,25 +940,25 @@ html:not(.dark) .hv-empty {
 }
 .archive-card-body,
 .directory-grid.directory-grid-compact:not(.cover-grid) > * .directory-card:not(.archive-card) .directory-card-body,
-.archive-timeline .directory-card:not(.archive-card) .directory-card-body,
+.archive-card--timeline .directory-card-body,
 .archive-timeline .archive-card-body,
-.archive-masonry .directory-card:not(.archive-card) .directory-card-body {
+.archive-card--masonry .directory-card-body {
   min-height: 0;
   padding: 0;
   justify-content: center;
 }
 .archive-card .archive-card-media,
 .directory-grid.directory-grid-compact:not(.cover-grid) > * .directory-card:not(.archive-card) .directory-card-media,
-.archive-timeline .directory-card:not(.archive-card) .directory-card-media,
-.archive-masonry .directory-card:not(.archive-card) .directory-card-media {
+.archive-card--timeline .directory-card-media,
+.archive-card--masonry .directory-card-media {
   background: rgba(15, 23, 42, 0.2);
 }
 @media (max-width: 767px) {
   .archive-card,
   .directory-grid.directory-grid-compact:not(.cover-grid) > * .directory-card:not(.archive-card),
-  .archive-timeline .directory-card:not(.archive-card),
+  .archive-card--timeline,
   .archive-timeline .archive-card,
-  .archive-masonry .directory-card:not(.archive-card) {
+  .archive-card--masonry {
     --archive-card-pad: 8px;
     --archive-card-gap: 10px;
   }
@@ -973,18 +973,18 @@ html:not(.dark) .hv-empty {
 }
 .archive-card-media,
 .directory-grid.directory-grid-compact:not(.cover-grid) > * .directory-card:not(.archive-card) .directory-card-media,
-.archive-timeline .directory-card:not(.archive-card) .directory-card-media,
+.archive-card--timeline .directory-card-media,
 .archive-timeline .archive-card-media,
-.archive-masonry .directory-card:not(.archive-card) .directory-card-media {
+.archive-card--masonry .directory-card-media {
   position: relative;
   height: 100%;
   min-height: 0;
 }
 .archive-card-media img,
 .directory-grid.directory-grid-compact:not(.cover-grid) > * .directory-card:not(.archive-card) .directory-card-media img,
-.archive-timeline .directory-card:not(.archive-card) .directory-card-media img,
+.archive-card--timeline .directory-card-media img,
 .archive-timeline .archive-card-media img,
-.archive-masonry .directory-card:not(.archive-card) .directory-card-media img {
+.archive-card--masonry .directory-card-media img {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -993,9 +993,9 @@ html:not(.dark) .hv-empty {
 }
 .archive-card-body,
 .directory-grid.directory-grid-compact:not(.cover-grid) > * .directory-card:not(.archive-card) .directory-card-body,
-.archive-timeline .directory-card:not(.archive-card) .directory-card-body,
+.archive-card--timeline .directory-card-body,
 .archive-timeline .archive-card-body,
-.archive-masonry .directory-card:not(.archive-card) .directory-card-body {
+.archive-card--masonry .directory-card-body {
   justify-content: flex-start;
 }
 .directory-card-title,
@@ -1051,15 +1051,15 @@ html:not(.dark) .hv-empty {
 }
 .archive-card,
 .directory-grid.directory-grid-compact:not(.cover-grid) > * .directory-card:not(.archive-card),
-.archive-timeline .directory-card:not(.archive-card),
-.archive-masonry .directory-card:not(.archive-card) {
+.archive-card--timeline,
+.archive-card--masonry {
   border-radius: var(--radius-card);
 }
 .archive-card-media,
 .directory-grid.directory-grid-compact:not(.cover-grid) > * .directory-card:not(.archive-card) .directory-card-media,
-.archive-timeline .directory-card:not(.archive-card) .directory-card-media,
+.archive-card--timeline .directory-card-media,
 .archive-timeline .archive-card-media,
-.archive-masonry .directory-card:not(.archive-card) .directory-card-media {
+.archive-card--masonry .directory-card-media {
   border-radius: var(--radius-media);
 }
 .hv-toolbar-meta-only .hv-toolbar-meta {
@@ -1095,7 +1095,7 @@ html:not(.dark) .hv-empty {
 .cover-grid > * {
   align-self: start;
 }
-.cover-grid .directory-card {
+.archive-card--cover {
   position: relative;
   display: block;
   width: 100%;
@@ -1253,7 +1253,7 @@ html:not(.dark) .hv-empty {
   padding: 2px 6px;
 }
 /* Masonry becomes an editorial image-on-top card, not another row card. */
-.archive-masonry .directory-card:not(.archive-card) {
+.archive-card--masonry {
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -1262,7 +1262,7 @@ html:not(.dark) .hv-empty {
   overflow: hidden;
   border-radius: var(--radius-card);
 }
-.archive-masonry .directory-card:not(.archive-card) .directory-card-media {
+.archive-card--masonry .directory-card-media {
   position: relative;
   width: 100%;
   height: auto;
@@ -1272,14 +1272,14 @@ html:not(.dark) .hv-empty {
   overflow: hidden;
   border-radius: 0;
 }
-.archive-masonry .directory-card:not(.archive-card) .directory-card-media img {
+.archive-card--masonry .directory-card-media img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-.archive-masonry .directory-card:not(.archive-card) .directory-card-body {
+.archive-card--masonry .directory-card-body {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -1287,15 +1287,15 @@ html:not(.dark) .hv-empty {
   padding: 14px;
   justify-content: flex-start;
 }
-.archive-masonry .directory-card:not(.archive-card) .directory-card-copy {
+.archive-card--masonry .directory-card-copy {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
-.archive-masonry .directory-card:not(.archive-card) .directory-card-time {
+.archive-card--masonry .directory-card-time {
   display: none;
 }
-.archive-masonry .directory-card:not(.archive-card) .directory-card-title {
+.archive-card--masonry .directory-card-title {
   --resource-title-size: var(--type-overlay-title);
   line-height: 1.35;
   white-space: normal;
@@ -1304,13 +1304,13 @@ html:not(.dark) .hv-empty {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
-.archive-masonry .directory-card:not(.archive-card) .directory-card-description {
+.archive-card--masonry .directory-card-description {
   margin: 0;
   font-size: var(--type-list-description);
   line-height: 1.55;
   -webkit-line-clamp: 2;
 }
-.archive-masonry .directory-card:not(.archive-card) .directory-card-foot {
+.archive-card--masonry .directory-card-foot {
   position: static;
   margin: 8px 0 0;
   padding: 0;
@@ -1715,5 +1715,6 @@ html:not(.dark) .hv-empty {
 }
 
 }
+
 
 
