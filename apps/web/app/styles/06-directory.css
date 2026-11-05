@@ -1371,12 +1371,6 @@ html:not(.dark) .hv-empty {
     margin-bottom: 7px;
   }
 }
-.directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-category {
-  display: inline-flex;
-  height: 19px;
-  align-items: center;
-  line-height: 1;
-}
 /* Shared generic card media for project icons and friend avatars. */
 .archive-item-icon {
   display: flex;
