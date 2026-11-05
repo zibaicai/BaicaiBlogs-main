@@ -206,8 +206,8 @@
   .dark .directory-empty {
     @apply text-slate-400;
   }/* ========================================================
-   8. C 缂佹棏鍨冲ú鎷屻亹閺囶潿鈧绱掗悢鍓侇伇闁告绱曟晶鏍ㄦ媴閹惧爼鍏?
-   闁告绱曟晶鏍嫉閳ь剛浜歌箛鎿冨晬閹?380px闁?440 閻庣妫勯惈?3 闁告帗顨愮槐?680+ 閻庣妫勯惈?4 闁?
+   8. C 缂備焦妫忛崹鍐裁洪幏灞讳汗闁哄浂娼块埀顒€顦辩槐鎺楁偄閸撲緡浼囬梺鍛婎殣缁辨洘鏅堕弽銊﹀闁规儳鐖奸崗?
+   闂佸憡顨愮槐鏇熸櫠閺嶎厼瀚夐柍褜鍓涙禍姝岀疀閹垮啫鏅柟?380px闂?440 闁诲海顢婂Λ鍕儓?3 闂佸憡甯楅〃鎰?680+ 闁诲海顢婂Λ鍕儓?4 闂?
    ======================================================== */
 
 /* Editorial directory grid + compact alternating timeline */
@@ -583,6 +583,7 @@ html:not(.dark) .hv-empty {
   min-height: 154px;
 }
 .directory-grid.directory-grid-compact:not(.cover-grid) > * .directory-card:not(.archive-card) .directory-card-body {
+  gap: 6px;
   justify-content: center;
   padding: 16px 18px;
 }
@@ -657,6 +658,7 @@ html:not(.dark) .hv-empty {
   min-height: 132px;
 }
 .archive-card--timeline .directory-card-body {
+  gap: 6px;
   justify-content: center;
   padding: 13px 15px;
 }
@@ -798,37 +800,6 @@ html:not(.dark) .hv-empty {
   flex: 1;
   flex-direction: column;
   gap: 16px;
-}
-.archive-card--masonry {
-  display: grid;
-  grid-template-columns: 160px minmax(0, 1fr);
-  min-height: 142px;
-}
-.archive-card--masonry .directory-card-media {
-  height: 100%;
-  min-height: 142px;
-}
-.archive-card--masonry .directory-card-body {
-  justify-content: center;
-  padding: 13px 15px;
-}
-@media (max-width: 767px) {
-  .archive-masonry {
-    display: block;
-  }
-
-  .archive-masonry-column + .archive-masonry-column {
-    margin-top: 16px;
-  }
-
-  .archive-card--masonry {
-    grid-template-columns: 108px minmax(0, 1fr);
-    min-height: 128px;
-  }
-
-  .archive-card--masonry .directory-card-media {
-    min-height: 128px;
-  }
 }
 /* Multi-author moment bubbles. */
 .moment-author {
@@ -1024,7 +995,10 @@ html:not(.dark) .hv-empty {
 .directory-card-tags {
   margin-top: 0;
 }
-.directory-card-body,
+.directory-card-body {
+  min-height: 0;
+  gap: 0;
+}
 .archive-card-body {
   min-height: 0;
   gap: 6px;
@@ -1246,7 +1220,7 @@ html:not(.dark) .hv-empty {
 .archive-card--cover .directory-card-tags {
   gap: 4px;
 }
-.cover-grid .directory-tag {
+.archive-card--cover .directory-tag {
   border: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(2, 6, 23, 0.46);
   color: rgba(255, 255, 255, 0.82);
@@ -1348,41 +1322,12 @@ html:not(.dark) .hv-empty {
 }
 /* The compact-row rules are intentionally more specific than the legacy
    horizontal layout, so the grid variant needs an equally explicit scope. */
-.directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) {
-  display: block;
-  grid-template-columns: none;
-  padding: 0;
-  gap: 0;
-  min-height: 0;
-  aspect-ratio: 1 / 1;
-  align-items: stretch;
-}
-.directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-media {
-  position: absolute;
-  inset: 0;
-  width: auto;
-  height: 100%;
-  min-height: 0;
-  border-radius: 0;
-}
-.directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-title {
-  --resource-title-size: var(--type-overlay-title);
-  line-height: 1.3;
-  white-space: normal;
-  color: #fff;
-}
-.directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-description {
-  margin-top: 6px;
-  color: rgba(255, 255, 255, 0.74);
-  font-size: var(--type-list-description);
-  line-height: 1.55;
-}
 @media (max-width: 767px) {
-  .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) {
+  .archive-card--cover {
     aspect-ratio: 16 / 9;
   }
 
-  .directory-grid.directory-grid-compact.cover-grid > * .directory-card:not(.archive-card) .directory-card-foot {
+  .archive-card--cover .directory-card-foot {
     min-height: 30px;
     max-height: 32px;
   }
@@ -1436,7 +1381,7 @@ html:not(.dark) .hv-empty {
   line-height: 1;
   text-shadow: 0 8px 24px rgba(2, 6, 23, 0.3);
 }
-.cover-grid .archive-item-icon {
+.archive-card--cover .archive-item-icon {
   position: absolute;
   inset: 0;
   z-index: 0;
@@ -1449,7 +1394,7 @@ html:not(.dark) .hv-empty {
 .archive-timeline .directory-card .archive-item-icon {
   font-size: var(--type-page-title);
 }
-.cover-grid .archive-item-meta,
+.archive-card--cover .archive-item-meta,
 .archive-masonry .archive-item-meta {
   color: rgba(255, 255, 255, 0.66);
   font-family: Consolas, monospace;
@@ -1464,7 +1409,7 @@ html:not(.dark) .hv-empty {
   margin-left: auto;
 }
 @media (max-width: 640px) {
-  .cover-grid .archive-item-icon {
+  .archive-card--cover .archive-item-icon {
     font-size: 42px;
   }
 }
@@ -1715,6 +1660,7 @@ html:not(.dark) .hv-empty {
 }
 
 }
+
 
 
 
