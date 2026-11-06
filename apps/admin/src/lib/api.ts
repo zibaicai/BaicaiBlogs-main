@@ -357,6 +357,9 @@ export const api = {
     request<void>(`/admin/appeals/${id}/handle?action=${encodeURIComponent(action)}`, { method: "POST" }),
   reopenAppeal: (id: number) => request<void>(`/admin/appeals/${id}/reopen?note=管理组复核`, { method: "POST" }),
   ipBans: () => request<any[]>("/admin/ip-bans"),
+  serverIpBans: () => request<Array<{ jail: string; ip: string; source: string }>>("/admin/ip-bans/server"),
+  unbanServerIp: (jail: string, ip: string) =>
+    request<void>(`/admin/ip-bans/server?jail=${encodeURIComponent(jail)}&ip=${encodeURIComponent(ip)}`, { method: "DELETE" }),
   banIp: (ip: string, reason: string) =>
     request<any>(`/admin/ip-bans?ip=${encodeURIComponent(ip)}&reason=${encodeURIComponent(reason)}`, { method: "POST" }),
   unbanIp: (id: number) => request<void>(`/admin/ip-bans/${id}`, { method: "DELETE" }),

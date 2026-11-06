@@ -43,6 +43,7 @@ public class ImageWallController {
     private final DeletionAuditRepository deletionAuditRepository;
     private final ObjectMapper objectMapper;
     private final IpBanService ipBanService;
+    private final Fail2banService fail2banService;
     private final GrantService grantService;
     private final AuditService auditService;
     private final PasswordAttemptService passwordAttemptService;
@@ -578,6 +579,33 @@ public class ImageWallController {
         try {
             User admin = imageWallService.currentUser();
             return ApiResponse.success("已封禁 IP", ipBanService.ban(ip, reason, admin.getId()));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @GetMapping("/admin/ip-bans/server")
+    public ApiResponse<List<Map<String, Object>>> serverIpBans() {
+        try {
+            User admin = imageWallService.currentUser();
+            if (!imageWallService.isSuperAdmin(admin)) {
+                return ApiResponse.error("只有超级管理员可以查看服务器封禁");
+            }
+            return ApiResponse.success(fail2banService.list());
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/admin/ip-bans/server")
+    public ApiResponse<Void> unbanServerIp(@RequestParam String jail, @RequestParam String ip) {
+        try {
+            User admin = imageWallService.currentUser();
+            if (!imageWallService.isSuperAdmin(admin)) {
+                return ApiResponse.error("只有超级管理员可以解封服务器 IP");
+            }
+            fail2banService.unban(jail, ip);
+            return ApiResponse.success("已解封服务器 IP", null);
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
         }

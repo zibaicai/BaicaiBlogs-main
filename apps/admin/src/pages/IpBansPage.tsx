@@ -17,17 +17,21 @@ type IpBan = {
   expiresAt?: string;
 };
 
+type ServerBan = { jail: string; ip: string; source: string };
+
 export default function IpBansPage() {
   const { showToast } = useToast();
   const superAdmin = getAdminRole() === "SUPER_ADMIN";
   const [items, setItems] = useState<IpBan[]>([]);
+  const [serverItems, setServerItems] = useState<ServerBan[]>([]);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await api.ipBans();
+      const [response, serverResponse] = await Promise.all([api.ipBans(), api.serverIpBans()]);
       setItems(response.data || []);
+      setServerItems(serverResponse.data || []);
     } catch (error) {
       showToast(error instanceof Error ? error.message : "加载失败", "error");
     } finally {
@@ -44,6 +48,17 @@ export default function IpBansPage() {
     try {
       await api.unbanIp(item.id);
       showToast("已解封", "success");
+      await load();
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "解封失败", "error");
+    }
+  };
+
+  const unbanServer = async (item: ServerBan) => {
+    if (!window.confirm(`确定解封服务器封禁 ${item.ip}（${item.jail}）？`)) return;
+    try {
+      await api.unbanServerIp(item.jail, item.ip);
+      showToast("已解封服务器 IP", "success");
       await load();
     } catch (error) {
       showToast(error instanceof Error ? error.message : "解封失败", "error");
@@ -110,6 +125,30 @@ export default function IpBansPage() {
           </div>
         </div>
       )}
+
+      <div className="mt-6">
+        <div className="mb-2 flex items-center justify-between">
+          <h2 className="text-xs font-black uppercase tracking-widest text-slate-400">服务器自动封禁</h2>
+          <span className="text-[10px] text-slate-500">{serverItems.length} 条</span>
+        </div>
+        {serverItems.length === 0 ? (
+          <AdminEmptyState title="暂无服务器封禁" description="fail2ban 当前没有封禁 IP。" />
+        ) : (
+          <div className="divide-y divide-white/[0.06] overflow-hidden rounded-xl border border-white/10 bg-white/[0.02]">
+            {serverItems.map((item) => (
+              <div key={`${item.jail}-${item.ip}`} className="flex flex-wrap items-center gap-3 px-4 py-3 text-xs">
+                <div className="min-w-0 flex-1">
+                  <div className="font-mono font-bold text-slate-200">{item.ip}</div>
+                  <div className="mt-0.5 text-[9px] text-slate-500">来源：{item.jail} · FAIL2BAN</div>
+                </div>
+                <Button variant="ghost" onClick={() => void unbanServer(item)}>
+                  <ShieldOff size={12} /> 解封
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </AdminPageShell>
   );
 }
