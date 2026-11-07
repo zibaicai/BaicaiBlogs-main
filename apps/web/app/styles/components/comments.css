@@ -205,5 +205,4 @@
   .comment-section { margin-top: 28px; padding: 16px; }
   .comment-head h2 { font-size: var(--type-section-title); }
 }
-.article-comments { grid-column: 1 / -1; width: 100%; }
 }

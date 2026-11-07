@@ -64,6 +64,22 @@
   --article-gutter-x: 1.25rem;
   --article-gutter-y: 1.25rem;
 }
+/* 评论作为文章卡正下方的“续卡”：同列同宽、同款玻璃视觉 */
+.article-comments {
+  grid-column: 2;
+  grid-row: 3;
+  min-width: 0;
+}
+.article-comments .comment-section {
+  margin-top: 20px;
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-bg-dark: rgba(30, 41, 59, 0.5); /* slate-800/50，与文章卡一致 */
+  --glass-blur: 24px; /* glass-blur--xl 同款 */
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --glass-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* shadow-2xl */
+  --glass-shadow-dark: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border-radius: 24px;
+}
 .article-summary {
   max-width: 52rem;
 }
