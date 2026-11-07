@@ -386,6 +386,30 @@ export default function CommentSection({
         </div>
       ))}
     </MessageListShell>
+
+    {variant === "card" && showStickyComposer && mounted && createPortal(
+      <div
+        className="fixed inset-x-0 z-[9999] border-t border-white/20 bg-white/90 p-2 backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/90"
+        style={{ bottom: `calc(${keyboardInset}px + env(safe-area-inset-bottom))`, paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))" }}
+      >
+        <div className="mx-auto flex max-w-3xl items-center gap-2">
+          <span className="shrink-0 text-[11px] font-bold text-slate-500">{user?.nickname || user?.username || "我"}</span>
+          <AutoGrowTextarea
+            value={content}
+            onChange={setContent}
+            onSubmit={() => void submit()}
+            placeholder="继续写根评论…"
+            maxRows={2}
+            ariaLabel="继续写根评论"
+            className="min-w-0 flex-1 rounded-full border border-white/20 bg-white/60 px-3 py-1.5 text-base text-slate-700 outline-none sm:text-xs dark:border-white/10 dark:bg-slate-900/60 dark:text-slate-200"
+          />
+          <button type="button" onClick={() => void submit()} disabled={sending || !content.trim()} className="rounded-full bg-indigo-500 px-3 py-1.5 text-[11px] font-bold text-white disabled:opacity-40">
+            {sending ? <Loader2 size={12} className="animate-spin" /> : "发送"}
+          </button>
+        </div>
+      </div>,
+      document.body
+    )}
     </div>
   );
 }
