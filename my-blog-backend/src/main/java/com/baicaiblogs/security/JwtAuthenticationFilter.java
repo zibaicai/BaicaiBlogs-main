@@ -34,9 +34,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         try {
-            String jwt = getJwtFromRequest(request);
+            String jwt = null;
+            for (String candidate : getJwtCandidates(request)) {
+                if (StringUtils.hasText(candidate) && jwtTokenProvider.validateToken(candidate)) {
+                    jwt = candidate;
+                    break;
+                }
+            }
 
-            if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
+            if (StringUtils.hasText(jwt)) {
                 String username = jwtTokenProvider.getUsernameFromToken(jwt);
                 User user = userRepository.findByUsername(username).orElse(null);
 
@@ -55,19 +61,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private String getJwtFromRequest(HttpServletRequest request) {
+    private String[] getJwtCandidates(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
+        String bearer = StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")
+                ? bearerToken.substring(7)
+                : null;
+
+        String adminToken = null;
+        String userToken = null;
         if (request.getCookies() != null) {
-            String fallback = null;
             for (Cookie cookie : request.getCookies()) {
-                if (ADMIN_COOKIE_NAME.equals(cookie.getName())) return cookie.getValue();
-                if (COOKIE_NAME.equals(cookie.getName())) fallback = cookie.getValue();
+                if (ADMIN_COOKIE_NAME.equals(cookie.getName())) adminToken = cookie.getValue();
+                if (COOKIE_NAME.equals(cookie.getName())) userToken = cookie.getValue();
             }
-            return fallback;
         }
-        return null;
+
+        return new String[]{ bearer, adminToken, userToken };
     }
 }
