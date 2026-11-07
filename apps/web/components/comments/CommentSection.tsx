@@ -379,6 +379,7 @@ export default function CommentSection({
             rootId={comment.id}
             targetType={targetType as "POST" | "MOMENT" | "ARTICLE" | "PROJECT" | "ALBUM" | "TRACK"}
             targetId={targetId}
+            rootAuthor={comment.author}
             onCollapse={() => setExpandedRootId(null)}
             onSubmitted={() => void load()}
           />

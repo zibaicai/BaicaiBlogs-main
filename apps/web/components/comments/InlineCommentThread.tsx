@@ -17,12 +17,14 @@ export default function InlineCommentThread({
   rootId,
   targetType,
   targetId,
+  rootAuthor,
   onCollapse,
   onSubmitted,
 }: {
   rootId: number;
   targetType: "POST" | "MOMENT" | "ARTICLE" | "PROJECT" | "ALBUM" | "TRACK";
   targetId: number;
+  rootAuthor?: string;
   onCollapse: () => void;
   onSubmitted: () => void;
 }) {
@@ -31,6 +33,7 @@ export default function InlineCommentThread({
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [replyingTo, setReplyingTo] = useState<Reply | null>(null);
+  const [composerOpen, setComposerOpen] = useState(false);
 
   const load = useCallback(async (nextPage: number) => {
     setLoading(true);
@@ -66,10 +69,20 @@ export default function InlineCommentThread({
                   {reply.replyToAuthor && <span className="ml-1 text-slate-500">回复 @{reply.replyToAuthor}</span>}
                 </div>
                 <p className="mt-1 text-xs leading-6 text-slate-300">{reply.content}</p>
-                <button type="button" onClick={() => setReplyingTo(reply)} className="mt-1 text-[10px] font-bold text-indigo-400">回复</button>
+                <button type="button" onClick={() => { setReplyingTo(reply); setComposerOpen(true); }} className="mt-1 text-[10px] font-bold text-indigo-400">回复</button>
               </div>
             ))}
             {items.length === 0 && <p className="py-2 text-xs text-slate-500">暂无回复。</p>}
+          </div>
+
+          <div className="mt-3 flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => { setReplyingTo(null); setComposerOpen(true); }}
+              className="text-[10px] font-bold text-indigo-400"
+            >
+              回复楼主{rootAuthor ? ` @${rootAuthor}` : ""}
+            </button>
           </div>
 
           {totalPages > 1 && (
@@ -80,21 +93,24 @@ export default function InlineCommentThread({
             </div>
           )}
 
-          <div className="mt-3">
-            <CommentComposer
-              key={replyingTo?.id ?? rootId}
-              targetType={targetType}
-              targetId={targetId}
-              parentId={replyingTo?.id ?? rootId}
-              replyingTo={replyingTo}
-              onCancelReply={() => setReplyingTo(null)}
-              onSubmitted={() => {
-                setReplyingTo(null);
-                void load(page);
-                onSubmitted();
-              }}
-            />
-          </div>
+          {composerOpen && (
+            <div className="mt-3">
+              <CommentComposer
+                key={replyingTo?.id ?? rootId}
+                targetType={targetType}
+                targetId={targetId}
+                parentId={replyingTo?.id ?? rootId}
+                replyingTo={replyingTo ?? (rootAuthor ? { author: rootAuthor } : null)}
+                onCancelReply={() => { setComposerOpen(false); setReplyingTo(null); }}
+                onSubmitted={() => {
+                  setComposerOpen(false);
+                  setReplyingTo(null);
+                  void load(page);
+                  onSubmitted();
+                }}
+              />
+            </div>
+          )}
 
           <div className="mt-2 text-right">
             <button type="button" onClick={onCollapse} className="text-[10px] font-bold text-slate-400 hover:text-white">

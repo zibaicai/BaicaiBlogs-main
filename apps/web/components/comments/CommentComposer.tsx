@@ -56,14 +56,14 @@ export default function CommentComposer({
   if (!user) return <a href="/login" className="text-xs font-bold text-indigo-500">登录后参与评论</a>;
 
   return (
-    <div className="rounded-2xl border border-white/20 bg-white/40 p-3 dark:border-white/10 dark:bg-slate-900/40">
+    <div className="comment-composer comment-composer--inline">
       {replyingTo && (
         <div className="mb-2 flex items-center justify-between text-[11px] text-slate-500">
           <span>回复 @{replyingTo.author}</span>
           <button type="button" onClick={onCancelReply} className="font-bold text-indigo-500">取消</button>
         </div>
       )}
-      <div className="flex items-end gap-2">
+      <div className="comment-composer-inline-row">
         <AutoGrowTextarea
           value={content}
           onChange={setContent}
@@ -72,13 +72,13 @@ export default function CommentComposer({
           minRows={1}
           maxRows={4}
           ariaLabel="评论内容"
-          className="min-w-0 flex-1 bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400 dark:text-slate-200"
+          className="comment-composer-inline-input min-w-0 flex-1 bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400 dark:text-slate-200"
         />
         <button
           type="button"
           onClick={() => void submit()}
           disabled={sending || !content.trim()}
-          className="mb-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-500 text-white disabled:opacity-40"
+          className="comment-composer-inline-send flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-500 text-white disabled:opacity-40"
           aria-label="发送评论"
         >
           {sending ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
