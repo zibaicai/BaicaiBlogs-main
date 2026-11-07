@@ -52,6 +52,8 @@ export default function CommentSection({
   externalHref,
   externalLabel,
   readOnly = false,
+  variant = "card",
+  itemLayout = "inline",
 }: {
   targetType: "POST" | "ALBUM" | "MOMENT" | "TRACK" | "ARTICLE" | "PROJECT";
   targetId: number;
@@ -62,6 +64,8 @@ export default function CommentSection({
   externalHref?: string;
   externalLabel?: string;
   readOnly?: boolean;
+  variant?: "card" | "embedded";
+  itemLayout?: "inline" | "stacked";
 }) {
   const { user, loading: authLoading } = useAuth();
   const { keyboardInset } = useVisualViewport();
@@ -233,8 +237,8 @@ export default function CommentSection({
   return (
     <div ref={sectionRef}>
     <MessageListShell
-      className="comment-section"
-      glass="card"
+      className={`comment-section ${variant === "embedded" ? "comment-section--embedded" : ""}`}
+      glass={variant === "card" ? "card" : undefined}
       header={
         <div className="comment-head">
           <div>
@@ -329,6 +333,7 @@ export default function CommentSection({
           name={comment.author}
           time={formatDate(comment.createdAt)}
           density="comfortable"
+          layout={itemLayout}
           actions={
             <div className="comment-actions" style={readOnly ? { pointerEvents: "none", opacity: 0.45 } : undefined}>
               <button

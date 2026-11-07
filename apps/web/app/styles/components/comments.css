@@ -4,6 +4,30 @@
   margin: 48px auto 0;
   padding: 22px;
 }
+.comment-section--embedded {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+.message-item--stacked .message-item-identity {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+.message-item--stacked .message-item-time {
+  white-space: nowrap;
+}
+.message-item--stacked .message-item-content {
+  margin-top: 8px;
+}
+.message-item--stacked .message-item-actions {
+  justify-content: flex-start;
+  margin-top: 8px;
+  opacity: 1;
+}
 .comment-head {
   display: flex;
   align-items: flex-end;

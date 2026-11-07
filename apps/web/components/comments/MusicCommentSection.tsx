@@ -20,6 +20,8 @@ export default function MusicCommentSection({
         emptyActionLabel="写评论"
         externalHref={externalHref}
         externalLabel="去网易云查看热评"
+        variant="embedded"
+        itemLayout="stacked"
       />
     </div>
   );
