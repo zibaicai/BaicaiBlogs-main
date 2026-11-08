@@ -455,7 +455,6 @@ export default function CommentSection({
             rootId={comment.id}
             targetType={targetType as "POST" | "MOMENT" | "ARTICLE" | "PROJECT" | "ALBUM" | "TRACK"}
             targetId={targetId}
-            rootAuthor={comment.author}
             startReply={replyTarget?.rootId === comment.id ? replyTarget : null}
             onCollapse={() => {
               setExpandedRootId(null);

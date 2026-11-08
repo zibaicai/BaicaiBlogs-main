@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Heart, Loader2, ThumbsDown } from "lucide-react";
+import { formatDate } from "../../lib/api";
 import CommentComposer from "./CommentComposer";
 
 type Reply = {
@@ -11,13 +12,15 @@ type Reply = {
   createdAt: string;
   parentId?: number;
   replyToAuthor?: string;
+  likeCount?: number;
+  dislikeCount?: number;
+  myReaction?: "LIKE" | "DISLIKE" | null;
 };
 
 export default function InlineCommentThread({
   rootId,
   targetType,
   targetId,
-  rootAuthor,
   startReply,
   onCollapse,
   onSubmitted,
@@ -25,7 +28,6 @@ export default function InlineCommentThread({
   rootId: number;
   targetType: "POST" | "MOMENT" | "ARTICLE" | "PROJECT" | "ALBUM" | "TRACK";
   targetId: number;
-  rootAuthor?: string;
   startReply?: { id: number; author: string } | null;
   onCollapse: () => void;
   onSubmitted: () => void;
@@ -53,6 +55,22 @@ export default function InlineCommentThread({
     }
   }, [rootId]);
 
+  const reactReply = async (reply: Reply, type: "LIKE" | "DISLIKE") => {
+    try {
+      const response = await fetch(`/api/user/comments/${reply.id}/reaction`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type }),
+      });
+      const json = await response.json().catch(() => null);
+      if (!response.ok || !json?.success) return;
+      setItems((prev) => prev.map((item) => item.id === reply.id ? { ...item, ...json.data } : item));
+    } catch {
+      // 静默失败，避免打断阅读
+    }
+  };
+
   useEffect(() => {
     void load(1);
   }, [load]);
@@ -73,20 +91,29 @@ export default function InlineCommentThread({
                   {reply.replyToAuthor && <span className="ml-1 text-slate-500">回复 @{reply.replyToAuthor}</span>}
                 </div>
                 <p className="mt-1 text-xs leading-6 text-slate-300">{reply.content}</p>
-                <button type="button" onClick={() => { setReplyingTo(reply); setComposerOpen(true); }} className="mt-1 text-[10px] font-bold text-indigo-400">回复</button>
+          <div className="mt-1 flex items-center gap-3 text-[10px] text-slate-500">
+            <time className="whitespace-nowrap">{formatDate(reply.createdAt)}</time>
+            <button
+              type="button"
+              onClick={() => void reactReply(reply, "LIKE")}
+              className={reply.myReaction === "LIKE" ? "text-indigo-400" : ""}
+              aria-label="点赞"
+            >
+              <Heart size={11} className="inline" /> {reply.likeCount || 0}
+            </button>
+            <button
+              type="button"
+              onClick={() => void reactReply(reply, "DISLIKE")}
+              className={reply.myReaction === "DISLIKE" ? "text-indigo-400" : ""}
+              aria-label="踩"
+            >
+              <ThumbsDown size={11} className="inline" /> {reply.dislikeCount || 0}
+            </button>
+            <button type="button" onClick={() => { setReplyingTo(reply); setComposerOpen(true); }} className="font-bold text-indigo-400">回复</button>
+          </div>
               </div>
             ))}
             {items.length === 0 && <p className="py-2 text-xs text-slate-500">暂无回复。</p>}
-          </div>
-
-          <div className="mt-3 flex items-center justify-between">
-            <button
-              type="button"
-              onClick={() => { setReplyingTo(null); setComposerOpen(true); }}
-              className="text-[10px] font-bold text-indigo-400"
-            >
-              回复楼主{rootAuthor ? ` @${rootAuthor}` : ""}
-            </button>
           </div>
 
           {totalPages > 1 && (
@@ -104,7 +131,7 @@ export default function InlineCommentThread({
                 targetType={targetType}
                 targetId={targetId}
                 parentId={replyingTo?.id ?? rootId}
-                replyingTo={replyingTo ?? (rootAuthor ? { author: rootAuthor } : null)}
+                replyingTo={replyingTo}
                 onCancelReply={() => { setComposerOpen(false); setReplyingTo(null); }}
                 onSubmitted={() => {
                   setComposerOpen(false);
