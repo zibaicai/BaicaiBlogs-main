@@ -12,10 +12,9 @@
   box-shadow: none;
   backdrop-filter: none;
 }
-.comment-section--embedded .comment-composer--sticky {
-  position: sticky;
-  top: 0;
-  z-index: 20;
+.comment-section--embedded .comment-sticky-bar {
+  --sticky-top: 0;
+  --sticky-z: 20;
 }
 .comment-composer.comment-composer--inline {
   display: block;

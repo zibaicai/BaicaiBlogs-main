@@ -281,7 +281,7 @@ export default function CommentSection({
           ) : canComment ? (
             <div
               ref={composerRef}
-              className={`comment-composer comment-composer--sticky ${expanded ? "is-expanded" : ""}`}
+              className={`comment-composer ${variant === "embedded" ? "sticky-bar comment-sticky-bar" : ""} ${expanded ? "is-expanded" : ""}`}
               // 收起状态下整条框都可以点：否则用户点边框/padding 没反应（移动端尤其明显）
               onClick={(event) => {
                 if ((event.target as HTMLElement).closest("button")) return;
