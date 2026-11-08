@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { glassProps } from "./ui/glass/GlassSurface";
+import ReadingSurface from "./reading/ReadingSurface";
 
 type MarkdownTheme = "classic" | "github-light" | "github-dark";
-type ReadingMode = "classic" | "github";
-type ReadingScheme = "auto" | "light" | "dark";
 
 const THEME_STORAGE_KEY = "markdown-reader-theme";
 
@@ -51,43 +50,42 @@ export default function MarkdownReader({ html }: { html: string }) {
   };
 
   const contentClass = "markdown-content markdown-body";
-  const mode: ReadingMode = theme === "classic" ? "classic" : "github";
-  const scheme: ReadingScheme =
+  const mode: "classic" | "github" = theme === "classic" ? "classic" : "github";
+  const scheme: "auto" | "light" | "dark" =
     theme === "classic" ? "auto" : theme === "github-light" ? "light" : "dark";
   const resolvedScheme = scheme === "auto" ? (isDark ? "dark" : "light") : scheme;
-  const effectiveTheme = `github-${resolvedScheme}`;
 
   return (
-    <section
+    <ReadingSurface
       className="markdown-reader"
-      data-md-theme={effectiveTheme}
-      data-reading-mode={mode}
-      data-reading-scheme={scheme}
-      data-reading-resolved-scheme={resolvedScheme}
-      data-site-theme={theme}
-    >
-      <div className="markdown-theme-bar">
-        <span className="markdown-theme-label">阅读主题</span>
-        <div {...glassProps("field", "suspend", "markdown-theme-options")} role="group" aria-label="Markdown 阅读主题">
-          {THEMES.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              title={option.hint}
-              aria-pressed={theme === option.value}
-              onClick={() => changeTheme(option.value)}
-              className={`markdown-theme-option ${theme === option.value ? "is-active" : ""}`}
-            >
-              {option.label}
-            </button>
-          ))}
+      mode={mode}
+      scheme={scheme}
+      resolvedScheme={resolvedScheme}
+      siteTheme={theme}
+      toolbar={
+        <div className="markdown-theme-bar">
+          <span className="markdown-theme-label">阅读主题</span>
+          <div {...glassProps("field", "suspend", "markdown-theme-options")} role="group" aria-label="Markdown 阅读主题">
+            {THEMES.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                title={option.hint}
+                aria-pressed={theme === option.value}
+                onClick={() => changeTheme(option.value)}
+                className={`markdown-theme-option ${theme === option.value ? "is-active" : ""}`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
-
+      }
+    >
       <div
         className={`${contentClass} ${theme === "classic" ? "markdown-body--site" : ""} transition-colors duration-300`}
         dangerouslySetInnerHTML={{ __html: html }}
       />
-    </section>
+    </ReadingSurface>
   );
 }
