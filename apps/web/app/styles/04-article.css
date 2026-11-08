@@ -10,8 +10,13 @@
 .reading-prose img {
   cursor: zoom-in;
 }
+.article-detail-card {
+  border-radius: var(--radius-reading-shell);
+}
 .article-reading-surface {
   margin-top: 2rem;
+  border-radius: var(--radius-reading);
+  overflow: hidden;
 }
 .article-reading-surface .markdown-theme-bar {
   padding: 0.75rem 1.5rem;
@@ -19,7 +24,8 @@
 .article-reading-surface .markdown-body {
   border-right: 0;
   border-left: 0;
-  border-radius: 0;
+  border-radius: var(--radius-reading);
+  overflow: hidden;
 }
 @media (min-width: 768px) {
   .article-reading-surface .markdown-theme-bar {

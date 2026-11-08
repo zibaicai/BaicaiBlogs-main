@@ -91,7 +91,7 @@ export default function ArticleDetailPage() {
                       className="mx-auto mb-8 block h-auto max-h-[70vh] w-auto max-w-full object-contain"
                     />
                   )}
-                  <div className="overflow-hidden rounded-[2rem] border border-white/30 bg-white/60 p-6 glass-blur glass-blur--xl dark:border-white/10 dark:bg-slate-800/60 md:p-10">
+                  <div className="article-detail-card overflow-hidden border border-white/30 bg-white/60 p-6 glass-blur glass-blur--xl dark:border-white/10 dark:bg-slate-800/60 md:p-10">
                     <BackButton fallbackHref="/articles" label="返回文章列表" />
                     <div className="flex flex-wrap items-center gap-2 text-meta font-bold text-slate-400">
                       <span>{article.category || "文章"}</span>

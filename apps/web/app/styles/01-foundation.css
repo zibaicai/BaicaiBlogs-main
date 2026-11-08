@@ -124,6 +124,8 @@
   --radius-control: 10px;
   --radius-card: 14px;
   --radius-panel: 18px;
+  --radius-reading: 18px;
+  --radius-reading-shell: 28px;
   --radius-modal: 22px;
   --radius-media: 8px;
 
@@ -178,6 +180,8 @@
   --radius-control: 10px;
   --radius-card: 14px;
   --radius-panel: 18px;
+  --radius-reading: 18px;
+  --radius-reading-shell: 28px;
   --radius-modal: 22px;
   --radius-media: 8px;
 }
