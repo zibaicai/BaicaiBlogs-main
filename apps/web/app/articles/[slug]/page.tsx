@@ -62,7 +62,7 @@ export default function ArticleDetailPage() {
       <Navbar />
       <PageTransition>
         <main className="directory-shell articles-shell">
-          <div className="mx-auto max-w-7xl">
+          <div className="mx-auto max-w-[1348px]">
             {loading ? (
               <div className="py-24 text-center text-slate-400"><Loader2 className="mx-auto animate-spin" /></div>
             ) : !article ? (
