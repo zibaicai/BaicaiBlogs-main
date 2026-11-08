@@ -116,6 +116,14 @@ export default function CommentSection({
     }
     return tops;
   }, [comments]);
+  const previewTops = useMemo(() => {
+    const tops = new Map(topReplies);
+    for (const [rootId, replies] of Object.entries(localReplies)) {
+      const id = Number(rootId);
+      if (!tops.has(id) && replies[0]) tops.set(id, replies[0]);
+    }
+    return tops;
+  }, [topReplies, localReplies]);
 
   useEffect(() => {
     setMounted(true);
@@ -397,10 +405,10 @@ export default function CommentSection({
         >
           {comment.content}
         </MessageItemShell>
-        {expandedRootId !== comment.id && (replyCounts.get(comment.id) || 0) > 0 && topReplies.get(comment.id) && (
+        {expandedRootId !== comment.id && ((replyCounts.get(comment.id) || 0) + (localReplies[comment.id]?.length || 0)) > 0 && previewTops.get(comment.id) && (
           <CommentThreadPreview
-            reply={topReplies.get(comment.id)!}
-            extraReplies={localReplies[comment.id] || []}
+            reply={previewTops.get(comment.id)!}
+            extraReplies={topReplies.has(comment.id) ? (localReplies[comment.id] || []) : (localReplies[comment.id] || []).slice(1)}
             count={(replyCounts.get(comment.id) || 0) + (localReplies[comment.id]?.length || 0)}
             onExpand={() => {
               setExpandedRootId(comment.id);
@@ -413,7 +421,7 @@ export default function CommentSection({
               });
             }}
             onReply={() => {
-              const top = topReplies.get(comment.id);
+              const top = previewTops.get(comment.id);
               if (!top) return;
               setReplyingRootId(comment.id);
               setReplyTarget({ rootId: comment.id, id: top.id, author: top.author });
