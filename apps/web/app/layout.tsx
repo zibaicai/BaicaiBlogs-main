@@ -79,7 +79,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
 
       <body
-        className="relative flex min-h-full w-screen flex-col overflow-x-hidden bg-slate-50 transition-colors duration-1000 dark:bg-slate-950"
+        className="relative flex min-h-full w-screen flex-col bg-slate-50 transition-colors duration-1000 dark:bg-slate-950"
         suppressHydrationWarning
       >
         <AppShell config={config}>{children}</AppShell>
