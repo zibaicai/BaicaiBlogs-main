@@ -10,6 +10,7 @@ import ArticleImageLightbox from "../../../components/ArticleImageLightbox";
 import ReadingProse from "../../../components/reading/ReadingProse";
 import ReadingSurface from "../../../components/reading/ReadingSurface";
 import ReadingToolbar from "../../../components/reading/ReadingToolbar";
+import TableOfContents from "../../../components/reading/TableOfContents";
 import { useReadingTheme } from "../../../components/reading/useReadingTheme";
 import ContentSidebar from "../../../components/ContentSidebar";
 import CommentSection from "../../../components/comments/CommentSection";
@@ -80,7 +81,10 @@ export default function ArticleDetailPage() {
             ) : (
               <div className="xl:grid xl:grid-cols-[320px_minmax(0,1fr)] xl:items-start xl:gap-8">
                 <aside className="hidden xl:sticky xl:top-24 xl:block">
-                  <ContentSidebar items={relatedItems} />
+                  <TableOfContents contentSelector=".markdown-body" />
+                  <div className="mt-5">
+                    <ContentSidebar items={relatedItems} />
+                  </div>
                 </aside>
 
                 <article className="min-w-0">
