@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { glassProps } from "./ui/glass/GlassSurface";
 import ReadingSurface from "./reading/ReadingSurface";
 import ReadingProse from "./reading/ReadingProse";
+import { resolveReadingScheme, useSiteDark, type ReadingScheme } from "./reading/useReadingScheme";
 
 type MarkdownTheme = "classic" | "github-light" | "github-dark";
 
@@ -21,7 +22,7 @@ function isMarkdownTheme(value: string | null): value is MarkdownTheme {
 
 export default function MarkdownReader({ html }: { html: string }) {
   const [theme, setTheme] = useState<MarkdownTheme>("classic");
-  const [isDark, setIsDark] = useState(false);
+  const isDark = useSiteDark();
 
   useEffect(() => {
     try {
@@ -30,15 +31,6 @@ export default function MarkdownReader({ html }: { html: string }) {
     } catch {
       // ignore storage errors
     }
-  }, []);
-
-  useEffect(() => {
-    const root = document.documentElement;
-    const update = () => setIsDark(root.classList.contains("dark"));
-    update();
-    const observer = new MutationObserver(update);
-    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
-    return () => observer.disconnect();
   }, []);
 
   const changeTheme = (next: MarkdownTheme) => {
@@ -52,9 +44,9 @@ export default function MarkdownReader({ html }: { html: string }) {
 
   const contentClass = "markdown-content markdown-body";
   const mode: "classic" | "github" = theme === "classic" ? "classic" : "github";
-  const scheme: "auto" | "light" | "dark" =
+  const scheme: ReadingScheme =
     theme === "classic" ? "auto" : theme === "github-light" ? "light" : "dark";
-  const resolvedScheme = scheme === "auto" ? (isDark ? "dark" : "light") : scheme;
+  const resolvedScheme = resolveReadingScheme(scheme, isDark);
 
   return (
     <ReadingSurface
