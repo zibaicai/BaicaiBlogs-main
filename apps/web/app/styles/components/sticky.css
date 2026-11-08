@@ -1,0 +1,23 @@
+@layer components {
+  .sticky-panel {
+    position: sticky;
+    top: var(--sticky-top, 0);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    max-height: var(--sticky-max-height, none);
+    overflow: hidden;
+  }
+
+  .sticky-panel-header,
+  .sticky-panel-footer {
+    flex: 0 0 auto;
+  }
+
+  .sticky-panel-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: var(--sticky-overflow, visible);
+    overscroll-behavior: contain;
+  }
+}

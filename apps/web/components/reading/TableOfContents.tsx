@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import GlassSurface from "../ui/glass/GlassSurface";
 import { ChevronDown } from "lucide-react";
+import StickyPanel from "../ui/StickyPanel";
+import { glassProps } from "../ui/glass/GlassSurface";
 
 type Heading = {
   id: string;
@@ -110,42 +111,44 @@ export default function TableOfContents({
   };
 
   return (
-    <GlassSurface as="div" variant="card" glassId="article.toc" className={`article-toc ${className}`.trim()}>
-      <div className="article-toc-heading">{title}</div>
-      <div className="article-toc-list">
-        {groups.map((group) => {
-          const isCollapsed = collapsed[group.key] === true;
-          return (
-            <div key={group.key} className="article-toc-group">
-              {group.heading && (
-                <button
-                  type="button"
-                  className={`article-toc-group-title text-toc ${activeId === group.heading.id ? "is-active" : ""}`}
-                  onClick={() => setCollapsed((value) => ({ ...value, [group.key]: !isCollapsed }))}
-                  aria-expanded={!isCollapsed}
-                >
-                  <span>{group.heading.text}</span>
-                  <ChevronDown size={13} className={isCollapsed ? "is-collapsed" : ""} />
-                </button>
-              )}
-              {!isCollapsed && (
-                <div className="article-toc-items">
-                  {group.items.map((item) => (
-                    <a
-                      key={item.id}
-                      href={`#${item.id}`}
-                      onClick={(event) => jump(event, item.id)}
-                      className={`article-toc-item text-toc level-${item.level} ${activeId === item.id ? "is-active" : ""}`}
-                    >
-                      {item.text}
-                    </a>
-                  ))}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </GlassSurface>
+    <StickyPanel
+      {...glassProps("card", "suspend", `article-toc ${className}`.trim())}
+      header={<div className="article-toc-heading">{title}</div>}
+      bodyClassName="article-toc-list"
+      scroll
+    >
+      {groups.map((group) => {
+        const isCollapsed = collapsed[group.key] === true;
+        return (
+          <div key={group.key} className="article-toc-group">
+            {group.heading && (
+              <button
+                type="button"
+                className={`article-toc-group-title text-toc ${activeId === group.heading.id ? "is-active" : ""}`}
+                onClick={() => setCollapsed((value) => ({ ...value, [group.key]: !isCollapsed }))}
+                aria-expanded={!isCollapsed}
+              >
+                <span>{group.heading.text}</span>
+                <ChevronDown size={13} className={isCollapsed ? "is-collapsed" : ""} />
+              </button>
+            )}
+            {!isCollapsed && (
+              <div className="article-toc-items">
+                {group.items.map((item) => (
+                  <a
+                    key={item.id}
+                    href={`#${item.id}`}
+                    onClick={(event) => jump(event, item.id)}
+                    className={`article-toc-item text-toc level-${item.level} ${activeId === item.id ? "is-active" : ""}`}
+                  >
+                    {item.text}
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </StickyPanel>
   );
 }

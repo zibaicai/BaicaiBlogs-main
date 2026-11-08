@@ -6,6 +6,7 @@
 @import "./styles/components/tabs.css";
 @import "./styles/components/media-stack.css";
 @import "./styles/components/messages.css";
+@import "./styles/components/sticky.css";
 @import "./styles/components/friends.css";
 @import "./styles/02-home.css";
 @import "./styles/03-navigation.css";
