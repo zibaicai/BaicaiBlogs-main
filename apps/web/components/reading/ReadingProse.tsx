@@ -1,6 +1,6 @@
 "use client";
 
-import type { MouseEventHandler } from "react";
+import { useMemo, type MouseEventHandler } from "react";
 import { useReadingContext } from "./ReadingContext";
 
 /**
@@ -17,12 +17,13 @@ export default function ReadingProse({
   onClick?: MouseEventHandler<HTMLDivElement>;
 }) {
   const reading = useReadingContext();
+  const htmlProps = useMemo(() => ({ __html: html }), [html]);
   return (
     <div
       ref={reading?.contentRef}
       className={`reading-prose ${className}`.trim()}
       onClickCapture={onClick}
-      dangerouslySetInnerHTML={{ __html: html }}
+      dangerouslySetInnerHTML={htmlProps}
     />
   );
 }
