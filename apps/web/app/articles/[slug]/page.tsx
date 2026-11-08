@@ -7,6 +7,7 @@ import Navbar from "../../../components/Navbar";
 import PageTransition from "../../../components/PageTransition";
 import BackButton from "../../../components/BackButton";
 import ArticleImageLightbox from "../../../components/ArticleImageLightbox";
+import ReadingProse from "../../../components/reading/ReadingProse";
 import ContentSidebar from "../../../components/ContentSidebar";
 import CommentSection from "../../../components/comments/CommentSection";
 import { articleApi, formatDay, type Article } from "../../../lib/api";
@@ -93,10 +94,10 @@ export default function ArticleDetailPage() {
                     </div>
                     <h1 className="detail-title mt-3 text-slate-900 dark:text-white">{article.title}</h1>
                     {article.subtitle && <p className="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">{article.subtitle}</p>}
-                    <div
+                    <ReadingProse
                       className="wechat-article mt-8"
+                      html={article.contentHtml}
                       onClick={openImage}
-                      dangerouslySetInnerHTML={{ __html: article.contentHtml }}
                     />
                     {article.tags && article.tags.length > 0 && (
                       <div className="mt-8 flex flex-wrap gap-2">

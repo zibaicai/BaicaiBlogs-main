@@ -15,8 +15,8 @@
   max-width: 100%;
   margin: 0 auto;
   color: var(--ui-text);
-  font-size: var(--type-card-title);
-  line-height: 1.9;
+  font-size: var(--reading-body, 1rem);
+  line-height: var(--reading-line-height, 1.85);
   word-break: break-word;
 }
 .wechat-article > :first-child { margin-top: 0; }

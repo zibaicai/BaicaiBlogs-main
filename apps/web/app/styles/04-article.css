@@ -1,4 +1,12 @@
 @layer components {
+:root {
+  --reading-body: 1rem;
+  --reading-line-height: 1.85;
+}
+.reading-prose {
+  font-size: var(--reading-body);
+  line-height: var(--reading-line-height);
+}
 /* Article reading layout */
 .article-reading-grid {
   display: grid;

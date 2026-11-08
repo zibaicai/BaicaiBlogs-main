@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { glassProps } from "./ui/glass/GlassSurface";
 import ReadingSurface from "./reading/ReadingSurface";
+import ReadingProse from "./reading/ReadingProse";
 
 type MarkdownTheme = "classic" | "github-light" | "github-dark";
 
@@ -82,9 +83,9 @@ export default function MarkdownReader({ html }: { html: string }) {
         </div>
       }
     >
-      <div
+      <ReadingProse
+        html={html}
         className={`${contentClass} ${theme === "classic" ? "markdown-body--site" : ""} transition-colors duration-300`}
-        dangerouslySetInnerHTML={{ __html: html }}
       />
     </ReadingSurface>
   );
