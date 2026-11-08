@@ -18,7 +18,7 @@ export default function ReadingProse({
   return (
     <div
       className={`reading-prose ${className}`.trim()}
-      onClick={onClick}
+      onClickCapture={onClick}
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );

@@ -49,9 +49,8 @@ export default function ArticleDetailPage() {
   }, [slug]);
 
   const openImage = (event: MouseEvent<HTMLDivElement>) => {
-    const target = event.target as HTMLElement;
-    if (target.tagName !== "IMG") return;
-    const image = target as HTMLImageElement;
+    const image = (event.target as HTMLElement).closest("img");
+    if (!(image instanceof HTMLImageElement)) return;
     setViewer({ src: image.currentSrc || image.src, alt: image.alt || article?.title || "文章图片" });
   };
 
