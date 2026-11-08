@@ -14,11 +14,13 @@ type PreviewReply = {
 
 export default function CommentThreadPreview({
   reply,
+  extraReplies = [],
   count,
   onExpand,
   onReply,
 }: {
   reply: PreviewReply;
+  extraReplies?: PreviewReply[];
   count: number;
   onExpand: () => void;
   onReply: () => void;
@@ -41,6 +43,17 @@ export default function CommentThreadPreview({
           <MessageCircle size={11} /> 回复
         </button>
       </div>
+
+      {extraReplies.map((item) => (
+        <div key={item.id} className="mt-1 border-t border-white/5 pt-1">
+          <p className="flex min-w-0 items-baseline gap-1 text-xs text-slate-300">
+            <strong className="shrink-0 font-bold text-slate-200">{item.author}</strong>
+            <span className="text-slate-500">：</span>
+            <span className="truncate">{item.content}</span>
+          </p>
+          <time className="text-[10px] text-slate-500">刚刚</time>
+        </div>
+      ))}
 
       <button type="button" onClick={onExpand} className="mt-1 text-[10px] font-bold text-indigo-400">
         共 {count} 条回复

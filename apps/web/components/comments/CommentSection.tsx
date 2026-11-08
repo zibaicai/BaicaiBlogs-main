@@ -9,6 +9,7 @@ import MessageListShell from "../messages/MessageListShell";
 import MessageItemShell from "../messages/MessageItemShell";
 import AutoGrowTextarea from "../ui/AutoGrowTextarea";
 import InlineCommentThread from "./InlineCommentThread";
+import CommentComposer from "./CommentComposer";
 import CommentThreadPreview from "./CommentThreadPreview";
 import { useVisualViewport } from "../../lib/useVisualViewport";
 
@@ -85,6 +86,8 @@ export default function CommentSection({
   const [notice, setNotice] = useState("");
   const [expandedRootId, setExpandedRootId] = useState<number | null>(null);
   const [replyTarget, setReplyTarget] = useState<{ rootId: number; id: number; author: string } | null>(null);
+  const [replyingRootId, setReplyingRootId] = useState<number | null>(null);
+  const [localReplies, setLocalReplies] = useState<Record<number, CommentItem[]>>({});
   const [highlightedId, setHighlightedId] = useState<number | null>(null);
   const focusComposer = () => {
     document.querySelector<HTMLTextAreaElement>(".comment-textarea")?.focus();
@@ -372,8 +375,8 @@ export default function CommentSection({
               <button
                 type="button"
                 onClick={() => {
-                  setExpandedRootId(comment.id);
-                  setReplyTarget({ rootId: comment.id, id: comment.id, author: comment.author });
+                  setReplyingRootId((current) => current === comment.id ? null : comment.id);
+                  setReplyTarget(null);
                 }}
                 aria-label="回复楼主"
               >
@@ -397,16 +400,45 @@ export default function CommentSection({
         {expandedRootId !== comment.id && (replyCounts.get(comment.id) || 0) > 0 && topReplies.get(comment.id) && (
           <CommentThreadPreview
             reply={topReplies.get(comment.id)!}
-            count={replyCounts.get(comment.id) || 0}
+            extraReplies={localReplies[comment.id] || []}
+            count={(replyCounts.get(comment.id) || 0) + (localReplies[comment.id]?.length || 0)}
             onExpand={() => {
               setExpandedRootId(comment.id);
               setReplyTarget(null);
+              setReplyingRootId(null);
+              setLocalReplies((prev) => {
+                const next = { ...prev };
+                delete next[comment.id];
+                return next;
+              });
             }}
             onReply={() => {
               const top = topReplies.get(comment.id);
               if (!top) return;
-              setExpandedRootId(comment.id);
+              setReplyingRootId(comment.id);
               setReplyTarget({ rootId: comment.id, id: top.id, author: top.author });
+            }}
+          />
+        )}
+        {replyingRootId === comment.id && (
+          <CommentComposer
+            targetType={targetType as "POST" | "MOMENT" | "ARTICLE" | "PROJECT" | "ALBUM" | "TRACK"}
+            targetId={targetId}
+            parentId={replyTarget?.rootId === comment.id ? replyTarget.id : comment.id}
+            replyingTo={replyTarget?.rootId === comment.id ? replyTarget : { author: comment.author }}
+            onCancelReply={() => {
+              setReplyingRootId(null);
+              setReplyTarget(null);
+            }}
+            onSubmitted={(created) => {
+              if (created) {
+                setLocalReplies((prev) => ({
+                  ...prev,
+                  [comment.id]: [...(prev[comment.id] || []), created as CommentItem],
+                }));
+              }
+              setReplyingRootId(null);
+              setReplyTarget(null);
             }}
           />
         )}

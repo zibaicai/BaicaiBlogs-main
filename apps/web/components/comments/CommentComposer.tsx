@@ -11,7 +11,7 @@ type CommentComposerProps = {
   parentId?: number;
   replyingTo?: { author: string } | null;
   onCancelReply?: () => void;
-  onSubmitted?: () => void;
+  onSubmitted?: (comment?: unknown) => void;
   readOnly?: boolean;
 };
 
@@ -43,7 +43,7 @@ export default function CommentComposer({
       const json = await response.json().catch(() => null);
       if (!response.ok || !json?.success) throw new Error(json?.message || "评论失败");
       setContent("");
-      onSubmitted?.();
+      onSubmitted?.(json.data);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "评论失败");
     } finally {
