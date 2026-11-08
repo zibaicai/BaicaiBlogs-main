@@ -97,12 +97,12 @@
   line-height: 1.5;
 }
 /* "本站" Markdown mode keeps GitHub typography and only swaps the surface. */
-.markdown-reader[data-site-theme="classic"] .markdown-body--site {
+.reading-surface[data-site-theme="classic"] .markdown-body--site {
   background-color: rgba(255, 255, 255, 0.72) !important;
   border: 1px solid rgba(255, 255, 255, 0.52);
   border-radius: 18px;
 }
-.dark .markdown-reader[data-site-theme="classic"] .markdown-body--site {
+.dark .reading-surface[data-site-theme="classic"] .markdown-body--site {
   background-color: rgba(15, 23, 42, 0.58) !important;
   border-color: rgba(255, 255, 255, 0.1);
 }
