@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type MouseEvent } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { BookOpen, Loader2 } from "lucide-react";
 import Navbar from "../../../components/Navbar";
@@ -49,11 +49,17 @@ export default function ArticleDetailPage() {
       .finally(() => setLoading(false));
   }, [slug]);
 
-  const openImage = (event: MouseEvent<HTMLDivElement>) => {
-    const image = (event.target as HTMLElement).closest("img");
+  const openImage = (event: globalThis.MouseEvent) => {
+    const image = (event.target as HTMLElement | null)?.closest("img");
     if (!(image instanceof HTMLImageElement)) return;
+    if (!image.closest(".article-reading-surface")) return;
     setViewer({ src: image.currentSrc || image.src, alt: image.alt || article?.title || "文章图片" });
   };
+
+  useEffect(() => {
+    document.addEventListener("click", openImage, true);
+    return () => document.removeEventListener("click", openImage, true);
+  });
 
   const relatedItems = related.map((item) => ({
     title: item.title,
@@ -109,7 +115,6 @@ export default function ArticleDetailPage() {
                       <ReadingProse
                         className={`markdown-body px-6 py-8 md:px-10 ${theme === "classic" ? "markdown-body--site" : ""}`}
                         html={article.contentHtml}
-                        onClick={openImage}
                       />
                     </ReadingSurface>
                     {article.tags && article.tags.length > 0 && (
