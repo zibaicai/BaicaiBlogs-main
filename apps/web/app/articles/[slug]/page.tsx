@@ -80,7 +80,7 @@ export default function ArticleDetailPage() {
               <div className="py-24 text-center text-sm text-slate-400"><BookOpen className="mx-auto mb-3" /> 文章不存在或未公开。</div>
             ) : (
               <div className="xl:grid xl:grid-cols-[320px_minmax(0,1fr)] xl:items-start xl:gap-8">
-                <aside className="hidden xl:sticky xl:top-24 xl:block">
+                <aside className="article-sidebar hidden xl:block">
                   <TableOfContents contentSelector=".markdown-body" />
                   <div className="mt-5">
                     <ContentSidebar items={relatedItems} />

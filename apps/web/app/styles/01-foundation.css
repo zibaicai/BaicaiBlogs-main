@@ -126,6 +126,8 @@
   --radius-panel: 18px;
   --radius-reading: 18px;
   --radius-reading-shell: 28px;
+  --reading-sticky-top: 64px;
+  --reading-sticky-gap: 6px;
   --radius-modal: 22px;
   --radius-media: 8px;
 
@@ -182,6 +184,8 @@
   --radius-panel: 18px;
   --radius-reading: 18px;
   --radius-reading-shell: 28px;
+  --reading-sticky-top: 64px;
+  --reading-sticky-gap: 6px;
   --radius-modal: 22px;
   --radius-media: 8px;
 }

@@ -119,16 +119,21 @@
 /* TOC */
 .article-toc {
   position: sticky;
-  top: 74px;
-  max-height: calc(100vh - 90px);
-  overflow-y: auto;
+  top: var(--reading-sticky-top);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  max-height: calc(100vh - var(--reading-sticky-top) - var(--reading-sticky-gap));
+  overflow: hidden;
   padding: 16px;
   transition: top 0.2s ease;
 }
 body[data-nav-hidden="true"] .article-toc {
-  top: 10px;
+  top: var(--reading-sticky-gap);
+  max-height: calc(100vh - var(--reading-sticky-gap) * 2);
 }
 .article-toc-heading {
+  flex: 0 0 auto;
   margin-bottom: 10px;
   padding-left: 2px;
   font-family: Consolas, monospace;
@@ -139,8 +144,12 @@ body[data-nav-hidden="true"] .article-toc {
 }
 .article-toc-list {
   display: flex;
+  flex: 1 1 auto;
   flex-direction: column;
+  min-height: 0;
   gap: 4px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .article-toc-group + .article-toc-group {
   margin-top: 8px;
