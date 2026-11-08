@@ -1,6 +1,6 @@
 "use client";
 
-import { Heart, MessageCircle, ThumbsDown } from "lucide-react";
+import { MessageCircle, ThumbsDown, ThumbsUp } from "lucide-react";
 import { formatDate } from "../../lib/api";
 
 type PreviewReply = {
@@ -37,7 +37,7 @@ export default function CommentThreadPreview({
 
       <div className="mt-1 flex items-center gap-3 text-[10px] text-slate-500">
         <time className="whitespace-nowrap">{formatDate(reply.createdAt)}</time>
-        <span className="inline-flex items-center gap-1"><Heart size={11} /> {reply.likeCount}</span>
+        <span className="inline-flex items-center gap-1"><ThumbsUp size={11} /> {reply.likeCount}</span>
         <span className="inline-flex items-center gap-1"><ThumbsDown size={11} /> {reply.dislikeCount}</span>
         <button type="button" onClick={onReply} className="ml-auto inline-flex items-center gap-1 font-bold text-indigo-400">
           <MessageCircle size={11} /> 回复

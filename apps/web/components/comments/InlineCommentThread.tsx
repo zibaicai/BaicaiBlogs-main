@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Heart, Loader2, ThumbsDown } from "lucide-react";
+import { Loader2, ThumbsDown, ThumbsUp } from "lucide-react";
 import { formatDate } from "../../lib/api";
 import CommentComposer from "./CommentComposer";
 
@@ -99,7 +99,7 @@ export default function InlineCommentThread({
               className={reply.myReaction === "LIKE" ? "text-indigo-400" : ""}
               aria-label="点赞"
             >
-              <Heart size={11} className="inline" /> {reply.likeCount || 0}
+              <ThumbsUp size={11} className="inline" /> {reply.likeCount || 0}
             </button>
             <button
               type="button"

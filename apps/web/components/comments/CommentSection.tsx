@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Flag, Heart, Loader2, MessageCircle, Send, ThumbsDown, Trash2 } from "lucide-react";
+import { Flag, Loader2, MessageCircle, Send, ThumbsDown, ThumbsUp, Trash2 } from "lucide-react";
 import { formatDate } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
 import MessageListShell from "../messages/MessageListShell";
@@ -369,7 +369,7 @@ export default function CommentSection({
                 className={comment.myReaction === "LIKE" ? "is-active" : ""}
                 aria-label="点赞"
               >
-                <Heart size={13} /> {comment.likeCount}
+                <ThumbsUp size={13} /> {comment.likeCount}
               </button>
               <button
                 type="button"
