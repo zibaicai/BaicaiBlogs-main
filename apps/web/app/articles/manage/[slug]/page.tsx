@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Navbar from "../../../../components/Navbar";
 import PageTransition from "../../../../components/PageTransition";
+import ReadingProse from "../../../../components/reading/ReadingProse";
+import ReadingSurface from "../../../../components/reading/ReadingSurface";
 import { getAdminArticleBySlug, getCurrentUser, getMyArticleBySlug, isAdminUser } from "../../../../lib/server-api";
 
 export const dynamic = "force-dynamic";
@@ -50,7 +52,17 @@ export default async function ManagedArticlePage({ params }: { params: Promise<{
               )}
               <h1 className="detail-title text-slate-900 dark:text-white">{article.title}</h1>
               {article.subtitle && <p className="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">{article.subtitle}</p>}
-              <div className="wechat-article mt-8" dangerouslySetInnerHTML={{ __html: article.contentHtml || "" }} />
+              <ReadingSurface
+                variant="article"
+                mode="classic"
+                scheme="auto"
+                resolvedScheme="light"
+              >
+                <ReadingProse
+                  className="markdown-body mt-8"
+                  html={article.contentHtml || ""}
+                />
+              </ReadingSurface>
             </article>
           </div>
         </main>
