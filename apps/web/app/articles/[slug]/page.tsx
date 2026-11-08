@@ -106,7 +106,7 @@ export default function ArticleDetailPage() {
                       toolbar={<ReadingToolbar theme={theme} onChange={setTheme} />}
                     >
                       <ReadingProse
-                        className={`wechat-article markdown-body mt-8 ${theme === "classic" ? "markdown-body--site" : ""}`}
+                        className={`markdown-body mt-8 ${theme === "classic" ? "markdown-body--site" : ""}`}
                         html={article.contentHtml}
                         onClick={openImage}
                       />

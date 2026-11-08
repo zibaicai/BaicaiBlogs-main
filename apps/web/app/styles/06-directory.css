@@ -360,7 +360,7 @@ html:not(.dark) .hv-empty {
   font-family: var(--font-body);
 }
 .article-prose,
-.markdown-body {
+.reading-prose {
   font-family: var(--font-prose);
 }
 .hv-toolbar-meta-only .hv-toolbar-meta {
