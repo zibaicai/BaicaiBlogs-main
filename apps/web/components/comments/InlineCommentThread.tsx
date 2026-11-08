@@ -18,6 +18,7 @@ export default function InlineCommentThread({
   targetType,
   targetId,
   rootAuthor,
+  startReply,
   onCollapse,
   onSubmitted,
 }: {
@@ -25,6 +26,7 @@ export default function InlineCommentThread({
   targetType: "POST" | "MOMENT" | "ARTICLE" | "PROJECT" | "ALBUM" | "TRACK";
   targetId: number;
   rootAuthor?: string;
+  startReply?: { id: number; author: string } | null;
   onCollapse: () => void;
   onSubmitted: () => void;
 }) {
@@ -32,8 +34,10 @@ export default function InlineCommentThread({
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [replyingTo, setReplyingTo] = useState<Reply | null>(null);
-  const [composerOpen, setComposerOpen] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<Reply | null>(
+    startReply ? { ...startReply, content: "", createdAt: "" } : null
+  );
+  const [composerOpen, setComposerOpen] = useState(Boolean(startReply));
 
   const load = useCallback(async (nextPage: number) => {
     setLoading(true);

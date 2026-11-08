@@ -9,6 +9,7 @@ import MessageListShell from "../messages/MessageListShell";
 import MessageItemShell from "../messages/MessageItemShell";
 import AutoGrowTextarea from "../ui/AutoGrowTextarea";
 import InlineCommentThread from "./InlineCommentThread";
+import CommentThreadPreview from "./CommentThreadPreview";
 import { useVisualViewport } from "../../lib/useVisualViewport";
 
 export interface CommentItem {
@@ -83,6 +84,7 @@ export default function CommentSection({
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [expandedRootId, setExpandedRootId] = useState<number | null>(null);
+  const [replyTarget, setReplyTarget] = useState<{ rootId: number; id: number; author: string } | null>(null);
   const [highlightedId, setHighlightedId] = useState<number | null>(null);
   const focusComposer = () => {
     document.querySelector<HTMLTextAreaElement>(".comment-textarea")?.focus();
@@ -95,6 +97,21 @@ export default function CommentSection({
       counts.set(comment.rootId, (counts.get(comment.rootId) || 0) + 1);
     }
     return counts;
+  }, [comments]);
+  const topReplies = useMemo(() => {
+    const tops = new Map<number, CommentItem>();
+    for (const comment of comments) {
+      if (!comment.rootId || comment.id === comment.rootId) continue;
+      const current = tops.get(comment.rootId);
+      if (
+        !current ||
+        comment.likeCount > current.likeCount ||
+        (comment.likeCount === current.likeCount && comment.createdAt < current.createdAt)
+      ) {
+        tops.set(comment.rootId, comment);
+      }
+    }
+    return tops;
   }, [comments]);
 
   useEffect(() => {
@@ -354,10 +371,23 @@ export default function CommentSection({
               </button>
               <button
                 type="button"
-                onClick={() => setExpandedRootId((current) => current === comment.id ? null : comment.id)}
+                onClick={() => {
+                  setExpandedRootId((current) => current === comment.id ? null : comment.id);
+                  setReplyTarget(null);
+                }}
                 aria-label="查看评论楼"
               >
                 <MessageCircle size={13} /> {replyCounts.get(comment.id) || 0} 条回复
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setExpandedRootId(comment.id);
+                  setReplyTarget({ rootId: comment.id, id: comment.id, author: comment.author });
+                }}
+                aria-label="回复楼主"
+              >
+                <MessageCircle size={13} /> 回复
               </button>
               {comment.canDelete && (
                 <button type="button" onClick={() => void remove(comment.id)} aria-label="删除">
@@ -374,13 +404,33 @@ export default function CommentSection({
         >
           {comment.content}
         </MessageItemShell>
+        {expandedRootId !== comment.id && (replyCounts.get(comment.id) || 0) > 0 && topReplies.get(comment.id) && (
+          <CommentThreadPreview
+            reply={topReplies.get(comment.id)!}
+            count={replyCounts.get(comment.id) || 0}
+            onExpand={() => {
+              setExpandedRootId(comment.id);
+              setReplyTarget(null);
+            }}
+            onReply={() => {
+              const top = topReplies.get(comment.id);
+              if (!top) return;
+              setExpandedRootId(comment.id);
+              setReplyTarget({ rootId: comment.id, id: top.id, author: top.author });
+            }}
+          />
+        )}
         {expandedRootId === comment.id && (
           <InlineCommentThread
             rootId={comment.id}
             targetType={targetType as "POST" | "MOMENT" | "ARTICLE" | "PROJECT" | "ALBUM" | "TRACK"}
             targetId={targetId}
             rootAuthor={comment.author}
-            onCollapse={() => setExpandedRootId(null)}
+            startReply={replyTarget?.rootId === comment.id ? replyTarget : null}
+            onCollapse={() => {
+              setExpandedRootId(null);
+              setReplyTarget(null);
+            }}
             onSubmitted={() => void load()}
           />
         )}
