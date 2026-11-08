@@ -163,3 +163,22 @@ AGENTS.md
 docs/architecture/
 docs/architecture/adr/
 ```
+
+## 16. Sticky 祖先不得污染滚动上下文
+
+```text
+页面滚动必须由 window/documentElement 承担
+body 不得成为 overflow 滚动容器
+布局容器不得使用 overflow:hidden/auto/scroll
+吸附容器不得位于 transform/filter/contain 祖先内
+```
+
+吸顶行为统一使用：
+
+```text
+components/ui/StickyPanel
+components/ui/StickyBar
+```
+
+具体距离由使用方通过 `--sticky-*` 变量提供。
+

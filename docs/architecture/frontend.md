@@ -171,3 +171,36 @@ components/settings/SettingsControls.inputClass
 页面内复制 SettingsCard 样式
 页面内复制 input 基础样式
 ```
+
+## Sticky 与滚动容器
+
+吸顶能力必须复用 primitive：
+
+```text
+components/ui/StickyPanel
+  垂直侧栏、可滚动内容、header/body/footer 插槽
+
+components/ui/StickyBar
+  横向工具条，只负责 sticky + top + z-index
+```
+
+组件本身不得写死业务距离。位置通过 CSS 变量提供：
+
+```text
+--sticky-top
+--sticky-max-height
+--sticky-z
+--sticky-overflow
+```
+
+约定：
+
+```text
+1. body 必须是 visible，页面滚动交给 window/documentElement
+2. 吸顶祖先不得使用 transform/filter/contain
+3. 布局容器不得使用 overflow:hidden/auto/scroll
+4. 媒体裁切、卡片圆角、列表内部滚动可以使用 overflow
+5. 视觉裁切优先 overflow:clip 或 clip-path
+6. 固定吸底镜像继续使用 fixed，不强行改为 sticky
+```
+
