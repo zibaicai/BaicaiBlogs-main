@@ -372,16 +372,6 @@ export default function CommentSection({
               <button
                 type="button"
                 onClick={() => {
-                  setExpandedRootId((current) => current === comment.id ? null : comment.id);
-                  setReplyTarget(null);
-                }}
-                aria-label="查看评论楼"
-              >
-                <MessageCircle size={13} /> {replyCounts.get(comment.id) || 0} 条回复
-              </button>
-              <button
-                type="button"
-                onClick={() => {
                   setExpandedRootId(comment.id);
                   setReplyTarget({ rootId: comment.id, id: comment.id, author: comment.author });
                 }}
