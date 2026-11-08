@@ -82,9 +82,7 @@ export default function ArticleDetailPage() {
               <div className="xl:grid xl:grid-cols-[320px_minmax(0,1fr)] xl:items-start xl:gap-8">
                 <aside className="article-sidebar hidden xl:block">
                   <ContentSidebar items={relatedItems} />
-                  <div className="mt-5">
-                    <TableOfContents contentSelector=".markdown-body" />
-                  </div>
+                  <TableOfContents contentSelector=".markdown-body" className="mt-5" />
                 </aside>
 
                 <article className="min-w-0">
