@@ -34,7 +34,6 @@ export default function ReadingSurface({
       data-reading-mode={mode}
       data-reading-scheme={scheme}
       data-reading-resolved-scheme={resolvedScheme}
-      data-md-theme={`github-${resolvedScheme}`}
       data-site-theme={siteTheme}
     >
       {toolbar}
