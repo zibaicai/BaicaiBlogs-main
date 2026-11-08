@@ -10,6 +10,22 @@
 .reading-prose img {
   cursor: zoom-in;
 }
+.article-reading-surface {
+  margin-top: 2rem;
+}
+.article-reading-surface .markdown-theme-bar {
+  padding: 0.75rem 1.5rem;
+}
+.article-reading-surface .markdown-body {
+  border-right: 0;
+  border-left: 0;
+  border-radius: 0;
+}
+@media (min-width: 768px) {
+  .article-reading-surface .markdown-theme-bar {
+    padding-inline: 2.5rem;
+  }
+}
 /* Article reading layout */
 .article-reading-grid {
   display: grid;

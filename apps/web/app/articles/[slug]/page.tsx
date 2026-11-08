@@ -85,7 +85,7 @@ export default function ArticleDetailPage() {
                       className="mx-auto mb-8 block h-auto max-h-[70vh] w-auto max-w-full object-contain"
                     />
                   )}
-                  <div className="rounded-[2rem] border border-white/30 bg-white/60 p-6 glass-blur glass-blur--xl dark:border-white/10 dark:bg-slate-800/60 md:p-10">
+                  <div className="overflow-hidden rounded-[2rem] border border-white/30 bg-white/60 p-6 glass-blur glass-blur--xl dark:border-white/10 dark:bg-slate-800/60 md:p-10">
                     <BackButton fallbackHref="/articles" label="返回文章列表" />
                     <div className="flex flex-wrap items-center gap-2 text-meta font-bold text-slate-400">
                       <span>{article.category || "文章"}</span>
@@ -98,6 +98,7 @@ export default function ArticleDetailPage() {
                     <h1 className="detail-title mt-3 text-slate-900 dark:text-white">{article.title}</h1>
                     {article.subtitle && <p className="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">{article.subtitle}</p>}
                     <ReadingSurface
+                      className="article-reading-surface -mx-6 md:-mx-10"
                       variant="article"
                       mode={mode}
                       scheme={scheme}
@@ -106,7 +107,7 @@ export default function ArticleDetailPage() {
                       toolbar={<ReadingToolbar theme={theme} onChange={setTheme} />}
                     >
                       <ReadingProse
-                        className={`markdown-body mt-8 ${theme === "classic" ? "markdown-body--site" : ""}`}
+                        className={`markdown-body px-6 py-8 md:px-10 ${theme === "classic" ? "markdown-body--site" : ""}`}
                         html={article.contentHtml}
                         onClick={openImage}
                       />
