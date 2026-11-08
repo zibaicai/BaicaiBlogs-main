@@ -108,7 +108,7 @@
 }
 @theme inline {
   --radius-lg: var(--radius-control);
-  --radius-xl: var(--radius-control);
+  --radius-xl: var(--radius-card);
   --radius-2xl: var(--radius-card);
   --radius-3xl: var(--radius-panel);
   --radius-4xl: var(--radius-modal);

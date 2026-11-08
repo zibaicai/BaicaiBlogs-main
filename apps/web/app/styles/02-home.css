@@ -97,7 +97,7 @@
   height: 62px;
   flex: 0 0 auto;
   overflow: hidden;
-  border-radius: 18px;
+  border-radius: var(--radius-panel);
   background: linear-gradient(135deg, #6f83b5, #a7b5d3);
   color: #fff;
   display: flex;
@@ -689,7 +689,7 @@ body.tool-pet-off .whale-pet {
     flex-grow: 0;
     flex-shrink: 0;
     flex-basis: 48px;
-    border-radius: 18px;
+    border-radius: var(--radius-panel);
   }
 
   .album-panel.is-active {
