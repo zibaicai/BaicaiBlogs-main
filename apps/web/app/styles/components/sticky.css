@@ -20,4 +20,10 @@
     overflow-y: var(--sticky-overflow, visible);
     overscroll-behavior: contain;
   }
+
+  .sticky-bar {
+    position: sticky;
+    top: var(--sticky-top, 0);
+    z-index: var(--sticky-z, 20);
+  }
 }

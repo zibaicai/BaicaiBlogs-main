@@ -418,9 +418,8 @@ html:not(.dark) .hv-empty {
   gap: 0.5rem;
 }
 .directory-toolbar {
-  position: sticky;
-  top: 4.5rem;
-  z-index: 60;
+  --sticky-top: 4.5rem;
+  --sticky-z: 60;
   margin-bottom: 1.25rem;
   flex-direction: row;
   align-items: center;

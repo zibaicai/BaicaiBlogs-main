@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import type { DirectoryFilter } from "./DirectoryExplorer";
 import { ARCHIVE_VIEWS, type ArchiveViewMode } from "./DirectoryView";
 import Select from "./ui/Select";
+import StickyBar from "./ui/StickyBar";
 
 export interface SortOption {
   value: string;
@@ -41,7 +42,7 @@ export default function ArchiveToolbar({
   extra?: ReactNode;
 }) {
   return (
-    <div className="directory-toolbar glass-blur glass-blur--md">
+    <StickyBar className="directory-toolbar glass-blur glass-blur--md">
       <div className="directory-tab-scroll">
         <div className="directory-tabs">
           {filters.map((filter) => (
@@ -104,6 +105,6 @@ export default function ArchiveToolbar({
           </div>
         )}
       </div>
-    </div>
+    </StickyBar>
   );
 }

@@ -5,6 +5,7 @@ import { Bell, Check, ChevronRight } from "lucide-react";
 import Navbar from "../../../components/Navbar";
 import PageTransition from "../../../components/PageTransition";
 import { PageTitle } from "../../../components/ui/Typography";
+import StickyPanel from "../../../components/ui/StickyPanel";
 
 interface Notice {
   id: number;
@@ -131,7 +132,12 @@ export default function NotificationsPage() {
           </PageTitle>
 
           <div className="grid gap-5 md:grid-cols-[190px_minmax(0,1fr)]">
-            <aside className="md:sticky md:top-24 md:self-start">
+            <StickyPanel
+              as="aside"
+              className="notifications-side max-md:static"
+              style={{ ["--sticky-top" as string]: "6rem" }}
+              scroll={false}
+            >
               <nav className="flex gap-1 overflow-x-auto pb-1 md:flex-col md:overflow-visible" aria-label="消息分类">
                 {CATEGORIES.map((item) => {
                   const active = category === item.id;
@@ -154,7 +160,7 @@ export default function NotificationsPage() {
                   );
                 })}
               </nav>
-            </aside>
+            </StickyPanel>
 
             <section className="min-w-0">
               <div className="mb-3 flex items-center justify-between gap-3">
