@@ -3,5 +3,5 @@
 import TableOfContents from "./reading/TableOfContents";
 
 export default function ArticleToc() {
-  return <TableOfContents contentSelector=".markdown-content" />;
+  return <TableOfContents />;
 }

@@ -4,78 +4,28 @@ import { useEffect, useMemo, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import StickyPanel from "../ui/StickyPanel";
 import { glassProps } from "../ui/glass/GlassSurface";
-
-type Heading = {
-  id: string;
-  text: string;
-  level: number;
-};
+import { useReadingContext, type ReadingAnchor } from "./ReadingContext";
 
 type Group = {
   key: string;
-  heading?: Heading;
-  items: Heading[];
+  heading?: ReadingAnchor;
+  items: ReadingAnchor[];
 };
 
-function slugifyHeading(text: string, index: number) {
-  const base = text
-    .trim()
-    .toLowerCase()
-    .replace(/[^\p{L}\p{N}]+/gu, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 60);
-  return `heading-${base || "section"}-${index}`;
-}
-
 export default function TableOfContents({
-  contentSelector,
   title = "目录",
   className = "",
 }: {
-  contentSelector: string;
   title?: string;
   className?: string;
 }) {
-  const [headings, setHeadings] = useState<Heading[]>([]);
-  const [activeId, setActiveId] = useState("");
+  const reading = useReadingContext();
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
-
-  useEffect(() => {
-    const root = document.querySelector<HTMLElement>(contentSelector);
-    if (!root) return;
-
-    const nodes = Array.from(root.querySelectorAll<HTMLElement>("h1, h2, h3, h4, h5, h6"));
-    const next = nodes
-      .map((node, index) => {
-        const text = (node.textContent || "").trim();
-        if (!text) return null;
-        if (!node.id) node.id = slugifyHeading(text, index);
-        return { id: node.id, text, level: Number(node.tagName.slice(1)) };
-      })
-      .filter(Boolean) as Heading[];
-
-    setHeadings(next);
-
-    const onScroll = () => {
-      let current = next[0]?.id || "";
-      for (const heading of next) {
-        const element = document.getElementById(heading.id);
-        if (element && element.getBoundingClientRect().top <= 110) {
-          current = heading.id;
-        }
-      }
-      setActiveId(current);
-    };
-
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [contentSelector]);
 
   const groups = useMemo(() => {
     const result: Group[] = [];
     let current: Group | null = null;
-    headings.forEach((heading) => {
+    (reading?.anchors || []).forEach((heading) => {
       if (heading.level === 1) {
         current = { key: heading.id, heading, items: [] };
         result.push(current);
@@ -88,7 +38,9 @@ export default function TableOfContents({
       }
     });
     return result;
-  }, [headings]);
+  }, [reading?.anchors]);
+
+  const activeId = reading?.activeAnchorId || "";
 
   useEffect(() => {
     if (!activeId) return;
@@ -100,15 +52,7 @@ export default function TableOfContents({
     }
   }, [activeId, groups]);
 
-  if (headings.length === 0) return null;
-
-  const jump = (event: React.MouseEvent<HTMLAnchorElement>, id: string) => {
-    event.preventDefault();
-    const element = document.getElementById(id);
-    if (!element) return;
-    const top = element.getBoundingClientRect().top + window.scrollY - 74;
-    window.scrollTo({ top, behavior: "smooth" });
-  };
+  if (!reading || reading.anchors.length === 0) return null;
 
   return (
     <StickyPanel
@@ -138,7 +82,10 @@ export default function TableOfContents({
                   <a
                     key={item.id}
                     href={`#${item.id}`}
-                    onClick={(event) => jump(event, item.id)}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      reading.scrollToAnchor(item.id);
+                    }}
                     className={`article-toc-item text-toc level-${item.level} ${activeId === item.id ? "is-active" : ""}`}
                   >
                     {item.text}

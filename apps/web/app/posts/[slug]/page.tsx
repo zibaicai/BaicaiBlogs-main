@@ -7,6 +7,7 @@ import RecommendedCard from "../../../components/RecommendedCard";
 import BackButton from "../../../components/BackButton";
 import ArticleToc from "../../../components/ArticleToc";
 import MarkdownReader from "../../../components/MarkdownReader";
+import { ReadingProvider } from "../../../components/reading/ReadingContext";
 import CommentSection from "../../../components/comments/CommentSection";
 import { formatDate, formatDay } from "../../../lib/api";
 import { getPost, getPosts } from "../../../lib/server-api";
@@ -49,6 +50,7 @@ export default async function PostDetail({ params }: { params: Promise<{ slug: s
     <div className="min-h-screen relative pb-20">
       <Navbar />
       <PageTransition>
+        <ReadingProvider>
         <main className="article-reading-grid w-[95%] max-w-7xl mx-auto mt-24 md:mt-28 relative z-10">
           <div className="article-left-top">
             <div className="article-back-slot">
@@ -131,6 +133,7 @@ export default async function PostDetail({ params }: { params: Promise<{ slug: s
             <CommentSection targetType="POST" targetId={post.id} />
           </div>
         </main>
+        </ReadingProvider>
       </PageTransition>
     </div>
   );

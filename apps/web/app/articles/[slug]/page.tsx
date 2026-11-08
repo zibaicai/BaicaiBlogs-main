@@ -11,6 +11,7 @@ import ReadingProse from "../../../components/reading/ReadingProse";
 import ReadingSurface from "../../../components/reading/ReadingSurface";
 import ReadingToolbar from "../../../components/reading/ReadingToolbar";
 import TableOfContents from "../../../components/reading/TableOfContents";
+import { ReadingProvider } from "../../../components/reading/ReadingContext";
 import { useReadingTheme } from "../../../components/reading/useReadingTheme";
 import ContentSidebar from "../../../components/ContentSidebar";
 import CommentSection from "../../../components/comments/CommentSection";
@@ -79,10 +80,11 @@ export default function ArticleDetailPage() {
             ) : !article ? (
               <div className="py-24 text-center text-sm text-slate-400"><BookOpen className="mx-auto mb-3" /> 文章不存在或未公开。</div>
             ) : (
+              <ReadingProvider>
               <div className="xl:grid xl:grid-cols-[320px_minmax(0,1fr)] xl:items-start xl:gap-8">
                 <aside className="article-sidebar hidden xl:block">
                   <ContentSidebar items={relatedItems} />
-                  <TableOfContents contentSelector=".markdown-body" className="mt-5" />
+                  <TableOfContents className="mt-5" />
                 </aside>
 
                 <article className="min-w-0">
@@ -135,6 +137,7 @@ export default function ArticleDetailPage() {
                   </div>
                 </article>
               </div>
+              </ReadingProvider>
             )}
           </div>
         </main>

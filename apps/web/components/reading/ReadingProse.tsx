@@ -1,6 +1,7 @@
 "use client";
 
 import type { MouseEventHandler } from "react";
+import { useReadingContext } from "./ReadingContext";
 
 /**
  * Shared long-form content surface.
@@ -15,8 +16,10 @@ export default function ReadingProse({
   className?: string;
   onClick?: MouseEventHandler<HTMLDivElement>;
 }) {
+  const reading = useReadingContext();
   return (
     <div
+      ref={reading?.contentRef}
       className={`reading-prose ${className}`.trim()}
       onClickCapture={onClick}
       dangerouslySetInnerHTML={{ __html: html }}
