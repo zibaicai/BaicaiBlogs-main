@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { glassProps } from "./ui/glass/GlassSurface";
 
 type MarkdownTheme = "classic" | "github-light" | "github-dark";
+type ReadingMode = "classic" | "github";
+type ReadingScheme = "auto" | "light" | "dark";
 
 const THEME_STORAGE_KEY = "markdown-reader-theme";
 
@@ -49,15 +51,21 @@ export default function MarkdownReader({ html }: { html: string }) {
   };
 
   const contentClass = "markdown-content markdown-body";
-  const effectiveTheme =
-    theme === "classic"
-      ? isDark
-        ? "github-dark"
-        : "github-light"
-      : theme;
+  const mode: ReadingMode = theme === "classic" ? "classic" : "github";
+  const scheme: ReadingScheme =
+    theme === "classic" ? "auto" : theme === "github-light" ? "light" : "dark";
+  const resolvedScheme = scheme === "auto" ? (isDark ? "dark" : "light") : scheme;
+  const effectiveTheme = `github-${resolvedScheme}`;
 
   return (
-    <section className="markdown-reader" data-md-theme={effectiveTheme} data-site-theme={theme}>
+    <section
+      className="markdown-reader"
+      data-md-theme={effectiveTheme}
+      data-reading-mode={mode}
+      data-reading-scheme={scheme}
+      data-reading-resolved-scheme={resolvedScheme}
+      data-site-theme={theme}
+    >
       <div className="markdown-theme-bar">
         <span className="markdown-theme-label">阅读主题</span>
         <div {...glassProps("field", "suspend", "markdown-theme-options")} role="group" aria-label="Markdown 阅读主题">
