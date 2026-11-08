@@ -9,7 +9,8 @@ import BackButton from "../../../components/BackButton";
 import ArticleImageLightbox from "../../../components/ArticleImageLightbox";
 import ReadingProse from "../../../components/reading/ReadingProse";
 import ReadingSurface from "../../../components/reading/ReadingSurface";
-import { useSiteDark } from "../../../components/reading/useReadingScheme";
+import ReadingToolbar from "../../../components/reading/ReadingToolbar";
+import { useReadingTheme } from "../../../components/reading/useReadingTheme";
 import ContentSidebar from "../../../components/ContentSidebar";
 import CommentSection from "../../../components/comments/CommentSection";
 import { articleApi, formatDay, type Article } from "../../../lib/api";
@@ -20,7 +21,7 @@ export default function ArticleDetailPage() {
   const [related, setRelated] = useState<Article[]>([]);
   const [viewer, setViewer] = useState<{ src: string; alt: string } | null>(null);
   const [loading, setLoading] = useState(true);
-  const isDark = useSiteDark();
+  const { theme, setTheme, mode, scheme, resolvedScheme } = useReadingTheme();
   const slug = params?.slug ? decodeURIComponent(params.slug) : "";
 
   useEffect(() => {
@@ -98,12 +99,14 @@ export default function ArticleDetailPage() {
                     {article.subtitle && <p className="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">{article.subtitle}</p>}
                     <ReadingSurface
                       variant="article"
-                      mode="classic"
-                      scheme="auto"
-                      resolvedScheme={isDark ? "dark" : "light"}
+                      mode={mode}
+                      scheme={scheme}
+                      resolvedScheme={resolvedScheme}
+                      siteTheme={theme}
+                      toolbar={<ReadingToolbar theme={theme} onChange={setTheme} />}
                     >
                       <ReadingProse
-                        className="wechat-article mt-8"
+                        className={`wechat-article markdown-body mt-8 ${theme === "classic" ? "markdown-body--site" : ""}`}
                         html={article.contentHtml}
                         onClick={openImage}
                       />

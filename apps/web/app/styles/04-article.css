@@ -7,6 +7,9 @@
   font-size: var(--reading-body);
   line-height: var(--reading-line-height);
 }
+.reading-prose img {
+  cursor: zoom-in;
+}
 /* Article reading layout */
 .article-reading-grid {
   display: grid;
