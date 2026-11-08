@@ -62,13 +62,13 @@ export default function ArticleDetailPage() {
       <Navbar />
       <PageTransition>
         <main className="directory-shell articles-shell">
-          <div className="mx-auto max-w-[1112px]">
+          <div className="mx-auto max-w-7xl">
             {loading ? (
               <div className="py-24 text-center text-slate-400"><Loader2 className="mx-auto animate-spin" /></div>
             ) : !article ? (
               <div className="py-24 text-center text-sm text-slate-400"><BookOpen className="mx-auto mb-3" /> 文章不存在或未公开。</div>
             ) : (
-              <div className="xl:grid xl:grid-cols-[320px_760px] xl:items-start xl:gap-8">
+              <div className="xl:grid xl:grid-cols-[320px_minmax(0,1fr)] xl:items-start xl:gap-8">
                 <aside className="hidden xl:sticky xl:top-24 xl:block">
                   <ContentSidebar items={relatedItems} />
                 </aside>

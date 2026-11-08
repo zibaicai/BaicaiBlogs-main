@@ -11,7 +11,7 @@
   padding-bottom: 5rem;
 }
 .wechat-article {
-  max-width: 680px;
+  max-width: 100%;
   margin: 0 auto;
   color: var(--ui-text);
   font-size: var(--type-card-title);
