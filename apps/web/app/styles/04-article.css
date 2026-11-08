@@ -10,6 +10,9 @@
 .reading-prose img {
   cursor: zoom-in;
 }
+.reading-prose :where(h1, h2, h3, h4, h5, h6) {
+  scroll-margin-top: calc(var(--reading-sticky-top) + 10px);
+}
 .article-detail-card {
   border-radius: var(--radius-reading-shell);
 }
