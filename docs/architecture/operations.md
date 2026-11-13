@@ -146,6 +146,32 @@ TURNSTILE_*
 
 Git 历史中的旧凭据一律视为已泄露，必须轮换，不能只删文件。
 
+## 视觉测试与 WAF
+
+Playwright / 截图测试不得在未认证状态下访问：
+
+```text
+/articles/manage
+```
+
+未认证访问会产生 404/403，并可能触发 `baicai-scan` 的 4xx 规则，导致测试出口 IP 被 fail2ban 全端口封禁。
+
+规则：
+
+```text
+manage 测试必须提供有效 ADMIN_COOKIE
+没有有效 Cookie 时 skip，不得用无效 Cookie 硬跑
+优先对本地或预发布环境跑视觉测试
+```
+
+如果测试出口 IP 被封：
+
+```bash
+fail2ban-client set baicai-scan unbanip <ip>
+```
+
+不要长期把动态办公 IP 加入 `ignoreip`。
+
 ## 安全操作
 
 ```text
