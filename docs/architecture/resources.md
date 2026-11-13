@@ -49,7 +49,30 @@ visibility = PUBLIC
 ```text
 PRIVATE 或 DRAFT
 → 公开路由 404
-→ 仅管理员通过管理路由查看
+→ 作者可管理
+→ ADMIN / SUPER_ADMIN 可管理
+```
+
+Article 的所有权优先于管理角色：
+
+```text
+作者始终可以管理自己的 DRAFT / PRIVATE 文章
+管理员额外拥有全站文章管理能力
+不能把“私有文章仅管理员可见”理解为“作者不能管理”
+```
+
+作者管理入口使用：
+
+```text
+/api/me/articles
+控制台 /articles
+```
+
+管理员全站目录使用：
+
+```text
+/api/admin/articles
+/articles/manage
 ```
 
 ### 来源字段

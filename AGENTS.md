@@ -8,7 +8,7 @@
 2. `docs/architecture/roles.md`
 3. `docs/architecture/resources.md`
 4. 与改动模块相关的 `docs/architecture/frontend.md` 或 `docs/architecture/backend.md`
-5. 修改 `ArticleCard` / `DirectoryExplorer` / 列表卡片前，必须阅读 `invariants.md` 第 17、18 条
+5. 修改 `ArchiveItemCard` / `ArticleCard` / `PostCard` / `DirectoryExplorer` / 列表卡片前，必须阅读 `invariants.md` 第 17、18、19 条
 
 ## 项目定位
 

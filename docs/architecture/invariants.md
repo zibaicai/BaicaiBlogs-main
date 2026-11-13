@@ -240,4 +240,35 @@ overflow hidden
 
 同类问题不得只改 CSS 后不复核其他卡片状态。
 
+## 19. Article 所有权优先于管理角色
+
+Article 是用户资产。作者必须始终能够管理自己的 `DRAFT` / `PRIVATE` 文章。
+
+```text
+作者：管理自己的全部文章
+ADMIN / SUPER_ADMIN：额外管理全站文章
+公开路由：只返回 PUBLISHED + PUBLIC
+```
+
+不能把私有文章写成：
+
+```text
+只有管理员可以查看/管理
+```
+
+作者管理走：
+
+```text
+/api/me/articles
+控制台 /articles
+```
+
+管理员全站目录走：
+
+```text
+/api/admin/articles
+/articles/manage
+```
+
+
 

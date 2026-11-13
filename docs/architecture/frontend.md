@@ -40,16 +40,48 @@ data-glass-scroll
 分页
 ```
 
+### ArchiveItemCard
+
+目录卡片的唯一基础渲染器，负责：
+
+```text
+封面 / 媒体
+标题
+描述
+meta
+tag / foot
+cover / timeline / masonry 布局
+```
+
+所有卡片布局、固定文本区、标题行高和 tag 对齐都只在这里维护。
+
 ### ArticleCard
 
-文章卡片，支持：
+`ArticleCard` 是 `ArchiveItemCard` 的 Article 适配层，只负责：
+
+```text
+Article → ArchiveItemCard props
+```
+
+支持：
 
 ```text
 hrefBase
 showStatus
+layout
 ```
 
 管理目录与公开目录使用同一个卡片。
+
+禁止：
+
+```text
+ArticleCard 自己复制卡片 DOM
+ArticleCard 自己维护另一套卡片布局 CSS
+页面直接复制 directory-card 结构
+```
+
+`PostCard` 同样是 Post 适配层；`ProjectsBoard` 等组合可以直接复用 `ArchiveItemCard`，但不得复制其结构。
 
 封面卡片（`archive-card--cover`）必须遵守固定文本区：
 
@@ -71,7 +103,7 @@ meta 绝对定位后让 title 顶到不可预测的位置
 
 标题行高只保留一个来源，不允许 `.resource-title` 与 `.directory-card-title` 互相覆盖导致 1.3 / 1.4 混用。
 
-详细硬规则见 [invariants.md](invariants.md) 第 17、18 条。
+详细硬规则见 [invariants.md](invariants.md) 第 17、18、19 条。
 
 ### ArticleDirectory
 
