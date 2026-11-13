@@ -166,6 +166,12 @@ layout={manage ? "row" : "cover"}
 
 public 与 manage 的卡片结构必须完全一致，只允许内容状态不同。
 
+修改卡片后必须运行：
+
+```bash
+pnpm --dir apps/web check:card-contract
+```
+
 详见 [invariants.md](invariants.md) 第 23 条。
 
 ## 页面职责

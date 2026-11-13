@@ -8,7 +8,7 @@
 2. `docs/architecture/roles.md`
 3. `docs/architecture/resources.md`
 4. 与改动模块相关的 `docs/architecture/frontend.md`、`docs/architecture/backend.md` 或 `docs/architecture/operations.md`
-5. 修改 `ArchiveItemCard` / `ArticleCard` / `PostCard` / `DirectoryExplorer` / `ArticleDirectory` / 列表卡片前，必须阅读 `invariants.md` 第 17–23 条
+5. 修改 `ArchiveItemCard` / `ArticleCard` / `PostCard` / `DirectoryExplorer` / `ArticleDirectory` / 列表卡片前，必须阅读 `invariants.md` 第 17–23 条，修改后运行 `pnpm --dir apps/web check:card-contract`
 
 ## 项目定位
 
