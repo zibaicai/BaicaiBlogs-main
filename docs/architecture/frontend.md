@@ -51,6 +51,28 @@ showStatus
 
 管理目录与公开目录使用同一个卡片。
 
+封面卡片（`archive-card--cover`）必须遵守固定文本区：
+
+```text
+copy 固定高度
+meta 固定高度行，无日期也保留占位
+title / description 正常文档流
+description 与 tag 之间保留空白
+tag / foot 固定在卡片底部
+```
+
+禁止使用：
+
+```text
+height: auto
+max-height 代替固定高度
+meta 绝对定位后让 title 顶到不可预测的位置
+```
+
+标题行高只保留一个来源，不允许 `.resource-title` 与 `.directory-card-title` 互相覆盖导致 1.3 / 1.4 混用。
+
+详细硬规则见 [invariants.md](invariants.md) 第 17、18 条。
+
 ### ArticleDirectory
 
 文章目录组合组件：

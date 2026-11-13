@@ -182,3 +182,62 @@ components/ui/StickyBar
 
 具体距离由使用方通过 `--sticky-*` 变量提供。
 
+## 17. 目录卡片文本区必须保持固定结构
+
+`ArticleCard` / `DirectoryExplorer` 的封面卡片必须保持以下结构：
+
+```text
+copy（固定高度文本区）
+├─ meta（固定高度行，没有日期时也保留占位）
+├─ title（正常文档流）
+├─ description（正常文档流）
+└─ 剩余空白
+foot（tag / meta，固定在卡片底部）
+```
+
+硬规则：
+
+```text
+文本区使用固定高度，不得改成 height:auto
+不得用 max-height 代替固定高度
+meta 不得绝对定位后让 title 顶到不可预测的位置
+title / description 从固定起点从上往下顺排
+description 与 tag 之间保留空白
+tag 固定在底部对齐
+```
+
+禁止用“让内容自己撑开”的方式修复单张卡片溢出。
+
+溢出只能在文本行内部处理：
+
+```text
+line-clamp
+overflow hidden
+固定行数
+```
+
+## 18. 重复组件改动前必须验证布局契约
+
+修改 `ArticleCard`、`DirectoryExplorer`、`ArticleDirectory` 等重复组件前，必须先确认：
+
+```text
+有日期 / 无日期
+短标题 / 两行标题
+有描述 / 无描述
+有 tag / 无 tag
+桌面 / 移动端
+```
+
+不得为了修复一张卡片而改变整个列表的结构契约。
+
+如果确实需要改变固定高度、meta 占位或 tag 位置，必须：
+
+```text
+更新本文件
+更新 docs/architecture/frontend.md
+在提交说明中写明结构变化
+```
+
+同类问题不得只改 CSS 后不复核其他卡片状态。
+
+
