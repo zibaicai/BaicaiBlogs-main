@@ -17,8 +17,8 @@ spring:
 
   jpa:
     hibernate:
-      # 首次部署用 update 自动补齐缺失字段；表结构稳定后可改回 validate
-      ddl-auto: update
+      # 生产环境只校验结构；DDL 由独立迁移账号执行
+      ddl-auto: validate
     show-sql: false
 
 # 生产环境允许的前端来源

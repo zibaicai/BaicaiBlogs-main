@@ -8,6 +8,9 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 # 本地开发允许的前端来源
+jwt:
+  secret: ${JWT_SECRET:baicai-local-dev-only-jwt-secret-change-me}
+
 app:
   cors:
     allowed-origins: http://localhost:3000,http://localhost:3001,http://localhost:3002
