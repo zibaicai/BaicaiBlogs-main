@@ -1377,7 +1377,7 @@ html:not(.dark) .hv-empty {
 @media (max-width: 1023px) {
   .archive-card--cover {
     --cover-foot-height: 24px;
-    --cover-copy-height: 7.6em;
+    --cover-copy-height: 8.2em;
     aspect-ratio: 16 / 9;
   }
 
