@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 public class Fail2banService {
 
     private static final Set<String> JAILS = Set.of("baicai-scan", "baicai-limit", "ufw-scan", "sshd");
+    private static final String WRAPPER = "/usr/local/sbin/baicai-fail2ban";
     private static final Pattern IPV4 = Pattern.compile(
             "^((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.){3}(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)$");
 
@@ -61,7 +62,12 @@ public class Fail2banService {
 
     private String run(String... command) {
         try {
-            Process process = new ProcessBuilder(command).redirectErrorStream(true).start();
+            String[] full = new String[command.length + 3];
+            full[0] = "sudo";
+            full[1] = "-n";
+            full[2] = WRAPPER;
+            System.arraycopy(command, 0, full, 3, command.length);
+            Process process = new ProcessBuilder(full).redirectErrorStream(true).start();
             StringBuilder output = new StringBuilder();
             try (BufferedReader reader = new BufferedReader(
                     new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
