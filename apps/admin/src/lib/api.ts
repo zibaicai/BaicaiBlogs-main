@@ -218,6 +218,8 @@ export const api = {
     request<void>(`/me/projects/${encodeURIComponent(projectId)}`, { method: "DELETE" }),
   getOverview: () => request<any>("/me/overview"),
   myProfile: () => request<any>("/me/profile"),
+
+  session: () => request<{ username: string; role: string; nickname?: string }>("/auth/me"),
   updateMyProfile: (payload: Record<string, unknown>) =>
     request<any>("/me/profile", { method: "PUT", body: JSON.stringify(payload) }),
   myPreferences: () => request<Record<string, unknown>>("/me/preferences"),

@@ -345,6 +345,12 @@ function StatCard({ icon, label, value, tone }: { icon: React.ReactNode; label: 
 }
 
 function Dashboard() {
+  const role = getAdminRole();
+  if (role === "USER") return <Navigate to="/posts" replace />;
+  return <AdminDashboard />;
+}
+
+function AdminDashboard() {
   const { data: response, loading, error } = useLoad<any>(() => api.getOverview());
   const data = response?.data || {};
   const assets = data.assets || {};
@@ -826,12 +832,33 @@ function ForbiddenListener() {
   return null;
 }
 
+function SessionGate({ children }: { children: React.ReactNode }) {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    api.session()
+      .then((res) => {
+        if (res?.success && res.data) {
+          setAdminUser(res.data.username || "");
+          setAdminRole(res.data.role || "");
+        }
+      })
+      .catch(() => {
+        setAdminUser("");
+        setAdminRole("");
+      })
+      .finally(() => setReady(true));
+  }, []);
+  if (!ready) return <div className="min-h-screen admin-bg flex items-center justify-center text-sm font-bold text-slate-400">Loading...</div>;
+  return <>{children}</>;
+}
+
 export default function App() {
   return (
     <ToastProvider>
       <ForbiddenListener />
       <OperationProvider>
         <SiteConfigProvider>
+          <SessionGate>
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<RequireAuth><Shell><Dashboard /></Shell></RequireAuth>} />
@@ -864,6 +891,7 @@ export default function App() {
             <Route path="/forbidden" element={<RequireAuth><Shell><ForbiddenPage /></Shell></RequireAuth>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          </SessionGate>
         </SiteConfigProvider>
       </OperationProvider>
     </ToastProvider>
