@@ -106,6 +106,32 @@ public class AuthService {
         userRepository.save(user);
     }
 
+    public void changePassword(User user, String currentPassword, String newPassword) {
+        if (!passwordEncoder.matches(currentPassword == null ? "" : currentPassword, user.getPassword())) {
+            throw new RuntimeException("当前密码错误");
+        }
+        if (newPassword == null || newPassword.length() < 12) {
+            throw new RuntimeException("新密码至少 12 位");
+        }
+        if (passwordEncoder.matches(newPassword, user.getPassword())) {
+            throw new RuntimeException("新密码不能与旧密码相同");
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setTokenVersion((user.getTokenVersion() == null ? 0 : user.getTokenVersion()) + 1);
+        userRepository.save(user);
+    }
+
+    public String resetPassword(User target) {
+        String chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%";
+        java.security.SecureRandom random = new java.security.SecureRandom();
+        StringBuilder temp = new StringBuilder();
+        for (int i = 0; i < 18; i++) temp.append(chars.charAt(random.nextInt(chars.length())));
+        target.setPassword(passwordEncoder.encode(temp.toString()));
+        target.setTokenVersion((target.getTokenVersion() == null ? 0 : target.getTokenVersion()) + 1);
+        userRepository.save(target);
+        return temp.toString();
+    }
+
     private LoginResponse buildTokenResponse(User user, boolean admin) {
         long expiration = admin ? adminExpiration : jwtExpiration;
         String token = jwtTokenProvider.generateToken(user.getUsername(), user.getTokenVersion(), expiration);

@@ -198,6 +198,12 @@ export const api = {
   disable2fa: (password: string) =>
     request<void>("/auth/2fa/disable", { method: "POST", body: JSON.stringify({ password }) }),
 
+  changePassword: (currentPassword: string, newPassword: string) =>
+    request<void>("/auth/password", {
+      method: "POST",
+      body: JSON.stringify({ currentPassword, newPassword }),
+    }),
+
   logout: () => request<void>("/auth/logout", { method: "POST", credentials: "include" }),
   myPosts: () => request<Post[]>("/me/posts"),
   myProjects: () => request<Project[]>("/me/projects"),

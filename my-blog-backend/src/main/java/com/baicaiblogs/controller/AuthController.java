@@ -1,6 +1,7 @@
 package com.baicaiblogs.controller;
 
 import com.baicaiblogs.dto.ApiResponse;
+import com.baicaiblogs.dto.ChangePasswordRequest;
 import com.baicaiblogs.dto.LoginRequest;
 import com.baicaiblogs.dto.LoginResponse;
 import com.baicaiblogs.entity.User;
@@ -54,6 +55,17 @@ public class AuthController {
                 httpResponse.addHeader(HttpHeaders.SET_COOKIE, c.toString());
             }
             return ApiResponse.success("登录成功", response);
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @PostMapping("/password")
+    public ApiResponse<Void> changePassword(@RequestBody ChangePasswordRequest body, HttpServletResponse response) {
+        try {
+            authService.changePassword(currentUser(), body.currentPassword(), body.newPassword());
+            clearAuthCookies(response);
+            return ApiResponse.success("密码已修改，请重新登录", null);
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
         }
@@ -152,6 +164,15 @@ public class AuthController {
 
     private boolean isAdmin(User user) {
         return user != null && ("ADMIN".equalsIgnoreCase(user.getRole()) || "SUPER_ADMIN".equalsIgnoreCase(user.getRole()));
+    }
+
+    private void clearAuthCookies(HttpServletResponse response) {
+        ResponseCookie user = ResponseCookie.from(JwtAuthenticationFilter.COOKIE_NAME, "")
+                .httpOnly(true).path("/").maxAge(0).sameSite("Lax").build();
+        ResponseCookie admin = ResponseCookie.from(JwtAuthenticationFilter.ADMIN_COOKIE_NAME, "")
+                .httpOnly(true).path("/").maxAge(0).sameSite("Lax").domain(".zibaicai.cn").build();
+        response.addHeader(HttpHeaders.SET_COOKIE, user.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, admin.toString());
     }
 
     private void setAdminCookie(HttpServletRequest request, HttpServletResponse response, String token) {

@@ -10,6 +10,10 @@ export default function SecuritySection() {
   const [otpauth, setOtpauth] = useState("");
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
+  const [currentPw, setCurrentPw] = useState("");
+  const [newPw, setNewPw] = useState("");
+  const [confirmPw, setConfirmPw] = useState("");
+  const [pwBusy, setPwBusy] = useState(false);
 
   const start = async () => {
     setBusy(true);
@@ -25,8 +29,7 @@ export default function SecuritySection() {
     }
   };
 
-  const enable = async () => {
-    if (!/^\d{6}$/.test(code.trim())) {
+  const enable = async () => {    if (!/^\d{6}$/.test(code.trim())) {
       showToast("请输入 6 位验证码", "error");
       return;
     }
@@ -39,6 +42,27 @@ export default function SecuritySection() {
       showToast(e instanceof Error ? e.message : "启用失败", "error");
     } finally {
       setBusy(false);
+    }
+  };
+
+  const changePassword = async () => {
+    if (newPw.length < 12) {
+      showToast("新密码至少 12 位", "error");
+      return;
+    }
+    if (newPw !== confirmPw) {
+      showToast("两次输入的新密码不一致", "error");
+      return;
+    }
+    setPwBusy(true);
+    try {
+      await api.changePassword(currentPw, newPw);
+      showToast("密码已修改，请重新登录", "success");
+      window.setTimeout(() => { window.location.href = "/login"; }, 800);
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : "修改失败", "error");
+    } finally {
+      setPwBusy(false);
     }
   };
 
@@ -75,6 +99,19 @@ export default function SecuritySection() {
           </div>
         )}
       </div>
+      <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+        <h3 className="text-lg font-black text-white">修改密码</h3>
+        <p className="mt-2 text-sm text-slate-400">修改后所有旧会话立即失效，需要重新登录。</p>
+        <div className="mt-4 space-y-3">
+          <Input type="password" value={currentPw} onChange={(e) => setCurrentPw(e.target.value)} placeholder="当前密码" autoComplete="current-password" />
+          <Input type="password" value={newPw} onChange={(e) => setNewPw(e.target.value)} placeholder="新密码（至少 12 位）" autoComplete="new-password" />
+          <Input type="password" value={confirmPw} onChange={(e) => setConfirmPw(e.target.value)} placeholder="确认新密码" autoComplete="new-password" />
+          <Button onClick={changePassword} disabled={pwBusy}>
+            {pwBusy ? "修改中..." : "修改密码"}
+          </Button>
+        </div>
+      </div>
+
       <div className="rounded-3xl border border-amber-400/20 bg-amber-400/5 p-6 text-sm text-amber-200/80">
         启用后请妥善保存身份验证器。丢失验证器将无法登录管理端，需要服务器运维介入重置。
       </div>
