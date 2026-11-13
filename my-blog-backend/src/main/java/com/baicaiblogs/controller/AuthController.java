@@ -90,7 +90,6 @@ public class AuthController {
     public ApiResponse<Map<String, Object>> setupTwoFactor() {
         try {
             User user = currentUser();
-            if (!isAdmin(user)) return ApiResponse.error("只有管理员可以启用二次验证");
             return ApiResponse.success(authService.setupTotp(user));
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());

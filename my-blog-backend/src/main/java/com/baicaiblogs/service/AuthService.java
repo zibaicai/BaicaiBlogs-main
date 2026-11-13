@@ -49,7 +49,7 @@ public class AuthService {
         loginAttemptService.success(ip, username);
 
         boolean admin = "ADMIN".equalsIgnoreCase(user.getRole()) || "SUPER_ADMIN".equalsIgnoreCase(user.getRole());
-        if (admin && Boolean.TRUE.equals(user.getTotpEnabled())) {
+        if (Boolean.TRUE.equals(user.getTotpEnabled())) {
             return LoginResponse.builder()
                     .requires2fa(true)
                     .challengeToken(jwtTokenProvider.generateTwoFactorChallenge(user.getUsername()))
