@@ -1072,7 +1072,13 @@ html:not(.dark) .hv-empty {
   align-self: start;
 }
 .archive-card--cover {
-  --cover-copy-height: 9.2em;
+  --cover-copy-height: calc(
+    14px + 22px + 8px
+    + (var(--type-card-title) * 2 * var(--leading-card-title))
+    + 6px
+    + (var(--type-list-description) * 2 * var(--leading-card-description))
+    + 10px
+  );
   --cover-foot-height: 26px;
   position: relative;
   display: block;
@@ -1245,7 +1251,7 @@ html:not(.dark) .hv-empty {
   margin-top: 6px;
   color: rgba(255, 255, 255, 0.74);
   font-size: var(--type-list-description);
-  line-height: 1.55;
+  line-height: var(--leading-card-description);
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
@@ -1377,7 +1383,6 @@ html:not(.dark) .hv-empty {
 @media (max-width: 1023px) {
   .archive-card--cover {
     --cover-foot-height: 24px;
-    --cover-copy-height: 8.2em;
     aspect-ratio: 16 / 9;
   }
 

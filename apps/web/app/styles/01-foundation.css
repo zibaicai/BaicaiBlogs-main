@@ -155,6 +155,7 @@
 
   /* Shared leading scale. Component classes must reference these tokens. */
   --leading-card-title: 1.35;
+  --leading-card-description: 1.55;
   --leading-detail-title: 1.2;
   --leading-body: 1.7;
   --leading-description: 1.65;
