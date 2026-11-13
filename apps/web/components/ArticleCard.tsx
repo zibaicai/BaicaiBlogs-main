@@ -1,4 +1,5 @@
 import { formatDay, type Article } from "../lib/api";
+import { DEFAULT_BACKGROUND } from "../lib/site-config";
 import ArchiveItemCard from "./ArchiveItemCard";
 
 export default function ArticleCard({
@@ -22,6 +23,7 @@ export default function ArticleCard({
           : article.visibility === "PRIVATE"
             ? "仅管理员"
             : undefined;
+  const cover = article.cover || DEFAULT_BACKGROUND.defaultPostCover;
   return (
     <ArchiveItemCard
       href={`${hrefBase}/${encodeURIComponent(article.slug)}`}
@@ -31,7 +33,7 @@ export default function ArticleCard({
       category={(article.categoryPath || article.category)?.split("/").join(" / ")}
       tags={article.tags}
       cornerBadge={showStatus && statusLabel ? statusLabel : undefined}
-      media={article.cover ? { kind: "cover", src: article.cover, alt: article.title, fit: "contain" } : undefined}
+      media={{ kind: "cover", src: cover, alt: article.title }}
       layout={layout}
     />
   );
