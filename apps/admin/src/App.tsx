@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link, NavLink, Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import {
   Activity,
@@ -234,7 +235,9 @@ const NAV_ITEMS = [
 function UserMenu() {
   const nav = useNavigate();
   const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState({ top: 0, right: 0 });
   const ref = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const user = getAdminUser();
   const role = getAdminRole();
   const avatar = getAdminAvatar();
@@ -244,18 +247,33 @@ function UserMenu() {
   useEffect(() => {
     if (!open) return;
     const onDoc = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      const target = e.target as Node;
+      if (ref.current?.contains(target) || menuRef.current?.contains(target)) return;
+      setOpen(false);
     };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
     };
+    const onViewport = () => setOpen(false);
     document.addEventListener("mousedown", onDoc);
     document.addEventListener("keydown", onKey);
+    window.addEventListener("resize", onViewport);
+    window.addEventListener("scroll", onViewport, true);
     return () => {
       document.removeEventListener("mousedown", onDoc);
       document.removeEventListener("keydown", onKey);
+      window.removeEventListener("resize", onViewport);
+      window.removeEventListener("scroll", onViewport, true);
     };
   }, [open]);
+
+  const toggle = () => {
+    if (!open && ref.current) {
+      const rect = ref.current.getBoundingClientRect();
+      setPos({ top: rect.bottom + 8, right: Math.max(12, window.innerWidth - rect.right) });
+    }
+    setOpen((v) => !v);
+  };
 
   const go = (path: string) => {
     setOpen(false);
@@ -279,7 +297,7 @@ function UserMenu() {
     <div className="relative" ref={ref}>
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={toggle}
         className="flex items-center gap-2 rounded-full pl-1 pr-2 py-1 hover:bg-white/5 transition-colors"
         aria-haspopup="menu"
         aria-expanded={open}
@@ -295,10 +313,12 @@ function UserMenu() {
         <ChevronDown size={13} className={`text-slate-500 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
 
-      {open && (
+      {open && createPortal(
         <div
+          ref={menuRef}
           role="menu"
-          className="absolute right-0 top-11 z-[200] w-56 overflow-hidden rounded-2xl border border-white/10 bg-slate-950/95 shadow-2xl backdrop-blur-2xl"
+          style={{ position: "fixed", top: pos.top, right: pos.right, zIndex: 10000 }}
+          className="w-56 overflow-hidden rounded-2xl border border-white/10 bg-slate-950/95 shadow-2xl backdrop-blur-2xl"
         >
           <div className="border-b border-white/10 px-4 py-3">
             <div className="truncate text-sm font-black text-white">{user || "未登录"}</div>
@@ -325,7 +345,8 @@ function UserMenu() {
               退出登录
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
@@ -378,7 +399,7 @@ function Shell({ children }: { children: React.ReactNode }) {
       </aside>
 
       <div className="flex-1 min-w-0 flex flex-col min-h-0">
-        <header className="h-16 shrink-0 px-5 md:px-6 flex items-center justify-between border-b border-white/5 bg-slate-950/30 backdrop-blur-xl">
+        <header className="relative z-[80] h-16 shrink-0 px-5 md:px-6 flex items-center justify-between border-b border-white/5 bg-slate-950/30 backdrop-blur-xl">
           <div className="flex items-center gap-2.5">
             <span className="lg:hidden w-8 h-8 rounded-lg bg-indigo-500 flex items-center justify-center text-white text-xs">
               🌌
@@ -397,7 +418,7 @@ function Shell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        <main className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden admin-scrollbar px-5 md:px-6 pt-5 pb-5">
+        <main className="relative z-0 flex-1 min-h-0 overflow-y-auto overflow-x-hidden admin-scrollbar px-5 md:px-6 pt-5 pb-5">
           {children}
         </main>
       </div>
