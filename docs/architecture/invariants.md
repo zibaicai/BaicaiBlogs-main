@@ -328,5 +328,43 @@ header 的 z-index 不能解决 header 内部子元素的 stacking context
 
 所有卡片标题统一通过 `ArchiveItemCard` 的样式契约管理。
 
+## 23. ArticleDirectory mode 不得改变布局
+
+`/articles` 与 `/articles/manage` 必须共用同一套卡片结构。
+
+`mode` 只能改变：
+
+```text
+数据范围
+筛选器
+状态角标
+链接前缀
+标题 / 说明
+工具栏附加操作
+```
+
+`mode` 不得改变：
+
+```text
+卡片尺寸
+文本区高度
+标题起点
+标题行高
+描述行数
+meta 高度
+tag / foot 位置
+```
+
+禁止：
+
+```text
+为 manage 复制一套卡片
+用 mode 切换 layout
+用 mode 添加页面专属卡片 class
+```
+
+public 与 manage 的视觉差异只能来自内容状态，不能来自布局。
+
+
 
 

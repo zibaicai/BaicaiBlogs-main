@@ -134,6 +134,40 @@ mode = public | manage
 
 禁止为管理目录复制一份列表 UI。
 
+`mode` 只允许改变：
+
+```text
+数据范围
+筛选器
+状态角标
+链接前缀
+页面标题 / 说明
+工具栏附加操作
+```
+
+`mode` 不得改变：
+
+```text
+卡片尺寸
+文本区高度
+标题起点
+标题行高
+描述行数
+meta 高度
+tag / foot 位置
+```
+
+禁止使用：
+
+```tsx
+className={manage ? "manage-card" : ""}
+layout={manage ? "row" : "cover"}
+```
+
+public 与 manage 的卡片结构必须完全一致，只允许内容状态不同。
+
+详见 [invariants.md](invariants.md) 第 23 条。
+
 ## 页面职责
 
 ### `/articles`
