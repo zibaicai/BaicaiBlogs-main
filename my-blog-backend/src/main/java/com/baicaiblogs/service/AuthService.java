@@ -56,6 +56,7 @@ public class AuthService {
                     .userId(user.getId())
                     .username(user.getUsername())
                     .nickname(user.getNickname() != null ? user.getNickname() : user.getUsername())
+                    .avatar(user.getAvatar())
                     .role(user.getRole())
                     .status(user.getStatus())
                     .build();
@@ -142,6 +143,7 @@ public class AuthService {
                 .userId(user.getId())
                 .username(user.getUsername())
                 .nickname(user.getNickname() != null ? user.getNickname() : user.getUsername())
+                .avatar(user.getAvatar())
                 .role(user.getRole())
                 .status(user.getStatus())
                 .build();

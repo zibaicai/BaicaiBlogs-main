@@ -2,6 +2,7 @@ const BASE = "/api";
 const TOKEN_KEY = "bc_admin_token";
 const USER_KEY = "bc_admin_user";
 const ROLE_KEY = "bc_admin_role";
+const AVATAR_KEY = "bc_admin_avatar";
 
 if (typeof localStorage !== "undefined") localStorage.removeItem(TOKEN_KEY);
 
@@ -11,6 +12,8 @@ export const getAdminUser = () => localStorage.getItem(USER_KEY) || "";
 export const setAdminUser = (u: string) => (u ? localStorage.setItem(USER_KEY, u) : localStorage.removeItem(USER_KEY));
 export const getAdminRole = () => localStorage.getItem(ROLE_KEY) || "";
 export const setAdminRole = (r: string) => (r ? localStorage.setItem(ROLE_KEY, r) : localStorage.removeItem(ROLE_KEY));
+export const getAdminAvatar = () => localStorage.getItem(AVATAR_KEY) || "";
+export const setAdminAvatar = (a: string) => (a ? localStorage.setItem(AVATAR_KEY, a) : localStorage.removeItem(AVATAR_KEY));
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -176,6 +179,7 @@ export const api = {
       token: string;
       username: string;
       role: string;
+      avatar?: string;
       requires2fa?: boolean;
       challengeToken?: string;
       totpSetupRequired?: boolean;
@@ -219,7 +223,7 @@ export const api = {
   getOverview: () => request<any>("/me/overview"),
   myProfile: () => request<any>("/me/profile"),
 
-  session: () => request<{ username: string; role: string; nickname?: string }>("/auth/me"),
+  session: () => request<{ username: string; role: string; nickname?: string; avatar?: string }>("/auth/me"),
   updateMyProfile: (payload: Record<string, unknown>) =>
     request<any>("/me/profile", { method: "PUT", body: JSON.stringify(payload) }),
   myPreferences: () => request<Record<string, unknown>>("/me/preferences"),

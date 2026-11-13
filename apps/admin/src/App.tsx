@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import {
   Activity,
   Archive,
   ArrowUpRight,
+  ChevronDown,
   Ban,
   BookOpen,
   Database,
@@ -32,7 +33,7 @@ import {
   Waypoints,
   Upload,
 } from "lucide-react";
-import { api, getAdminRole, getAdminUser, setAdminUser, setAdminRole } from "./lib/api";
+import { api, getAdminRole, getAdminUser, getAdminAvatar, setAdminUser, setAdminRole, setAdminAvatar } from "./lib/api";
 import { ToastProvider, useToast } from "./components/ToastProvider";
 import { OperationProvider } from "./context/OperationContext";
 import { SiteConfigProvider } from "./context/SiteConfigProvider";
@@ -60,6 +61,7 @@ import FriendMessagesPage from "./pages/FriendMessagesPage";
 import IpBansPage from "./pages/IpBansPage";
 import ForbiddenPage from "./pages/ForbiddenPage";
 import MySettingsPage from "./pages/MySettingsPage";
+import AccountSecurityPage from "./pages/AccountSecurityPage";
 import CommentAuditPage from "./pages/CommentAuditPage";
 
 type Any = Record<string, any>;
@@ -105,6 +107,7 @@ function Login() {
         if (!j?.success) throw new Error(j?.message || "验证失败");
         setAdminUser(j.data.username || u.trim());
         setAdminRole(j.data.role || "");
+        setAdminAvatar(j.data.avatar || "");
         nav("/");
       } catch (error) {
         setMsg("验证失败：" + (error instanceof Error ? error.message : "未知错误"));
@@ -129,6 +132,7 @@ function Login() {
       }
       setAdminUser(j.data.username || u.trim());
       setAdminRole(j.data.role || "");
+      setAdminAvatar(j.data.avatar || "");
       nav("/");
     } catch (error) {
       setMsg("登录失败：" + (error instanceof Error ? error.message : "未知错误"));
@@ -227,9 +231,107 @@ const NAV_ITEMS = [
   { to: "/my-settings", label: "个人设置", icon: Settings },
 ];
 
-function Shell({ children }: { children: React.ReactNode }) {
+function UserMenu() {
   const nav = useNavigate();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
   const user = getAdminUser();
+  const role = getAdminRole();
+  const avatar = getAdminAvatar();
+  const roleLabel = role === "SUPER_ADMIN" ? "超级管理员" : role === "ADMIN" ? "管理员" : "用户";
+  const initial = (user || "U").slice(0, 1).toUpperCase();
+
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  const go = (path: string) => {
+    setOpen(false);
+    nav(path);
+  };
+
+  const logout = async () => {
+    setOpen(false);
+    try {
+      await api.logout();
+    } catch {
+      // 后端失败也清理本地会话
+    }
+    setAdminUser("");
+    setAdminRole("");
+    setAdminAvatar("");
+    nav("/login");
+  };
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-2 rounded-full pl-1 pr-2 py-1 hover:bg-white/5 transition-colors"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-label="账户菜单"
+      >
+        {avatar ? (
+          <img src={avatar} alt="" className="h-8 w-8 rounded-full object-cover ring-2 ring-indigo-400/30" />
+        ) : (
+          <span className="h-8 w-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 text-white text-xs font-black flex items-center justify-center ring-2 ring-indigo-400/30">
+            {initial}
+          </span>
+        )}
+        <ChevronDown size={13} className={`text-slate-500 transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+
+      {open && (
+        <div
+          role="menu"
+          className="absolute right-0 top-11 z-[200] w-56 overflow-hidden rounded-2xl border border-white/10 bg-slate-950/95 shadow-2xl backdrop-blur-2xl"
+        >
+          <div className="border-b border-white/10 px-4 py-3">
+            <div className="truncate text-sm font-black text-white">{user || "未登录"}</div>
+            <div className="mt-0.5 text-[10px] font-bold text-indigo-300">{roleLabel}</div>
+          </div>
+          <div className="p-1.5">
+            <button role="menuitem" onClick={() => go("/my-settings")} className="w-full rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-300 hover:bg-white/10 hover:text-white">
+              个人设置
+            </button>
+            <button role="menuitem" onClick={() => go("/account/security")} className="w-full rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-300 hover:bg-white/10 hover:text-white">
+              账号安全
+            </button>
+            {(role === "ADMIN" || role === "SUPER_ADMIN") && (
+              <button role="menuitem" onClick={() => go("/settings")} className="w-full rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-300 hover:bg-white/10 hover:text-white">
+                站点设置
+              </button>
+            )}
+            <a role="menuitem" href="https://www.zibaicai.cn" target="_blank" rel="noreferrer" className="block rounded-xl px-3 py-2 text-xs font-bold text-slate-300 hover:bg-white/10 hover:text-white">
+              访问 C 端
+            </a>
+          </div>
+          <div className="border-t border-white/10 p-1.5">
+            <button role="menuitem" onClick={logout} className="w-full rounded-xl px-3 py-2 text-left text-xs font-bold text-red-300 hover:bg-red-500/15">
+              退出登录
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Shell({ children }: { children: React.ReactNode }) {
   const role = getAdminRole();
   const userNav = new Set(["/", "/posts", "/projects", "/gallery", "/moments", "/articles", "/my-settings"]);
   const superOnlyNav = new Set(["/privacy", "/suggestions", "/ip-bans", "/archives", "/access"]);
@@ -238,17 +340,6 @@ function Shell({ children }: { children: React.ReactNode }) {
     if (role === "ADMIN") return !superOnlyNav.has(item.to);
     return userNav.has(item.to);
   });
-
-  const logout = async () => {
-    try {
-      await api.logout();
-    } catch {
-      // 即使后端失败也清理本地登录态
-    }
-    setAdminUser("");
-    setAdminRole("");
-    nav("/login");
-  };
 
   return (
     <div className="h-screen overflow-hidden admin-bg flex">
@@ -284,19 +375,6 @@ function Shell({ children }: { children: React.ReactNode }) {
             </NavLink>
           ))}
         </nav>
-
-        <div className="mt-auto rounded-2xl bg-white/5 border border-white/10 p-3">
-          <div className="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-0.5">
-            当前账号
-          </div>
-          <div className="text-[12px] font-bold text-slate-200 truncate">{user || "admin"}</div>
-          <button
-            onClick={logout}
-            className="mt-2 w-full py-2 rounded-lg bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white text-[10px] font-black transition-all flex items-center justify-center gap-1.5"
-          >
-            <LogOut size={13} /> 退出登录
-          </button>
-        </div>
       </aside>
 
       <div className="flex-1 min-w-0 flex flex-col min-h-0">
@@ -315,14 +393,7 @@ function Shell({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-3 md:gap-4">
             {/* 页面级操作由页面通过 Portal 注入，避免按钮跟随内容滚动 */}
             <div id="admin-header-actions" className="flex items-center" />
-            <a
-              href="https://www.zibaicai.cn"
-              target="_blank"
-              rel="noreferrer"
-              className="hidden sm:flex text-[10px] font-bold text-slate-400 hover:text-indigo-400 transition-colors items-center gap-1"
-            >
-              访问 C 端 <ArrowUpRight size={13} />
-            </a>
+            <UserMenu />
           </div>
         </header>
 
@@ -840,10 +911,12 @@ function SessionGate({ children }: { children: React.ReactNode }) {
         if (!res?.success || !res.data) throw new Error("未登录");
         setAdminUser(res.data.username || "");
         setAdminRole(res.data.role || "");
+        setAdminAvatar(res.data.avatar || "");
       })
       .catch(() => {
         setAdminUser("");
         setAdminRole("");
+        setAdminAvatar("");
       })
       .finally(() => setReady(true));
   }, []);
@@ -886,6 +959,7 @@ export default function App() {
             <Route path="/access" element={<RequireAuth><RequireRole roles={["SUPER_ADMIN"]}><Shell><AccessPage /></Shell></RequireRole></RequireAuth>} />
             <Route path="/settings" element={<RequireAuth><RequireRole roles={["ADMIN", "SUPER_ADMIN"]}><Shell><SettingsPage /></Shell></RequireRole></RequireAuth>} />
             <Route path="/my-settings" element={<RequireAuth><Shell><MySettingsPage /></Shell></RequireAuth>} />
+            <Route path="/account/security" element={<RequireAuth><Shell><AccountSecurityPage /></Shell></RequireAuth>} />
             <Route path="/editor/:slug?" element={<RequireAuth><EditorPage /></RequireAuth>} />
             <Route path="/forbidden" element={<RequireAuth><Shell><ForbiddenPage /></Shell></RequireAuth>} />
             <Route path="*" element={<Navigate to="/" replace />} />
