@@ -5,24 +5,27 @@
     "dev": "next dev -p 3001",
     "build": "next build",
     "start": "next start -p 3001",
-    "check:card-contract": "node scripts/check-card-contract.mjs"
+    "check:card-contract": "node scripts/check-card-contract.mjs",
+    "test:visual": "playwright test",
+    "test:visual:update": "playwright test --update-snapshots"
   },
   "dependencies": {
+    "framer-motion": "^12.38.0",
+    "highlight.js": "^11.11.1",
+    "katex": "^0.16.45",
+    "lucide-react": "^1.7.0",
     "next": "16.2.1",
     "react": "19.2.4",
-    "react-dom": "19.2.4",
-    "framer-motion": "^12.38.0",
-    "lucide-react": "^1.7.0",
-    "katex": "^0.16.45",
-    "highlight.js": "^11.11.1"
+    "react-dom": "19.2.4"
   },
   "devDependencies": {
-    "typescript": "^5.6.0",
+    "@playwright/test": "^1.55.0",
+    "@tailwindcss/postcss": "^4.1.0",
+    "@tailwindcss/typography": "^0.5.19",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "tailwindcss": "^4.1.0",
-    "@tailwindcss/postcss": "^4.1.0",
-    "@tailwindcss/typography": "^0.5.19"
+    "typescript": "^5.6.0"
   }
 }

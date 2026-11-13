@@ -2,11 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { Eye, Plus, Search, Trash2 } from "lucide-react";
 
 import { api, getAdminRole } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
-import { AdminPageHeader, AdminPageShell, FilterTabs, StatusBadge, TagBadge } from "../components/admin/AdminUI";
+import { AdminPageHeader, AdminPageShell, FilterTabs, StatusBadge } from "../components/admin/AdminUI";
 import { DataTable } from "../components/admin/DataTable";
 
 type Article = {
@@ -14,9 +14,11 @@ type Article = {
   title: string;
   category?: string;
   tags?: string[];
+  summary?: string;
   status: string;
   visibility?: string;
   slug: string;
+  publishedAt?: string;
   updatedAt?: string;
   words?: number;
 };
@@ -123,13 +125,57 @@ export default function ArticlesListPage() {
         empty="没有符合条件的文章。"
         onRowClick={(article) => navigate(`/articles/${article.id}`)}
         columns={[
-          { key: "title", header: "标题", cell: (article) => <button type="button" onClick={() => navigate(`/articles/${article.id}`)} className="block max-w-[300px] truncate text-left text-[12px] font-bold text-white hover:text-indigo-300">{article.title}</button> },
-          { key: "status", header: "状态", cell: (article) => <StatusBadge status={article.status} /> },
-          { key: "category", header: "分类", cell: (article) => <span className="text-slate-400">{article.category || "未分类"}</span> },
-          { key: "tags", header: "标签", className: "max-w-[180px]", cell: (article) => <div className="flex flex-wrap gap-1">{(article.tags || []).slice(0, 3).map((tag) => <TagBadge key={tag}>{tag}</TagBadge>)}{!(article.tags || []).length && <span className="text-slate-600">—</span>}</div> },
-          { key: "updatedAt", header: "更新时间", cell: (article) => <span className="whitespace-nowrap text-[10px] text-slate-500">{article.updatedAt ? new Date(article.updatedAt).toLocaleString("zh-CN", { dateStyle: "short", timeStyle: "short" }) : "—"}</span> },
-          { key: "review", header: "审核", className: "text-right", cell: (article) => isAdmin && article.status === "PENDING_REVIEW" ? <div className="flex justify-end gap-1"><button type="button" onClick={() => void approve(article)} className="rounded-md bg-emerald-500/15 px-2 py-1 text-[10px] font-bold text-emerald-300">通过</button><button type="button" onClick={() => void reject(article)} className="rounded-md bg-red-500/15 px-2 py-1 text-[10px] font-bold text-red-300">驳回</button></div> : null },
-          { key: "action", header: "操作", className: "text-right", cell: (article) => <div className="flex justify-end gap-0.5"><button type="button" onClick={() => navigate(`/articles/${article.id}/edit`)} title="编辑" className="rounded-md p-1.5 text-slate-400 hover:bg-white/10 hover:text-white"><Pencil size={13} /></button><button type="button" onClick={() => article.status === "PUBLISHED" && article.visibility === "PUBLIC" ? window.open(`https://www.zibaicai.cn/articles/${article.slug}`, "_blank") : navigate(`/articles/${article.id}`)} title={article.status === "PUBLISHED" && article.visibility === "PUBLIC" ? "C 端预览" : "后台预览"} className="rounded-md p-1.5 text-slate-400 hover:bg-white/10 hover:text-white"><Eye size={13} /></button><button type="button" onClick={() => void remove(article)} title="删除" className="rounded-md p-1.5 text-slate-500 hover:bg-red-500/10 hover:text-red-300"><Trash2 size={13} /></button></div> },
+          {
+            key: "title",
+            header: "标题",
+            cell: (article) => (
+              <button type="button" onClick={() => navigate(`/articles/${article.id}`)} className="block min-w-0 max-w-[320px] text-left">
+                <p className="truncate text-[12px] font-bold text-white hover:text-indigo-300">{article.title}</p>
+                <p className="mt-0.5 truncate font-mono text-[9px] text-slate-600">{article.slug}</p>
+              </button>
+            ),
+          },
+          {
+            key: "status",
+            header: "状态",
+            cell: (article) => (
+              <div className="flex items-center gap-1.5">
+                <StatusBadge status={article.status} />
+                <span className="whitespace-nowrap text-[9px] font-bold text-slate-500">
+                  {article.visibility === "PRIVATE" ? "私有" : "公开"}
+                </span>
+              </div>
+            ),
+          },
+          {
+            key: "summary",
+            header: "简介",
+            className: "max-w-[280px]",
+            cell: (article) => <p className="line-clamp-2 text-[10px] leading-5 text-slate-500">{article.summary || "暂无摘要"}</p>,
+          },
+          {
+            key: "updatedAt",
+            header: "更新时间",
+            cell: (article) => <span className="whitespace-nowrap text-[10px] text-slate-500">{article.updatedAt ? new Date(article.updatedAt).toLocaleString("zh-CN", { dateStyle: "short", timeStyle: "short" }) : "—"}</span>,
+          },
+          {
+            key: "action",
+            header: "操作",
+            className: "text-right",
+            cell: (article) => (
+              <div className="flex justify-end gap-1">
+                {isAdmin && article.status === "PENDING_REVIEW" && (
+                  <>
+                    <button type="button" onClick={() => void approve(article)} className="rounded-md bg-emerald-500/15 px-2 py-1 text-[9px] font-bold text-emerald-300 hover:bg-emerald-500/25">通过</button>
+                    <button type="button" onClick={() => void reject(article)} className="rounded-md bg-red-500/15 px-2 py-1 text-[9px] font-bold text-red-300 hover:bg-red-500/25">驳回</button>
+                  </>
+                )}
+                <Link to={`/articles/${article.id}/edit`} className="rounded-md bg-indigo-500/10 px-2 py-1 text-[9px] font-bold text-indigo-300 hover:bg-indigo-500 hover:text-white">编辑</Link>
+                <button type="button" onClick={() => article.status === "PUBLISHED" && article.visibility === "PUBLIC" ? window.open(`https://www.zibaicai.cn/articles/${article.slug}`, "_blank") : navigate(`/articles/${article.id}`)} title={article.status === "PUBLISHED" && article.visibility === "PUBLIC" ? "C 端预览" : "后台预览"} className="rounded-md p-1.5 text-slate-400 hover:bg-white/10 hover:text-white"><Eye size={13} /></button>
+                <button type="button" onClick={() => void remove(article)} title="删除" className="rounded-md p-1.5 text-slate-500 hover:bg-red-500/10 hover:text-red-300"><Trash2 size={13} /></button>
+              </div>
+            ),
+          },
         ]}
       />
     </AdminPageShell>

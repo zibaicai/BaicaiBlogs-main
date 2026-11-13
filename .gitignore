@@ -72,3 +72,8 @@ apps/web/.next/
 # 本地部署/测试产物
 /_deploy/
 /_test/
+
+# Playwright
+apps/web/test-results/
+apps/web/playwright-report/
+apps/web/blob-report/
