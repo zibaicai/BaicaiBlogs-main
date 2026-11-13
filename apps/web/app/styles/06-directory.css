@@ -42,11 +42,11 @@
   .directory-card-title {
     @apply line-clamp-2 font-semibold text-slate-800 transition-colors duration-300;
     font-size: var(--type-card-title);
-    line-height: 1.35;
+    line-height: var(--leading-card-title);
   }
 
   .directory-card .directory-card-title {
-    line-height: 1.35;
+    line-height: var(--leading-card-title);
   }
 
   .dark .directory-card-title {
@@ -492,7 +492,7 @@ html:not(.dark) .hv-empty {
   font-family: "Songti SC", "Noto Serif SC", Georgia, serif;
   font-size: var(--type-card-title);
   font-weight: 600;
-  line-height: 1.35;
+  line-height: var(--leading-card-title);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1231,7 +1231,7 @@ html:not(.dark) .hv-empty {
   color: #fff;
   font-family: var(--font-ui);
   font-weight: 600;
-  line-height: 1.35;
+  line-height: var(--leading-card-title);
   white-space: normal;
   text-overflow: clip;
   -webkit-box-orient: vertical;
@@ -1341,7 +1341,7 @@ html:not(.dark) .hv-empty {
   color: var(--ui-text-muted);
 }
 .archive-card--masonry .directory-card-title {
-  line-height: 1.35;
+  line-height: var(--leading-card-title);
   white-space: normal;
   display: -webkit-box;
   overflow: hidden;

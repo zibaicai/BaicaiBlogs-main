@@ -19,7 +19,7 @@
   font-family: var(--font-literary);
   font-size: var(--type-detail-title);
   font-weight: 700;
-  line-height: 1.2;
+  line-height: var(--leading-detail-title);
   letter-spacing: -0.025em;
 }
 @utility text-section-title {
@@ -33,7 +33,7 @@
   font-family: var(--font-ui);
   font-size: var(--type-card-title);
   font-weight: 600;
-  line-height: 1.4;
+  line-height: var(--leading-card-title);
 }
 @utility text-subtitle {
   font-size: var(--type-subtitle);
@@ -41,11 +41,11 @@
 }
 @utility text-body {
   font-size: var(--type-body);
-  line-height: 1.7;
+  line-height: var(--leading-body);
 }
 @utility text-description {
   font-size: var(--type-card-description);
-  line-height: 1.65;
+  line-height: var(--leading-description);
 }
 @utility text-control {
   font-size: var(--type-control);
@@ -53,7 +53,7 @@
 }
 @utility text-meta {
   font-size: var(--type-meta);
-  line-height: 1.5;
+  line-height: var(--leading-meta);
 }
 @utility text-caption {
   font-size: var(--type-caption);
@@ -152,6 +152,13 @@
   --type-caption: clamp(0.6875rem, 0.66rem + 0.08vw, 0.8125rem);
   --prose-body: clamp(1rem, 0.95rem + 0.18vw, 1.0625rem);
   --prose-line-height: 1.85;
+
+  /* Shared leading scale. Component classes must reference these tokens. */
+  --leading-card-title: 1.35;
+  --leading-detail-title: 1.2;
+  --leading-body: 1.7;
+  --leading-description: 1.65;
+  --leading-meta: 1.5;
 
   /* Shared form-control tokens. */
   --control-height: 42px;

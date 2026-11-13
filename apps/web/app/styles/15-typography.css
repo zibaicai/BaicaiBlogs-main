@@ -18,7 +18,7 @@
   font-family: var(--font-ui);
   font-size: var(--resource-title-size, var(--type-card-title));
   font-weight: 600;
-  line-height: 1.4;
+  line-height: var(--leading-card-title);
 }
 .resource-title--compact {
   --resource-title-size: var(--type-list-title);
@@ -34,7 +34,7 @@
 }
 .resource-meta {
   font-size: var(--type-meta);
-  line-height: 1.5;
+  line-height: var(--leading-meta);
 }
 .page-subtitle {
   font-size: var(--type-page-subtitle);
@@ -46,7 +46,7 @@
 }
 .resource-description {
   font-size: var(--type-card-description);
-  line-height: 1.65;
+  line-height: var(--leading-description);
 }
 .resource-description--compact {
   font-size: var(--type-list-description);
@@ -54,7 +54,7 @@
 }
 .ui-body {
   font-size: var(--type-body);
-  line-height: 1.7;
+  line-height: var(--leading-body);
 }
 .ui-caption {
   font-size: var(--type-caption);
@@ -71,7 +71,7 @@
   font-family: var(--font-literary);
   font-size: var(--type-detail-title);
   font-weight: 700;
-  line-height: 1.2;
+  line-height: var(--leading-detail-title);
   letter-spacing: -0.025em;
   text-wrap: pretty;
   width: 100%;
@@ -82,11 +82,11 @@
 }
 .description {
   font-size: var(--type-card-description);
-  line-height: 1.65;
+  line-height: var(--leading-description);
 }
 .body-text {
   font-size: var(--type-body);
-  line-height: 1.7;
+  line-height: var(--leading-body);
 }
 .control-text {
   font-size: var(--type-control);

@@ -100,14 +100,14 @@ export const DEFAULT_BACKGROUND: BackgroundConfig = {
   defaultPostCover: "/bg-5.webp",
 };
 
-export function getDefaultCover(seed: string) {
-  const images = DEFAULT_BACKGROUND.bgImages;
-  if (!images.length) return DEFAULT_BACKGROUND.defaultPostCover;
+const ARTICLE_FALLBACK_COVERS = ["/bg-1.webp", "/bg-2.webp", "/bg-3.webp"];
+
+export function getArticleCover(seed: string) {
   let hash = 0;
   for (const char of seed || "default") {
     hash = (hash * 31 + char.charCodeAt(0)) | 0;
   }
-  return images[Math.abs(hash) % images.length];
+  return ARTICLE_FALLBACK_COVERS[Math.abs(hash) % ARTICLE_FALLBACK_COVERS.length];
 }
 
 export const DEFAULT_DANMAKU: string[] = [
