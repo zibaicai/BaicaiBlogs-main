@@ -270,5 +270,63 @@ ADMIN / SUPER_ADMIN：额外管理全站文章
 /articles/manage
 ```
 
+## 20. 首屏必须先开屏后首页
+
+首屏绘制顺序必须是：
+
+```text
+开屏
+→ 首页
+```
+
+禁止：
+
+```text
+首页
+→ 开屏
+→ 首页
+```
+
+实现要求：
+
+```text
+服务端输出静态开屏骨架
+首帧 CSS 隐藏 #app-mount-root
+head 内联脚本在绘制前判断是否已看过开屏
+开屏结束后再加 splash-seen
+```
+
+不得只依赖客户端 `useEffect` 才挂载开屏层。
+
+## 21. 浮层不得被层叠上下文裁剪
+
+会覆盖页面内容的下拉菜单、弹层、选择器必须使用：
+
+```text
+createPortal → document.body
+position: fixed
+```
+
+不能只在 `backdrop-filter`、`transform`、`filter` 的父容器内部提高 `z-index`。
+
+```text
+header 的 z-index 不能解决 header 内部子元素的 stacking context
+局部 z-index 不能突破父级层叠上下文
+```
+
+## 22. 标题排版只能有一个来源
+
+卡片标题的字号、行高、字重必须只在一个组件/规则中定义。
+
+禁止：
+
+```text
+.resource-title 与 .directory-card-title 互相覆盖
+页面通过更高 specificity 临时改行高
+同一类卡片混用 1.3 / 1.4
+```
+
+所有卡片标题统一通过 `ArchiveItemCard` 的样式契约管理。
+
 
 

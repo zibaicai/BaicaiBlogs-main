@@ -32,9 +32,87 @@ JWT 支持：
 ```text
 Authorization: Bearer <token>
 BC_TOKEN Cookie
+BC_ADMIN_TOKEN Cookie
 ```
 
 角色来自数据库用户，不来自前端声明。
+
+### 密钥与有效期
+
+JWT secret 只来自环境变量：
+
+```text
+JWT_SECRET
+```
+
+不得写进仓库、JAR、前端或日志。
+
+有效期：
+
+```text
+普通用户：24 小时
+管理员：2 小时
+```
+
+### tokenVersion
+
+JWT 包含：
+
+```text
+sub
+tokenVersion
+iat
+exp
+```
+
+每次请求与数据库 `users.token_version` 比较：
+
+```text
+不一致 → 拒绝认证
+```
+
+封禁、改密、管理员强制下线时递增 tokenVersion。
+
+### 2FA
+
+管理员和普通用户都可以绑定 TOTP。
+
+登录流程：
+
+```text
+用户名 + 密码
+→ 需要 2FA 时返回 challengeToken
+→ POST /api/auth/2fa/verify
+→ 签发正式 token
+```
+
+challengeToken：
+
+```text
+scope=2fa
+有效期 5 分钟
+不能访问业务接口
+```
+
+TOTP secret 只存数据库，不返回给前端；绑定接口返回一次 `otpauthUrl`。
+
+### 密码
+
+```text
+POST /api/auth/password
+旧密码校验
+新密码至少 12 位
+不能与旧密码相同
+成功后 tokenVersion + 1
+```
+
+超级管理员可以重置普通用户密码：
+
+```text
+POST /api/admin/users/{id}/password/reset
+```
+
+返回一次性临时密码，旧 token 立即失效。
 
 ## 授权命名空间目标
 
@@ -77,9 +155,29 @@ BC_ADMIN_TOKEN
 管理员跨子域管理能力
 ```
 
+Cookie 必须：
+
+```text
+HttpOnly
+Secure（HTTPS）
+SameSite=Lax
+Path=/
+```
+
+管理端 token 不得写入 localStorage。
+
 不要把普通用户 token 写入 `.zibaicai.cn` 后又被管理员页面复用。
 
 C 端管理目录需要管理员身份时，使用独立的管理员 Cookie 或短期签名 token。
+
+前端请求统一：
+
+```text
+credentials: "include"
+```
+
+不得手工从 localStorage 读取 token 拼 Authorization。
+
 
 ## 资源授权
 
