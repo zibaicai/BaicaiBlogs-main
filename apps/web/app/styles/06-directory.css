@@ -42,7 +42,11 @@
   .directory-card-title {
     @apply line-clamp-2 font-semibold text-slate-800 transition-colors duration-300;
     font-size: var(--type-card-title);
-    line-height: 1.4;
+    line-height: 1.35;
+  }
+
+  .directory-card .directory-card-title {
+    line-height: 1.35;
   }
 
   .dark .directory-card-title {
@@ -1153,10 +1157,11 @@ html:not(.dark) .hv-empty {
   justify-content: flex-start;
   box-sizing: border-box;
   font-size: var(--type-card-title);
-  height: var(--cover-copy-height);
+  height: auto;
+  max-height: calc(100% - var(--cover-foot-height) - 28px);
   min-width: 0;
   min-height: 0;
-  padding: 14px 0 0;
+  padding: 40px 0 0;
   overflow: hidden;
 }
 .directory-card-meta {
@@ -1178,11 +1183,17 @@ html:not(.dark) .hv-empty {
   white-space: nowrap;
 }
 .archive-card--cover .directory-card-meta {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
   display: flex;
   align-items: center;
   gap: 8px;
   min-width: 0;
-  margin-bottom: 8px;
+  height: 22px;
+  margin-bottom: 0;
+  overflow: hidden;
 }
 .archive-card--cover .directory-card-meta .directory-card-time {
   margin-bottom: 0;
@@ -1221,11 +1232,12 @@ html:not(.dark) .hv-empty {
   color: #fff;
   font-family: var(--font-ui);
   font-weight: 600;
-  line-height: 1.3;
+  line-height: 1.35;
   white-space: normal;
   text-overflow: clip;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  padding-bottom: 2px;
 }
 .archive-card--cover .directory-card-description {
   display: -webkit-box;
