@@ -1072,7 +1072,7 @@ html:not(.dark) .hv-empty {
   align-self: start;
 }
 .archive-card--cover {
-  --cover-copy-height: 7.6em;
+  --cover-copy-height: 9.2em;
   --cover-foot-height: 26px;
   position: relative;
   display: block;
@@ -1157,11 +1157,11 @@ html:not(.dark) .hv-empty {
   justify-content: flex-start;
   box-sizing: border-box;
   font-size: var(--type-card-title);
-  height: auto;
-  max-height: calc(100% - var(--cover-foot-height) - 28px);
+  height: var(--cover-copy-height);
+  max-height: none;
   min-width: 0;
   min-height: 0;
-  padding: 40px 0 0;
+  padding: 14px 0 0;
   overflow: hidden;
 }
 .directory-card-meta {
@@ -1183,16 +1183,14 @@ html:not(.dark) .hv-empty {
   white-space: nowrap;
 }
 .archive-card--cover .directory-card-meta {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
+  position: relative;
+  flex: 0 0 22px;
   display: flex;
   align-items: center;
   gap: 8px;
   min-width: 0;
   height: 22px;
-  margin-bottom: 0;
+  margin-bottom: 8px;
   overflow: hidden;
 }
 .archive-card--cover .directory-card-meta .directory-card-time {
@@ -1228,6 +1226,7 @@ html:not(.dark) .hv-empty {
 }
 .archive-card--cover .directory-card-title {
   display: -webkit-box;
+  flex: 0 0 auto;
   overflow: hidden;
   color: #fff;
   font-family: var(--font-ui);
@@ -1241,6 +1240,7 @@ html:not(.dark) .hv-empty {
 }
 .archive-card--cover .directory-card-description {
   display: -webkit-box;
+  flex: 0 0 auto;
   overflow: hidden;
   margin-top: 6px;
   color: rgba(255, 255, 255, 0.74);
@@ -1377,12 +1377,13 @@ html:not(.dark) .hv-empty {
 @media (max-width: 1023px) {
   .archive-card--cover {
     --cover-foot-height: 24px;
+    --cover-copy-height: 7.6em;
     aspect-ratio: 16 / 9;
   }
 
   .archive-card--cover .directory-card-copy {
-    height: auto;
-    max-height: calc(100% - var(--cover-foot-height) - 22px);
+    height: var(--cover-copy-height);
+    max-height: none;
   }
 }
 @media (min-width: 1201px) {

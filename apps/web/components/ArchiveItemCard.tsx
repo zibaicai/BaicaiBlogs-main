@@ -45,6 +45,7 @@ export default function ArchiveItemCard({
   variant,
   layout = "auto",
 }: ArchiveItemCardProps) {
+  const coverLayout = layout === "auto" || layout === "cover";
   if (layout === "profile") {
     const avatar =
       media?.kind === "icon" ? (
@@ -137,7 +138,7 @@ export default function ArchiveItemCard({
 
       <div className="directory-card-body">
         <div className="directory-card-copy">
-          {(label || category) && (
+          {(label || category || coverLayout) && (
             <div className="directory-card-meta">
               {label && <time className="directory-card-time text-meta">{label}</time>}
               {category && <span className="directory-card-category text-meta">{category}</span>}
