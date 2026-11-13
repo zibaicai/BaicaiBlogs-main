@@ -3,8 +3,10 @@ const TOKEN_KEY = "bc_admin_token";
 const USER_KEY = "bc_admin_user";
 const ROLE_KEY = "bc_admin_role";
 
-export const getToken = () => localStorage.getItem(TOKEN_KEY) || "";
-export const setToken = (t: string) => (t ? localStorage.setItem(TOKEN_KEY, t) : localStorage.removeItem(TOKEN_KEY));
+if (typeof localStorage !== "undefined") localStorage.removeItem(TOKEN_KEY);
+
+export const getToken = () => "";
+export const setToken = (_t: string) => localStorage.removeItem(TOKEN_KEY);
 export const getAdminUser = () => localStorage.getItem(USER_KEY) || "";
 export const setAdminUser = (u: string) => (u ? localStorage.setItem(USER_KEY, u) : localStorage.removeItem(USER_KEY));
 export const getAdminRole = () => localStorage.getItem(ROLE_KEY) || "";
@@ -26,7 +28,7 @@ export async function request<T = any>(path: string, opts: RequestInit = {}): Pr
   const token = getToken();
   if (token) headers.Authorization = "Bearer " + token;
 
-  const res = await fetch(BASE + path, { ...opts, headers });
+  const res = await fetch(BASE + path, { ...opts, headers, credentials: "include" });
   const json = (await res.json().catch(() => null)) as ApiResponse<T> | null;
 
   if (res.status === 401) {
@@ -170,10 +172,24 @@ export const api = {
   get: <T = any>(path: string) => request<T>(path),
 
   login: (username: string, password: string) =>
-    request<{ token: string; username: string; role: string }>("/auth/login?cookie=true&adminCookie=true", {
+    request<{
+      token: string;
+      username: string;
+      role: string;
+      requires2fa?: boolean;
+      challengeToken?: string;
+      totpSetupRequired?: boolean;
+    }>("/auth/login?cookie=true&adminCookie=true", {
       method: "POST",
       credentials: "include",
       body: JSON.stringify({ username, password }),
+    }),
+
+  verify2fa: (challengeToken: string, code: string) =>
+    request<{ token: string; username: string; role: string }>("/auth/2fa/verify", {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify({ challengeToken, code }),
     }),
 
   logout: () => request<void>("/auth/logout", { method: "POST", credentials: "include" }),
@@ -365,7 +381,7 @@ export const api = {
   unbanIp: (id: number) => request<void>(`/admin/ip-bans/${id}`, { method: "DELETE" }),
   exportReports: async (ids: number[]) => {
     const res = await fetch(`/api/admin/reports/export?ids=${ids.join(",")}`, {
-      headers: { Authorization: `Bearer ${getToken()}` },
+      credentials: "include",
     });
     if (!res.ok) throw new Error(`导出失败 (${res.status})`);
     return res.blob();
@@ -397,9 +413,8 @@ export const api = {
   reviewSuggestion: (id: number, payload: any) =>
     request<any>(`/admin/suggestions/${id}/review`, { method: "POST", body: JSON.stringify(payload) }),
   adminSuggestionImage: async (id: number) => {
-    const token = getToken();
     const response = await fetch(`/api/admin/suggestions/images/${id}`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      credentials: "include",
     });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     return URL.createObjectURL(await response.blob());

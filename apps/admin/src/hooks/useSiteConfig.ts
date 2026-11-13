@@ -145,14 +145,12 @@ export function useSiteConfig() {
   const fetchAllConfigs = useCallback(async () => {
     setState((prev) => ({ ...prev, loading: true, error: null }));
     try {
-      const token = localStorage.getItem("bc_admin_token") || "";
-      const authHeaders: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
       const [siteInfoRes, bgRes, danmakuRes, aiRes, miscRes] = await Promise.all([
-        fetch(`${API_BASE_URL}/api/admin/config/group/site-info`, { headers: authHeaders }),
-        fetch(`${API_BASE_URL}/api/admin/config/group/background`, { headers: authHeaders }),
-        fetch(`${API_BASE_URL}/api/admin/config/group/danmaku`, { headers: authHeaders }),
-        fetch(`${API_BASE_URL}/api/admin/config/group/ai`, { headers: authHeaders }),
-        fetch(`${API_BASE_URL}/api/admin/config/group/misc`, { headers: authHeaders }),
+        fetch(`${API_BASE_URL}/api/admin/config/group/site-info`, { credentials: "include" }),
+        fetch(`${API_BASE_URL}/api/admin/config/group/background`, { credentials: "include" }),
+        fetch(`${API_BASE_URL}/api/admin/config/group/danmaku`, { credentials: "include" }),
+        fetch(`${API_BASE_URL}/api/admin/config/group/ai`, { credentials: "include" }),
+        fetch(`${API_BASE_URL}/api/admin/config/group/misc`, { credentials: "include" }),
       ]);
 
       const [siteInfoJson, bgJson, danmakuJson, aiJson, miscJson] = await Promise.all([

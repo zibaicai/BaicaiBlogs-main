@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Check, ExternalLink, Link2, Search, X } from "lucide-react";
 
-import { getToken } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
 import { Button } from "../components/ui/Button";
 import { AdminPageHeader, AdminPageShell, StatusBadge } from "../components/admin/AdminUI";
@@ -22,12 +21,11 @@ type Application = {
 };
 
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const token = getToken();
   const res = await fetch(`/api${path}`, {
     ...init,
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(init.headers as Record<string, string>),
     },
   });

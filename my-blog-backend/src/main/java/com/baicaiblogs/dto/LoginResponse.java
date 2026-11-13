@@ -18,4 +18,7 @@ public class LoginResponse {
     private String nickname;
     private String role;
     private String status;
+    private Boolean requires2fa;
+    private String challengeToken;
+    private Boolean totpSetupRequired;
 }

@@ -32,7 +32,7 @@ import {
   Waypoints,
   Upload,
 } from "lucide-react";
-import { api, getAdminRole, getAdminUser, getToken, setAdminUser, setAdminRole, setToken } from "./lib/api";
+import { api, getAdminRole, getAdminUser, setAdminUser, setAdminRole } from "./lib/api";
 import { ToastProvider, useToast } from "./components/ToastProvider";
 import { OperationProvider } from "./context/OperationContext";
 import { SiteConfigProvider } from "./context/SiteConfigProvider";
@@ -88,9 +88,31 @@ function Login() {
   const [p, setP] = useState("");
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
+  const [challenge, setChallenge] = useState("");
+  const [code, setCode] = useState("");
 
   const submit = async (e?: React.FormEvent) => {
     e?.preventDefault();
+    if (challenge) {
+      if (!/^\d{6}$/.test(code.trim())) {
+        setMsg("请输入 6 位动态验证码");
+        return;
+      }
+      setBusy(true);
+      setMsg("");
+      try {
+        const j = await api.verify2fa(challenge, code.trim());
+        if (!j?.success) throw new Error(j?.message || "验证失败");
+        setAdminUser(j.data.username || u.trim());
+        setAdminRole(j.data.role || "");
+        nav("/");
+      } catch (error) {
+        setMsg("验证失败：" + (error instanceof Error ? error.message : "未知错误"));
+      } finally {
+        setBusy(false);
+      }
+      return;
+    }
     if (!u.trim() || !p) {
       setMsg("请输入用户名和密码");
       return;
@@ -99,8 +121,12 @@ function Login() {
     setMsg("");
     try {
       const j = await api.login(u.trim(), p);
-      if (!j?.success || !j.data?.token) throw new Error(j?.message || "登录失败");
-      setToken(j.data.token);
+      if (!j?.success) throw new Error(j?.message || "登录失败");
+      if (j.data.requires2fa && j.data.challengeToken) {
+        setChallenge(j.data.challengeToken);
+        setMsg("请输入身份验证器中的 6 位动态验证码");
+        return;
+      }
       setAdminUser(j.data.username || u.trim());
       setAdminRole(j.data.role || "");
       nav("/");
@@ -146,12 +172,29 @@ function Login() {
           placeholder="••••••••"
         />
 
+        {challenge && (
+          <>
+            <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1 mt-4">
+              动态验证码
+            </label>
+            <input
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              maxLength={6}
+              className="w-full rounded-2xl bg-black/20 border border-white/10 px-5 py-3.5 text-sm tracking-[0.5em] text-slate-100 outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="000000"
+            />
+          </>
+        )}
+
         <button
           type="submit"
           disabled={busy}
           className="w-full mt-7 py-4 rounded-2xl bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 text-white font-black text-sm shadow-lg shadow-indigo-500/30 transition-all active:scale-95 flex items-center justify-center gap-2"
         >
-          {busy && <Loader2 className="animate-spin" size={16} />} 登 录
+          {busy && <Loader2 className="animate-spin" size={16} />} {challenge ? "验 证" : "登 录"}
         </button>
         <div className="mt-4 text-xs text-red-400 min-h-[18px] font-bold">{msg}</div>
       </form>
@@ -202,7 +245,6 @@ function Shell({ children }: { children: React.ReactNode }) {
     } catch {
       // 即使后端失败也清理本地登录态
     }
-    setToken("");
     setAdminUser("");
     setAdminRole("");
     nav("/login");
@@ -761,7 +803,7 @@ function TimelinePreview() {
 }
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
-  if (!getToken()) return <Navigate to="/login" replace />;
+  if (!getAdminUser()) return <Navigate to="/login" replace />;
   return <>{children}</>;
 }
 

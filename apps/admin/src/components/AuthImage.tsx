@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { getToken } from "../lib/api";
 
 /**
  * 管理端图片必须带 Bearer 加载：<img> 本身不会带 Authorization。
@@ -24,7 +23,7 @@ export default function AuthImage({
     }
     let objectUrl = "";
     let cancelled = false;
-    fetch(src, { headers: getToken() ? { Authorization: `Bearer ${getToken()}` } : {} })
+    fetch(src, { credentials: "include" })
       .then((res) => (res.ok ? res.blob() : Promise.reject(new Error(`HTTP ${res.status}`))))
       .then((blob) => {
         if (cancelled) return;

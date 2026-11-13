@@ -35,7 +35,7 @@ public class AuthController {
                                             HttpServletResponse httpResponse) {
         try {
             LoginResponse response = authService.login(request, clientIp(httpRequest));
-            if (cookie) {
+            if (cookie && response.getToken() != null && !response.getToken().isBlank()) {
                 boolean secure = "https".equalsIgnoreCase(httpRequest.getHeader("X-Forwarded-Proto"))
                         || httpRequest.isSecure();
                 String host = httpRequest.getServerName() == null ? "" : httpRequest.getServerName().toLowerCase();
@@ -54,6 +54,52 @@ public class AuthController {
                 httpResponse.addHeader(HttpHeaders.SET_COOKIE, c.toString());
             }
             return ApiResponse.success("登录成功", response);
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @PostMapping("/2fa/verify")
+    public ApiResponse<LoginResponse> verifyTwoFactor(@RequestBody Map<String, String> body,
+                                                      HttpServletRequest httpRequest,
+                                                      HttpServletResponse httpResponse) {
+        try {
+            LoginResponse response = authService.verifyTwoFactor(body.get("challengeToken"), body.get("code"));
+            if (response.getToken() != null) {
+                setAdminCookie(httpRequest, httpResponse, response.getToken());
+            }
+            return ApiResponse.success("登录成功", response);
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @PostMapping("/2fa/setup")
+    public ApiResponse<Map<String, Object>> setupTwoFactor() {
+        try {
+            User user = currentUser();
+            if (!isAdmin(user)) return ApiResponse.error("只有管理员可以启用二次验证");
+            return ApiResponse.success(authService.setupTotp(user));
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @PostMapping("/2fa/enable")
+    public ApiResponse<Void> enableTwoFactor(@RequestBody Map<String, String> body) {
+        try {
+            authService.enableTotp(currentUser(), body.get("code"));
+            return ApiResponse.success("二次验证已启用", null);
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    @PostMapping("/2fa/disable")
+    public ApiResponse<Void> disableTwoFactor(@RequestBody Map<String, String> body) {
+        try {
+            authService.disableTotp(currentUser(), body.get("password"));
+            return ApiResponse.success("二次验证已关闭", null);
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
         }
@@ -94,6 +140,34 @@ public class AuthController {
         data.put("status", user.getStatus());
         data.put("createdAt", user.getCreatedAt());
         return ApiResponse.success(data);
+    }
+
+    private User currentUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication() == null
+                ? null
+                : SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!(principal instanceof User user)) throw new RuntimeException("请先登录");
+        return user;
+    }
+
+    private boolean isAdmin(User user) {
+        return user != null && ("ADMIN".equalsIgnoreCase(user.getRole()) || "SUPER_ADMIN".equalsIgnoreCase(user.getRole()));
+    }
+
+    private void setAdminCookie(HttpServletRequest request, HttpServletResponse response, String token) {
+        boolean secure = "https".equalsIgnoreCase(request.getHeader("X-Forwarded-Proto")) || request.isSecure();
+        String host = request.getServerName() == null ? "" : request.getServerName().toLowerCase();
+        ResponseCookie.ResponseCookieBuilder builder = ResponseCookie.from(
+                        JwtAuthenticationFilter.ADMIN_COOKIE_NAME, token)
+                .httpOnly(true)
+                .secure(secure)
+                .sameSite("Lax")
+                .path("/")
+                .maxAge(Duration.ofSeconds(7200));
+        if (host.equals("zibaicai.cn") || host.endsWith(".zibaicai.cn")) {
+            builder.domain(".zibaicai.cn");
+        }
+        response.addHeader(HttpHeaders.SET_COOKIE, builder.build().toString());
     }
 
     private String clientIp(HttpServletRequest request) {

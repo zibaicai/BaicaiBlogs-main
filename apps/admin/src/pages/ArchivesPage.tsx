@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DOMPurify from "dompurify";
 import { Archive, ChevronLeft, ChevronRight, Download, ExternalLink, FileText, Loader2, Pencil, Plus, RefreshCw, Search, ShieldCheck, Trash2, UserRound, X } from "lucide-react";
-import { getAdminRole, getToken } from "../lib/api";
+import { getAdminRole } from "../lib/api";
 import { useToast } from "../components/ToastProvider";
 import { AdminEmptyState, AdminLoading, AdminPageHeader, AdminPageShell, StatusBadge } from "../components/admin/AdminUI";
 import { DataTable } from "../components/admin/DataTable";
@@ -32,12 +32,11 @@ type DeleteRequest = { id: number; archiveId: number; requestedBy?: number; titl
 type AccessLog = { id: number; action: string; username?: string; userId: number; ipHash?: string; userAgent?: string; createdAt?: string };
 
 async function archiveRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const token = getToken();
   const res = await fetch(`/api${path}`, {
     ...init,
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(init.headers as Record<string, string>),
     },
   });
@@ -301,9 +300,8 @@ export default function ArchivesPage() {
   const downloadSnapshot = async () => {
     if (!selected) return;
     try {
-      const token = getToken();
       const res = await fetch(`/api/internal/archives/${selected.id}/snapshot`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        credentials: "include",
       });
       if (!res.ok) throw new Error("快照下载失败");
       const blob = await res.blob();

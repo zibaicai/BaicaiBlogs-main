@@ -36,6 +36,22 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    public String generateTwoFactorChallenge(String username) {
+        Date now = new Date();
+        return Jwts.builder()
+                .subject(username)
+                .claim("scope", "2fa")
+                .issuedAt(now)
+                .expiration(new Date(now.getTime() + 300_000))
+                .signWith(getSigningKey())
+                .compact();
+    }
+
+    public String getScope(String token) {
+        Object value = parseClaims(token).get("scope");
+        return value == null ? null : value.toString();
+    }
+
     public String getUsernameFromToken(String token) {
         return parseClaims(token).getSubject();
     }

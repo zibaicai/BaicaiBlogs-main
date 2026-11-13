@@ -22,6 +22,7 @@ public class AuthService {
     private final TurnstileService turnstileService;
     private final RegistrationGuardService registrationGuardService;
     private final RegistrationAuditRepository registrationAuditRepository;
+    private final TotpService totpService;
 
     @Value("${jwt.expiration}")
     private long jwtExpiration;
@@ -48,9 +49,66 @@ public class AuthService {
         loginAttemptService.success(ip, username);
 
         boolean admin = "ADMIN".equalsIgnoreCase(user.getRole()) || "SUPER_ADMIN".equalsIgnoreCase(user.getRole());
+        if (admin && Boolean.TRUE.equals(user.getTotpEnabled())) {
+            return LoginResponse.builder()
+                    .requires2fa(true)
+                    .challengeToken(jwtTokenProvider.generateTwoFactorChallenge(user.getUsername()))
+                    .userId(user.getId())
+                    .username(user.getUsername())
+                    .nickname(user.getNickname() != null ? user.getNickname() : user.getUsername())
+                    .role(user.getRole())
+                    .status(user.getStatus())
+                    .build();
+        }
+        return buildTokenResponse(user, admin);
+    }
+
+    public LoginResponse verifyTwoFactor(String challengeToken, String code) {
+        if (!jwtTokenProvider.validateToken(challengeToken) || !"2fa".equals(jwtTokenProvider.getScope(challengeToken))) {
+            throw new RuntimeException("二次验证已失效，请重新登录");
+        }
+        User user = userRepository.findByUsername(jwtTokenProvider.getUsernameFromToken(challengeToken)).orElse(null);
+        if (user == null || !Boolean.TRUE.equals(user.getTotpEnabled())) {
+            throw new RuntimeException("二次验证未启用");
+        }
+        if (!totpService.verify(user.getTotpSecret(), code)) {
+            throw new RuntimeException("验证码错误");
+        }
+        boolean admin = "ADMIN".equalsIgnoreCase(user.getRole()) || "SUPER_ADMIN".equalsIgnoreCase(user.getRole());
+        return buildTokenResponse(user, admin);
+    }
+
+    public java.util.Map<String, Object> setupTotp(User user) {
+        String secret = totpService.generateSecret();
+        user.setTotpSecret(secret);
+        user.setTotpEnabled(false);
+        userRepository.save(user);
+        java.util.Map<String, Object> result = new java.util.LinkedHashMap<>();
+        result.put("secret", secret);
+        result.put("otpauthUrl", totpService.otpauthUrl("Baicai", user.getUsername(), secret));
+        return result;
+    }
+
+    public void enableTotp(User user, String code) {
+        if (user.getTotpSecret() == null || !totpService.verify(user.getTotpSecret(), code)) {
+            throw new RuntimeException("验证码错误");
+        }
+        user.setTotpEnabled(true);
+        userRepository.save(user);
+    }
+
+    public void disableTotp(User user, String password) {
+        if (!passwordEncoder.matches(password == null ? "" : password, user.getPassword())) {
+            throw new RuntimeException("密码错误");
+        }
+        user.setTotpEnabled(false);
+        user.setTotpSecret(null);
+        userRepository.save(user);
+    }
+
+    private LoginResponse buildTokenResponse(User user, boolean admin) {
         long expiration = admin ? adminExpiration : jwtExpiration;
         String token = jwtTokenProvider.generateToken(user.getUsername(), user.getTokenVersion(), expiration);
-
         return LoginResponse.builder()
                 .token(token)
                 .tokenType("Bearer")
