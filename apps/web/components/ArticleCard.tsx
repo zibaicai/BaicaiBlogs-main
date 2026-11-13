@@ -1,5 +1,5 @@
 import { formatDay, type Article } from "../lib/api";
-import { DEFAULT_BACKGROUND } from "../lib/site-config";
+import { getDefaultCover } from "../lib/site-config";
 import ArchiveItemCard from "./ArchiveItemCard";
 
 export default function ArticleCard({
@@ -23,7 +23,7 @@ export default function ArticleCard({
           : article.visibility === "PRIVATE"
             ? "仅管理员"
             : undefined;
-  const cover = article.cover || DEFAULT_BACKGROUND.defaultPostCover;
+  const cover = article.cover || getDefaultCover(article.slug || article.title);
   return (
     <ArchiveItemCard
       href={`${hrefBase}/${encodeURIComponent(article.slug)}`}

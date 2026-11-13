@@ -6,13 +6,10 @@
 }
 /* Articles: independent long-form reading module. */
 .articles-shell {
-  margin-top: 6.5rem;
+  margin-top: 7rem;
   padding-top: 0;
   padding-bottom: 5rem;
-  max-width: 1348px;
-}
-@media (max-width: 640px) {
-  .articles-shell { margin-top: 5rem; }
+  max-width: 80rem;
 }
 .directory-card-corner-badge {
   position: absolute;

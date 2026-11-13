@@ -100,6 +100,16 @@ export const DEFAULT_BACKGROUND: BackgroundConfig = {
   defaultPostCover: "/bg-5.webp",
 };
 
+export function getDefaultCover(seed: string) {
+  const images = DEFAULT_BACKGROUND.bgImages;
+  if (!images.length) return DEFAULT_BACKGROUND.defaultPostCover;
+  let hash = 0;
+  for (const char of seed || "default") {
+    hash = (hash * 31 + char.charCodeAt(0)) | 0;
+  }
+  return images[Math.abs(hash) % images.length];
+}
+
 export const DEFAULT_DANMAKU: string[] = [
   "今天也要好好写代码", "海风把 bug 吹走了", "这张照片值得留下",
   "正在整理一些想法", "鲸鱼娘在摸鱼", "先保存，再继续折腾",

@@ -1,9 +1,9 @@
 import { formatDay, type Post } from "../lib/api";
-import { DEFAULT_BACKGROUND } from "../lib/site-config";
+import { getDefaultCover } from "../lib/site-config";
 import ArchiveItemCard from "./ArchiveItemCard";
 
 export default function PostCard({ post, layout = "cover" }: { post: Post; layout?: "cover" | "timeline" | "masonry" }) {
-  const cover = post.cover || DEFAULT_BACKGROUND.defaultPostCover;
+  const cover = post.cover || getDefaultCover(post.slug || post.title);
 
   return (
     <ArchiveItemCard

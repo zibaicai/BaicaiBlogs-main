@@ -10,7 +10,7 @@ import RecommendedCard from "../../../../components/RecommendedCard";
 import MarkdownReader from "../../../../components/MarkdownReader";
 import { ReadingProvider } from "../../../../components/reading/ReadingContext";
 import { formatDate, formatDay } from "../../../../lib/api";
-import { DEFAULT_BACKGROUND } from "../../../../lib/site-config";
+import { getDefaultCover } from "../../../../lib/site-config";
 import {
   getAdminArticles,
   getCurrentUser,
@@ -45,7 +45,7 @@ export default async function ManagedArticlePage({ params }: { params: Promise<{
   const recentArticles = allArticles
     .filter((item) => item.id !== article.id)
     .slice(0, 4);
-  const cover = article.cover || DEFAULT_BACKGROUND.defaultPostCover;
+  const cover = article.cover || getDefaultCover(article.slug);
   const publishedAt = article.publishedAt || article.createdAt;
 
   return (

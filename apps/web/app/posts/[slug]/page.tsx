@@ -11,7 +11,7 @@ import { ReadingProvider } from "../../../components/reading/ReadingContext";
 import CommentSection from "../../../components/comments/CommentSection";
 import { formatDate, formatDay } from "../../../lib/api";
 import { getPost, getPosts } from "../../../lib/server-api";
-import { DEFAULT_BACKGROUND } from "../../../lib/site-config";
+import { getDefaultCover } from "../../../lib/site-config";
 
 export const dynamic = "force-dynamic";
 
@@ -44,7 +44,7 @@ export default async function PostDetail({ params }: { params: Promise<{ slug: s
   }
 
   const recentPosts = allPosts.filter((p) => p.slug !== slug).slice(0, 4);
-  const cover = post.cover || DEFAULT_BACKGROUND.defaultPostCover;
+  const cover = post.cover || getDefaultCover(post.slug);
 
   return (
     <div className="min-h-screen relative pb-20">
