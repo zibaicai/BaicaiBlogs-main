@@ -192,6 +192,12 @@ export const api = {
       body: JSON.stringify({ challengeToken, code }),
     }),
 
+  setup2fa: () => request<{ secret: string; otpauthUrl: string }>("/auth/2fa/setup", { method: "POST" }),
+  enable2fa: (code: string) =>
+    request<void>("/auth/2fa/enable", { method: "POST", body: JSON.stringify({ code }) }),
+  disable2fa: (password: string) =>
+    request<void>("/auth/2fa/disable", { method: "POST", body: JSON.stringify({ password }) }),
+
   logout: () => request<void>("/auth/logout", { method: "POST", credentials: "include" }),
   myPosts: () => request<Post[]>("/me/posts"),
   myProjects: () => request<Project[]>("/me/projects"),

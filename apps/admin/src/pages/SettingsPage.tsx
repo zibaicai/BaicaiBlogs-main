@@ -14,6 +14,7 @@ import AIWhaleSection from "../components/settings/AIWhaleSection";
 import FooterSection from "../components/settings/FooterSection";
 import GallerySection from "../components/settings/GallerySection";
 import DisplaySection from "../components/settings/DisplaySection";
+import SecuritySection from "../components/settings/SecuritySection";
 
 const TABS = [
   { id: "profile", label: "站点信息", icon: "🪪" },
@@ -23,6 +24,7 @@ const TABS = [
   { id: "footer", label: "页脚", icon: "📄" },
   { id: "gallery", label: "图库", icon: "🌄" },
   { id: "display", label: "显示", icon: "🎨" },
+  { id: "security", label: "安全", icon: "🔐" },
 ];
 
 const SITE_INFO_KEYS = [
@@ -194,6 +196,7 @@ export default function SettingsPage() {
         {activeTab === "footer" && <FooterSection {...panelProps} />}
         {activeTab === "gallery" && <GallerySection {...panelProps} />}
         {activeTab === "display" && <DisplaySection {...panelProps} />}
+        {activeTab === "security" && <SecuritySection />}
       </motion.div>
     </AdminPageShell>
   );
