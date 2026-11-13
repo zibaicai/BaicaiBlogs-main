@@ -26,6 +26,9 @@ public class AuthService {
     @Value("${jwt.expiration}")
     private long jwtExpiration;
 
+    @Value("${jwt.admin-expiration:7200000}")
+    private long adminExpiration;
+
     public LoginResponse login(LoginRequest request, String ip) {
         String username = request.getUsername() == null ? "" : request.getUsername().trim();
         loginAttemptService.assertAllowed(ip, username);
@@ -44,12 +47,14 @@ public class AuthService {
         }
         loginAttemptService.success(ip, username);
 
-        String token = jwtTokenProvider.generateToken(user.getUsername());
+        boolean admin = "ADMIN".equalsIgnoreCase(user.getRole()) || "SUPER_ADMIN".equalsIgnoreCase(user.getRole());
+        long expiration = admin ? adminExpiration : jwtExpiration;
+        String token = jwtTokenProvider.generateToken(user.getUsername(), user.getTokenVersion(), expiration);
 
         return LoginResponse.builder()
                 .token(token)
                 .tokenType("Bearer")
-                .expiresIn(jwtExpiration)
+                .expiresIn(expiration)
                 .userId(user.getId())
                 .username(user.getUsername())
                 .nickname(user.getNickname() != null ? user.getNickname() : user.getUsername())

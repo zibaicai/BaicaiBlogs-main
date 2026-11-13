@@ -44,9 +44,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (StringUtils.hasText(jwt)) {
                 String username = jwtTokenProvider.getUsernameFromToken(jwt);
+                Integer tokenVersion = jwtTokenProvider.getTokenVersionFromToken(jwt);
                 User user = userRepository.findByUsername(username).orElse(null);
 
-                if (user != null && !"BANNED".equalsIgnoreCase(user.getStatus())) {
+                if (user != null && !"BANNED".equalsIgnoreCase(user.getStatus())
+                        && tokenVersion != null
+                        && tokenVersion.equals(user.getTokenVersion() == null ? 0 : user.getTokenVersion())) {
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             user, null,
                             Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole())));
