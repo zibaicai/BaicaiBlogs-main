@@ -837,10 +837,9 @@ function SessionGate({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     api.session()
       .then((res) => {
-        if (res?.success && res.data) {
-          setAdminUser(res.data.username || "");
-          setAdminRole(res.data.role || "");
-        }
+        if (!res?.success || !res.data) throw new Error("未登录");
+        setAdminUser(res.data.username || "");
+        setAdminRole(res.data.role || "");
       })
       .catch(() => {
         setAdminUser("");
