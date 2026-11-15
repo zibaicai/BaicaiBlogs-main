@@ -77,19 +77,11 @@
 .dark .moment-row[data-side="right"] .moment-card {
   border-image-source: url("/moments/bubble-right-dark-organic.svg");
 }
-@media (max-width: 767px) {
-  .moment-row .moment-card {
-    max-width: 88%;
-  }
-  .moment-row .moment-resource .moment-card {
-    max-width: 88%;
-  }
-}
-
 /* The avatar belongs to the resource, outside the bubble. The bubble tail
-   points at it; right-side resources mirror the whole unit. */
-.moment-resource {
+   points at it; right-side resources mirror the whole unit. */.moment-resource {
+  --moment-card-width: min(620px, 72vw, 100%);
   display: flex;
+  width: var(--moment-card-width);
   min-width: 0;
   max-width: 100%;
   flex-direction: column;
@@ -97,10 +89,12 @@
   gap: 0;
 }
 .moment-row[data-side="right"] .moment-resource,
+.moment-resource[data-side="right"],
 .moment-resource--right {
   align-items: flex-end;
 }
 .moment-row[data-side="right"] .moment-person,
+.moment-resource[data-side="right"] .moment-person,
 .moment-resource--right .moment-person {
   flex-direction: row-reverse;
   margin: 0 12px 0 0;
@@ -139,14 +133,16 @@
   white-space: nowrap;
 }
 .moment-resource .moment-card {
-  width: auto;
-  min-width: min(280px, calc(100vw - 96px));
-  max-width: min(620px, calc(100vw - 96px));
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   order: 1;
 }
-.moment-row .moment-resource .moment-card {
-  min-width: min(280px, 100%);
-  max-width: min(620px, 72%);
+.moment-resource[data-side="right"] .moment-card {
+  border-image-source: url("/moments/bubble-right-light-organic.svg");
+}
+.dark .moment-resource[data-side="right"] .moment-card {
+  border-image-source: url("/moments/bubble-right-dark-organic.svg");
 }
 .moment-permalink {
   border: 0;
@@ -179,11 +175,12 @@
   max-height: calc(100dvh - 24px);
   overflow-y: auto;
   overscroll-behavior: contain;
-  border: 1px solid rgba(215, 225, 238, 0.9);
+  border: 0;
   border-radius: 32px;
   background: rgba(247, 249, 253, 0.94);
   padding: 10px;
   box-shadow:
+    0 0 0 1px rgba(215, 225, 238, 0.9),
     0 20px 60px rgba(24, 38, 55, 0.2),
     0 3px 12px rgba(24, 38, 55, 0.08);
   backdrop-filter: blur(14px) saturate(1.05);
@@ -191,9 +188,9 @@
   transform-origin: top left;
 }
 .dark .moment-expanded-surface {
-  border-color: rgba(51, 65, 85, 0.9);
   background: rgba(15, 23, 42, 0.96);
   box-shadow:
+    0 0 0 1px rgba(51, 65, 85, 0.9),
     0 28px 90px rgba(0, 0, 0, 0.5),
     0 6px 20px rgba(0, 0, 0, 0.28);
 }
@@ -225,14 +222,20 @@
 .moment-expanded-surface .moment-resource--right {
   align-items: flex-end;
 }
+.moment-expanded-surface .moment-resource[data-side="right"] {
+  align-items: flex-end;
+}
 .moment-expanded-surface .moment-resource--right .moment-person {
   margin: 0 14px 0 0;
 }
+.moment-expanded-surface .moment-resource[data-side="right"] .moment-person {
+  margin: 0 14px 0 0;
+}
 .moment-expanded-surface .moment-resource .moment-card {
-  width: auto;
+  width: 100%;
   min-width: 0;
   max-width: none;
-  flex: 1 1 auto;
+  flex: 0 0 auto;
 }
 .moment-expanded-surface .moment-card {
   content-visibility: visible;
@@ -262,6 +265,7 @@
   margin-top: 6px;
   overflow-y: auto;
   overscroll-behavior: contain;
+  scrollbar-gutter: stable;
   padding-right: 4px;
 }
 .moment-comment {
@@ -399,6 +403,9 @@
   font-weight: 800;
 }
 @media (max-width: 767px) {
+  .moment-resource {
+    --moment-card-width: min(88vw, 520px, 100%);
+  }
   .moment-person {
     flex-basis: auto;
   }
@@ -425,4 +432,5 @@
   }
 }
 }
+
 

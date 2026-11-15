@@ -53,6 +53,7 @@ export default function MomentCard({
     <div
       ref={resourceRef}
       className={`moment-resource moment-resource--${side} ${isExpanded ? "moment-resource--expanded" : ""}`}
+      data-side={side}
       aria-hidden={isExpanded || undefined}
     >
       <div className="moment-person">
