@@ -38,25 +38,22 @@ export default function MomentOverlay({
 
   const viewportWidth = window.innerWidth;
   const viewportHeight = window.innerHeight;
-  const width = Math.min(720, viewportWidth - 32);
-  const preferredLeft = side === "left" ? anchorRect.left : anchorRect.right - width;
-  const left = Math.min(Math.max(16, preferredLeft), viewportWidth - width - 16);
-  const top = Math.min(Math.max(88, anchorRect.top - 12), Math.max(88, viewportHeight - 180));
+  const width = Math.min(anchorRect.width + 20, viewportWidth - 24);
+  const preferredLeft = anchorRect.left - 10;
+  const left = Math.min(Math.max(12, preferredLeft), Math.max(12, viewportWidth - width - 12));
+  const top = Math.min(Math.max(12, anchorRect.top - 10), Math.max(12, viewportHeight - 160));
+  const closeTop = Math.max(0, top - 14);
+  const closeLeft = Math.min(left + width - 16, viewportWidth - 40);
 
   return createPortal(
     <div className="moment-overlay-root">
-      <button type="button" className="moment-overlay-scrim" aria-label="关闭留言" onClick={onClose} />
+      <button type="button" className="moment-overlay-catcher" aria-label="关闭留言" onClick={onClose} />
       <div
         className="moment-expanded-surface"
         role="dialog"
-        aria-modal="true"
         aria-label={`${moment.authorName || "匿名用户"}的说说留言`}
         style={{ top, left, width }}
       >
-        <button ref={closeRef} type="button" className="moment-overlay-close" onClick={onClose} aria-label="关闭留言">
-          <X size={16} />
-        </button>
-
         <MomentCard
           moment={moment}
           side={side}
@@ -72,6 +69,16 @@ export default function MomentOverlay({
           onCloseComments={onClose}
         />
       </div>
+      <button
+        ref={closeRef}
+        type="button"
+        className="moment-overlay-close"
+        style={{ top: closeTop, left: closeLeft }}
+        onClick={onClose}
+        aria-label="关闭留言"
+      >
+        <X size={16} />
+      </button>
     </div>,
     document.body
   );

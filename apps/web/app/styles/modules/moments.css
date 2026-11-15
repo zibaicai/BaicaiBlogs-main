@@ -163,32 +163,32 @@
   z-index: 9998;
   pointer-events: none;
 }
-.moment-overlay-scrim {
+.moment-overlay-catcher {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   border: 0;
-  background: rgba(2, 6, 23, 0.38);
+  background: transparent;
   cursor: default;
   pointer-events: auto;
-  backdrop-filter: blur(4px);
 }
 .moment-expanded-surface {
   position: fixed;
   z-index: 9999;
-  max-height: calc(100dvh - 112px);
+  max-height: calc(100dvh - 24px);
   overflow-y: auto;
   overscroll-behavior: contain;
   border: 1px solid rgba(215, 225, 238, 0.9);
-  border-radius: 30px;
-  background: rgba(247, 249, 253, 0.96);
-  padding: 22px 24px 32px;
+  border-radius: 32px;
+  background: rgba(247, 249, 253, 0.94);
+  padding: 10px;
   box-shadow:
-    0 28px 90px rgba(24, 38, 55, 0.22),
-    0 6px 20px rgba(24, 38, 55, 0.1);
-  backdrop-filter: blur(20px) saturate(1.05);
+    0 20px 60px rgba(24, 38, 55, 0.2),
+    0 3px 12px rgba(24, 38, 55, 0.08);
+  backdrop-filter: blur(14px) saturate(1.05);
   pointer-events: auto;
+  transform-origin: top left;
 }
 .dark .moment-expanded-surface {
   border-color: rgba(51, 65, 85, 0.9);
@@ -198,10 +198,8 @@
     0 6px 20px rgba(0, 0, 0, 0.28);
 }
 .moment-overlay-close {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  z-index: 4;
+  position: fixed;
+  z-index: 10000;
   display: inline-flex;
   width: 30px;
   height: 30px;
@@ -412,12 +410,12 @@
     max-width: 80px;
   }
   .moment-overlay-root {
-    padding: 0 12px;
+    padding: 0;
   }
   .moment-expanded-surface {
-    max-height: calc(100dvh - 88px);
+    max-height: calc(100dvh - 16px);
     border-radius: 24px;
-    padding: 18px 16px 16px;
+    padding: 8px;
   }
   .moment-expanded-surface .moment-resource {
     gap: 7px;
