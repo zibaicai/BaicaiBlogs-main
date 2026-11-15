@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import MomentCard, { type MomentStory } from "../MomentCard";
@@ -18,37 +18,21 @@ export default function MomentOverlay({
   onClose: () => void;
 }) {
   const closeRef = useRef<HTMLButtonElement>(null);
-  const closeTimerRef = useRef<number | null>(null);
-  const closingRef = useRef(false);
   const [commentCount, setCommentCount] = useState(0);
-  const [isClosing, setIsClosing] = useState(false);
-
-  const requestClose = useCallback(() => {
-    if (closingRef.current) return;
-    closingRef.current = true;
-    setIsClosing(true);
-    closeTimerRef.current = window.setTimeout(onClose, 150);
-  }, [onClose]);
 
   useEffect(() => {
     closeRef.current?.focus();
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") requestClose();
+      if (event.key === "Escape") onClose();
     };
-    const onScroll = () => requestClose();
+    const onScroll = () => onClose();
     document.addEventListener("keydown", onKeyDown);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       document.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("scroll", onScroll);
     };
-  }, [requestClose]);
-
-  useEffect(() => {
-    return () => {
-      if (closeTimerRef.current !== null) window.clearTimeout(closeTimerRef.current);
-    };
-  }, []);
+  }, [onClose]);
 
   if (typeof document === "undefined") return null;
 
@@ -63,9 +47,9 @@ export default function MomentOverlay({
 
   return createPortal(
     <div className="moment-overlay-root">
-      <button type="button" className="moment-overlay-catcher" aria-label="关闭留言" onClick={requestClose} />
+      <button type="button" className="moment-overlay-catcher" aria-label="关闭留言" onClick={onClose} />
       <div
-        className={`moment-expanded-surface${isClosing ? " is-closing" : ""}`}
+        className="moment-expanded-surface"
         role="dialog"
         aria-label={`${moment.authorName || "匿名用户"}的说说留言`}
         style={{ top, left, width }}
@@ -82,7 +66,7 @@ export default function MomentOverlay({
               <p className="moment-comments-empty">留言暂不可用。</p>
             )
           }
-          onCloseComments={requestClose}
+          onCloseComments={onClose}
         />
       </div>
       <button
@@ -90,7 +74,7 @@ export default function MomentOverlay({
         type="button"
         className="moment-overlay-close"
         style={{ top: closeTop, left: closeLeft }}
-        onClick={requestClose}
+        onClick={onClose}
         aria-label="关闭留言"
       >
         <X size={16} />
