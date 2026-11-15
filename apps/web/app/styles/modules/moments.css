@@ -1,4 +1,4 @@
-﻿@layer components {
+@layer components {
 /* Full-SVG moment bubble. The transparent border is the card's safe area;
    the SVG body is one shape, so there is no seam and no pseudo-element tail. */
 .moment-card {
@@ -80,6 +80,331 @@
 @media (max-width: 767px) {
   .moment-row .moment-card {
     max-width: 88%;
+  }
+  .moment-row .moment-resource .moment-card {
+    max-width: 88%;
+  }
+}
+
+/* The avatar belongs to the resource, outside the bubble. The bubble tail
+   points at it; right-side resources mirror the whole unit. */
+.moment-resource {
+  display: flex;
+  min-width: 0;
+  max-width: 100%;
+  align-items: flex-end;
+  gap: 10px;
+}
+.moment-row[data-side="right"] .moment-resource {
+  flex-direction: row-reverse;
+}
+.moment-resource--expanded {
+  visibility: hidden;
+  pointer-events: none;
+}
+.moment-person {
+  display: flex;
+  flex: 0 0 42px;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding-bottom: 8px;
+}
+.moment-person .moment-avatar {
+  width: 34px;
+  height: 34px;
+  font-size: var(--type-meta);
+}
+.moment-person strong {
+  max-width: 64px;
+  overflow: hidden;
+  color: var(--ui-text-muted);
+  font-family: var(--font-body);
+  font-size: var(--type-caption);
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.moment-resource .moment-card {
+  width: auto;
+  min-width: min(280px, calc(100vw - 96px));
+  max-width: min(620px, calc(100vw - 96px));
+}
+.moment-row .moment-resource .moment-card {
+  min-width: min(280px, 100%);
+  max-width: min(620px, 72%);
+}
+.moment-permalink {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* Expanded moment: the original resource stays in flow as an invisible
+   anchor; this surface floats above the following resources. */
+.moment-overlay-root {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+}
+.moment-overlay-scrim {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: rgba(2, 6, 23, 0.38);
+  cursor: default;
+  pointer-events: auto;
+  backdrop-filter: blur(4px);
+}
+.moment-expanded-surface {
+  position: fixed;
+  z-index: 9999;
+  max-height: calc(100dvh - 112px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid rgba(215, 225, 238, 0.9);
+  border-radius: 30px;
+  background: rgba(247, 249, 253, 0.96);
+  padding: 22px 24px 20px;
+  box-shadow:
+    0 28px 90px rgba(24, 38, 55, 0.22),
+    0 6px 20px rgba(24, 38, 55, 0.1);
+  backdrop-filter: blur(20px) saturate(1.05);
+  pointer-events: auto;
+}
+.dark .moment-expanded-surface {
+  border-color: rgba(51, 65, 85, 0.9);
+  background: rgba(15, 23, 42, 0.96);
+  box-shadow:
+    0 28px 90px rgba(0, 0, 0, 0.5),
+    0 6px 20px rgba(0, 0, 0, 0.28);
+}
+.moment-overlay-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 4;
+  display: inline-flex;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--ui-border);
+  border-radius: 999px;
+  background: var(--ui-secondary-bg);
+  color: var(--ui-text-muted);
+}
+.moment-overlay-close:hover {
+  color: var(--ui-text);
+  border-color: var(--ui-accent);
+}
+.moment-expanded-surface .moment-resource {
+  width: 100%;
+  align-items: flex-end;
+}
+.moment-expanded-surface .moment-person {
+  padding-bottom: 14px;
+}
+.moment-expanded-surface .moment-resource .moment-card {
+  width: auto;
+  min-width: 0;
+  max-width: none;
+  flex: 1 1 auto;
+}
+.moment-expanded-surface .moment-card {
+  content-visibility: visible;
+}
+
+/* Flat moment comments: no nested threads, direct @ mentions only. */
+.moment-comments {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--ui-border);
+}
+.moment-comments-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--ui-text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--type-meta);
+  font-weight: 700;
+}
+.moment-comments-head > span:first-child {
+  color: var(--ui-text);
+}
+.moment-comments-list {
+  max-height: min(34vh, 300px);
+  margin-top: 6px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 4px;
+}
+.moment-comment {
+  display: flex;
+  gap: 8px;
+  padding: 9px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--ui-border) 65%, transparent);
+}
+.moment-comment:last-child {
+  border-bottom: 0;
+}
+.moment-comment-avatar {
+  width: 25px;
+  height: 25px;
+  flex: 0 0 25px;
+  font-size: var(--type-caption);
+}
+.moment-comment-main {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.moment-comment-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.moment-comment-meta strong {
+  overflow: hidden;
+  color: var(--ui-text);
+  font-size: var(--type-meta);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.moment-comment-meta time {
+  flex: 0 0 auto;
+  color: var(--ui-text-faint);
+  font-family: var(--font-mono);
+  font-size: var(--type-caption);
+}
+.moment-comment-main p {
+  margin: 3px 0 0;
+  color: var(--ui-text);
+  font-size: var(--type-description);
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.moment-comment-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+.moment-comment-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: var(--ui-text-faint);
+  font-size: var(--type-caption);
+  font-weight: 700;
+  cursor: pointer;
+}
+.moment-comment-actions button:hover {
+  color: var(--ui-accent-strong);
+}
+.moment-comments-state,
+.moment-comments-empty,
+.moment-comments-note,
+.moment-comments-login {
+  margin: 10px 0 0;
+  color: var(--ui-text-muted);
+  font-size: var(--type-meta);
+  line-height: 1.6;
+}
+.moment-comments-state {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.moment-comments-error {
+  margin: 8px 0 0;
+  color: #fb7185;
+  font-size: var(--type-meta);
+}
+.moment-composer {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--ui-border);
+}
+.moment-composer-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+.moment-composer-input {
+  min-width: 0;
+  flex: 1 1 auto;
+  border: 1px solid var(--ui-border);
+  border-radius: 14px;
+  background: var(--ui-secondary-bg);
+  padding: 8px 10px;
+  color: var(--ui-text);
+  font-size: var(--type-description);
+  outline: none;
+}
+.moment-composer-input:focus {
+  border-color: var(--ui-accent);
+}
+.moment-composer-send {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  background: var(--ui-accent);
+  color: var(--ui-accent-contrast);
+}
+.moment-composer-send:disabled {
+  opacity: 0.4;
+}
+.moment-composer-mention {
+  display: block;
+  margin-top: 4px;
+  color: var(--ui-accent-strong);
+  font-size: var(--type-caption);
+}
+.moment-comments-login a {
+  color: var(--ui-accent-strong);
+  font-weight: 800;
+}
+@media (max-width: 767px) {
+  .moment-person {
+    flex-basis: 36px;
+  }
+  .moment-person .moment-avatar {
+    width: 30px;
+    height: 30px;
+  }
+  .moment-person strong {
+    max-width: 52px;
+  }
+  .moment-overlay-root {
+    padding: 0 12px;
+  }
+  .moment-expanded-surface {
+    max-height: calc(100dvh - 88px);
+    border-radius: 24px;
+    padding: 18px 16px 16px;
+  }
+  .moment-expanded-surface .moment-resource {
+    gap: 7px;
+  }
+  .moment-comments-list {
+    max-height: min(30vh, 240px);
   }
 }
 }

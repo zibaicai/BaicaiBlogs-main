@@ -83,6 +83,52 @@ ArticleCard 自己维护另一套卡片布局 CSS
 
 `PostCard` 同样是 Post 适配层；`ProjectsBoard` 等组合可以直接复用 `ArchiveItemCard`，但不得复制其结构。
 
+### MomentCard / MomentOverlay
+
+`/moments` 的说说使用独立的气泡资源组合：
+
+```text
+MomentCard
+  头像 + 昵称（气泡外）
+  气泡（border-image）
+
+MomentOverlay
+  Portal → document.body
+  全屏轻蒙版
+  展开资源容器（背景 + 阴影 + 圆角）
+    头像 + 气泡 + 留言
+```
+
+硬规则：
+
+```text
+展开资源不参与文档流，原卡片保留占位
+浮层必须 Portal，不能放在 .moment-card 的 filter 层叠上下文内
+展开时原卡片隐藏但保留高度
+点击蒙版 / Esc / 收起留言关闭
+留言为单层列表，不做楼中楼
+留言最多展示 10 条，超出不继续撑高气泡
+@ 留言者只插入提及，不创建 parentId
+```
+
+`MomentOverlay` 的资源容器必须有不透明背景，避免展开头像与下方说说头像重叠。
+
+### 留言组件边界
+
+文章、笔记等页面继续使用 `CommentSection` 的完整评论能力。
+
+说说浮层使用 `MomentComments`：
+
+```text
+只读 / 写留言
+单层留言
+最多 10 条
+@ 留言者
+内部滚动
+```
+
+不得为了说说浮层去修改 `CommentSection` 的楼中楼结构；两者是不同交互模型。
+
 封面卡片（`archive-card--cover`）必须遵守固定文本区：
 
 ```text

@@ -6,6 +6,7 @@ import Navbar from "../../components/Navbar";
 import PageTransition from "../../components/PageTransition";
 import DirectoryExplorer from "../../components/DirectoryExplorer";
 import MomentCard from "../../components/MomentCard";
+import MomentOverlay from "../../components/moments/MomentOverlay";
 import { useAuth } from "../../lib/auth";
 
 type Moment = {
@@ -26,6 +27,7 @@ export default function MomentsPage() {
   const { user, loading: authLoading } = useAuth();
   const [moments, setMoments] = useState<Moment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expanded, setExpanded] = useState<{ moment: Moment; side: "left" | "right"; anchorRect: DOMRect } | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -48,15 +50,25 @@ export default function MomentsPage() {
 
   const items = useMemo(
     () =>
-      moments.map((moment) => ({
-        key: String(moment.slug || moment.id),
-        node: <MomentCard moment={moment} />,
-        searchText: [moment.date, (moment.htmlContent || "").replace(/<[^>]+>/g, " ")].join(" "),
-        filterValues: [moment.visibility === "PRIVATE" ? "private" : "public"],
-        title: (moment.content || "").replace(/<[^>]+>/g, " ").trim().slice(0, 60),
-        date: moment.date,
-      })),
-    [moments, user]
+      moments.map((moment, index) => {
+        const side = index % 2 === 0 ? "left" : "right";
+        return {
+          key: String(moment.slug || moment.id),
+          node: (
+            <MomentCard
+              moment={moment}
+              side={side}
+              isExpanded={expanded?.moment.slug === moment.slug}
+              onOpenComments={(anchorRect) => setExpanded({ moment, side, anchorRect })}
+            />
+          ),
+          searchText: [moment.date, (moment.htmlContent || "").replace(/<[^>]+>/g, " ")].join(" "),
+          filterValues: [moment.visibility === "PRIVATE" ? "private" : "public"],
+          title: (moment.content || "").replace(/<[^>]+>/g, " ").trim().slice(0, 60),
+          date: moment.date,
+        };
+      }),
+    [moments, user, expanded?.moment.slug]
   );
 
   const filters = [
@@ -104,6 +116,14 @@ export default function MomentsPage() {
           )}
         </main>
       </PageTransition>
+      {expanded && (
+        <MomentOverlay
+          moment={expanded.moment}
+          side={expanded.side}
+          anchorRect={expanded.anchorRect}
+          onClose={() => setExpanded(null)}
+        />
+      )}
     </div>
   );
 }
